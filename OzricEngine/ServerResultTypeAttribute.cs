@@ -4,9 +4,9 @@ namespace OzricEngine
 {
     public class ServerResultTypeAttribute : Attribute
     {
-        public readonly ServerResult.Type value;
+        public readonly string value;
 
-        public ServerResultTypeAttribute(ServerResult.Type value)
+        public ServerResultTypeAttribute(string value)
         {
             this.value = value;
         }

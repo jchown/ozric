@@ -2,7 +2,7 @@ namespace OzricEngine
 {
     public class ServerAuthRequired
     {
-        public string type { get; set; }
-        public string ha_version { get; set; }
+        public string type;
+        public string ha_version;
     }
 }

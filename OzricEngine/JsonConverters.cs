@@ -10,7 +10,7 @@ namespace OzricEngine
 {
     public class JsonConverters
     {
-        private static readonly IDictionary<ServerResult.Type, Type> ResultTypes = new Dictionary<ServerResult.Type, Type>();
+        private static readonly IDictionary<string, Type> ResultTypes = new Dictionary<string, Type>();
 
         static JsonConverters()
         {
@@ -40,15 +40,10 @@ namespace OzricEngine
                     }
 
                     var value = typeProperty.GetString();
-                    if (!ServerResult.Type.TryParse(value, out ServerResult.Type enumType))
-                    {
-                        throw new JsonException($"Could not parse {value} as {typeof(ServerResult.Type)}");
-                    }
-                    
-                    var type = ResultTypes[enumType];
+                    var type = ResultTypes[value];
                     if (type == null)
                     {
-                        throw new JsonException($"Unknown class for {enumType} of {typeof(ServerResult.Type)}");
+                        throw new JsonException($"Unknown class for \"{value}\" of {typeof(ServerResult)}");
                     }
 
                     var jsonObject = jsonDocument.RootElement.GetRawText();

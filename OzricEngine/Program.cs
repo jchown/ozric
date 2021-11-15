@@ -1,9 +1,4 @@
-﻿using System;
-using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 
 namespace OzricEngine
 {
@@ -14,6 +9,15 @@ namespace OzricEngine
             using (var engine = new Engine())
             {
                 await engine.Authenticate();
+                
+                await engine.Send(new ClientEventSubscribe());
+                
+                await engine.Receive<ServerEventSubscribeResult>();
+
+                while (true)
+                {
+                    await engine.Receive<ServerEvent>();
+                }
             }
         }
     }

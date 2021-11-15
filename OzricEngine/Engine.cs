@@ -2,6 +2,7 @@ using System;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,6 +24,7 @@ namespace OzricEngine
         private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
         private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters = { new JsonConverters.ResultConverter() }
         };
 
@@ -52,7 +54,7 @@ namespace OzricEngine
             CancellationTokenSource cancellation = new CancellationTokenSource();
             cancellation.CancelAfter(SendTimeout);
 
-            var json = JsonSerializer.Serialize(t);
+            var json = JsonSerializer.Serialize(t, JsonOptions);
             Console.WriteLine($">> {json}");
 
             int length = Encoding.UTF8.GetBytes(json, 0, json.Length, buffer, 0);
