@@ -1,6 +1,6 @@
 namespace OzricEngine
 {
-    public class ServerEventSubscribeResult
+    public class ServerEventSubscribed
     {
         public int id;
         public string type;

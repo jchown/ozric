@@ -15,17 +15,17 @@ namespace OzricEngine
         private ClientWebSocket client = new ClientWebSocket();
 //              client("User-Agent", "Ozric/0.1");
 
-        private byte[] buffer = new byte[1024];
+        private byte[] buffer = new byte[65536];
 
         private string llat =
             "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI5NjIyODE0NmFmMmQ0YTVmOWZiZmNiNDRmNTY0ZGQ4NSIsImlhdCI6MTYzNzAwMzc4OCwiZXhwIjoxOTUyMzYzNzg4fQ.YeZGrm3Shnx5Zu8MedejVB61t2GWWr4gU0MqIqb0cXY";
 
-        private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(10);
+        private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(60);
         private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
         private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Converters = { new JsonConverters.ResultConverter() }
+            Converters = { new JsonConverterServerMessage(), new JsonConverterEvent() }
         };
 
         public async Task Connect()
@@ -44,7 +44,7 @@ namespace OzricEngine
             var received = await client.ReceiveAsync(new ArraySegment<byte>(buffer), cancellation.Token);
             var json = Encoding.UTF8.GetString(buffer, 0, received.Count);
 
-            Console.WriteLine($"<< {json}");
+            WriteLine($"<< {json}");
             
             return JsonSerializer.Deserialize<T>(json, JsonOptions);
         }
@@ -55,10 +55,18 @@ namespace OzricEngine
             cancellation.CancelAfter(SendTimeout);
 
             var json = JsonSerializer.Serialize(t, JsonOptions);
-            Console.WriteLine($">> {json}");
+            WriteLine($">> {json}");
 
             int length = Encoding.UTF8.GetBytes(json, 0, json.Length, buffer, 0);
             await client.SendAsync(new ArraySegment<byte>(buffer, 0, length), WebSocketMessageType.Text, true, cancellation.Token);
+        }
+
+        private void WriteLine(string s)
+        {
+            var before = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine(s);
+            Console.ForegroundColor = before;
         }
 
         public void Dispose()
@@ -70,7 +78,7 @@ namespace OzricEngine
         {
             await Connect();
             
-            var authReq = await Receive<ServerAuthRequired>();
+            var authReq = await Receive<ServerMessageAuthRequired>();
             Console.WriteLine($"Auth requested by HA {authReq.ha_version}");
 
             var auth = new ClientAuth
@@ -79,12 +87,12 @@ namespace OzricEngine
             };
             await Send(auth);
             
-            var authResult = await Receive<ServerResult>();
+            var authResult = await Receive<ServerMessage>();
             if (authResult is ServerAuthInvalid invalid)
             {
                 throw new Exception($"Auth failed: {invalid.message}");
             }
-            if (!(authResult is ServerAuthOK))
+            if (!(authResult is ServerMessageAuthOK))
             {
                 throw new Exception($"Auth failed: Unexpected result: {authResult}");
             }

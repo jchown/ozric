@@ -79,19 +79,29 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="ClientAuth.cs" />
-        <Compile Include="ClientEvents.cs" />
         <Compile Include="Engine.cs" />
-        <Compile Include="JsonConverters.cs" />
+        <Compile Include="json\JsonConverterBase.cs" />
+        <Compile Include="json\JsonConverterEvent.cs" />
+        <Compile Include="json\JsonConverterServerMessage.cs" />
+        <Compile Include="json\TypeKeyAttribute.cs" />
+        <Compile Include="messages\EventCallServiceData.cs" />
+        <Compile Include="messages\ClientAuth.cs" />
+        <Compile Include="messages\ClientEventSubscribe.cs" />
+        <Compile Include="messages\Event.cs" />
+        <Compile Include="messages\EventCallService.cs" />
+        <Compile Include="messages\EventDataContext.cs" />
+        <Compile Include="messages\EventData.cs" />
+        <Compile Include="messages\EventState.cs" />
+        <Compile Include="messages\EventStateChanged.cs" />
+        <Compile Include="messages\ServerMessageAuthOK.cs" />
+        <Compile Include="messages\ServerMessageAuthRequired.cs" />
+        <Compile Include="messages\ServerAuthResults.cs" />
+        <Compile Include="messages\ServerMessageEvent.cs" />
+        <Compile Include="messages\ServerEventSubscribed.cs" />
+        <Compile Include="messages\ServerMessage.cs" />
+        <Compile Include="messages\EventDataServiceData.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
-        <Compile Include="ServerAuthOK.cs" />
-        <Compile Include="ServerAuthRequired.cs" />
-        <Compile Include="ServerAuthResults.cs" />
-        <Compile Include="ServerEvent.cs" />
-        <Compile Include="ServerEventSubscribeResult.cs" />
-        <Compile Include="ServerResult.cs" />
-        <Compile Include="ServerResultTypeAttribute.cs" />
     </ItemGroup>
     <ItemGroup>
       <None Include="packages.config" />
