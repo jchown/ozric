@@ -84,6 +84,12 @@
         <Compile Include="json\JsonConverterEvent.cs" />
         <Compile Include="json\JsonConverterServerMessage.cs" />
         <Compile Include="json\TypeKeyAttribute.cs" />
+        <Compile Include="messages\ClientCallService.cs" />
+        <Compile Include="messages\ClientCommand.cs" />
+        <Compile Include="messages\ClientGetConfig.cs" />
+        <Compile Include="messages\ClientGetServices.cs" />
+        <Compile Include="messages\ClientGetStates.cs" />
+        <Compile Include="messages\ClientPing.cs" />
         <Compile Include="messages\EventCallServiceData.cs" />
         <Compile Include="messages\ClientAuth.cs" />
         <Compile Include="messages\ClientEventSubscribe.cs" />
