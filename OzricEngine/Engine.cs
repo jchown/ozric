@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
@@ -41,8 +42,25 @@ namespace OzricEngine
             CancellationTokenSource cancellation = new CancellationTokenSource();
             cancellation.CancelAfter(ReceiveTimeout);
 
-            var received = await client.ReceiveAsync(new ArraySegment<byte>(buffer), cancellation.Token);
-            var json = Encoding.UTF8.GetString(buffer, 0, received.Count);
+            string json;
+            using (var ms = new MemoryStream())
+            {
+                var bytes = new ArraySegment<byte>(buffer);
+                WebSocketReceiveResult received;
+                do
+                {
+                    received = await client.ReceiveAsync(bytes, cancellation.Token);
+                    ms.Write(bytes.Array, bytes.Offset, received.Count);
+                }
+                while (!received.EndOfMessage);
+
+                ms.Seek(0, SeekOrigin.Begin);
+                
+                using (var reader = new StreamReader(ms, Encoding.UTF8))
+                {
+                    json = reader.ReadToEnd();
+                }
+            }
 
             WriteLine($"<< {json}");
             

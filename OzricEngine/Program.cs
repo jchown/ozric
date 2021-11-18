@@ -11,6 +11,10 @@ namespace OzricEngine
             {
                 await engine.Authenticate();
                 
+                await engine.Send(new ClientGetStates());
+                
+                await engine.Receive<ServerGetStates>();
+                
                 await engine.Send(new ClientEventSubscribe());
                 
                 await engine.Receive<ServerEventSubscribed>();

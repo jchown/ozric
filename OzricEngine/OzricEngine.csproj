@@ -99,6 +99,7 @@
         <Compile Include="messages\EventData.cs" />
         <Compile Include="messages\EventState.cs" />
         <Compile Include="messages\EventStateChanged.cs" />
+        <Compile Include="messages\ServerGetStates.cs" />
         <Compile Include="messages\ServerMessageAuthOK.cs" />
         <Compile Include="messages\ServerMessageAuthRequired.cs" />
         <Compile Include="messages\ServerAuthResults.cs" />
