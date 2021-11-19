@@ -80,6 +80,8 @@
     </ItemGroup>
     <ItemGroup>
         <Compile Include="Engine.cs" />
+        <Compile Include="ext\DictionaryExt.cs" />
+        <Compile Include="ext\EnumerableExt.cs" />
         <Compile Include="json\JsonConverterBase.cs" />
         <Compile Include="json\JsonConverterEvent.cs" />
         <Compile Include="json\JsonConverterServerMessage.cs" />
@@ -95,7 +97,8 @@
         <Compile Include="messages\ClientEventSubscribe.cs" />
         <Compile Include="messages\Event.cs" />
         <Compile Include="messages\EventCallService.cs" />
-        <Compile Include="messages\EventDataContext.cs" />
+        <Compile Include="messages\State.cs" />
+        <Compile Include="messages\StateContext.cs" />
         <Compile Include="messages\EventData.cs" />
         <Compile Include="messages\EventState.cs" />
         <Compile Include="messages\EventStateChanged.cs" />

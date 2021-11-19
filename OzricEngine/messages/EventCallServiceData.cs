@@ -1,4 +1,5 @@
 using System;
+using System.Runtime.Remoting.Contexts;
 
 namespace OzricEngine
 {
@@ -9,6 +10,6 @@ namespace OzricEngine
         public EventDataServiceData service_data { get; set; }
         public string origin { get; set; }
         public DateTime time_fired { get; set; }
-        public EventDataContext context { get; set; }
+        public StateContext context { get; set; }
     }
 }

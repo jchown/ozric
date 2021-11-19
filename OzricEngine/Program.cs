@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using OzricEngine.ext;
 
 namespace OzricEngine
 {
@@ -13,7 +15,9 @@ namespace OzricEngine
                 
                 await engine.Send(new ClientGetStates());
                 
-                await engine.Receive<ServerGetStates>();
+                var states = await engine.Receive<ServerGetStates>();
+                
+                Console.WriteLine(states.result.Select(entity => $"{entity.Name} {entity.state}").Join("\n"));
                 
                 await engine.Send(new ClientEventSubscribe());
                 
