@@ -1,7 +1,7 @@
 namespace OzricEngine
 {
     [TypeKey("auth_required")]
-    public class ServerMessageAuthRequired: ServerMessage
+    public class ServerAuthRequired: ServerMessage
     {
         public string ha_version { get; set; }
     }

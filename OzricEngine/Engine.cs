@@ -96,7 +96,7 @@ namespace OzricEngine
         {
             await Connect();
             
-            var authReq = await Receive<ServerMessageAuthRequired>();
+            var authReq = await Receive<ServerAuthRequired>();
             Console.WriteLine($"Auth requested by HA {authReq.ha_version}");
 
             var auth = new ClientAuth
@@ -110,7 +110,7 @@ namespace OzricEngine
             {
                 throw new Exception($"Auth failed: {invalid.message}");
             }
-            if (!(authResult is ServerMessageAuthOK))
+            if (!(authResult is ServerAuthOK))
             {
                 throw new Exception($"Auth failed: Unexpected result: {authResult}");
             }

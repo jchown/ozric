@@ -32,6 +32,10 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="JetBrains.Annotations, Version=2021.3.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
+          <HintPath>..\packages\JetBrains.Annotations.2021.3.0\lib\net20\JetBrains.Annotations.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
         <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
           <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
           <Private>True</Private>
@@ -97,16 +101,18 @@
         <Compile Include="messages\ClientEventSubscribe.cs" />
         <Compile Include="messages\Event.cs" />
         <Compile Include="messages\EventCallService.cs" />
+        <Compile Include="messages\Result.cs" />
+        <Compile Include="messages\ServerResult.cs" />
         <Compile Include="messages\State.cs" />
         <Compile Include="messages\StateContext.cs" />
         <Compile Include="messages\EventData.cs" />
         <Compile Include="messages\EventState.cs" />
         <Compile Include="messages\EventStateChanged.cs" />
         <Compile Include="messages\ServerGetStates.cs" />
-        <Compile Include="messages\ServerMessageAuthOK.cs" />
-        <Compile Include="messages\ServerMessageAuthRequired.cs" />
+        <Compile Include="messages\ServerAuthOK.cs" />
+        <Compile Include="messages\ServerAuthRequired.cs" />
         <Compile Include="messages\ServerAuthResults.cs" />
-        <Compile Include="messages\ServerMessageEvent.cs" />
+        <Compile Include="messages\ServerEvent.cs" />
         <Compile Include="messages\ServerEventSubscribed.cs" />
         <Compile Include="messages\ServerMessage.cs" />
         <Compile Include="messages\EventDataServiceData.cs" />
