@@ -83,13 +83,18 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
+        <Compile Include="Connection.cs" />
         <Compile Include="Engine.cs" />
         <Compile Include="ext\DictionaryExt.cs" />
         <Compile Include="ext\EnumerableExt.cs" />
+        <Compile Include="Home.cs" />
         <Compile Include="json\JsonConverterBase.cs" />
         <Compile Include="json\JsonConverterEvent.cs" />
         <Compile Include="json\JsonConverterServerMessage.cs" />
         <Compile Include="json\TypeKeyAttribute.cs" />
+        <Compile Include="logic\SkyBrightness.cs" />
+        <Compile Include="logic\Node.cs" />
+        <Compile Include="logic\Scalar.cs" />
         <Compile Include="messages\ClientCallService.cs" />
         <Compile Include="messages\ClientCommand.cs" />
         <Compile Include="messages\ClientGetConfig.cs" />

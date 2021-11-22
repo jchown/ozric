@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace OzricEngine
 {
+    [TypeKey("get_states")]
     public class ServerGetStates: ServerMessage
     {
         public int id { get; set; }

@@ -1,120 +1,55 @@
 using System;
-using System.IO;
-using System.Net.WebSockets;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading;
+using System.Collections.Generic;
 using System.Threading.Tasks;
+using OzricEngine.logic;
 
 namespace OzricEngine
 {
-    public class Engine : IDisposable
+    public class Engine
     {
-        private Uri uri = new Uri("ws://homeassistant:8123/api/websocket");
+        private readonly Home home;
+        private readonly Connection connection;
+        private readonly Dictionary<string, Node> nodes;
 
-        private ClientWebSocket client = new ClientWebSocket();
-//              client("User-Agent", "Ozric/0.1");
-
-        private byte[] buffer = new byte[65536];
-
-        private string llat =
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI5NjIyODE0NmFmMmQ0YTVmOWZiZmNiNDRmNTY0ZGQ4NSIsImlhdCI6MTYzNzAwMzc4OCwiZXhwIjoxOTUyMzYzNzg4fQ.YeZGrm3Shnx5Zu8MedejVB61t2GWWr4gU0MqIqb0cXY";
-
-        private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(60);
-        private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
-        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+        public Engine(Home home, Connection connection)
         {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            Converters = { new JsonConverterServerMessage(), new JsonConverterEvent() }
-        };
+            this.home = home;
+            this.connection = connection;
+            
+            nodes = new Dictionary<string, Node>();
+            Add(new SkyBrightness());
 
-        public async Task Connect()
-        {
-            CancellationTokenSource cancellation = new CancellationTokenSource();
-            cancellation.CancelAfter(ReceiveTimeout);
-
-            await client.ConnectAsync(uri, cancellation.Token);
+            foreach (var node in nodes.Values)
+            {
+                node.OnInit(home);
+            }
         }
 
-        public async Task<T> Receive<T>()
+        private void Add(Node node)
         {
-            CancellationTokenSource cancellation = new CancellationTokenSource();
-            cancellation.CancelAfter(ReceiveTimeout);
+            nodes[node.id] = node;
+        }
 
-            string json;
-            using (var ms = new MemoryStream())
+        public async Task ProcessEvents()
+        {
+            await connection.Send(new ClientEventSubscribe());
+
+            await connection.Receive<ServerEventSubscribed>();
+
+            while (true)
             {
-                var bytes = new ArraySegment<byte>(buffer);
-                WebSocketReceiveResult received;
-                do
-                {
-                    received = await client.ReceiveAsync(bytes, cancellation.Token);
-                    ms.Write(bytes.Array, bytes.Offset, received.Count);
-                }
-                while (!received.EndOfMessage);
+                var ev = await connection.Receive<ServerEvent>();
 
-                ms.Seek(0, SeekOrigin.Begin);
-                
-                using (var reader = new StreamReader(ms, Encoding.UTF8))
+                if (ev.payload is EventStateChanged stateChanged)
                 {
-                    json = reader.ReadToEnd();
+                    Console.WriteLine($"{stateChanged.data.new_state.entity_id} = {stateChanged.data.old_state.state} -> {stateChanged.data.new_state.state}");
+                }
+
+                if (ev.payload is EventCallService callService)
+                {
+                    Console.WriteLine($"{callService.data.domain}: {callService.data.service_data.entity_id}: {callService.data.service}");
                 }
             }
-
-            WriteLine($"<< {json}");
-            
-            return JsonSerializer.Deserialize<T>(json, JsonOptions);
-        }
-        
-        public async Task Send<T>(T t)
-        {
-            CancellationTokenSource cancellation = new CancellationTokenSource();
-            cancellation.CancelAfter(SendTimeout);
-
-            var json = JsonSerializer.Serialize(t, JsonOptions);
-            WriteLine($">> {json}");
-
-            int length = Encoding.UTF8.GetBytes(json, 0, json.Length, buffer, 0);
-            await client.SendAsync(new ArraySegment<byte>(buffer, 0, length), WebSocketMessageType.Text, true, cancellation.Token);
-        }
-
-        private void WriteLine(string s)
-        {
-            var before = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.DarkBlue;
-            Console.WriteLine(s);
-            Console.ForegroundColor = before;
-        }
-
-        public void Dispose()
-        {
-            client?.Dispose();
-        }
-
-        public async Task Authenticate()
-        {
-            await Connect();
-            
-            var authReq = await Receive<ServerAuthRequired>();
-            Console.WriteLine($"Auth requested by HA {authReq.ha_version}");
-
-            var auth = new ClientAuth
-            {
-                access_token = llat
-            };
-            await Send(auth);
-            
-            var authResult = await Receive<ServerMessage>();
-            if (authResult is ServerAuthInvalid invalid)
-            {
-                throw new Exception($"Auth failed: {invalid.message}");
-            }
-            if (!(authResult is ServerAuthOK))
-            {
-                throw new Exception($"Auth failed: Unexpected result: {authResult}");
-            }
-            Console.WriteLine("Auth OK");
         }
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using OzricEngine.ext;
+using OzricEngine.logic;
 
 namespace OzricEngine
 {
@@ -10,53 +11,40 @@ namespace OzricEngine
     {
         public static async Task Main(string[] args)
         {
-            using (var engine = new Engine())
+            using (var connection = new Connection())
             {
-                await engine.Authenticate();
+                await connection.Authenticate();
                 
-                await engine.Send(new ClientGetStates());
+                await connection.Send(new ClientGetStates());
                 
-                var states = await engine.Receive<ServerGetStates>();
-                
-                Console.WriteLine(states.result.Select(entity => $"{entity.Name} {entity.state}").Join("\n"));
+                var states = await connection.Receive<ServerGetStates>();
 
-                var callServices = new ClientCallService
-                {
-                    domain = "light",
-                    service = "turn_off",
-                    target = new Dictionary<string, string>()
-                    {
-                        { "entity_id", "light.panasonic_strip" }
-                    }
-                };
-                await engine.Send(callServices);
+                var home = new Home(states.result);
+                
+                var engine = new Engine(home, connection);
 
-                await engine.Receive<ServerMessage>();
+                await engine.ProcessEvents();
+
+                await TogglePanasonic(connection);
 
                 //await ProcessEvents(engine);
             }
         }
 
-        private static async Task ProcessEvents(Engine engine)
+        private static async Task TogglePanasonic(Connection connection)
         {
-            await engine.Send(new ClientEventSubscribe());
-
-            await engine.Receive<ServerEventSubscribed>();
-
-            while (true)
+            var callServices = new ClientCallService
             {
-                var ev = await engine.Receive<ServerEvent>();
-
-                if (ev.payload is EventStateChanged stateChanged)
+                domain = "light",
+                service = "turn_off",
+                target = new Dictionary<string, string>()
                 {
-                    Console.WriteLine($"{stateChanged.data.new_state.entity_id} = {stateChanged.data.old_state.state} -> {stateChanged.data.new_state.state}");
+                    { "entity_id", "light.panasonic_strip" }
                 }
+            };
+            await connection.Send(callServices);
 
-                if (ev.payload is EventCallService callService)
-                {
-                    Console.WriteLine($"{callService.data.domain}: {callService.data.service_data.entity_id}: {callService.data.service}");
-                }
-            }
+            await connection.Receive<ServerMessage>();
         }
     }
 }

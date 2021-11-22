@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace OzricEngine
 {
     /// <summary>
@@ -8,5 +10,10 @@ namespace OzricEngine
     public abstract class Event
     {
         public string event_type { get; set; }
+        
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 }

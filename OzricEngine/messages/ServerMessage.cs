@@ -1,3 +1,4 @@
+using System.Text.Json;
 using JetBrains.Annotations;
 
 namespace OzricEngine
@@ -9,5 +10,10 @@ namespace OzricEngine
     public abstract class ServerMessage
     {
         public string type { get; set; }
+
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 }
