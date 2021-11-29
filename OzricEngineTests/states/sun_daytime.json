@@ -1,0 +1,23 @@
+{
+  "entity_id": "sun.sun",
+  "state": "below_horizon",
+  "attributes": {
+    "next_dawn": "2021-12-01T07:21:25.459551+00:00",
+    "next_dusk": "2021-11-30T16:39:36.918701+00:00",
+    "next_midnight": "2021-11-30T00:00:43+00:00",
+    "next_noon": "2021-12-01T12:00:31+00:00",
+    "next_rising": "2021-12-01T08:03:33.515882+00:00",
+    "next_setting": "2021-11-30T15:57:30.359979+00:00",
+    "elevation": -26.88,
+    "azimuth": 269.45,
+    "rising": false,
+    "friendly_name": "Sun"
+  },
+  "last_changed": "2021-11-29T16:02:18.231670+00:00",
+  "last_updated": "2021-11-29T19:06:08.084370+00:00",
+  "context": {
+    "id": "b5d336b095083b52aab33dc1fc69d5bd",
+    "parent_id": null,
+    "user_id": null
+  }
+}

@@ -27,7 +27,7 @@ namespace OzricEngine.logic
             var sunLevel = GetSunLevel(home);
             var cloudLevel = GetCloudLevel(home);
 
-            value = sunLevel * (0.8f - cloudLevel);
+            value = sunLevel - (cloudLevel * 0.8f);
         }
 
         private float GetSunLevel(Home home)
@@ -96,7 +96,52 @@ namespace OzricEngine.logic
 
         private float GetCloudLevel(Home home)
         {
-            return 0;
+            var weather = home.Get("weather.home");
+            if (weather == null)
+            {
+                home.Log("No weather state found");
+                return 0;
+            }
+
+            switch (weather.state)
+            {
+                case "sunny":
+                case "clear-night":
+                case "windy":
+                {
+                    return 0;
+                }
+
+                case "windy-variant":
+                case "partlycloudy":
+                {
+                    return 0.25f;
+                }
+
+                case "snowy":
+                case "rainy":
+                case "cloudy":
+                {
+                    return 0.5f;
+                }
+                
+                case "fog":
+                case "hail":
+                case "lightning":
+                case "lightning-rainy":
+                case "snowy-rainy":
+                case "pouring":
+                case "exceptional":
+                {
+                    return 1;
+                }
+                
+                default:
+                {
+                    home.Log($"Unknown weather state: '{weather.state}'");
+                    return 0.5f;
+                }
+            }
         }
         
         private Tuple<DateTime, string> ParseTime(State sun, string attribute)

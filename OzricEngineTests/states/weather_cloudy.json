@@ -1,0 +1,67 @@
+{
+  "entity_id": "weather.home",
+  "state": "cloudy",
+  "attributes": {
+    "temperature": 8.6,
+    "humidity": 89,
+    "pressure": 1012.6,
+    "wind_bearing": 286.3,
+    "wind_speed": 21.2,
+    "forecast": [
+      {
+        "condition": "rainy",
+        "precipitation": 6.8,
+        "temperature": 10.4,
+        "templow": 9.5,
+        "datetime": "2021-11-30T12:00:00+00:00",
+        "wind_bearing": 265.8,
+        "wind_speed": 37.4
+      },
+      {
+        "condition": "rainy",
+        "precipitation": 8.1,
+        "temperature": 9.8,
+        "templow": 3.5,
+        "datetime": "2021-12-01T12:00:00+00:00",
+        "wind_bearing": 317.3,
+        "wind_speed": 45.0
+      },
+      {
+        "condition": "partlycloudy",
+        "precipitation": 0.6,
+        "temperature": 5.0,
+        "templow": 3.8,
+        "datetime": "2021-12-02T12:00:00+00:00",
+        "wind_bearing": 337.7,
+        "wind_speed": 24.5
+      },
+      {
+        "condition": "partlycloudy",
+        "precipitation": 2.9,
+        "temperature": 8.7,
+        "templow": 3.8,
+        "datetime": "2021-12-03T12:00:00+00:00",
+        "wind_bearing": 308.6,
+        "wind_speed": 24.5
+      },
+      {
+        "condition": "rainy",
+        "precipitation": 15.9,
+        "temperature": 6.5,
+        "templow": 5.3,
+        "datetime": "2021-12-04T12:00:00+00:00",
+        "wind_bearing": 291.4,
+        "wind_speed": 34.2
+      }
+    ],
+    "friendly_name": "Home",
+    "attribution": "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute."
+  },
+  "last_changed": "2021-11-29T17:19:44.447563+00:00",
+  "last_updated": "2021-11-29T18:22:44.491941+00:00",
+  "context": {
+    "id": "ac626e071cb11c3c4cd78391b1cd3791",
+    "parent_id": null,
+    "user_id": null
+  }
+}
