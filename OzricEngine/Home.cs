@@ -18,5 +18,10 @@ namespace OzricEngine.logic
         {
             return states[entityID] ?? throw new Exception("Unknown entity");
         }
+
+        public virtual DateTime GetTime()
+        {
+            return DateTime.Now;
+        }
     }
 }

@@ -23,7 +23,8 @@ namespace OzricEngine
 
         private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(60);
         private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
-        private static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
+
+        public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
             DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
             Converters = { new JsonConverterServerMessage(), new JsonConverterEvent() }
