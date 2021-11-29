@@ -96,7 +96,7 @@ namespace OzricEngine.logic
 
         private float GetCloudLevel(Home home)
         {
-            return 0.5f;
+            return 0;
         }
         
         private Tuple<DateTime, string> ParseTime(State sun, string attribute)
