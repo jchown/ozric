@@ -13,7 +13,7 @@ namespace OzricEngineTests
             MockHome home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
             skyBrightness.OnInit(home);
             
-            Assert.Equal(0f, skyBrightness.value);
+            Assert.Equal(0f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
         }
         
         [Fact]
@@ -24,12 +24,12 @@ namespace OzricEngineTests
             MockHome home = new MockHome(morning, "sun_morning", "weather_sunny");
 
             skyBrightness.OnInit(home);
-            Assert.Equal(0.71f, skyBrightness.value, 2);
+            Assert.Equal(0.71f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value, 2);
 
             home.SetTime(morning.AddMinutes(10));
 
             skyBrightness.OnUpdate(home);
-            Assert.Equal(0.95f, skyBrightness.value, 2);
+            Assert.Equal(0.95f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value, 2);
         }
         
         [Fact]
@@ -39,7 +39,7 @@ namespace OzricEngineTests
             MockHome home = new MockHome(DateTime.Parse("2021-11-30T12:21:25.459551+00:00"), "sun_daytime", "weather_sunny");
             skyBrightness.OnInit(home);
             
-            Assert.Equal(1f, skyBrightness.value);
+            Assert.Equal(1f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
         }
         
         [Fact]
@@ -49,7 +49,7 @@ namespace OzricEngineTests
             MockHome home = new MockHome(DateTime.Parse("2021-11-30T12:21:25.459551+00:00"), "sun_daytime", "weather_cloudy");
             skyBrightness.OnInit(home);
             
-            Assert.Equal(0.6f, skyBrightness.value);
+            Assert.Equal(0.6f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
         }
     }
 }

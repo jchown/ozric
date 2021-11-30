@@ -84,7 +84,7 @@
         <Reference Include="System.Xml" />
     </ItemGroup>
     <ItemGroup>
-        <Compile Include="Connection.cs" />
+        <Compile Include="Comms.cs" />
         <Compile Include="Engine.cs" />
         <Compile Include="ext\DictionaryExt.cs" />
         <Compile Include="ext\EnumerableExt.cs" />
@@ -93,6 +93,15 @@
         <Compile Include="json\JsonConverterEvent.cs" />
         <Compile Include="json\JsonConverterServerMessage.cs" />
         <Compile Include="json\TypeKeyAttribute.cs" />
+        <Compile Include="logic\Constant.cs" />
+        <Compile Include="logic\Input.cs" />
+        <Compile Include="logic\InputSelector.cs" />
+        <Compile Include="logic\Light.cs" />
+        <Compile Include="logic\OnOff.cs" />
+        <Compile Include="logic\Output.cs" />
+        <Compile Include="logic\Colour.cs" />
+        <Compile Include="logic\OutputSelector.cs" />
+        <Compile Include="logic\Sensor.cs" />
         <Compile Include="logic\SkyBrightness.cs" />
         <Compile Include="logic\Node.cs" />
         <Compile Include="logic\Scalar.cs" />

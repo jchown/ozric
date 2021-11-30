@@ -1,11 +1,12 @@
 namespace OzricEngine.logic
 {
-    public abstract class Scalar: Node
+    public class Scalar
     {
-        public float value { get; protected set;  }
-
-        protected Scalar(string id) : base(id)
+        public Scalar(float value = 0.0f)
         {
+            this.value = value;
         }
+
+        public float value { get; set;  }
     }
 }

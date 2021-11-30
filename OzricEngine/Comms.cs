@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace OzricEngine
 {
-    public class Connection : IDisposable
+    public class Comms : IDisposable
     {
         private Uri uri = new Uri("ws://homeassistant:8123/api/websocket");
 
@@ -107,15 +107,18 @@ namespace OzricEngine
             await Send(auth);
             
             var authResult = await Receive<ServerMessage>();
-            if (authResult is ServerAuthInvalid invalid)
+            switch (authResult)
             {
-                throw new Exception($"Auth failed: {invalid.message}");
+                case ServerAuthOK _:
+                    Console.WriteLine("Auth OK");
+                    break;
+                
+                case ServerAuthInvalid invalid:
+                    throw new Exception($"Auth failed: {invalid.message}");
+                
+                default:
+                    throw new Exception($"Auth failed: Unexpected result: {authResult}");
             }
-            if (!(authResult is ServerAuthOK))
-            {
-                throw new Exception($"Auth failed: Unexpected result: {authResult}");
-            }
-            Console.WriteLine("Auth OK");
         }
     }
 }

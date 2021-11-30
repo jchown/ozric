@@ -3,11 +3,15 @@ using System.Collections.Generic;
 
 namespace OzricEngine.logic
 {
-    public class SkyBrightness: Scalar
+    public class SkyBrightness: Node
     {
         private const string ID = "sky-brightness";
+        
+        public const string sun = "sun";
+        public const string clouds = "clouds";
+        public const string brightness = "brightness";
 
-        public SkyBrightness() : base(ID)
+        public SkyBrightness() : base(ID, new List<Output> { new Output(sun, new Scalar()), new Output(clouds, new Scalar()), new Output(brightness, new Scalar())})
         {
             description = "Combines dawn & dusk times with the current weather to determine the overall light level. 1 = bright sunshine, 0 = darkness";
         }
@@ -27,7 +31,9 @@ namespace OzricEngine.logic
             var sunLevel = GetSunLevel(home);
             var cloudLevel = GetCloudLevel(home);
 
-            value = sunLevel - (cloudLevel * 0.8f);
+            SetOutputValue(sun, new Scalar(sunLevel));
+            SetOutputValue(clouds, new Scalar(cloudLevel));
+            SetOutputValue(brightness, new Scalar(sunLevel - (cloudLevel * 0.8f)));
         }
 
         private float GetSunLevel(Home home)

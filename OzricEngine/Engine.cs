@@ -8,13 +8,14 @@ namespace OzricEngine
     public class Engine
     {
         private readonly Home home;
-        private readonly Connection connection;
+        private readonly Comms comms;
         private readonly Dictionary<string, Node> nodes;
+        private readonly Dictionary<OutputSelector, List<InputSelector>> edges;
 
-        public Engine(Home home, Connection connection)
+        public Engine(Home home, Comms comms)
         {
             this.home = home;
-            this.connection = connection;
+            this.comms = comms;
             
             nodes = new Dictionary<string, Node>();
             Add(new SkyBrightness());
@@ -32,13 +33,13 @@ namespace OzricEngine
 
         public async Task ProcessEvents()
         {
-            await connection.Send(new ClientEventSubscribe());
+            await comms.Send(new ClientEventSubscribe());
 
-            await connection.Receive<ServerEventSubscribed>();
+            await comms.Receive<ServerEventSubscribed>();
 
             while (true)
             {
-                var ev = await connection.Receive<ServerEvent>();
+                var ev = await comms.Receive<ServerEvent>();
 
                 if (ev.payload is EventStateChanged stateChanged)
                 {

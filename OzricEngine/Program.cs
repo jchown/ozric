@@ -11,7 +11,7 @@ namespace OzricEngine
     {
         public static async Task Main(string[] args)
         {
-            using (var connection = new Connection())
+            using (var connection = new Comms())
             {
                 await connection.Authenticate();
                 
@@ -31,7 +31,7 @@ namespace OzricEngine
             }
         }
 
-        private static async Task TogglePanasonic(Connection connection)
+        private static async Task TogglePanasonic(Comms comms)
         {
             var callServices = new ClientCallService
             {
@@ -42,9 +42,9 @@ namespace OzricEngine
                     { "entity_id", "light.panasonic_strip" }
                 }
             };
-            await connection.Send(callServices);
+            await comms.Send(callServices);
 
-            await connection.Receive<ServerMessage>();
+            await comms.Receive<ServerMessage>();
         }
     }
 }
