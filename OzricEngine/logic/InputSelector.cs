@@ -2,7 +2,7 @@ namespace OzricEngine
 {
     class InputSelector
     {
-        public readonly string nodeID;
+        public string nodeID { get; set; }
         public string inputName { get; protected set; }
     }
 }

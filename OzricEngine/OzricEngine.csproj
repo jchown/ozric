@@ -98,6 +98,7 @@
         <Compile Include="logic\InputSelector.cs" />
         <Compile Include="logic\Light.cs" />
         <Compile Include="logic\OnOff.cs" />
+        <Compile Include="logic\Or.cs" />
         <Compile Include="logic\Output.cs" />
         <Compile Include="logic\Colour.cs" />
         <Compile Include="logic\OutputSelector.cs" />
@@ -105,6 +106,7 @@
         <Compile Include="logic\SkyBrightness.cs" />
         <Compile Include="logic\Node.cs" />
         <Compile Include="logic\Scalar.cs" />
+        <Compile Include="logic\VariableInputs.cs" />
         <Compile Include="messages\ClientCallService.cs" />
         <Compile Include="messages\ClientCommand.cs" />
         <Compile Include="messages\ClientGetConfig.cs" />

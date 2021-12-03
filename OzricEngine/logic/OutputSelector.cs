@@ -2,7 +2,7 @@ namespace OzricEngine
 {
     class OutputSelector
     {
-        public readonly string nodeID;
+        public string nodeID { get; set; }
         public string outputName { get; protected set; }
     }
 }

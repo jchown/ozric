@@ -5,7 +5,7 @@ namespace OzricEngine.logic
 {
     public abstract class Node
     {
-        public readonly string id;
+        public string id  { get; set; }
         public string description { get; protected set; }
         public List<Input> inputs { get; protected set; }
         public List<Output> outputs { get; protected set; }
