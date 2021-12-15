@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace OzricEngine.logic
 {
-    public class Or: VariableInputs<OnOff>
+    public class And: VariableInputs<OnOff>
     {
-        public Or(string id): base(id, new List<Pin> { new Pin("output", new OnOff()) })
+        public And(string id): base(id, new List<Pin> { new Pin("output", new OnOff()) })
         {
         }
             
@@ -20,9 +20,9 @@ namespace OzricEngine.logic
 
         private void UpdateValue(Home home)
         {
-            var on = false;
+            var on = true;
             foreach (var onOff in GetInputValues())
-                on |= onOff.value;
+                on &= onOff.value;
 
             var value = new OnOff(on);
             home.Log($"{id}.output = {value}");
