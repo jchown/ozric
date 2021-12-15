@@ -18,9 +18,6 @@ namespace OzricEngine
 
         private byte[] buffer = new byte[65536];
 
-        private string llat =
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI5NjIyODE0NmFmMmQ0YTVmOWZiZmNiNDRmNTY0ZGQ4NSIsImlhdCI6MTYzNzAwMzc4OCwiZXhwIjoxOTUyMzYzNzg4fQ.YeZGrm3Shnx5Zu8MedejVB61t2GWWr4gU0MqIqb0cXY";
-
         private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(60);
         private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
 
@@ -93,7 +90,7 @@ namespace OzricEngine
             client?.Dispose();
         }
 
-        public async Task Authenticate()
+        public async Task Authenticate(string llat)
         {
             await Connect();
             

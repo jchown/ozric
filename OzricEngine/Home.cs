@@ -11,7 +11,7 @@ namespace OzricEngine.logic
         {
             states = new Dictionary<string, State>();
             foreach (var state in stateList)
-                states[state.entity_id] = state;
+                states.Add(state.entity_id, state);
         }
 
         public State Get(string entityID)

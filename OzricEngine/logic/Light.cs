@@ -4,7 +4,7 @@ namespace OzricEngine.logic
 {
     public class Light: Node
     {
-        public Light(string id) : base(id, new List<Input> { new Input("on-off", new OnOff()), new Input("colour", new Colour()) })
+        public Light(string id) : base(id, new List<Pin> { new Pin("on-off", new OnOff()), new Pin("colour", new Colour()) }, null)
         {
         }
 

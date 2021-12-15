@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using OzricEngine.ext;
 
 namespace OzricEngine.logic
 {
@@ -7,97 +9,30 @@ namespace OzricEngine.logic
     {
         public string id  { get; set; }
         public string description { get; protected set; }
-        public List<Input> inputs { get; protected set; }
-        public List<Output> outputs { get; protected set; }
+        public List<Pin> inputs { get; protected set; }
+        public List<Pin> outputs { get; protected set; }
 
-        protected Node(string id, List<Input> inputs): this(id, inputs, new List<Output>())
-        {
-        }
-
-
-        protected Node(string id, List<Output> outputs): this(id, new List<Input>(), outputs)
-        {
-        }
-
-        protected Node(string id, List<Input> inputs, List<Output> outputs)
+        protected Node(string id, List<Pin> inputs, List<Pin> outputs)
         {
             this.id = id;
-            this.inputs = inputs;
-            this.outputs = outputs;
+            this.inputs = inputs ?? new List<Pin>();
+            this.outputs = outputs ?? new List<Pin>();
         }
         
         public abstract void OnInit(Home home);
         
         public abstract void OnUpdate(Home home);
+        
+        internal void SetOutputValue(string name, object value)
+        {
+            var output = GetOutput(name) ?? throw new Exception($"Unknown output {name}");
+            output.SetValue(value);
+        }
 
-        protected void SetOutputValue(string name, Scalar scalar)
+        internal void SetInputValue(string name, object value)
         {
-            var output = GetOutput(name) ?? throw new Exception($"No output called {name}");
-            
-            switch (output.value)
-            {
-                case Scalar s:
-                    s.value = scalar.value;
-                    return;
-                
-                case Colour c:
-                    c.r = c.g = c.b = scalar.value;
-                    return;
-                
-                case OnOff onOff:
-                    onOff.value = scalar.value >= 0.5f;
-                    return;
-                
-                default:
-                    throw new Exception($"Don't know how to assign Scalar to {output.GetType().Name}");
-            }
-        }
-        
-        protected void SetOutputValue(string name, Colour colour)
-        {
-            var output = GetOutput(name) ?? throw new Exception($"No output called {name}");
-            
-            switch (output.value)
-            {
-                case Scalar s:
-                    s.value = colour.luminance;
-                    return;
-                
-                case Colour c:
-                    c.r = colour.r;
-                    c.g = colour.g;
-                    c.b = colour.b;
-                    c.a = colour.a;
-                    return;
-                
-                case OnOff onOff:
-                    onOff.value = colour.luminance >= 0.5f;
-                    return;
-                
-                default:
-                    throw new Exception($"Don't know how to assign Colour to {output.GetType().Name}");
-            }
-        }
-        
-        protected void SetOutputValue(string name, object value)
-        {
-            switch (value)
-            {
-                case Scalar scalar:
-                    SetOutputValue(name, scalar);
-                    return;
-                
-                case Colour colour:
-                    SetOutputValue(name, colour);
-                    return;
-                
-                case OnOff onOff:
-                    SetOutputValue(name, onOff);
-                    return;
-                
-                default:
-                    throw new Exception($"Don't know how to assign {value.GetType().Name}");
-            }
+            var input = GetInput(name) ?? throw new Exception($"Unknown input {name} in {id}, possible values [{inputs.Select(i => i.name).Join(",")}]");
+            input.SetValue(value);
         }
 
         public object GetOutputValue(string name)
@@ -123,9 +58,14 @@ namespace OzricEngine.logic
             return output as OnOff ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(OnOff)}");
         }
 
-        private Output GetOutput(string name)
+        private Pin GetOutput(string name)
         {
             return outputs.Find(o => o.name == name);
+        }
+
+        private Pin GetInput(string name)
+        {
+            return inputs.Find(o => o.name == name);
         }
     }
 }

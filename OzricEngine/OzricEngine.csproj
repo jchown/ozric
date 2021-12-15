@@ -93,13 +93,13 @@
         <Compile Include="json\JsonConverterEvent.cs" />
         <Compile Include="json\JsonConverterServerMessage.cs" />
         <Compile Include="json\TypeKeyAttribute.cs" />
+        <Compile Include="logic\And.cs" />
         <Compile Include="logic\Constant.cs" />
-        <Compile Include="logic\Input.cs" />
+        <Compile Include="logic\Pin.cs" />
         <Compile Include="logic\InputSelector.cs" />
         <Compile Include="logic\Light.cs" />
         <Compile Include="logic\OnOff.cs" />
         <Compile Include="logic\Or.cs" />
-        <Compile Include="logic\Output.cs" />
         <Compile Include="logic\Colour.cs" />
         <Compile Include="logic\OutputSelector.cs" />
         <Compile Include="logic\Sensor.cs" />

@@ -15,5 +15,13 @@ namespace OzricEngine.ext
 
             return dictionary[key];
         }
+
+        public static V GetOrSet<K,V>(this IDictionary<K,V> dictionary, K key, Func<V> setter) where V: class
+        {
+            if (!dictionary.ContainsKey(key))
+                return dictionary[key] = setter();
+    
+            return dictionary[key];
+        }
     }
 }

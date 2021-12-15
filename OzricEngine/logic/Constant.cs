@@ -6,7 +6,7 @@ namespace OzricEngine.logic
     {
         public T value { get; set; }
         
-        public Constant(string id, T value) : base(id, new List<Output> { new Output("value", value) })
+        public Constant(string id, T value) : base(id, null, new List<Pin> { new Pin("value", value) })
         {
             this.value = value;
         }
