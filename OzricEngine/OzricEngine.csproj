@@ -86,6 +86,7 @@
     <ItemGroup>
         <Compile Include="Comms.cs" />
         <Compile Include="Engine.cs" />
+        <Compile Include="ext\DateTimeExt.cs" />
         <Compile Include="ext\DictionaryExt.cs" />
         <Compile Include="ext\EnumerableExt.cs" />
         <Compile Include="Home.cs" />
@@ -95,6 +96,7 @@
         <Compile Include="json\TypeKeyAttribute.cs" />
         <Compile Include="logic\And.cs" />
         <Compile Include="logic\Constant.cs" />
+        <Compile Include="logic\DayPhases.cs" />
         <Compile Include="logic\Pin.cs" />
         <Compile Include="logic\InputSelector.cs" />
         <Compile Include="logic\Light.cs" />
@@ -106,6 +108,7 @@
         <Compile Include="logic\SkyBrightness.cs" />
         <Compile Include="logic\Node.cs" />
         <Compile Include="logic\Scalar.cs" />
+        <Compile Include="logic\ValueType.cs" />
         <Compile Include="logic\VariableInputs.cs" />
         <Compile Include="messages\ClientCallService.cs" />
         <Compile Include="messages\ClientCommand.cs" />
