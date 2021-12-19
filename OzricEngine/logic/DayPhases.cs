@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 using OzricEngine.ext;
 
 namespace OzricEngine.logic
@@ -13,28 +14,35 @@ namespace OzricEngine.logic
 
         public class PhaseStart
         {
+            public SunPhase start;
+            public int startOffsetSeconds;
             public readonly Dictionary<string, object> values;
-            private SunPhase _start;
-            private int _startOffsetSeconds;
 
-            public PhaseStart(Dictionary<string, object> values, SunPhase start, int startOffsetSeconds)
+            public PhaseStart(Dictionary<string, object> values, SunPhase start, int startOffsetSeconds = 0)
             {
                 this.values = values;
-                _start = start;
-                _startOffsetSeconds = startOffsetSeconds;
+                this.start = start;
+                this.startOffsetSeconds = startOffsetSeconds;
             }
+            
+            /// <summary>
+            /// Return the time this phase starts. Always in today's timeframe.
+            /// </summary>
+            /// <param name="now">The current day.</param>
+            /// <param name="sunAttributes">The attributes from the HA sun state, see https://www.home-assistant.io/integrations/sun/</param>
+            /// <returns></returns>
 
             public DateTime GetStartTime(DateTime now, Dictionary<string, object> sunAttributes)
             {
                 var attributeName = GetStartTimeAttribute();
-                var dateTime = DateTime.Parse(sunAttributes[attributeName] as string);
-                dateTime = dateTime.AddSeconds(_startOffsetSeconds);
+                var dateTime = sunAttributes.Get(attributeName) as DateTime? ?? throw new Exception($"Unknown sun attribute '{attributeName}', expected one of {sunAttributes.Keys.Join(",")}");
+                dateTime = dateTime.AddSeconds(startOffsetSeconds);
                 return dateTime.SetDayOfYear(now.DayOfYear);
             }
 
             private string GetStartTimeAttribute()
             {
-                return _start switch
+                return start switch
                 {
                     SunPhase.Dawn => "next_dawn",
                     SunPhase.Dusk => "next_dusk",
@@ -47,7 +55,7 @@ namespace OzricEngine.logic
             }
         }
 
-        private List<PhaseStart> phases;
+        public readonly List<PhaseStart> phases = new List<PhaseStart>();
             
         public DayPhases(string id) : base(id, null, null)
         {
@@ -74,7 +82,7 @@ namespace OzricEngine.logic
             //  Figure out what phase are we in
 
             var sun = home.Get("sun.sun");
-            var now = DateTime.Now;
+            var now = home.GetTime();
 
             int i = 0;
             var startTime = phases[0].GetStartTime(now, sun.attributes);

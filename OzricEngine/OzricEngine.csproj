@@ -89,7 +89,9 @@
         <Compile Include="ext\DateTimeExt.cs" />
         <Compile Include="ext\DictionaryExt.cs" />
         <Compile Include="ext\EnumerableExt.cs" />
+        <Compile Include="ext\ExceptionExt.cs" />
         <Compile Include="Home.cs" />
+        <Compile Include="json\JsonConverterDictionaryObjectValues.cs" />
         <Compile Include="json\JsonConverterBase.cs" />
         <Compile Include="json\JsonConverterEvent.cs" />
         <Compile Include="json\JsonConverterServerMessage.cs" />
