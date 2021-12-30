@@ -19,9 +19,9 @@ namespace OzricEngine.logic
             this.outputs = outputs ?? new List<Pin>();
         }
         
-        public abstract void OnInit(Home home);
+        public abstract void OnInit(Engine engine);
         
-        public abstract void OnUpdate(Home home);
+        public abstract void OnUpdate(Engine engine);
         
         internal void SetOutputValue(string name, object value)
         {
@@ -37,7 +37,7 @@ namespace OzricEngine.logic
 
         public object GetOutputValue(string name)
         {
-            return GetOutput(name)?.value ?? throw new Exception($"No output called {name}");
+            return GetOutput(name)?.value ?? throw new Exception($"No output called {name}, possible values [{outputs.Select(o => o.name).Join(",")}]");
         }
 
         public Scalar GetOutputScalar(string name)
@@ -63,7 +63,7 @@ namespace OzricEngine.logic
             return outputs.Find(o => o.name == name);
         }
 
-        private Pin GetInput(string name)
+        protected Pin GetInput(string name)
         {
             return inputs.Find(o => o.name == name);
         }

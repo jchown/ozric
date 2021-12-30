@@ -12,22 +12,22 @@ namespace OzricEngine.logic
             this.entityID = entityID;
         }
 
-        public override void OnInit(Home home)
+        public override void OnInit(Engine engine)
         {
-            UpdateState(home);
+            UpdateState(engine);
         }
 
-        public override void OnUpdate(Home home)
+        public override void OnUpdate(Engine engine)
         {
-            UpdateState(home);
+            UpdateState(engine);
         }
 
-        private void UpdateState(Home home)
+        private void UpdateState(Engine engine)
         {
-            var device = home.Get(entityID) ?? throw new Exception($"Unknown device {entityID}");
+            var device = engine.home.Get(entityID) ?? throw new Exception($"Unknown device {entityID}");
             var value = new OnOff(device.state != "off");
 
-            home.Log($"{id}.activity = {value}");
+            engine.home.Log($"{id}.activity = {value}");
             SetOutputValue("activity", value);
         }
     }

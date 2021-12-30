@@ -9,7 +9,7 @@ namespace OzricEngine
 {
     public class Engine
     {
-        private readonly Home home;
+        public readonly Home home;
         private readonly Comms comms;
         private readonly Dictionary<string, Node> nodes;
         private readonly Dictionary<OutputSelector, List<InputSelector>> edges;
@@ -45,7 +45,7 @@ namespace OzricEngine
         {
             foreach (var node in nodes.Values)
             {
-                node.OnInit(home);
+                node.OnInit(this);
             }
 
             await comms.Send(new ClientEventSubscribe());
@@ -74,7 +74,7 @@ namespace OzricEngine
             {
                 var node = nodes[nodeID];
                 
-                node.OnUpdate(home);
+                node.OnUpdate(this);
 
                 foreach (var edge in edges)
                 {

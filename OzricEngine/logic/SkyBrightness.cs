@@ -16,20 +16,20 @@ namespace OzricEngine.logic
             description = "Combines dawn & dusk times with the current weather to determine the overall light level. 1 = bright sunshine, 0 = darkness";
         }
          
-        public override void OnInit(Home home)
+        public override void OnInit(Engine engine)
         {
-            CalculateValue(home);            
+            CalculateValue(engine);            
         }
 
-        public override void OnUpdate(Home home)
+        public override void OnUpdate(Engine engine)
         {
-            CalculateValue(home);            
+            CalculateValue(engine);            
         }
 
-        private void CalculateValue(Home home)
+        private void CalculateValue(Engine engine)
         {
-            var sunLevel = GetSunLevel(home);
-            var cloudLevel = GetCloudLevel(home);
+            var sunLevel = GetSunLevel(engine.home);
+            var cloudLevel = GetCloudLevel(engine.home);
 
             SetOutputValue(sun, new Scalar(sunLevel));
             SetOutputValue(clouds, new Scalar(cloudLevel));

@@ -11,7 +11,8 @@ namespace OzricEngineTests
         {
             SkyBrightness skyBrightness = new SkyBrightness();
             MockHome home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
-            skyBrightness.OnInit(home);
+            MockEngine engine = new MockEngine(home);
+            skyBrightness.OnInit(engine);
             
             Assert.Equal(0f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
         }
@@ -22,13 +23,14 @@ namespace OzricEngineTests
             var morning = DateTime.Parse("2021-11-30T07:51:25.459551+00:00");
             SkyBrightness skyBrightness = new SkyBrightness();
             MockHome home = new MockHome(morning, "sun_morning", "weather_sunny");
+            MockEngine engine = new MockEngine(home);
 
-            skyBrightness.OnInit(home);
+            skyBrightness.OnInit(engine);
             Assert.Equal(0.71f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value, 2);
 
             home.SetTime(morning.AddMinutes(10));
 
-            skyBrightness.OnUpdate(home);
+            skyBrightness.OnUpdate(engine);
             Assert.Equal(0.95f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value, 2);
         }
         
@@ -37,7 +39,9 @@ namespace OzricEngineTests
         {
             SkyBrightness skyBrightness = new SkyBrightness();
             MockHome home = new MockHome(DateTime.Parse("2021-11-30T12:21:25.459551+00:00"), "sun_daytime", "weather_sunny");
-            skyBrightness.OnInit(home);
+            MockEngine engine = new MockEngine(home);
+
+            skyBrightness.OnInit(engine);
             
             Assert.Equal(1f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
         }
@@ -47,7 +51,9 @@ namespace OzricEngineTests
         {
             SkyBrightness skyBrightness = new SkyBrightness();
             MockHome home = new MockHome(DateTime.Parse("2021-11-30T12:21:25.459551+00:00"), "sun_daytime", "weather_cloudy");
-            skyBrightness.OnInit(home);
+            MockEngine engine = new MockEngine(home);
+
+            skyBrightness.OnInit(engine);
             
             Assert.Equal(0.6f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
         }

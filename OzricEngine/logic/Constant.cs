@@ -11,12 +11,12 @@ namespace OzricEngine.logic
             this.value = value;
         }
 
-        public override void OnInit(Home home)
+        public override void OnInit(Engine engine)
         {
             SetOutputValue("value", value);
         }
 
-        public override void OnUpdate(Home home)
+        public override void OnUpdate(Engine engine)
         {
             SetOutputValue("value", value);
         }

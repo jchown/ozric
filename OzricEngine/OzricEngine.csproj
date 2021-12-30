@@ -33,6 +33,10 @@
         <WarningLevel>4</WarningLevel>
     </PropertyGroup>
     <ItemGroup>
+        <Reference Include="Humanizer, Version=2.13.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e">
+          <HintPath>..\packages\Humanizer.Core.2.13.14\lib\netstandard2.0\Humanizer.dll</HintPath>
+          <Private>True</Private>
+        </Reference>
         <Reference Include="JetBrains.Annotations, Version=2021.3.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
           <HintPath>..\packages\JetBrains.Annotations.2021.3.0\lib\net20\JetBrains.Annotations.dll</HintPath>
           <Private>True</Private>
@@ -96,20 +100,21 @@
         <Compile Include="json\JsonConverterEvent.cs" />
         <Compile Include="json\JsonConverterServerMessage.cs" />
         <Compile Include="json\TypeKeyAttribute.cs" />
-        <Compile Include="logic\And.cs" />
+        <Compile Include="logic\IfAll.cs" />
         <Compile Include="logic\Constant.cs" />
         <Compile Include="logic\DayPhases.cs" />
         <Compile Include="logic\Pin.cs" />
         <Compile Include="logic\InputSelector.cs" />
         <Compile Include="logic\Light.cs" />
         <Compile Include="logic\OnOff.cs" />
-        <Compile Include="logic\Or.cs" />
+        <Compile Include="logic\IfAny.cs" />
         <Compile Include="logic\Colour.cs" />
         <Compile Include="logic\OutputSelector.cs" />
         <Compile Include="logic\Sensor.cs" />
         <Compile Include="logic\SkyBrightness.cs" />
         <Compile Include="logic\Node.cs" />
         <Compile Include="logic\Scalar.cs" />
+        <Compile Include="logic\Switch.cs" />
         <Compile Include="logic\ValueType.cs" />
         <Compile Include="logic\VariableInputs.cs" />
         <Compile Include="messages\ClientCallService.cs" />

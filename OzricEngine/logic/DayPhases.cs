@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using Humanizer;
 using OzricEngine.ext;
 
 namespace OzricEngine.logic
@@ -9,7 +10,35 @@ namespace OzricEngine.logic
     {
         public enum SunPhase
         {
-            Dawn, Dusk, Rising, Setting, Noon, Midnight
+            /// <summary>
+            /// The sun starts to rise. Followed by [SunPhase.Rising]
+            /// </summary>
+            Dawn,
+            
+            /// <summary>
+            /// The sun has fully set.
+            /// </summary>
+            Dusk,
+            
+            /// <summary>
+            /// Dawn has finished.
+            /// </summary>
+            Rising,
+            
+            /// <summary>
+            /// Sunset has started. Followed by [SunPhase.Dusk]
+            /// </summary>
+            Setting, 
+            
+            /// <summary>
+            /// Always 12:00 local time
+            /// </summary>
+            Noon,
+            
+            /// <summary>
+            /// Always 00:00 local time
+            /// </summary>
+            Midnight
         }
 
         public class PhaseStart
@@ -53,6 +82,20 @@ namespace OzricEngine.logic
                     _ => throw new ArgumentOutOfRangeException()
                 };
             }
+
+            public override string ToString()
+            {
+                if (startOffsetSeconds == 0)
+                    return $"{start}";
+
+                var offset = TimeSpan.FromSeconds(Math.Abs(startOffsetSeconds)).Humanize();
+                if (startOffsetSeconds > 0)
+                {
+                    return $"{start} +{offset}";
+                }
+
+                return $"{start} -{offset}";
+            }
         }
 
         public readonly List<PhaseStart> phases = new List<PhaseStart>();
@@ -62,27 +105,25 @@ namespace OzricEngine.logic
             description = "Uses the time of day to determine the values of output";
         }
          
-        public override void OnInit(Home home)
+        public override void OnInit(Engine engine)
         {
-            CalculateValues(home);            
+            CalculateValues(engine);            
         }
 
-        public override void OnUpdate(Home home)
+        public override void OnUpdate(Engine engine)
         {
-            CalculateValues(home);            
+            CalculateValues(engine);            
         }
 
-        private void CalculateValues(Home home)
+        private void CalculateValues(Engine engine)
         {
             if (phases.Count < 2)
-            {
                 return;
-            }
             
             //  Figure out what phase are we in
 
-            var sun = home.Get("sun.sun");
-            var now = home.GetTime();
+            var sun = engine.home.Get("sun.sun");
+            var now = engine.home.GetTime();
 
             int i = 0;
             var startTime = phases[0].GetStartTime(now, sun.attributes);
@@ -102,11 +143,19 @@ namespace OzricEngine.logic
             } while (i < phases.Count - 2);
 
             var currentPhase = phases[i];
+            var nextPhase = phases[(i + 1) % phases.Count];
+            
+            engine.home.Log($"{id}.phase is {currentPhase} to {nextPhase}");
 
             foreach (var output in currentPhase.values)
             {
                 SetOutputValue(output.Key, output.Value);
             }
+        }
+
+        public void AddOutputValue(string name, Colour value)
+        {
+            outputs.Add(new Pin(name, value));
         }
     }
 }

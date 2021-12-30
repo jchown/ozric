@@ -8,24 +8,24 @@ namespace OzricEngine.logic
         {
         }
             
-        public override void OnInit(Home home)
+        public override void OnInit(Engine engine)
         {
-            UpdateValue(home);
+            UpdateValue(engine);
         }
 
-        public override void OnUpdate(Home home)
+        public override void OnUpdate(Engine engine)
         {
-            UpdateValue(home);
+            UpdateValue(engine);
         }
 
-        private void UpdateValue(Home home)
+        private void UpdateValue(Engine engine)
         {
             var on = false;
             foreach (var onOff in GetInputValues())
                 on |= onOff.value;
 
             var value = new OnOff(on);
-            home.Log($"{id}.output = {value}");
+            engine.home.Log($"{id}.output = {value}");
             SetOutputValue("output", value);
         }
     }

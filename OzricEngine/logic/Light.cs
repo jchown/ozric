@@ -4,16 +4,26 @@ namespace OzricEngine.logic
 {
     public class Light: Node
     {
-        public Light(string id) : base(id, new List<Pin> { new Pin("on-off", new OnOff()), new Pin("colour", new Colour()) }, null)
+        private readonly string entityID;
+
+        public Light(string id, string entityID) : base(id, new List<Pin> { new Pin("on-off", new OnOff()), new Pin("colour", new Colour()) }, null)
         {
+            this.entityID = entityID;
         }
 
-        public override void OnInit(Home home)
+        public override void OnInit(Engine engine)
         {
+            UpdateValue(engine);
         }
 
-        public override void OnUpdate(Home home)
+        public override void OnUpdate(Engine engine)
         {
+            UpdateValue(engine);
+        }
+
+        private void UpdateValue(Engine engine)
+        {
+            //engine.
         }
     }
 }

@@ -8,5 +8,9 @@ namespace OzricEngineTests
         public MockEngine() : base(new MockHome(new List<State>()), new MockComms())
         {
         }
+        
+        public MockEngine(MockHome home) : base(home, new MockComms())
+        {
+        }
     }
 }

@@ -5,6 +5,29 @@ namespace OzricEngine.logic
 {
     public sealed class Colour: IEquatable<Colour>
     {
+        public static readonly Colour WHITE = new Colour(1f,1f,1f);
+
+        public Colour()
+        {
+            r = g = b = a = 1f;
+        }
+
+        public Colour(int rgb)
+        {
+            a = 1f;
+            b = (rgb & 0xff) / 255f;
+            g = ((rgb >> 8) & 0xff) / 255f;
+            r = ((rgb >> 16) & 0xff) / 255f;
+        }
+
+        public Colour(float r, float g, float b, float a = 1f)
+        {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+            this.a = a;
+        }
+
         public float r { get; set;  }
         public float g { get; set;  }
         public float b { get; set;  }
