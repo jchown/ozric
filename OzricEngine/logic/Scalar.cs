@@ -2,7 +2,7 @@ using System;
 
 namespace OzricEngine.logic
 {
-    public sealed class Scalar: IEquatable<Scalar>
+    public sealed class Scalar: Value, IEquatable<Scalar>
     {
         public float value { get; set;  }
 

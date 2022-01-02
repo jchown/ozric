@@ -2,6 +2,6 @@ namespace OzricEngine.logic
 {
     public enum ValueType
     {
-        Scalar, OnOff, Colour
+        Scalar, OnOff, Color
     }
 }

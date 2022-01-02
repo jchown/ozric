@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
+using System.Linq;
+using System.Threading.Tasks;
 using Humanizer;
 using OzricEngine.ext;
 
@@ -45,9 +46,9 @@ namespace OzricEngine.logic
         {
             public SunPhase start;
             public int startOffsetSeconds;
-            public readonly Dictionary<string, object> values;
+            public readonly Dictionary<string, Value> values;
 
-            public PhaseStart(Dictionary<string, object> values, SunPhase start, int startOffsetSeconds = 0)
+            public PhaseStart(Dictionary<string, Value> values, SunPhase start, int startOffsetSeconds = 0)
             {
                 this.values = values;
                 this.start = start;
@@ -105,31 +106,47 @@ namespace OzricEngine.logic
             description = "Uses the time of day to determine the values of output";
         }
          
-        public override void OnInit(Engine engine)
+        public override Task OnInit(Engine engine)
         {
             CalculateValues(engine);            
+            return Task.CompletedTask;
         }
 
-        public override void OnUpdate(Engine engine)
+        public override Task OnUpdate(Engine engine)
         {
-            CalculateValues(engine);            
+            CalculateValues(engine);
+            return Task.CompletedTask;
         }
 
         private void CalculateValues(Engine engine)
         {
-            if (phases.Count < 2)
+            if (phases.Count == 0)
                 return;
-            
+
+            if (phases.Count == 1)
+            {
+                var onlyPhase = phases[0];
+
+                engine.Log($"{id}.phase can only be [{onlyPhase}]");
+
+                foreach (var output in onlyPhase.values)
+                {
+                    SetOutputValue(output.Key, output.Value);
+                }
+
+                return;
+            }
+
             //  Figure out what phase are we in
 
             var sun = engine.home.Get("sun.sun");
             var now = engine.home.GetTime();
 
-            int i = 0;
+            int i = 1;
             var startTime = phases[0].GetStartTime(now, sun.attributes);
             do
             {
-                var endTime = phases[1].GetStartTime(now, sun.attributes);
+                var endTime = phases[i % phases.Count].GetStartTime(now, sun.attributes);
 
                 if (startTime > endTime)
                     startTime = startTime.AddDays(-1);
@@ -140,12 +157,12 @@ namespace OzricEngine.logic
                 startTime = endTime;
                 i++;
 
-            } while (i < phases.Count - 2);
+            } while (i < phases.Count);
 
-            var currentPhase = phases[i];
-            var nextPhase = phases[(i + 1) % phases.Count];
+            var currentPhase = phases[i - 1];
+            var nextPhase = phases[i % phases.Count];
             
-            engine.home.Log($"{id}.phase is {currentPhase} to {nextPhase}");
+            engine.Log($"{id}.phase is between [{currentPhase}] and [{nextPhase}]");
 
             foreach (var output in currentPhase.values)
             {
@@ -153,9 +170,18 @@ namespace OzricEngine.logic
             }
         }
 
-        public void AddOutputValue(string name, Colour value)
+        public void AddOutputValue(string name, ColorRGB value)
         {
             outputs.Add(new Pin(name, value));
+        }
+
+        public void AddPhase(PhaseStart phaseStart)
+        {
+            var missing = phaseStart.values.Keys.FirstOrDefault(o => !HasOutput(o));
+            if (missing != null)
+                throw new Exception($"{missing} is not an output of {this}");
+
+            phases.Add(phaseStart);
         }
     }
 }

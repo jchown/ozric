@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
@@ -16,20 +17,22 @@ namespace OzricEngine.logic
             description = "Combines dawn & dusk times with the current weather to determine the overall light level. 1 = bright sunshine, 0 = darkness";
         }
          
-        public override void OnInit(Engine engine)
+        public override Task OnInit(Engine engine)
         {
-            CalculateValue(engine);            
+            CalculateValue(engine);
+            return Task.CompletedTask;
         }
 
-        public override void OnUpdate(Engine engine)
+        public override Task OnUpdate(Engine engine)
         {
-            CalculateValue(engine);            
+            CalculateValue(engine);
+            return Task.CompletedTask;
         }
 
         private void CalculateValue(Engine engine)
         {
             var sunLevel = GetSunLevel(engine.home);
-            var cloudLevel = GetCloudLevel(engine.home);
+            var cloudLevel = GetCloudLevel(engine);
 
             SetOutputValue(sun, new Scalar(sunLevel));
             SetOutputValue(clouds, new Scalar(cloudLevel));
@@ -100,12 +103,12 @@ namespace OzricEngine.logic
             return (float) (timeBefore / (timeBefore + timeAfter));
         }
 
-        private float GetCloudLevel(Home home)
+        private float GetCloudLevel(Engine engine)
         {
-            var weather = home.Get("weather.home");
+            var weather = engine.home.Get("weather.home");
             if (weather == null)
             {
-                home.Log("No weather state found");
+                engine.Log("No weather state found");
                 return 0;
             }
 
@@ -144,7 +147,7 @@ namespace OzricEngine.logic
                 
                 default:
                 {
-                    home.Log($"Unknown weather state: '{weather.state}'");
+                    engine.Log($"Unknown weather state: '{weather.state}'");
                     return 0.5f;
                 }
             }

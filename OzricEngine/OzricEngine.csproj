@@ -100,6 +100,9 @@
         <Compile Include="json\JsonConverterEvent.cs" />
         <Compile Include="json\JsonConverterServerMessage.cs" />
         <Compile Include="json\TypeKeyAttribute.cs" />
+        <Compile Include="logic\ColorHS.cs" />
+        <Compile Include="logic\ColorTemp.cs" />
+        <Compile Include="logic\ColorValue.cs" />
         <Compile Include="logic\IfAll.cs" />
         <Compile Include="logic\Constant.cs" />
         <Compile Include="logic\DayPhases.cs" />
@@ -108,13 +111,14 @@
         <Compile Include="logic\Light.cs" />
         <Compile Include="logic\OnOff.cs" />
         <Compile Include="logic\IfAny.cs" />
-        <Compile Include="logic\Colour.cs" />
+        <Compile Include="logic\ColorRGB.cs" />
         <Compile Include="logic\OutputSelector.cs" />
         <Compile Include="logic\Sensor.cs" />
         <Compile Include="logic\SkyBrightness.cs" />
         <Compile Include="logic\Node.cs" />
         <Compile Include="logic\Scalar.cs" />
         <Compile Include="logic\Switch.cs" />
+        <Compile Include="logic\Value.cs" />
         <Compile Include="logic\ValueType.cs" />
         <Compile Include="logic\VariableInputs.cs" />
         <Compile Include="messages\ClientCallService.cs" />

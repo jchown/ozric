@@ -4,7 +4,7 @@ namespace OzricEngine
 {
     internal class Program
     {
-        public static async Task Main(string[] args)
+        public static void Main(string[] args)
         {
             using (var connection = new Comms())
             {

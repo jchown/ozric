@@ -10,7 +10,8 @@ namespace OzricEngine
     public class Engine
     {
         public readonly Home home;
-        private readonly Comms comms;
+        public readonly Comms comms;
+        
         private readonly Dictionary<string, Node> nodes;
         private readonly Dictionary<OutputSelector, List<InputSelector>> edges;
 
@@ -85,7 +86,7 @@ namespace OzricEngine
 
                     foreach (var input in edge.Value)
                     {
-                        home.Log($"{input.nodeID}.{input.inputName} = {value}");
+                        Log($"{input.nodeID}.{input.inputName} = {value}");
                         nodes[input.nodeID].SetInputValue(input.inputName, value);
                     }
                 }
@@ -126,13 +127,17 @@ namespace OzricEngine
 
                 if (nextID == null)
                     throw new Exception($"Cannot order nodes, cycle in graph?\nOrdered = {ordered.Join(",")}\nUnordered = {unordered.Join(",")}");
-                
 
                 ordered.Add(nextID);
                 unordered.Remove(nextID);
             }
 
             return ordered;
+        }
+
+        public void Log(string s)
+        {
+            Console.WriteLine(s);
         }
     }
 }

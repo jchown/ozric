@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
@@ -12,14 +13,16 @@ namespace OzricEngine.logic
             this.entityID = entityID;
         }
 
-        public override void OnInit(Engine engine)
+        public override Task OnInit(Engine engine)
         {
             UpdateState(engine);
+            return Task.CompletedTask;
         }
 
-        public override void OnUpdate(Engine engine)
+        public override Task OnUpdate(Engine engine)
         {
             UpdateState(engine);
+            return Task.CompletedTask;
         }
 
         private void UpdateState(Engine engine)
@@ -27,7 +30,7 @@ namespace OzricEngine.logic
             var device = engine.home.Get(entityID) ?? throw new Exception($"Unknown device {entityID}");
             var value = new OnOff(device.state != "off");
 
-            engine.home.Log($"{id}.activity = {value}");
+            engine.Log($"{id}.activity = {value}");
             SetOutputValue("activity", value);
         }
     }

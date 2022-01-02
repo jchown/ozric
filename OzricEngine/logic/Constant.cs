@@ -1,24 +1,27 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
-    public class Constant<T>: Node where T: class
+    public class Constant<T>: Node where T: Value
     {
-        public T value { get; set; }
+        public T value { get; }
         
         public Constant(string id, T value) : base(id, null, new List<Pin> { new Pin("value", value) })
         {
             this.value = value;
         }
 
-        public override void OnInit(Engine engine)
+        public override Task OnInit(Engine engine)
         {
             SetOutputValue("value", value);
+            return Task.CompletedTask;
         }
 
-        public override void OnUpdate(Engine engine)
+        public override Task OnUpdate(Engine engine)
         {
             SetOutputValue("value", value);
+            return Task.CompletedTask;
         }
     }
 }

@@ -8,9 +8,9 @@ namespace OzricEngine.logic
     public class Pin
     {
         public string name { get; }
-        public object value { get; protected set;  }
+        public Value value { get; }
         
-        public Pin(string name, object value)
+        public Pin(string name, Value value)
         {
             this.name = name;
             this.value = value;
@@ -24,7 +24,7 @@ namespace OzricEngine.logic
                     s.value = scalar.value;
                     return;
                 
-                case Colour c:
+                case ColorRGB c:
                     c.r = c.g = c.b = scalar.value;
                     return;
                 
@@ -37,27 +37,26 @@ namespace OzricEngine.logic
             }
         }
         
-        private void SetValue(Colour colour)
+        private void SetValue(ColorRGB ColorRgb)
         {
             switch (value)
             {
                 case Scalar s:
-                    s.value = colour.luminance;
+                    s.value = ColorRgb.luminance;
                     return;
                 
-                case Colour c:
-                    c.r = colour.r;
-                    c.g = colour.g;
-                    c.b = colour.b;
-                    c.a = colour.a;
+                case ColorRGB c:
+                    c.r = ColorRgb.r;
+                    c.g = ColorRgb.g;
+                    c.b = ColorRgb.b;
                     return;
                 
                 case OnOff o:
-                    o.value = colour.luminance >= 0.5f;
+                    o.value = ColorRgb.luminance >= 0.5f;
                     return;
                 
                 default:
-                    throw new Exception($"Don't know how to assign Colour to {value.GetType()}");
+                    throw new Exception($"Don't know how to assign Color to {value.GetType()}");
             }
         }
         
@@ -69,8 +68,8 @@ namespace OzricEngine.logic
                     s.value = onOff.value ? 1 : 0;
                     return;
                 
-                case Colour c: 
-                    c.r = c.g = c.b = onOff.value ? 1 : 0;
+                case ColorValue c: 
+                    c.luminance = onOff.value ? 1 : 0;
                     return;
                 
                 case OnOff o:
@@ -78,11 +77,11 @@ namespace OzricEngine.logic
                     return;
                 
                 default:
-                    throw new Exception($"Don't know how to assign Colour to {value.GetType()}");
+                    throw new Exception($"Don't know how to assign Color to {value.GetType()}");
             }
         }
 
-        public void SetValue(object value)
+        public void SetValue(Value value)
         {
             switch (value)
             {
@@ -90,8 +89,8 @@ namespace OzricEngine.logic
                     SetValue(scalar);
                     return;
 
-                case Colour colour:
-                    SetValue(colour);
+                case ColorRGB Color:
+                    SetValue(Color);
                     return;
 
                 case OnOff onOff:

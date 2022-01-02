@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
@@ -8,14 +9,16 @@ namespace OzricEngine.logic
         {
         }
             
-        public override void OnInit(Engine engine)
+        public override Task OnInit(Engine engine)
         {
             UpdateValue(engine);
+            return Task.CompletedTask;
         }
 
-        public override void OnUpdate(Engine engine)
+        public override Task OnUpdate(Engine engine)
         {
             UpdateValue(engine);
+            return Task.CompletedTask;
         }
 
         private void UpdateValue(Engine engine)
@@ -25,7 +28,7 @@ namespace OzricEngine.logic
                 on |= onOff.value;
 
             var value = new OnOff(on);
-            engine.home.Log($"{id}.output = {value}");
+            engine.Log($"{id}.output = {value}");
             SetOutputValue("output", value);
         }
     }

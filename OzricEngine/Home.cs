@@ -23,10 +23,5 @@ namespace OzricEngine.logic
         {
             return DateTime.Now;
         }
-
-        public void Log(string s)
-        {
-            Console.WriteLine(s);
-        }
     }
 }

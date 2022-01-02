@@ -2,11 +2,15 @@ using System;
 
 namespace OzricEngine.logic
 {
-    public sealed class OnOff: IEquatable<OnOff>
+    public sealed class OnOff: Value, IEquatable<OnOff>
     {
         public bool value { get; set;  }
 
-        public OnOff(bool value = false)
+        public OnOff()
+        {
+        }
+
+        public OnOff(bool value)
         {
             this.value = value;
         }
