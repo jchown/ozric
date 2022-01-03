@@ -3,11 +3,11 @@ using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
-    public class Constant<T>: Node where T: Value
+    public class Constant: Node
     {
-        public T value { get; }
+        public Value value { get; }
         
-        public Constant(string id, T value) : base(id, null, new List<Pin> { new Pin("value", value) })
+        public Constant(string id, ValueType type, Value value) : base(id, null, new List<Pin> { new Pin("value", type, value) })
         {
             this.value = value;
         }

@@ -3,9 +3,9 @@ using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
-    public class Or: VariableInputs<OnOff>
+    public class IfAny: VariableInputs
     {
-        public Or(string id): base(id, new List<Pin> { new Pin("output", new OnOff()) })
+        public IfAny(string id): base(id, ValueType.OnOff, new List<Pin> { new Pin("output", ValueType.OnOff) })
         {
         }
             
@@ -24,7 +24,7 @@ namespace OzricEngine.logic
         private void UpdateValue(Engine engine)
         {
             var on = false;
-            foreach (var onOff in GetInputValues())
+            foreach (var onOff in GetInputValues<OnOff>())
                 on |= onOff.value;
 
             var value = new OnOff(on);

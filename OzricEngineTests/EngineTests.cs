@@ -11,9 +11,9 @@ namespace OzricEngineTests
         [Fact]
         void nodeOrderDependsOnConnections()
         {
-            var o1 = new Or("o1");
-            var o2 = new Or("o2");
-            var o3 = new Or("o3");
+            var o1 = new IfAny("o1");
+            var o2 = new IfAny("o2");
+            var o3 = new IfAny("o3");
 
             var nodes = new List<Node>
             {

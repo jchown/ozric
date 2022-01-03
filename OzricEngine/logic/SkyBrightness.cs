@@ -12,7 +12,7 @@ namespace OzricEngine.logic
         public const string clouds = "clouds";
         public const string brightness = "brightness";
 
-        public SkyBrightness() : base(ID, null, new List<Pin> { new Pin(sun, new Scalar()), new Pin(clouds, new Scalar()), new Pin(brightness, new Scalar())})
+        public SkyBrightness() : base(ID, null, new List<Pin> { new Pin(sun, ValueType.Scalar), new Pin(clouds, ValueType.Scalar), new Pin(brightness, ValueType.Scalar)})
         {
             description = "Combines dawn & dusk times with the current weather to determine the overall light level. 1 = bright sunshine, 0 = darkness";
         }

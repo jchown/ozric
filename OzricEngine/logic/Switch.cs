@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
-    public class Switch<TValue>: Node where TValue: Value, new()
+    public class Switch: Node
     {
-        public Switch(string id): base(id, new List<Pin> { new Pin("on", new TValue()), new Pin("off", new TValue()), new Pin("switch", new OnOff()) }, new List<Pin> { new Pin("output", new TValue()) })
+        public Switch(string id, ValueType type): base(id, new List<Pin> { new Pin("on", type), new Pin("off", type), new Pin("switch", ValueType.OnOff) }, new List<Pin> { new Pin("output", type) })
         {
         }
             

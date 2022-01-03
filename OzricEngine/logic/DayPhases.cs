@@ -170,9 +170,9 @@ namespace OzricEngine.logic
             }
         }
 
-        public void AddOutputValue(string name, Value value)
+        public void AddOutputValue(string name, ValueType type)
         {
-            outputs.Add(new Pin(name, value));
+            outputs.Add(new Pin(name, type));
         }
 
         public void AddPhase(PhaseStart phaseStart)

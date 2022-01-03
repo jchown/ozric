@@ -8,7 +8,7 @@ namespace OzricEngine.logic
     {
         private readonly string entityID;
 
-        public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new Pin("activity", new OnOff()) })
+        public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new Pin("activity", ValueType.OnOff) })
         {
             this.entityID = entityID;
         }

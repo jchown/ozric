@@ -8,28 +8,30 @@ namespace OzricEngine.logic
     public class Pin
     {
         public string name { get; }
-        public Value value { get; }
-        
-        public Pin(string name, Value value)
+        public ValueType type { get; }
+        public Value value { get; set; }
+
+        public Pin(string name, ValueType type, Value value = null)
         {
             this.name = name;
+            this.type = type;
             this.value = value;
         }
         
         private void SetValue(Scalar scalar)
         {
-            switch (value)
+            switch (type)
             {
-                case Scalar s:
-                    s.value = scalar.value;
+                case ValueType.Scalar:
+                    value = scalar;
                     return;
                 
-                case ColorRGB c:
-                    c.r = c.g = c.b = scalar.value;
+                case ValueType.Color:
+                    value = new ColorRGB(1, 1, 1, scalar.value);
                     return;
                 
-                case OnOff onOff:
-                    onOff.value = scalar.value >= 0.5f;
+                case ValueType.OnOff:
+                    value = new OnOff(scalar.value > 0);
                     return;
                 
                 default:
@@ -37,35 +39,20 @@ namespace OzricEngine.logic
             }
         }
         
-        private void SetValue(ColorValue value)
+        private void SetValue(ColorValue color)
         {
-            switch (this.value)
+            switch (type)
             {
-                case Scalar s:
-                    s.value = value.luminance;
+                case ValueType.Scalar:
+                    value = new Scalar(color.brightness); 
                     return;
 
-                case ColorRGB c:
-
-                    // TODO: Sod this off and make inputs have a class "type", not a value, and just verify & copy. No interpolations.
-
-                    if (value is ColorRGB rgb)
-                    {
-                        c.r = value.r;
-                        c.g = value.g;
-                        c.b = value.b;
-                    }
-                    c.brightness = value.brightness;
+                case ValueType.Color:
+                    value = color; 
                     return;
 
-                case ColorRGB c:
-                    c.r = value.r;
-                    c.g = value.g;
-                    c.b = value.b;
-                    return;
-
-                case OnOff o:
-                    o.value = value.luminance >= 0.5f;
+                case ValueType.OnOff:
+                    value = new OnOff(color.brightness > 0);
                     return;
                 
                 default:
@@ -75,18 +62,18 @@ namespace OzricEngine.logic
         
         private void SetValue(OnOff onOff)
         {
-            switch (value)
+            switch (type)
             {
-                case Scalar s:
-                    s.value = onOff.value ? 1 : 0;
+                case ValueType.Scalar:
+                    value = new Scalar(onOff.value ? 1 : 0);
                     return;
                 
-                case ColorValue c: 
-                    c.luminance = onOff.value ? 1 : 0;
+                case ValueType.Color: 
+                    value = new ColorRGB(1,1,1, onOff.value ? 1 : 0);
                     return;
                 
-                case OnOff o:
-                    o.value = onOff.value;
+                case ValueType.OnOff:
+                    value = onOff;
                     return;
                 
                 default:

@@ -11,7 +11,7 @@ namespace OzricEngine.logic
         public void canSplitDayInToMorningAndEvening()
         {
             var node = new DayPhases("am_pm");
-            node.outputs.Add(new Pin("morning", new OnOff()));
+            node.outputs.Add(new Pin("morning", ValueType.OnOff));
             node.phases.Add(new DayPhases.PhaseStart( new Dictionary<string, Value> { { "morning", new OnOff(true) } }, DayPhases.SunPhase.Midnight));
             node.phases.Add(new DayPhases.PhaseStart( new Dictionary<string, Value> { { "morning", new OnOff() } }, DayPhases.SunPhase.Noon));
 
@@ -30,11 +30,11 @@ namespace OzricEngine.logic
         public void canEvaluatePhaseCorrectly()
         {
             var node = new DayPhases("Color-phases");
-            node.AddOutputValue("Color", new ColorRGB());
-            node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(1,0,0,0) }  }, DayPhases.SunPhase.Midnight));
-            node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(0,1,0,0) }  }, DayPhases.SunPhase.Midnight, + 6 * 60 * 60));
-            node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(0,0,1,0) }  }, DayPhases.SunPhase.Noon));
-            node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(0,0,0,1) }  }, DayPhases.SunPhase.Midnight, - 6 * 60 * 60));
+            node.AddOutputValue("Color", ValueType.Color);
+            node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(1,0,0,0) } }, DayPhases.SunPhase.Midnight));
+            node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(0,1,0,0) } }, DayPhases.SunPhase.Midnight, + 6 * 60 * 60));
+            node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(0,0,1,0) } }, DayPhases.SunPhase.Noon));
+            node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(0,0,0,1) } }, DayPhases.SunPhase.Midnight, - 6 * 60 * 60));
             
             var home = new MockHome(DateTime.Parse("2021-11-29T03:21:25.459551+00:00"), "sun_morning");
             var engine = new MockEngine(home);

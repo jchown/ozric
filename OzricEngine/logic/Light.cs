@@ -10,7 +10,7 @@ namespace OzricEngine.logic
     {
         private readonly string entityID;
 
-        public Light(string id, string entityID) : base(id, new List<Pin> { new Pin("color", new ColorRGB()) }, null)
+        public Light(string id, string entityID) : base(id, new List<Pin> { new Pin("color", ValueType.Color) }, null)
         {
             this.entityID = entityID;
         }
