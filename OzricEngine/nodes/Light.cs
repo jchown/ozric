@@ -30,19 +30,6 @@ namespace OzricEngine.logic
             var currentState = engine.home.Get(entityID);
             var attributes = currentState.LightAttributes;
 
-            /*
-            var callServices = new ClientCallService
-            {
-                domain = "light",
-                service = (state == "on" ? "turn_off" : "turn_on"),
-                target = new Dictionary<string, string>()
-                {
-                    { "entity_id", entityID }
-                }
-            };
-            engine.comms.Send(callServices);
-            */
-
             bool on = (currentState.state == "on");
             engine.Log($"{entityID}.on = {on}");
             if (on)
@@ -54,7 +41,6 @@ namespace OzricEngine.logic
 
             bool needsUpdate = desiredOn != on || (on && brightness != attributes.brightness);
 
-            string colorMode = null;
             string colorKey = null;
             object colorValue = null;
 
@@ -78,7 +64,7 @@ namespace OzricEngine.logic
                         {
                             engine.Log($"{entityID}.Color#hs = {attributes.hs_color[0]},{attributes.hs_color[1]}");
 
-                            needsUpdate |= attributes.hs_color[0] != hs.h && attributes.hs_color[1] != hs.s;
+                            needsUpdate |= attributes.hs_color[0] != h && attributes.hs_color[1] != s;
                         }
 
                         colorKey = "hs_color";
@@ -143,6 +129,11 @@ namespace OzricEngine.logic
                 if (!result.success)
                 {
                     engine.Log($"Light {entityID} failed to update: {result.error.code} - {result.error.message}");
+                }
+                else
+                {
+                    currentState.attributes["brightness"] = brightness;
+                    currentState.attributes[colorKey] = colorValue;
                 }
             }
 
