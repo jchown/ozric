@@ -170,7 +170,7 @@ namespace OzricEngine.logic
             }
         }
 
-        public void AddOutputValue(string name, ColorRGB value)
+        public void AddOutputValue(string name, Value value)
         {
             outputs.Add(new Pin(name, value));
         }

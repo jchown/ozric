@@ -46,7 +46,7 @@ namespace OzricEngine
         {
             foreach (var node in nodes.Values)
             {
-                node.OnInit(this);
+                await node.OnInit(this);
             }
 
             await comms.Send(new ClientEventSubscribe());
@@ -69,13 +69,13 @@ namespace OzricEngine
             }
         }
 
-        public void Update()
+        public async Task Update()
         {
             foreach (var nodeID in GetNodesInOrder())
             {
                 var node = nodes[nodeID];
                 
-                node.OnUpdate(this);
+                await node.OnUpdate(this);
 
                 foreach (var edge in edges)
                 {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OzricEngine.ext;
 
@@ -9,7 +10,7 @@ namespace OzricEngine.logic
     {
         private readonly string entityID;
 
-        public Light(string id, string entityID) : base(id, new List<Pin> { new Pin("on", new OnOff()), new Pin("color", new ColorRGB()) }, null)
+        public Light(string id, string entityID) : base(id, new List<Pin> { new Pin("color", new ColorRGB()) }, null)
         {
             this.entityID = entityID;
         }
@@ -44,27 +45,109 @@ namespace OzricEngine.logic
 
             bool on = (currentState.state == "on");
             engine.Log($"{entityID}.on = {on}");
+            if (on)
+                engine.Log($"{entityID}.brightness = {attributes.brightness}");
 
-            var value = (GetInput("on").value as OnOff).value;
-            if (value != on)
+            var desired = (GetInput("color").value as ColorValue);
+            var brightness = ((int)(desired.brightness * 255));
+            var desiredOn = brightness > 0;
+
+            bool needsUpdate = desiredOn != on || (on && brightness != attributes.brightness);
+
+            string colorMode = null;
+            string colorKey = null;
+            string colorValue = null;
+
+            if (desiredOn)
             {
-                // Turn off
-                
+                switch (desired)
+                {
+                    case ColorHS hs:
+                    {
+                        int h = (int)(hs.h * 360);
+                        int s = (int)(hs.s * 100);
+
+                        if (attributes.color_mode != "hs")
+                        {
+                            if (!attributes.supported_color_modes.Contains("hs"))
+                                throw new Exception($"Light {entityID} does not support HS color mode");
+
+                            needsUpdate = true;
+                        }
+                        else
+                        {
+                            engine.Log($"{entityID}.Color#hs = {attributes.hs_color[0]},{attributes.hs_color[1]}");
+
+                            needsUpdate |= attributes.hs_color[0] != hs.h && attributes.hs_color[1] != hs.s;
+                        }
+
+                        colorMode = "hs";
+                        colorKey = "color_hs";
+                        colorValue = $"{h},{s}";
+                        break;
+                    }
+
+                    case ColorRGB rgb:
+                    {
+                        int r = (int)(rgb.r * 255);
+                        int g = (int)(rgb.g * 255);
+                        int b = (int)(rgb.b * 255);
+
+                        if (attributes.color_mode != "rgb")
+                        {
+                            if (!attributes.supported_color_modes.Contains("rgb"))
+                                throw new Exception($"Light {entityID} does not support RGB color mode");
+
+                            needsUpdate = true;
+                        }
+                        else
+                        {
+                            engine.Log($"{entityID}.Color#rgb = {attributes.rgb_color[0]},{attributes.rgb_color[1]},{attributes.rgb_color[2]}");
+
+                            needsUpdate |= (attributes.rgb_color[0] != r) && (attributes.rgb_color[1] != g) && (attributes.rgb_color[2] != b);
+                        }
+
+                        colorMode = "rgb";
+                        colorKey = "color_rgb";
+                        colorValue = $"{r},{g},{b}";
+                        break;
+                    }
+
+                    default:
+                    {
+                        throw new Exception($"Light {entityID} given color value of type {desired.GetType()}");
+                    }
+                }
+            }
+
+            if (needsUpdate)
+            {
                 var callServices = new ClientCallService
                 {
                     domain = "light",
-                    service = on ? "turn_off" : "turn_on",
+                    service = desiredOn ? "turn_on" : "turn_off",
                     target = new Dictionary<string, string>()
                     {
                         { "entity_id", entityID }
                     }
                 };
+
+                if (desiredOn)
+                {
+                    callServices.service_data = new Dictionary<string, string>()
+                    {
+                        { "brightness", brightness.ToString()},
+                        { "color_mode", colorMode },
+                        { colorKey, colorValue }
+                    };
+                }
+
                 await engine.comms.Send(callServices);
             }
 
+            /*
             if (on)
             {
-                engine.Log($"{entityID}.brightness = {attributes.brightness}");
 
                 switch (attributes.color_mode)
                 {
@@ -72,12 +155,8 @@ namespace OzricEngine.logic
                         engine.Log($"{entityID}.Color#temp = {attributes.color_temp}");
                         break;
 
-                    case "hs":
-                        engine.Log($"{entityID}.Color#hs = {attributes.hs_color[0]},{attributes.hs_color[1]}");
-                        break;
 
                     case "rgb":
-                        engine.Log($"{entityID}.Color#rgb = {attributes.rgb_color[0]},{attributes.rgb_color[1]},{attributes.rgb_color[2]}");
                         break;
 
                     case "rgbw":
@@ -92,6 +171,7 @@ namespace OzricEngine.logic
                         throw new Exception($"color_mode was not expected to be {attributes.color_mode} ({currentState.attributes.Get("color_mode") ?? "<not set>"})");
                 }
             }
+            */
         }
     }
 }

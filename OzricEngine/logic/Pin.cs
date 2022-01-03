@@ -37,26 +37,39 @@ namespace OzricEngine.logic
             }
         }
         
-        private void SetValue(ColorRGB ColorRgb)
+        private void SetValue(ColorValue value)
         {
-            switch (value)
+            switch (this.value)
             {
                 case Scalar s:
-                    s.value = ColorRgb.luminance;
+                    s.value = value.luminance;
                     return;
-                
+
                 case ColorRGB c:
-                    c.r = ColorRgb.r;
-                    c.g = ColorRgb.g;
-                    c.b = ColorRgb.b;
+
+                    // TODO: Sod this off and make inputs have a class "type", not a value, and just verify & copy. No interpolations.
+
+                    if (value is ColorRGB rgb)
+                    {
+                        c.r = value.r;
+                        c.g = value.g;
+                        c.b = value.b;
+                    }
+                    c.brightness = value.brightness;
                     return;
-                
+
+                case ColorRGB c:
+                    c.r = value.r;
+                    c.g = value.g;
+                    c.b = value.b;
+                    return;
+
                 case OnOff o:
-                    o.value = ColorRgb.luminance >= 0.5f;
+                    o.value = value.luminance >= 0.5f;
                     return;
                 
                 default:
-                    throw new Exception($"Don't know how to assign Color to {value.GetType()}");
+                    throw new Exception($"Don't know how to assign Color to {this.value.GetType()}");
             }
         }
         
@@ -89,7 +102,7 @@ namespace OzricEngine.logic
                     SetValue(scalar);
                     return;
 
-                case ColorRGB Color:
+                case ColorValue Color:
                     SetValue(Color);
                     return;
 
