@@ -27,6 +27,8 @@ namespace OzricEngine
             Converters = { new JsonConverterServerMessage(), new JsonConverterEvent() }
         };
 
+        private ServerResult result;
+
         public async Task Connect()
         {
             CancellationTokenSource cancellation = new CancellationTokenSource();
@@ -75,6 +77,20 @@ namespace OzricEngine
 
             int length = Encoding.UTF8.GetBytes(json, 0, json.Length, buffer, 0);
             await client.SendAsync(new ArraySegment<byte>(buffer, 0, length), WebSocketMessageType.Text, true, cancellation.Token);
+        }
+
+        public async Task<ServerResult> SendCommand<T>(T command) where T : ClientCommand
+        {
+            int id = command.id;
+
+            await Send(command);
+
+            result = await Receive<ServerResult>();
+
+            if (result.id != id)
+                throw new Exception($"Race condition: Expected result of #{id} but was #{result.id}");
+            
+            return result;
         }
 
         private void WriteLine(string s)

@@ -9,40 +9,28 @@ namespace OzricEngine.logic
 
         public ColorRGB()
         {
-            r = g = b = 1;
-            brightness = 1;
         }
 
-        public ColorRGB(int rgb, float brightness = 1f)
+        public ColorRGB(int rgb, float brightness = 1f): base(brightness)
         {
             b = (rgb & 0xff) / 255f;
             g = ((rgb >> 8) & 0xff) / 255f;
             r = ((rgb >> 16) & 0xff) / 255f;
-            this.brightness = brightness;
         }
 
-        public ColorRGB(float r, float g, float b, float brightness)
+        public ColorRGB(float r, float g, float b, float brightness): base(brightness)
         {
             this.r = r;
             this.g = g;
             this.b = b;
-            this.brightness = brightness;
         }
 
-        public float r { get; set;  }
-        public float g { get; set;  }
-        public float b { get; set;  }
+        public float r { get; }
+        public float g { get; }
+        public float b { get; }
         
         [JsonIgnore]
-        public override float luminance
-        {
-            get => (float)(0.3 * r + 0.59 * g + 0.11 * b) * brightness;
-            set
-            {
-                r = g = b = 1;
-                brightness = value;
-            }
-        }
+        public override float luminance => (float)(0.3 * r + 0.59 * g + 0.11 * b) * brightness;
 
         public override bool Equals(object o) => Equals(o as ColorRGB);
 

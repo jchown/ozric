@@ -4,8 +4,12 @@ namespace OzricEngine.logic
 {
     public sealed class Scalar: Value, IEquatable<Scalar>
     {
-        public float value { get; set;  }
+        public float value { get; }
 
+        public Scalar()
+        {
+        }
+        
         public Scalar(float value = 0.0f)
         {
             this.value = value;

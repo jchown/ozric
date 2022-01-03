@@ -5,6 +5,12 @@ namespace OzricEngine
     {
         public int id { get; set; }
         public bool success { get; set; }
-        public Result result { get; set; }
+        public ServerResultError error { get; set; }
+    }
+
+    public class ServerResultError
+    {
+        public string code { get; set; }
+        public string message { get; set; }
     }
 }

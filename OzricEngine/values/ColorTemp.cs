@@ -17,17 +17,13 @@ namespace OzricEngine.logic
         public int t { get; }
         
         [JsonIgnore]
-        public override float luminance
-        {
-            get => brightness;
-            set => brightness = value;
-        }
+        public override float luminance => brightness;
 
         public override bool Equals(object o) => Equals(o as ColorTemp);
 
         public bool Equals(ColorTemp other)
         {
-            return (other != null) && (t == other.t);
+            return other != null && t == other.t;
         }
     }
 }

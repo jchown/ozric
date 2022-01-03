@@ -4,14 +4,18 @@ namespace OzricEngine.logic
 {
     public abstract class ColorValue: Value
     {
-        public float brightness { get; protected set; }
+        public float brightness { get; }
 
         [JsonIgnore]
-        public abstract float luminance { get; set; }
+        public abstract float luminance { get; }
 
         protected ColorValue()
         {
-            brightness = 1;
+        }
+
+        protected ColorValue(float brightness)
+        {
+            this.brightness = brightness;
         }
     }
 }

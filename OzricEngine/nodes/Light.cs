@@ -56,7 +56,7 @@ namespace OzricEngine.logic
 
             string colorMode = null;
             string colorKey = null;
-            string colorValue = null;
+            object colorValue = null;
 
             if (desiredOn)
             {
@@ -81,9 +81,8 @@ namespace OzricEngine.logic
                             needsUpdate |= attributes.hs_color[0] != hs.h && attributes.hs_color[1] != hs.s;
                         }
 
-                        colorMode = "hs";
-                        colorKey = "color_hs";
-                        colorValue = $"{h},{s}";
+                        colorKey = "hs_color";
+                        colorValue = new List<int> { h, s };
                         break;
                     }
 
@@ -107,9 +106,8 @@ namespace OzricEngine.logic
                             needsUpdate |= (attributes.rgb_color[0] != r) && (attributes.rgb_color[1] != g) && (attributes.rgb_color[2] != b);
                         }
 
-                        colorMode = "rgb";
                         colorKey = "color_rgb";
-                        colorValue = $"{r},{g},{b}";
+                        colorValue = new List<int> { r, g, b };
                         break;
                     }
 
@@ -134,15 +132,18 @@ namespace OzricEngine.logic
 
                 if (desiredOn)
                 {
-                    callServices.service_data = new Dictionary<string, string>()
+                    callServices.service_data = new Dictionary<string, object>()
                     {
-                        { "brightness", brightness.ToString()},
-                        { "color_mode", colorMode },
+                        { "brightness", brightness},
                         { colorKey, colorValue }
                     };
                 }
 
-                await engine.comms.Send(callServices);
+                var result = await engine.comms.SendCommand(callServices);
+                if (!result.success)
+                {
+                    engine.Log($"Light {entityID} failed to update: {result.error.code} - {result.error.message}");
+                }
             }
 
             /*

@@ -20,6 +20,21 @@ namespace OzricEngine.logic
             this.outputs = outputs ?? new List<Pin>();
         }
         
+        public bool HasOutput(string name)
+        {
+            return GetOutput(name) != null;
+        }
+
+        private Pin GetOutput(string name)
+        {
+            return outputs.Find(o => o.name == name);
+        }
+
+        protected Pin GetInput(string name)
+        {
+            return inputs.Find(o => o.name == name);
+        }
+
         public abstract Task OnInit(Engine engine);
         
         public abstract Task OnUpdate(Engine engine);
@@ -30,7 +45,7 @@ namespace OzricEngine.logic
             output.SetValue(value);
         }
 
-        internal void SetInputValue(string name, Value value)
+        public void SetInputValue(string name, Value value)
         {
             var input = GetInput(name) ?? throw new Exception($"Unknown input {name} in {id}, possible values [{inputs.Select(i => i.name).Join(",")}]");
             input.SetValue(value);
@@ -47,10 +62,10 @@ namespace OzricEngine.logic
             return output as Scalar ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(Scalar)}");
         }
 
-        public ColorRGB GetOutputColor(string name)
+        public ColorValue GetOutputColor(string name)
         {
             var output = GetOutputValue(name);
-            return output as ColorRGB ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(ColorRGB)}");
+            return output as ColorValue ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(ColorRGB)}");
         }
 
         public ColorValue GetInputColor(string name)
@@ -63,21 +78,6 @@ namespace OzricEngine.logic
         {
             var output = GetOutputValue(name);
             return output as OnOff ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(OnOff)}");
-        }
-
-        public bool HasOutput(string name)
-        {
-            return GetOutput(name) != null;
-        }
-
-        private Pin GetOutput(string name)
-        {
-            return outputs.Find(o => o.name == name);
-        }
-
-        protected Pin GetInput(string name)
-        {
-            return inputs.Find(o => o.name == name);
         }
     }
 }

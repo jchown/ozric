@@ -8,7 +8,7 @@ namespace OzricEngine
         
         public string domain { get; set; }
         public string service { get; set; }
-        public Dictionary<string, string> service_data { get; set; } = null;
+        public Dictionary<string, object> service_data { get; set; }
         public Dictionary<string, string> target { get; set; }
     }
 }

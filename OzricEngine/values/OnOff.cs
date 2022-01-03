@@ -4,7 +4,7 @@ namespace OzricEngine.logic
 {
     public sealed class OnOff: Value, IEquatable<OnOff>
     {
-        public bool value { get; set;  }
+        public bool value { get; }
 
         public OnOff()
         {
