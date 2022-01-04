@@ -125,8 +125,12 @@ namespace OzricEngine.logic
                     };
                 }
 
-                var result = await engine.comms.SendCommand(callServices);
-                if (!result.success)
+                var result = await engine.comms.SendCommand(callServices, COMMAND_TIMEOUT_MS);
+                if (result == null)
+                {
+                    engine.Log($"Light {entityID} failed to respond");
+                }
+                else if (!result.success)
                 {
                     engine.Log($"Light {entityID} failed to update: {result.error.code} - {result.error.message}");
                 }
@@ -136,34 +140,8 @@ namespace OzricEngine.logic
                     currentState.attributes[colorKey] = colorValue;
                 }
             }
-
-            /*
-            if (on)
-            {
-
-                switch (attributes.color_mode)
-                {
-                    case "color_temp":
-                        engine.Log($"{entityID}.Color#temp = {attributes.color_temp}");
-                        break;
-
-
-                    case "rgb":
-                        break;
-
-                    case "rgbw":
-                        engine.Log($"{entityID}.Color#rgbw = {attributes.rgb_color[0]},{attributes.rgb_color[1]},{attributes.rgb_color[2]},{attributes.rgb_color[3]}");
-                        break;
-
-                    case "rgbww":
-                        engine.Log($"{entityID}.Color#rgbww = {attributes.rgb_color[0]},{attributes.rgb_color[1]},{attributes.rgb_color[2]},{attributes.rgb_color[3]},{attributes.rgb_color[4]}");
-                        break;
-
-                    default:
-                        throw new Exception($"color_mode was not expected to be {attributes.color_mode} ({currentState.attributes.Get("color_mode") ?? "<not set>"})");
-                }
-            }
-            */
         }
+ 
+        private const int COMMAND_TIMEOUT_MS = 5000;
     }
 }

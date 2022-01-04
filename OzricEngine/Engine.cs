@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using OzricEngine.ext;
 using OzricEngine.logic;
@@ -41,22 +43,36 @@ namespace OzricEngine
         {
             edges.Get(output).Remove(input);
         }
-
-        public async Task ProcessEvents()
+        
+        public async Task MainLoop(CancellationToken? cancellationToken = null)
         {
-            foreach (var node in nodes.Values)
+            try
             {
-                await node.OnInit(this);
+                await comms.StartMessagePump(this);
+
+                await InitNodes();
+
+                while (!(cancellationToken?.IsCancellationRequested ?? false))
+                {
+                    await UpdateNodes();
+
+                    var events = comms.TakePendingEvents(3000);
+                    if (events.Count > 0)
+                    {
+                        await ProcessEvents(events);
+                    }
+                }
             }
-
-            await comms.Send(new ClientEventSubscribe());
-
-            await comms.Receive<ServerEventSubscribed>();
-
-            while (true)
+            catch (Exception e)
             {
-                var ev = await comms.Receive<ServerEvent>();
+                Log($"Main loop threw exception: {e}");
+            }
+        }
 
+        private async Task ProcessEvents(List<ServerEvent> events)
+        {
+            foreach (var ev in events)
+            {
                 if (ev.payload is EventStateChanged stateChanged)
                 {
                     Console.WriteLine($"{stateChanged.data.new_state.entity_id} = {stateChanged.data.old_state.state} -> {stateChanged.data.new_state.state}");
@@ -69,13 +85,28 @@ namespace OzricEngine
             }
         }
 
-        public async Task Update()
+        public async Task InitNodes()
+        {
+            await ProcessNodes(node => node.OnInit(this));
+        }
+
+        public async Task UpdateNodes()
+        {
+            await ProcessNodes(node => node.OnUpdate(this));
+        }
+        
+        /// <summary>
+        /// Process all nodes, ordering according to dependencies.
+        /// </summary>
+        /// <param name="nodeProcessor"></param>
+
+        public async Task ProcessNodes(Func<Node, Task> nodeProcessor)
         {
             foreach (var nodeID in GetNodesInOrder())
             {
                 var node = nodes[nodeID];
                 
-                await node.OnUpdate(this);
+                await nodeProcessor(node);
 
                 foreach (var edge in edges)
                 {

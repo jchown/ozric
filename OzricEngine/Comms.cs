@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.IO;
 using System.Net.WebSockets;
 using System.Text;
@@ -17,6 +19,9 @@ namespace OzricEngine
 //              client("User-Agent", "Ozric/0.1");
 
         private byte[] buffer = new byte[65536];
+        private bool messagePumpRunning;
+        private readonly BlockingCollection<ServerEvent> pendingEvents;
+        private readonly ConcurrentDictionary<int, AsyncObject<ServerResult>> asyncResults;
 
         private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(60);
         private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
@@ -27,9 +32,13 @@ namespace OzricEngine
             Converters = { new JsonConverterServerMessage(), new JsonConverterEvent() }
         };
 
-        private ServerResult result;
+        public Comms()
+        {
+            pendingEvents = new BlockingCollection<ServerEvent>(new ConcurrentQueue<ServerEvent>());
+            asyncResults = new ConcurrentDictionary<int, AsyncObject<ServerResult>>();
+        }
 
-        public async Task Connect()
+        private async Task Connect()
         {
             CancellationTokenSource cancellation = new CancellationTokenSource();
             cancellation.CancelAfter(ReceiveTimeout);
@@ -79,20 +88,6 @@ namespace OzricEngine
             await client.SendAsync(new ArraySegment<byte>(buffer, 0, length), WebSocketMessageType.Text, true, cancellation.Token);
         }
 
-        public async Task<ServerResult> SendCommand<T>(T command) where T : ClientCommand
-        {
-            int id = command.id;
-
-            await Send(command);
-
-            result = await Receive<ServerResult>();
-
-            if (result.id != id)
-                throw new Exception($"Race condition: Expected result of #{id} but was #{result.id}");
-            
-            return result;
-        }
-
         private void WriteLine(string s)
         {
             var before = Console.ForegroundColor;
@@ -132,6 +127,128 @@ namespace OzricEngine
                 default:
                     throw new Exception($"Auth failed: Unexpected result: {authResult}");
             }
+        }
+        
+        public async Task<ServerResult> SendCommand<T>(T command, int millisecondsTimeout) where T : ClientCommand
+        {
+            if (!messagePumpRunning)
+                throw new Exception("Message pump not running");
+
+            var receiver = WaitForResult(command.id, millisecondsTimeout);
+
+            await Send(command);
+
+            return await receiver;
+        }
+        
+        /// <summary>
+        /// Start the message pump which will continuously receive messages from HA and dispatch to thread-safe queues. 
+        /// </summary>
+        /// <param name="engine"></param>
+
+        public async Task StartMessagePump(Engine engine)
+        {
+            await Send(new ClientEventSubscribe());
+
+            await Receive<ServerEventSubscribed>();
+
+            messagePumpRunning = true;
+
+            _ = Task.Run(() => MessagePump(engine));
+        }
+        
+        private async Task MessagePump(Engine engine)
+        {
+            try
+            {
+                while (true)
+                {
+                    var message = await Receive<ServerMessage>();
+
+                    switch (message)
+                    {
+                        case ServerEvent ev:
+                        {
+                            pendingEvents.Add(ev);
+                            break;
+                        }
+
+                        case ServerResult result:
+                        {
+                            if (asyncResults.TryGetValue(result.id, out var obj))
+                            {
+                                obj.Set(result);
+                            }
+                            else
+                            {
+                                engine.Log($"No task waiting for result of client message {result.id}, ignored");
+                            }
+
+                            break;
+                        }
+
+                        default:
+                        {
+                            engine.Log($"Unknown message type ({message.type}), ignored");
+                            break;
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                engine.Log($"Exception thrown in message pump: {e}");
+            }
+            finally
+            {
+                messagePumpRunning = false;
+            }
+        }
+
+        /// <summary>
+        /// Start waiting for a ServerResult with the id given. The message pump must have been started.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="millisecondsTimeout"></param>
+        /// <returns></returns>
+
+        private async Task<ServerResult> WaitForResult(int id, int millisecondsTimeout)
+        {
+            if (!messagePumpRunning)
+                throw new Exception("Message pump not running");
+
+            var obj = new AsyncObject<ServerResult>();
+            
+            if (!asyncResults.TryAdd(id, obj))
+                return null;
+            
+            return await obj.Get(millisecondsTimeout);
+        }
+
+
+        /// <summary>
+        /// Return and remove any events received. Will wait for the timeout period if none are already queued.
+        /// </summary>
+        /// <param name="millisecondsTimeout"></param>
+        /// <returns></returns>
+
+        public List<ServerEvent> TakePendingEvents(int millisecondsTimeout)
+        {
+            if (!messagePumpRunning)
+                throw new Exception("Message pump not running");
+
+            var taken = new List<ServerEvent>();
+
+            if (pendingEvents.Count == 0)
+            {
+                if (pendingEvents.TryTake(out var ev, millisecondsTimeout))
+                    taken.Add(ev);
+            }
+
+            while (pendingEvents.TryTake(out var ev))
+                taken.Add(ev);
+
+            return taken;
         }
     }
 }
