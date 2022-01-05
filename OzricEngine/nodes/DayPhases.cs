@@ -65,7 +65,8 @@ namespace OzricEngine.logic
             public DateTime GetStartTime(DateTime now, Dictionary<string, object> sunAttributes)
             {
                 var attributeName = GetStartTimeAttribute();
-                var dateTime = sunAttributes.Get(attributeName) as DateTime? ?? throw new Exception($"Unknown sun attribute '{attributeName}', expected one of {sunAttributes.Keys.Join(",")}");
+                var attributeValue = sunAttributes.Get(attributeName) ?? throw new Exception($"Unknown sun attribute '{attributeName}', expected one of {sunAttributes.Keys.Join(",")}");
+                var dateTime = attributeValue as DateTime? ?? throw new Exception($"Unexpected sun attribute '{attributeName}' type, expected {nameof(DateTime)} but was {attributeValue.GetType().Name}"); 
                 dateTime = dateTime.AddSeconds(startOffsetSeconds);
                 return dateTime.SetDayOfYear(now.DayOfYear);
             }
