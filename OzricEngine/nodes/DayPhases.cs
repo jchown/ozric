@@ -97,6 +97,11 @@ namespace OzricEngine.logic
 
                 return $"{start} -{offset}";
             }
+
+            public static PhaseStart Create(SunPhase sunPhase, int offsetSeconds, params ValueTuple<string, Value>[] attributes)
+            {
+                return new PhaseStart(attributes.ToDictionary(a => a.Item1, a => a.Item2), sunPhase, offsetSeconds);
+            }
         }
 
         public readonly List<PhaseStart> phases = new List<PhaseStart>();

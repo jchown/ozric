@@ -19,7 +19,13 @@ namespace OzricEngine.logic
             this.inputs = inputs ?? new List<Pin>();
             this.outputs = outputs ?? new List<Pin>();
         }
-        
+
+
+        public bool HasInput(string name)
+        {
+            return GetInput(name) != null;
+        }
+
         public bool HasOutput(string name)
         {
             return GetOutput(name) != null;

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using OzricEngine.ext;
@@ -27,6 +28,13 @@ namespace OzricEngine.logic
 
         private async Task UpdateValue(Engine engine)
         {
+            var input = GetInput("color");
+            if (input == null || input.value == null)
+            {
+                engine.Log($"{entityID} has no input called 'color'");
+                return;
+            }
+
             var currentState = engine.home.Get(entityID);
             var attributes = currentState.LightAttributes;
 
@@ -35,7 +43,10 @@ namespace OzricEngine.logic
             if (on)
                 engine.Log($"{entityID}.brightness = {attributes.brightness}");
 
-            var desired = (GetInput("color").value as ColorValue);
+            var desired = (input.value as ColorValue);
+            if (desired == null)
+                throw new Exception($"${entityID}.input[color] is a {input.value.GetType().Name}, not a {nameof(ColorValue)}");
+            
             var brightness = ((int)(desired.brightness * 255));
             var desiredOn = brightness > 0;
 
@@ -141,7 +152,7 @@ namespace OzricEngine.logic
                 }
             }
         }
- 
+
         private const int COMMAND_TIMEOUT_MS = 5000;
     }
 }

@@ -221,8 +221,15 @@ namespace OzricEngine
             
             if (!asyncResults.TryAdd(id, obj))
                 return null;
-            
-            return await obj.Get(millisecondsTimeout);
+
+            try
+            {
+                return await obj.Get(millisecondsTimeout);
+            }
+            finally
+            {
+                asyncResults.TryRemove(id, out _);
+            }
         }
 
 

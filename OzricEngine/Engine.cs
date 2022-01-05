@@ -75,12 +75,24 @@ namespace OzricEngine
             {
                 if (ev.payload is EventStateChanged stateChanged)
                 {
-                    Console.WriteLine($"{stateChanged.data.new_state.entity_id} = {stateChanged.data.old_state.state} -> {stateChanged.data.new_state.state}");
+                    var newState = stateChanged.data.new_state;
+
+                    var entity = home.Get(newState.entity_id);
+                    if (entity == null)
+                        continue;
+
+                    if (entity.state != newState.state)
+                        Log($"{newState.entity_id} = {stateChanged.data.old_state.state} -> {newState.state}");
+
+                    entity.state = newState.state;
+                    entity.attributes = newState.attributes;
+                    entity.last_updated = newState.last_updated;
+                    entity.last_changed = newState.last_changed;
                 }
 
                 if (ev.payload is EventCallService callService)
                 {
-                    Console.WriteLine($"{callService.data.domain}: {callService.data.service_data.entity_id}: {callService.data.service}");
+                    Console.WriteLine($"{callService.data.domain}: {callService.data.service_data.entity_id[0]}: {callService.data.service}");
                 }
             }
         }
