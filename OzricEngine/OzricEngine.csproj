@@ -33,57 +33,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Humanizer, Version=2.13.0.0, Culture=neutral, PublicKeyToken=979442b78dfc278e">
-      <HintPath>..\packages\Humanizer.Core.2.13.14\lib\netstandard2.0\Humanizer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="JetBrains.Annotations, Version=2021.3.0.0, Culture=neutral, PublicKeyToken=1010a0d8d6380325">
-      <HintPath>..\packages\JetBrains.Annotations.2021.3.0\lib\net20\JetBrains.Annotations.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="mscorlib" />
     <Reference Include="System" />
-    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Data" />
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Numerics" />
-    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="System.Runtime.Serialization.Json, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
       <HintPath>C:\Windows\Microsoft.NET\Framework64\v4.0.30319\System.Runtime.Serialization.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Text.Encodings.Web, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>..\packages\System.Text.Encodings.Web.6.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Text.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>..\packages\System.Text.Json.6.0.0\lib\net461\System.Text.Json.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51">
-      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
-      <Private>True</Private>
     </Reference>
     <Reference Include="System.Xml" />
   </ItemGroup>
@@ -153,16 +109,68 @@
     <Compile Include="values\ValueType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
+    <PackageReference Include="Humanizer" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.af" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.ar" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.az" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.bg" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.bn-BD" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.cs" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.da" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.de" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.el" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.es" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.fa" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.fi-FI" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.fr" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.fr-BE" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.he" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.hr" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.hu" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.hy" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.id" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.is" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.it" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.ja" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.ko-KR" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.ku" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.lv" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.ms-MY" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.mt" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.nb" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.nb-NO" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.nl" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.pl" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.pt" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.ro" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.ru" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.sk" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.sl" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.sr" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.sr-Latn" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.sv" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.th-TH" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.tr" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.uk" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.uz-Cyrl-UZ" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.uz-Latn-UZ" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.vi" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.zh-CN" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.zh-Hans" Version="2.13.14" />
+    <PackageReference Include="Humanizer.Core.zh-Hant" Version="2.13.14" />
+    <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="6.0.0" />
+    <PackageReference Include="System.Buffers" Version="4.5.1" />
+    <PackageReference Include="System.Memory" Version="4.5.4" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" />
+    <PackageReference Include="System.Text.Encodings.Web" Version="6.0.0" />
+    <PackageReference Include="System.Text.Json" Version="6.0.0" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.5.4" />
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Import Project="..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets" Condition="Exists('..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105.The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
          Other similar extension points exist, see Microsoft.Common.targets.
     <Target Name="BeforeBuild">
