@@ -30,7 +30,7 @@ namespace OzricEngine.logic
         public void canEvaluatePhaseCorrectly()
         {
             var node = new DayPhases("Color-phases");
-            node.AddOutputValue("Color", ValueType.Color);
+            node.AddOutput("Color", ValueType.Color);
             node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(1,0,0,0) } }, DayPhases.SunPhase.Midnight));
             node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(0,1,0,0) } }, DayPhases.SunPhase.Midnight, + 6 * 60 * 60));
             node.AddPhase(new DayPhases.PhaseStart(new Dictionary<string, Value> { { "Color", new ColorRGB(0,0,1,0) } }, DayPhases.SunPhase.Noon));

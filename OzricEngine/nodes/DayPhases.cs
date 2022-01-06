@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
 using System.Threading.Tasks;
 using Humanizer;
 using OzricEngine.ext;
@@ -66,7 +67,27 @@ namespace OzricEngine.logic
             {
                 var attributeName = GetStartTimeAttribute();
                 var attributeValue = sunAttributes.Get(attributeName) ?? throw new Exception($"Unknown sun attribute '{attributeName}', expected one of {sunAttributes.Keys.Join(",")}");
-                var dateTime = attributeValue as DateTime? ?? throw new Exception($"Unexpected sun attribute '{attributeName}' type, expected {nameof(DateTime)} but was {attributeValue.GetType().Name}"); 
+                DateTime dateTime;
+                switch (attributeValue)
+                {
+                    case JsonElement je:
+                    {
+                        if (!je.TryGetDateTime(out dateTime))
+                            throw new Exception($"Failed to parse {je} as a DateTime");
+                        break;
+                    }
+                    case DateTime dt:
+                    {
+                        dateTime = dt;
+                        break;
+                    }
+
+                    default:
+                    {
+                        throw new Exception($"Unexpected sun attribute '{attributeName}' type, expected {nameof(DateTime)} but was {attributeValue.GetType().Name}");
+                    }
+                }
+
                 dateTime = dateTime.AddSeconds(startOffsetSeconds);
                 return dateTime.SetDayOfYear(now.DayOfYear);
             }
@@ -174,11 +195,6 @@ namespace OzricEngine.logic
             {
                 SetOutputValue(output.Key, output.Value);
             }
-        }
-
-        public void AddOutputValue(string name, ValueType type)
-        {
-            outputs.Add(new Pin(name, type));
         }
 
         public void AddPhase(PhaseStart phaseStart)

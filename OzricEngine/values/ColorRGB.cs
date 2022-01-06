@@ -6,6 +6,9 @@ namespace OzricEngine.logic
     public sealed class ColorRGB: ColorValue, IEquatable<ColorRGB>
     {
         public static readonly ColorRGB WHITE = new ColorRGB(1f,1f,1f,1f);
+        public static readonly ColorRGB RED = new ColorRGB(1f,0f,0f,1f);
+        public static readonly ColorRGB GREEN = new ColorRGB(0f,1f,0f,1f);
+        public static readonly ColorRGB BLUE = new ColorRGB(0f,0f,1f,1f);
 
         public ColorRGB()
         {

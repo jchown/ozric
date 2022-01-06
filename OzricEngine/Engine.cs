@@ -69,7 +69,7 @@ namespace OzricEngine
             }
         }
 
-        private async Task ProcessEvents(List<ServerEvent> events)
+        protected async Task ProcessEvents(List<ServerEvent> events)
         {
             foreach (var ev in events)
             {

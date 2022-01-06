@@ -20,6 +20,15 @@ namespace OzricEngine.logic
             this.outputs = outputs ?? new List<Pin>();
         }
 
+        public void AddInput(string name, ValueType type)
+        {
+            inputs.Add(new Pin(name, type));
+        }
+
+        public void AddOutput(string name, ValueType type)
+        {
+            outputs.Add(new Pin(name, type));
+        }
 
         public bool HasInput(string name)
         {

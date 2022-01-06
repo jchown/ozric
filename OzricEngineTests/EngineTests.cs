@@ -1,8 +1,11 @@
+using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using OzricEngine;
 using OzricEngine.ext;
 using OzricEngine.logic;
 using Xunit;
+using ValueType = OzricEngine.logic.ValueType;
 
 namespace OzricEngineTests
 {
@@ -51,6 +54,22 @@ namespace OzricEngineTests
             int ai = ordered.IndexOf(after);
             Assert.False(bi == -1 || ai == -1);
             Assert.True(bi < ai);
+        }
+    
+        [Fact]
+        async Task canProcessSunEvents()
+        {
+            var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
+            var engine = new MockEngine(home);
+
+            var phases = new DayPhases("phase_id");
+            phases.AddOutput("color", ValueType.Color);
+            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Midnight, 0, ("color", ColorRGB.WHITE) ));
+            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Noon, 0, ("color", ColorRGB.RED) ));
+
+            await phases.OnInit(engine);
+            await engine.ProcessMockEvent("sun_event");
+            await phases.OnUpdate(engine);
         }
     }
 }
