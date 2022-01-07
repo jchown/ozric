@@ -28,7 +28,7 @@ namespace OzricEngine.logic
                 on |= onOff.value;
 
             var value = new OnOff(on);
-            engine.Log($"{id}.output = {value}");
+            Log(LogLevel.Debug, "output = {0}", value);
             SetOutputValue("output", value);
         }
     }

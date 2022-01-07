@@ -30,7 +30,7 @@ namespace OzricEngine.logic
             var device = engine.home.Get(entityID) ?? throw new Exception($"Unknown device {entityID}");
             var value = new OnOff(device.state != "off");
 
-            engine.Log($"{id}.activity = {value}");
+            Log(LogLevel.Debug, "activity = {0}", value);
             SetOutputValue("activity", value);
         }
     }

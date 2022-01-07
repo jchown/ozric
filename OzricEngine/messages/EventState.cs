@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json;
 
 namespace OzricEngine
 {
@@ -15,5 +16,10 @@ namespace OzricEngine
         
         public string state { get; set; }
         public Dictionary<string,object> attributes { get; set; }
+        
+        public override string ToString()
+        {
+            return JsonSerializer.Serialize(this);
+        }
     }
 }

@@ -11,7 +11,7 @@ namespace OzricEngine
     /// <summary>
     /// Main loop that drives all node behaviour
     /// </summary>
-    public class Engine
+    public class Engine: OzricObject
     {
         public readonly Home home;
         public readonly Comms comms;
@@ -67,7 +67,7 @@ namespace OzricEngine
             }
             catch (Exception e)
             {
-                Log($"Main loop threw exception: {e}");
+                Log(LogLevel.Error, "Main loop threw exception: {0}", e);
             }
         }
 
@@ -83,12 +83,12 @@ namespace OzricEngine
                     if (entity == null)
                         continue;
 
-                    if (entity.state != newState.state)
-                        Log($"{newState.entity_id} = {stateChanged.data.old_state.state} -> {newState.state}");
-
                     var now = home.GetTime();
                     if (!entity.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS))
+                    {
                         entity.lastUpdatedByOther = now;
+                        Log(LogLevel.Info, "{0} = {1}", newState.entity_id, stateChanged.data.new_state);
+                    }
 
                     entity.state = newState.state;
                     entity.attributes = newState.attributes;
@@ -135,7 +135,7 @@ namespace OzricEngine
 
                     foreach (var input in edge.Value)
                     {
-                        Log($"{input.nodeID}.{input.inputName} = {value}");
+                        Log(LogLevel.Debug, "{0}.{1} = {2}", input.nodeID, input.inputName, value);
                         nodes[input.nodeID].SetInputValue(input.inputName, value);
                     }
                 }
@@ -184,11 +184,8 @@ namespace OzricEngine
             return ordered;
         }
 
-        public void Log(string s)
-        {
-            Console.WriteLine(s);
-        }
- 
         private const int SELF_EVENT_SECS = 3;
+
+        public override string Name => "Engine";
     }
 }

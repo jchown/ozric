@@ -81,7 +81,6 @@ namespace OzricEngine.logic
                         dateTime = dt;
                         break;
                     }
-
                     default:
                     {
                         throw new Exception($"Unexpected sun attribute '{attributeName}' type, expected {nameof(DateTime)} but was {attributeValue.GetType().Name}");
@@ -154,7 +153,7 @@ namespace OzricEngine.logic
             {
                 var onlyPhase = phases[0];
 
-                engine.Log($"{id}.phase can only be [{onlyPhase}]");
+                Log(LogLevel.Debug, "phase can only be [{0}]", onlyPhase);
 
                 foreach (var output in onlyPhase.values)
                 {
@@ -175,11 +174,16 @@ namespace OzricEngine.logic
             {
                 var endTime = phases[i % phases.Count].GetStartTime(now, sun.attributes);
 
-                if (startTime > endTime)
-                    startTime = startTime.AddDays(-1);
-
-                if (now >= startTime && now < endTime)
-                    break;
+                if (startTime > endTime)    // Watch for wrap-around to start of day
+                {
+                    if (now >= startTime && now < endTime.AddDays(1))
+                        break;
+                }
+                else
+                {
+                    if (now >= startTime && now < endTime)
+                        break;
+                }
 
                 startTime = endTime;
                 i++;
@@ -189,7 +193,7 @@ namespace OzricEngine.logic
             var currentPhase = phases[i - 1];
             var nextPhase = phases[i % phases.Count];
             
-            engine.Log($"{id}.phase is between [{currentPhase}] and [{nextPhase}]");
+            Log(LogLevel.Debug, "phase is between {0} and {1}", currentPhase, nextPhase);
 
             foreach (var output in currentPhase.values)
             {

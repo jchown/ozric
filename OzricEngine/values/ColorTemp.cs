@@ -9,7 +9,7 @@ namespace OzricEngine.logic
         {
         }
 
-        public ColorTemp(int t)
+        public ColorTemp(int t, float brightness): base(brightness)
         {
             this.t = t;
         }

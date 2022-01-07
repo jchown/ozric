@@ -5,18 +5,19 @@ using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using System.Threading;
 using System.Threading.Tasks;
+using OzricEngine.logic;
 
 namespace OzricEngine
 {
-    public class Comms : IDisposable
+    public class Comms: OzricObject, IDisposable
     {
+        public override string Name => "Comms";
+
         private Uri uri = new Uri("ws://homeassistant:8123/api/websocket");
 
-        private ClientWebSocket client = new ClientWebSocket();
-//              client("User-Agent", "Ozric/0.1");
+        private ClientWebSocket client;
 
         private byte[] buffer = new byte[65536];
         private bool messagePumpRunning;
@@ -32,18 +33,41 @@ namespace OzricEngine
             Converters = { new JsonConverterServerMessage(), new JsonConverterEvent() }
         };
 
-        public Comms()
+        private readonly string llat;
+
+        public Comms(string llat)
         {
+            this.llat = llat;
+            
             pendingEvents = new BlockingCollection<ServerEvent>(new ConcurrentQueue<ServerEvent>());
             asyncResults = new ConcurrentDictionary<int, AsyncObject<ServerResult>>();
         }
 
         private async Task Connect()
         {
+            client = new ClientWebSocket();
+//              client("User-Agent", "Ozric/0.1");
+
             CancellationTokenSource cancellation = new CancellationTokenSource();
             cancellation.CancelAfter(ReceiveTimeout);
 
             await client.ConnectAsync(uri, cancellation.Token);
+        }
+
+        private async Task Disconnect()
+        {
+            try
+            {
+                client.Abort();
+                client.Dispose();
+            }
+            catch (Exception)
+            {
+            }
+            finally
+            {
+                client = null;
+            }
         }
 
         public async Task<T> Receive<T>()
@@ -71,7 +95,7 @@ namespace OzricEngine
                 }
             }
 
-            WriteLine($"<< {json}");
+            Log(LogLevel.Debug,  "<< {0}", json);
             
             return JsonSerializer.Deserialize<T>(json, JsonOptions);
         }
@@ -82,7 +106,8 @@ namespace OzricEngine
             cancellation.CancelAfter(SendTimeout);
 
             var json = JsonSerializer.Serialize(t, JsonOptions);
-            WriteLine($">> {json}");
+
+            Log(LogLevel.Debug,  ">> {0}", json);
 
             int length = Encoding.UTF8.GetBytes(json, 0, json.Length, buffer, 0);
             await client.SendAsync(new ArraySegment<byte>(buffer, 0, length), WebSocketMessageType.Text, true, cancellation.Token);
@@ -101,12 +126,12 @@ namespace OzricEngine
             client?.Dispose();
         }
 
-        public async Task Authenticate(string llat)
+        public async Task Authenticate()
         {
             await Connect();
             
             var authReq = await Receive<ServerAuthRequired>();
-            Console.WriteLine($"Auth requested by HA {authReq.ha_version}");
+            Log(LogLevel.Info, "Auth requested by HA {0}", authReq.ha_version);
 
             var auth = new ClientAuth
             {
@@ -183,7 +208,7 @@ namespace OzricEngine
                                 }
                                 else
                                 {
-                                    engine.Log($"No task waiting for result of client message {result.id}, ignored");
+                                    Log(LogLevel.Warning, "No task waiting for result of client message {0}, ignored", result.id);
                                 }
 
                                 break;
@@ -191,20 +216,45 @@ namespace OzricEngine
 
                             default:
                             {
-                                engine.Log($"Unknown message type ({message.type}), ignored");
+                                Log(LogLevel.Warning, "Unknown message type ({0}), ignored", message.type);
                                 break;
+                            }
+                        }
+                    }
+                    catch (WebSocketException e)
+                    {
+                        Log(LogLevel.Error, "Error receiving message: {0}", e);
+
+                        while (true)
+                        {
+                            await Task.Delay(TimeSpan.FromSeconds(3));
+
+                            try
+                            {
+                                Log(LogLevel.Info, "Reconnecting...");
+
+                                await Disconnect();
+                                await Authenticate();
+                                await Send(new ClientEventSubscribe());
+                                await Receive<ServerEventSubscribed>();
+
+                                Log(LogLevel.Info, "Reconnected");
+                                break;
+                            }
+                            catch (WebSocketException)
+                            {
                             }
                         }
                     }
                     catch (Exception e)
                     {
-                        engine.Log($"Error handling message: {e}");
+                        Log(LogLevel.Error, "Error handling message: {0}", e);
                     }
                 }
             }
             catch (Exception e)
             {
-                engine.Log($"Exception thrown in message pump: {e}");
+                Log(LogLevel.Error, "Exception thrown in message pump: {0}", e);
             }
             finally
             {

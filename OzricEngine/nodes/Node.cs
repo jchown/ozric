@@ -6,8 +6,10 @@ using OzricEngine.ext;
 
 namespace OzricEngine.logic
 {
-    public abstract class Node
+    public abstract class Node: OzricObject
     {
+        public override string Name => id;
+
         public string id  { get; }
         public string description { get; protected set; }
         public List<Pin> inputs { get; }

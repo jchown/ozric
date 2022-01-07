@@ -108,7 +108,7 @@ namespace OzricEngine.logic
             var weather = engine.home.Get("weather.home");
             if (weather == null)
             {
-                engine.Log("No weather state found");
+                Log(LogLevel.Warning, "No weather state found");
                 return 0;
             }
 
@@ -147,7 +147,7 @@ namespace OzricEngine.logic
                 
                 default:
                 {
-                    engine.Log($"Unknown weather state: '{weather.state}'");
+                    Log(LogLevel.Warning, "Unknown weather state: '{0}'", weather.state);
                     return 0.5f;
                 }
             }

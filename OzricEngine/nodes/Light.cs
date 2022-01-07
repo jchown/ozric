@@ -32,7 +32,7 @@ namespace OzricEngine.logic
             var input = GetInput("color");
             if (input == null || input.value == null)
             {
-                engine.Log($"{entityID} has no input called 'color'");
+                Log(LogLevel.Error, "{0} has no input called 'color'", entityID);
                 return;
             }
 
@@ -40,16 +40,16 @@ namespace OzricEngine.logic
 
             if (currentState.IsOverridden(engine.home.GetTime(), secondsToAllowOverrideByOthers))
             {
-                engine.Log($"{entityID} is being controlled by another service");
+                Log(LogLevel.Error, "{0} is being controlled by another service", entityID);
                 return;
             }
             
             var attributes = currentState.LightAttributes;
 
             bool on = (currentState.state == "on");
-            engine.Log($"{entityID}.on = {on}");
+            Log(LogLevel.Debug, "{0}.on = {1}", entityID, on);
             if (on)
-                engine.Log($"{entityID}.brightness = {attributes.brightness}");
+                Log(LogLevel.Debug, "brightness = {0}", attributes.brightness);
 
             var desired = (input.value as ColorValue);
             if (desired == null)
@@ -86,7 +86,7 @@ namespace OzricEngine.logic
                         }
                         else
                         {
-                            engine.Log($"{entityID}.Color#hs = {attributes.hs_color[0]},{attributes.hs_color[1]}");
+                            Log(LogLevel.Debug, "color#hs = {0},{1}", attributes.hs_color[0], attributes.hs_color[1]);
 
                             needsUpdate |= attributes.hs_color[0] != h || attributes.hs_color[1] != s;
                         }
@@ -115,13 +115,38 @@ namespace OzricEngine.logic
                         }
                         else
                         {
-                            engine.Log($"{entityID}.Color#rgb = {attributes.rgb_color[0]},{attributes.rgb_color[1]},{attributes.rgb_color[2]}");
+                            Log(LogLevel.Debug, "color#rgb = {0},{1},{2}", attributes.rgb_color[0], attributes.rgb_color[1], attributes.rgb_color[2]);
 
                             needsUpdate |= (attributes.rgb_color[0] != r) || (attributes.rgb_color[1] != g) || (attributes.rgb_color[2] != b);
                         }
 
                         colorKey = "color_rgb";
                         colorValue = new List<int> { r, g, b };
+                        break;
+                    }
+
+                    case ColorTemp temp:
+                    {
+                        if (attributes.color_mode != "color_temp")
+                        {
+                            if (!attributes.supported_color_modes.Contains("color_temp"))
+                            {
+                                needsConversion = true;
+                            }
+                            else
+                            {
+                                needsUpdate = true;
+                            }
+                        }
+                        else
+                        {
+                            Log(LogLevel.Debug, "color#temp = {0}", attributes.color_temp);
+
+                            needsUpdate |= (attributes.color_temp != temp.t);
+                        }
+
+                        colorKey = "color_temp";
+                        colorValue = temp.t;
                         break;
                     }
 
@@ -155,7 +180,7 @@ namespace OzricEngine.logic
 
                     colorKey = "xy_color";
                     colorValue = new List<float> { x, y };
-                    brightness = (int)(Y * brightness);
+                    //brightness = (int)(Y * brightness);
 
                     needsUpdate = attributes.xy_color == null || (attributes.xy_color[0] != x) || (attributes.xy_color[1] != y) || (attributes.brightness != brightness);
                 }
@@ -203,11 +228,11 @@ namespace OzricEngine.logic
                 var result = await engine.comms.SendCommand(callServices, COMMAND_TIMEOUT_MS);
                 if (result == null)
                 {
-                    engine.Log($"Light {entityID} failed to respond");
+                    Log(LogLevel.Warning, "Entity failed to respond");
                 }
                 else if (!result.success)
                 {
-                    engine.Log($"Light {entityID} failed to update: {result.error.code} - {result.error.message}");
+                    Log(LogLevel.Warning, "Entity failed to update: {0} - {1}", result.error.code, result.error.message);
                 }
                 else
                 {
