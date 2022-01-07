@@ -28,7 +28,7 @@ namespace OzricEngine
 
         public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
         {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            IgnoreNullValues = true,
             Converters = { new JsonConverterServerMessage(), new JsonConverterEvent() }
         };
 
