@@ -23,6 +23,55 @@ namespace OzricEngine.logic
         [JsonIgnore]
         public override float luminance => (float)(0.3 * h + 0.59 * s + 0.11);
 
+        public override void GetRGB(out float r, out float g, out float b)
+        {
+            //  See https://stackoverflow.com/questions/3018313/algorithm-to-convert-rgb-to-hsv-and-hsv-to-rgb-in-range-0-255-for-both
+            
+            float H = h * 6;
+            float fract = H - MathF.Floor(H);
+
+            float P = (1 - s);
+            float Q = (1 - s * fract);
+            float T = (1 - s * (1 - fract));
+
+            if (H < 1)
+            {
+                r = 1;
+                g = T;
+                b = P;
+            }
+            else if (H < 2)
+            {
+                r = Q;
+                g = 1;
+                b = P;
+            }
+            else if (H < 3)
+            {
+                r = P;
+                g = 1;
+                b = T;
+            }
+            else if (H < 4)
+            {
+                r = P;
+                g = Q;
+                b = 1;
+            }
+            else if (H < 5)
+            {
+                r = T;
+                g = P;
+                b = 1;
+            }
+            else
+            {
+                r = 1;
+                g = P;
+                b = Q;
+            }
+        }
+
         public override bool Equals(object o) => Equals(o as ColorHS);
 
         public bool Equals(ColorHS other)

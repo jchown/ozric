@@ -163,35 +163,42 @@ namespace OzricEngine
             {
                 while (true)
                 {
-                    var message = await Receive<ServerMessage>();
-
-                    switch (message)
+                    try
                     {
-                        case ServerEvent ev:
-                        {
-                            pendingEvents.Add(ev);
-                            break;
-                        }
+                        var message = await Receive<ServerMessage>();
 
-                        case ServerResult result:
+                        switch (message)
                         {
-                            if (asyncResults.TryGetValue(result.id, out var obj))
+                            case ServerEvent ev:
                             {
-                                obj.Set(result);
-                            }
-                            else
-                            {
-                                engine.Log($"No task waiting for result of client message {result.id}, ignored");
+                                pendingEvents.Add(ev);
+                                break;
                             }
 
-                            break;
-                        }
+                            case ServerResult result:
+                            {
+                                if (asyncResults.TryGetValue(result.id, out var obj))
+                                {
+                                    obj.Set(result);
+                                }
+                                else
+                                {
+                                    engine.Log($"No task waiting for result of client message {result.id}, ignored");
+                                }
 
-                        default:
-                        {
-                            engine.Log($"Unknown message type ({message.type}), ignored");
-                            break;
+                                break;
+                            }
+
+                            default:
+                            {
+                                engine.Log($"Unknown message type ({message.type}), ignored");
+                                break;
+                            }
                         }
+                    }
+                    catch (Exception e)
+                    {
+                        engine.Log($"Error handling message: {e}");
                     }
                 }
             }
@@ -225,6 +232,10 @@ namespace OzricEngine
             try
             {
                 return await obj.Get(millisecondsTimeout);
+            }
+            catch (Exception e)
+            {
+                return null;
             }
             finally
             {

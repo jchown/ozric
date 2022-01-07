@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using OzricEngine.ext;
+using OzricEngine.logic;
 
 namespace OzricEngine
 {
@@ -16,6 +17,9 @@ namespace OzricEngine
         public DateTime last_updated { get; set; }
         public StateContext context { get; set; }
 
+        public DateTime? lastUpdatedByOzric;
+        public DateTime? lastUpdatedByOther;
+
         [JsonIgnore]
         public string Name => (attributes.Get("friendly_name") as string ?? entity_id).Trim();
 
@@ -25,6 +29,29 @@ namespace OzricEngine
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);
+        }
+        
+        /// <summary>
+        /// If someone else has updated this entity, we probably shouldn't mess with it for a while. 
+        /// </summary>
+        /// <param name="secondsToAllowOverrideByOthers"></param>
+        /// <returns></returns>
+
+        public bool IsOverridden(DateTime now, int secondsToAllowOverrideByOthers)
+        {
+            return lastUpdatedByOther != null && (now - lastUpdatedByOther.Value).TotalSeconds < secondsToAllowOverrideByOthers;
+        }
+        
+        /// <summary>
+        /// We would like to know if an event was (probably) due to something we did.
+        /// </summary>
+        /// <param name="now"></param>
+        /// <param name="secondsRecent"></param>
+        /// <returns></returns>
+        
+        public bool WasRecentlyUpdatedByOzric(DateTime now, int secondsRecent)
+        {
+            return lastUpdatedByOzric != null && (now - lastUpdatedByOzric.Value).TotalSeconds < secondsRecent;
         }
     }
 

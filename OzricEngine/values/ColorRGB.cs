@@ -35,6 +35,13 @@ namespace OzricEngine.logic
         [JsonIgnore]
         public override float luminance => (float)(0.3 * r + 0.59 * g + 0.11 * b) * brightness;
 
+        public override void GetRGB(out float r, out float g, out float b)
+        {
+            r = this.r;
+            g = this.g;
+            b = this.b;
+        }
+        
         public override bool Equals(object o) => Equals(o as ColorRGB);
 
         public bool Equals(ColorRGB other)

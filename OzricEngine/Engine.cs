@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -9,6 +8,9 @@ using OzricEngine.logic;
 
 namespace OzricEngine
 {
+    /// <summary>
+    /// Main loop that drives all node behaviour
+    /// </summary>
     public class Engine
     {
         public readonly Home home;
@@ -83,6 +85,10 @@ namespace OzricEngine
 
                     if (entity.state != newState.state)
                         Log($"{newState.entity_id} = {stateChanged.data.old_state.state} -> {newState.state}");
+
+                    var now = home.GetTime();
+                    if (!entity.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS))
+                        entity.lastUpdatedByOther = now;
 
                     entity.state = newState.state;
                     entity.attributes = newState.attributes;
@@ -182,5 +188,7 @@ namespace OzricEngine
         {
             Console.WriteLine(s);
         }
+ 
+        private const int SELF_EVENT_SECS = 3;
     }
 }
