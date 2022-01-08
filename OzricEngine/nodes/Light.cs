@@ -6,15 +6,14 @@ using OzricEngine.ext;
 
 namespace OzricEngine.logic
 {
-    public class Light: Node
+    public class Light: EntityNode
     {
-        private string entityID { get; set; }
         private int secondsToAllowOverrideByOthers { get; set; }
 
-        public Light(string id, string entityID) : base(id, new List<Pin> { new Pin("color", ValueType.Color) }, null)
+        public Light(string id, string entityID) : base(id, entityID, new List<Pin> { new Pin("color", ValueType.Color) }, null)
         {
-            this.entityID = entityID;
-            this.secondsToAllowOverrideByOthers = 10 * 60;
+            secondsToAllowOverrideByOthers = 10 * 60;
+            minLogLevel = LogLevel.Debug;
         }
 
         public override async Task OnInit(Engine engine)
@@ -29,6 +28,9 @@ namespace OzricEngine.logic
 
         private async Task UpdateValue(Engine engine)
         {
+            if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
+                return;
+            
             var input = GetInput("color");
             if (input == null || input.value == null)
             {
@@ -36,7 +38,7 @@ namespace OzricEngine.logic
                 return;
             }
 
-            var currentState = engine.home.Get(entityID);
+            var currentState = engine.home.GetEntityState(entityID);
 
             if (currentState.IsOverridden(engine.home.GetTime(), secondsToAllowOverrideByOthers))
             {
@@ -208,7 +210,7 @@ namespace OzricEngine.logic
                     target = new Dictionary<string, string>()
                     {
                         { "entity_id", entityID }
-                    }
+                    },
                 };
 
                 if (desiredOn)
@@ -221,7 +223,11 @@ namespace OzricEngine.logic
                         { "brightness", brightness},
                         { colorKey, colorValue }
                     };
+                    
+                    Log(LogLevel.Info, "call service {0}, {1}={2}, brightness {3}", callServices.service, colorKey, colorValue, brightness);
                 }
+                else
+                    Log(LogLevel.Info, "call service {0}", callServices.service);
                 
                 currentState.lastUpdatedByOzric = engine.home.GetTime();
 
@@ -248,6 +254,8 @@ namespace OzricEngine.logic
                 }
             }
         }
+
+        private const double MIN_UPDATE_INTERVAL_SECS = 3;
 
         private const int COMMAND_TIMEOUT_MS = 5000;
     }

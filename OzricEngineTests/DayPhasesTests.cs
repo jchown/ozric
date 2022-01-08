@@ -54,5 +54,39 @@ namespace OzricEngine.logic
             node.OnUpdate(engine);
             Assert.Equal(new ColorRGB(0, 0, 0, 1), node.GetOutputColor("Color"));
         }
+
+        [Fact]
+        public void notConfusedByPreMidnightPhases()
+        {
+            var node = new DayPhases("kitchen-lights-phases");
+            node.AddOutput("colour", ValueType.Color);
+
+            var afterMidnight = DayPhases.PhaseStart.Create(DayPhases.SunPhase.Midnight, - 34 * 60, ("colour", ColorRGB.RED));
+            var after6am = DayPhases.PhaseStart.Create(DayPhases.SunPhase.Midnight, 6 * 60 * 60, ("colour", ColorRGB.GREEN));
+            var afterSunSetting = DayPhases.PhaseStart.Create(DayPhases.SunPhase.Setting, -30 * 60, ("colour", ColorRGB.BLUE));
+            var after8pm = DayPhases.PhaseStart.Create(DayPhases.SunPhase.Midnight, -8 * 60 * 60, ("colour", ColorRGB.WHITE));
+        
+            node.phases.Add(afterMidnight);
+            node.phases.Add(after6am);
+            node.phases.Add(afterSunSetting);
+            node.phases.Add(after8pm);
+
+            var home = new MockHome(DateTime.Parse("2021-11-29T03:21:25.459551+00:00"), "sun_morning");
+            var engine = new MockEngine(home);
+
+            node.OnInit(engine);
+
+            home.SetTime(DateTime.Parse("2021-11-29T09:21:25.459551+00:00"));
+            node.OnUpdate(engine);
+            Assert.Equal(ColorRGB.GREEN, node.GetOutputColor("colour"));
+
+            home.SetTime(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"));
+            node.OnUpdate(engine);
+            Assert.Equal(ColorRGB.BLUE, node.GetOutputColor("colour"));
+
+            home.SetTime(DateTime.Parse("2021-11-29T23:41:25.459551+00:00"));
+            node.OnUpdate(engine);
+            Assert.Equal(ColorRGB.RED, node.GetOutputColor("colour"));
+        }
     }
 }

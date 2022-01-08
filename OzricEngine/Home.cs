@@ -5,16 +5,16 @@ namespace OzricEngine.logic
 {
     public class Home
     {
-        private Dictionary<string, State> states;
+        private Dictionary<string, EntityState> states;
 
-        public Home(List<State> stateList)
+        public Home(List<EntityState> stateList)
         {
-            states = new Dictionary<string, State>();
+            states = new Dictionary<string, EntityState>();
             foreach (var state in stateList)
                 states.Add(state.entity_id, state);
         }
 
-        public State Get(string entityID)
+        public EntityState GetEntityState(string entityID)
         {
             return states[entityID] ?? throw new Exception("Unknown entity");
         }

@@ -7,6 +7,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using OzricEngine.ext;
 using OzricEngine.logic;
 
 namespace OzricEngine
@@ -41,6 +42,8 @@ namespace OzricEngine
             
             pendingEvents = new BlockingCollection<ServerEvent>(new ConcurrentQueue<ServerEvent>());
             asyncResults = new ConcurrentDictionary<int, AsyncObject<ServerResult>>();
+
+            minLogLevel = LogLevel.Debug;
         }
 
         private async Task Connect()
@@ -96,8 +99,15 @@ namespace OzricEngine
             }
 
             Log(LogLevel.Debug,  "<< {0}", json);
-            
-            return JsonSerializer.Deserialize<T>(json, JsonOptions);
+
+            try
+            {
+                return JsonSerializer.Deserialize<T>(json, JsonOptions);
+            }
+            catch (Exception e)
+            {
+                throw e.Rethrown($"while parsing {json}");
+            }
         }
         
         public async Task Send<T>(T t)

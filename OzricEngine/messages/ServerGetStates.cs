@@ -8,6 +8,6 @@ namespace OzricEngine
         public int id { get; set; }
         public bool success { get; set; }
         public string error { get; set; }
-        public List<State> result { get; set; }
+        public List<EntityState> result { get; set; }
     }
 }

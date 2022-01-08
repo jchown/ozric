@@ -10,7 +10,7 @@ namespace OzricEngineTests
 {
     public class MockEngine: Engine
     {
-        public MockEngine() : base(new MockHome(new List<State>()), new MockComms())
+        public MockEngine() : base(new MockHome(new List<EntityState>()), new MockComms())
         {
         }
         

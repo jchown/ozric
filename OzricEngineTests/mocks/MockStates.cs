@@ -8,12 +8,12 @@ namespace OzricEngineTests
 {
     public static class MockStates
     {
-        public static State Load(string name)
+        public static EntityState Load(string name)
         {
             var json = File.ReadAllText($"../../../states/{name}.json");
             try
             {
-                return JsonSerializer.Deserialize<State>(json, Comms.JsonOptions);
+                return JsonSerializer.Deserialize<EntityState>(json, Comms.JsonOptions);
             }
             catch (Exception e)
             {

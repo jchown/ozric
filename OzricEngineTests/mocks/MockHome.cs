@@ -10,7 +10,7 @@ namespace OzricEngineTests
     {
         private DateTime time;
 
-        public MockHome(List<State> stateList) : base(stateList)
+        public MockHome(List<EntityState> stateList) : base(stateList)
         {
         }
 

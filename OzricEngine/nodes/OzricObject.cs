@@ -1,4 +1,6 @@
 using System;
+using System.Collections;
+using System.Text.Json;
 
 namespace OzricEngine.logic
 {
@@ -6,45 +8,51 @@ namespace OzricEngine.logic
     {
         public abstract string Name { get; }
         
-        private LogLevel minLevel = LogLevel.Info;
+        protected LogLevel minLogLevel = LogLevel.Info;
         
         protected void Log(LogLevel level, string message)
         {
-            if (level >= minLevel)
+            if (level >= minLogLevel)
                 _Log(message);
         }
         
         protected void Log<T0>(LogLevel level, string message, T0 arg0)
         {
-            if (level >= minLevel)
+            if (level >= minLogLevel)
                 _Log(message, arg0);
         }
         
         protected void Log<T0,T1>(LogLevel level, string message, T0 arg0, T1 arg1)
         {
-            if (level >= minLevel)
+            if (level >= minLogLevel)
                 _Log(message, arg0, arg1);
         }
         
         protected void Log<T0,T1,T2>(LogLevel level, string message, T0 arg0, T1 arg1, T2 arg2)
         {
-            if (level >= minLevel)
+            if (level >= minLogLevel)
                 _Log(message, arg0, arg1, arg2);
         }
         
         protected void Log<T0,T1,T2,T3>(LogLevel level, string message, T0 arg0, T1 arg1, T2 arg2, T3 arg3)
         {
-            if (level >= minLevel)
+            if (level >= minLogLevel)
                 _Log(message, arg0, arg1, arg2, arg3);
         }
 
         private void _Log(string message)
         {
-            Console.WriteLine($"[{Name}] {message}");
+            Console.WriteLine($"[{DateTime.Now.ToLongTimeString()}|{Name}] {message}");
         }
 
         private void _Log(string format, params object[] args)
         {
+            for (int i = 0; i < args.Length; i++)
+            {
+                if (args[i] is ICollection)
+                    args[i] = JsonSerializer.Serialize(args[i]);
+            }
+            
             _Log(string.Format(format, args));
         }
     }

@@ -27,7 +27,7 @@ namespace OzricEngine.logic
 
         private void UpdateState(Engine engine)
         {
-            var device = engine.home.Get(entityID) ?? throw new Exception($"Unknown device {entityID}");
+            var device = engine.home.GetEntityState(entityID) ?? throw new Exception($"Unknown device {entityID}");
             var value = new OnOff(device.state != "off");
 
             Log(LogLevel.Debug, "activity = {0}", value);

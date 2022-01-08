@@ -38,7 +38,7 @@ namespace OzricEngine
             var inputs = edges.GetOrSet(output, () => new List<InputSelector>());
             inputs.Add(input);
             
-            Console.WriteLine($"{output.nodeID}.{output.outputName} -> {input.nodeID}.{input.inputName}");
+            Log(LogLevel.Debug, "{0}.{1} -> {2}.{3}", output.nodeID, output.outputName, input.nodeID, input.inputName);
         }
 
         public void Disconnect(OutputSelector output, InputSelector input)
@@ -79,7 +79,7 @@ namespace OzricEngine
                 {
                     var newState = stateChanged.data.new_state;
 
-                    var entity = home.Get(newState.entity_id);
+                    var entity = home.GetEntityState(newState.entity_id);
                     if (entity == null)
                         continue;
 
@@ -87,7 +87,8 @@ namespace OzricEngine
                     if (!entity.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS))
                     {
                         entity.lastUpdatedByOther = now;
-                        Log(LogLevel.Info, "{0} = {1}", newState.entity_id, stateChanged.data.new_state);
+                        if (!entity.entity_id.Contains("panasonic"))
+                            Log(LogLevel.Info, "{0} ({1}) = {2}", newState.entity_id, ev.payload.context.user_id, stateChanged.data.new_state);
                     }
 
                     entity.state = newState.state;
@@ -98,7 +99,7 @@ namespace OzricEngine
 
                 if (ev.payload is EventCallService callService)
                 {
-                    Console.WriteLine($"{callService.data.domain}: {callService.data.service_data.entity_id[0]}: {callService.data.service}");
+                    Log(LogLevel.Debug, "{0}: {1}: {2}", callService.data.domain, callService.data.service_data.entity_id[0], callService.data.service);
                 }
             }
         }
@@ -184,7 +185,7 @@ namespace OzricEngine
             return ordered;
         }
 
-        private const int SELF_EVENT_SECS = 3;
+        private const int SELF_EVENT_SECS = 10;
 
         public override string Name => "Engine";
     }

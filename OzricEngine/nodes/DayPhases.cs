@@ -165,7 +165,7 @@ namespace OzricEngine.logic
 
             //  Figure out what phase are we in
 
-            var sun = engine.home.Get("sun.sun");
+            var sun = engine.home.GetEntityState("sun.sun");
             var now = engine.home.GetTime();
 
             int i = 1;
