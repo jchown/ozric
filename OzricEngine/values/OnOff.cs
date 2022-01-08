@@ -4,6 +4,8 @@ namespace OzricEngine.logic
 {
     public sealed class OnOff: Value, IEquatable<OnOff>
     {
+        public override ValueType ValueType => ValueType.OnOff;
+
         public bool value { get; }
 
         public OnOff()

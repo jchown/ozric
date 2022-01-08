@@ -4,13 +4,15 @@ namespace OzricEngine.logic
 {
     public sealed class Scalar: Value, IEquatable<Scalar>
     {
+        public override ValueType ValueType => ValueType.Scalar;
+
         public float value { get; }
 
         public Scalar()
         {
         }
         
-        public Scalar(float value = 0.0f)
+        public Scalar(float value)
         {
             this.value = value;
         }

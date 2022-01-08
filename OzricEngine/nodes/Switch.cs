@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
+    /// <summary>
+    /// Choose from two values based on the state of an OnOff input
+    /// </summary>
     public class Switch: Node
     {
         public Switch(string id, ValueType type): base(id, new List<Pin> { new Pin("on", type), new Pin("off", type), new Pin("switch", ValueType.OnOff) }, new List<Pin> { new Pin("output", type) })

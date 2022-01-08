@@ -5,6 +5,8 @@ namespace OzricEngine.logic
 {
     public abstract class ColorValue: Value
     {
+        public override ValueType ValueType => ValueType.Color;
+
         public float brightness { get; }
 
         [JsonIgnore]

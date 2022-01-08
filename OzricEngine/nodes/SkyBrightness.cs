@@ -4,6 +4,9 @@ using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
+    /// <summary>
+    /// Combines dawn & dusk times with the current weather to determine the overall light level. 1 = bright sunshine, 0 = darkness
+    /// </summary>
     public class SkyBrightness: Node
     {
         private const string ID = "sky-brightness";
@@ -14,7 +17,6 @@ namespace OzricEngine.logic
 
         public SkyBrightness() : base(ID, null, new List<Pin> { new Pin(sun, ValueType.Scalar), new Pin(clouds, ValueType.Scalar), new Pin(brightness, ValueType.Scalar)})
         {
-            description = "Combines dawn & dusk times with the current weather to determine the overall light level. 1 = bright sunshine, 0 = darkness";
         }
          
         public override Task OnInit(Engine engine)

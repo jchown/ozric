@@ -64,8 +64,8 @@ namespace OzricEngineTests
 
             var phases = new DayPhases("phase_id");
             phases.AddOutput("color", ValueType.Color);
-            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Midnight, 0, ("color", ColorRGB.WHITE) ));
-            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Noon, 0, ("color", ColorRGB.RED) ));
+            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Midnight, 0, new Mode("am") ));
+            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Noon, 0, new Mode("pm") ));
 
             await phases.OnInit(engine);
             await engine.ProcessMockEvent("sun_event");

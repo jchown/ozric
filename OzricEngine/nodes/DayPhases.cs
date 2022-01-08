@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Humanizer;
@@ -8,6 +7,9 @@ using OzricEngine.ext;
 
 namespace OzricEngine.logic
 {
+    /// <summary>
+    /// Split the day into phases, emitting a Mode for each one.
+    /// </summary>
     public class DayPhases: Node
     {
         public enum SunPhase
@@ -47,13 +49,13 @@ namespace OzricEngine.logic
         {
             public SunPhase start;
             public int startOffsetSeconds;
-            public readonly Dictionary<string, Value> values;
+            public Mode mode;
 
-            public PhaseStart(Dictionary<string, Value> values, SunPhase start, int startOffsetSeconds = 0)
+            public PhaseStart(Mode mode, SunPhase start, int startOffsetSeconds = 0)
             {
-                this.values = values;
                 this.start = start;
                 this.startOffsetSeconds = startOffsetSeconds;
+                this.mode = mode;
             }
             
             /// <summary>
@@ -119,17 +121,17 @@ namespace OzricEngine.logic
                 return $"{start} -{offset}";
             }
 
-            public static PhaseStart Create(SunPhase sunPhase, int offsetSeconds, params ValueTuple<string, Value>[] attributes)
+            public static PhaseStart Create(SunPhase sunPhase, int offsetSeconds, Mode mode)
             {
-                return new PhaseStart(attributes.ToDictionary(a => a.Item1, a => a.Item2), sunPhase, offsetSeconds);
+                return new PhaseStart(mode, sunPhase, offsetSeconds);
             }
         }
 
-        public readonly List<PhaseStart> phases = new List<PhaseStart>();
+        private List<PhaseStart> phases { get; }
             
-        public DayPhases(string id) : base(id, null, null)
+        public DayPhases(string id) : base(id, null, new List<Pin> { new Pin("mode", ValueType.Mode) })
         {
-            description = "Uses the time of day to determine the values of output";
+            phases = new List<PhaseStart>();
         }
          
         public override Task OnInit(Engine engine)
@@ -155,11 +157,7 @@ namespace OzricEngine.logic
 
                 Log(LogLevel.Debug, "phase can only be [{0}]", onlyPhase);
 
-                foreach (var output in onlyPhase.values)
-                {
-                    SetOutputValue(output.Key, output.Value);
-                }
-
+                SetOutputValue("mode", onlyPhase.mode);
                 return;
             }
 
@@ -178,6 +176,9 @@ namespace OzricEngine.logic
                 {
                     if (now >= startTime && now < endTime.AddDays(1))
                         break;
+                    
+                    if (now >= startTime.AddDays(-1) && now < endTime)
+                        break;
                 }
                 else
                 {
@@ -195,18 +196,11 @@ namespace OzricEngine.logic
             
             Log(LogLevel.Debug, "phase is between {0} and {1}", currentPhase, nextPhase);
 
-            foreach (var output in currentPhase.values)
-            {
-                SetOutputValue(output.Key, output.Value);
-            }
+            SetOutputValue("mode", currentPhase.mode);
         }
 
         public void AddPhase(PhaseStart phaseStart)
         {
-            var missing = phaseStart.values.Keys.FirstOrDefault(o => !HasOutput(o));
-            if (missing != null)
-                throw new Exception($"{missing} is not an output of {this}");
-
             phases.Add(phaseStart);
         }
     }

@@ -162,6 +162,27 @@ namespace OzricEngine
                     dependencies.GetOrSet(input.nodeID, () => new List<string>()).Add(output);
             }
             
+            //  Some nodes have no edges
+
+            foreach (var node in nodes)
+            {
+                if (!dependencies.ContainsKey(node.Key))
+                    dependencies[node.Key] = new List<string>();
+            }
+            
+            //  Check no dependencies are missing
+
+            foreach (var dependency in dependencies)
+            {
+                foreach (var nodeID in dependency.Value)
+                {
+                    if (!dependencies.ContainsKey(nodeID))
+                    {
+                        throw new Exception($"Node '{dependency.Key}' depends on '{nodeID}', but is not in graph");
+                    }
+                }
+            }
+            
             //  Now can walk through picking nodes that either have no dependencies
             //  or all its dependencies have already been picked 
             

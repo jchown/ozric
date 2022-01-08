@@ -11,7 +11,6 @@ namespace OzricEngine.logic
         public override string Name => id;
 
         public string id  { get; }
-        public string description { get; protected set; }
         public List<Pin> inputs { get; }
         public List<Pin> outputs { get; }
 
@@ -42,7 +41,7 @@ namespace OzricEngine.logic
             return GetOutput(name) != null;
         }
 
-        private Pin GetOutput(string name)
+        protected Pin GetOutput(string name)
         {
             return outputs.Find(o => o.name == name);
         }

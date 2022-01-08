@@ -35,7 +35,7 @@ namespace OzricEngine.logic
                     return;
                 
                 default:
-                    throw new Exception($"Don't know how to assign Scalar to {value.GetType()}");
+                    throw new Exception($"Don't know how to assign Scalar to {type}");
             }
         }
         
@@ -56,7 +56,7 @@ namespace OzricEngine.logic
                     return;
                 
                 default:
-                    throw new Exception($"Don't know how to assign Color to {this.value.GetType()}");
+                    throw new Exception($"Don't know how to assign Color to {type}");
             }
         }
         
@@ -77,7 +77,21 @@ namespace OzricEngine.logic
                     return;
                 
                 default:
-                    throw new Exception($"Don't know how to assign Color to {value.GetType()}");
+                    throw new Exception($"Don't know how to assign Color to {type}");
+            }
+        }
+
+                
+        private void SetValue(Mode mode)
+        {
+            switch (type)
+            {
+                case ValueType.Mode:
+                    value = mode;
+                    return;
+                
+                default:
+                    throw new Exception($"Don't know how to assign Mode to {type}");
             }
         }
 
@@ -95,6 +109,10 @@ namespace OzricEngine.logic
 
                 case OnOff onOff:
                     SetValue(onOff);
+                    return;
+
+                case Mode mode:
+                    SetValue(mode);
                     return;
 
                 default:

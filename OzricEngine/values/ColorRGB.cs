@@ -9,6 +9,7 @@ namespace OzricEngine.logic
         public static readonly ColorRGB RED = new ColorRGB(1f,0f,0f,1f);
         public static readonly ColorRGB GREEN = new ColorRGB(0f,1f,0f,1f);
         public static readonly ColorRGB BLUE = new ColorRGB(0f,0f,1f,1f);
+        public static readonly ColorRGB YELLOW = new ColorRGB(1f,1f,1f,1f);
 
         public ColorRGB()
         {
