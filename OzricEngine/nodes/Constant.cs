@@ -12,13 +12,13 @@ namespace OzricEngine.logic
             this.value = value;
         }
 
-        public override Task OnInit(Engine engine)
+        public override Task OnInit(Context context)
         {
             SetOutputValue("value", value);
             return Task.CompletedTask;
         }
 
-        public override Task OnUpdate(Engine engine)
+        public override Task OnUpdate(Context context)
         {
             SetOutputValue("value", value);
             return Task.CompletedTask;

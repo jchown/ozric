@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace OzricEngine
 {
     public class ClientGetStates : ClientCommand

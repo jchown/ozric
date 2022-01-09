@@ -19,20 +19,21 @@ namespace OzricEngine.logic
         {
         }
          
-        public override Task OnInit(Engine engine)
+        public override Task OnInit(Context context)
         {
-            CalculateValue(engine);
+            CalculateValue(context);
             return Task.CompletedTask;
         }
 
-        public override Task OnUpdate(Engine engine)
+        public override Task OnUpdate(Context context)
         {
-            CalculateValue(engine);
+            CalculateValue(context);
             return Task.CompletedTask;
         }
 
-        private void CalculateValue(Engine engine)
+        private void CalculateValue(Context context)
         {
+            var engine = context.engine;
             var sunLevel = GetSunLevel(engine.home);
             var cloudLevel = GetCloudLevel(engine);
 

@@ -9,15 +9,15 @@ namespace OzricEngine.logic
         {
         }
             
-        public override Task OnInit(Engine engine)
+        public override Task OnInit(Context context)
         {
-            UpdateValue(engine);
+            UpdateValue(context.engine);
             return Task.CompletedTask;
         }
 
-        public override Task OnUpdate(Engine engine)
+        public override Task OnUpdate(Context context)
         {
-            UpdateValue(engine);
+            UpdateValue(context.engine);
             return Task.CompletedTask;
         }
 

@@ -134,19 +134,19 @@ namespace OzricEngine.logic
             phases = new List<PhaseStart>();
         }
          
-        public override Task OnInit(Engine engine)
+        public override Task OnInit(Context context)
         {
-            CalculateValues(engine);            
+            CalculateValues(context);            
             return Task.CompletedTask;
         }
 
-        public override Task OnUpdate(Engine engine)
+        public override Task OnUpdate(Context engine)
         {
             CalculateValues(engine);
             return Task.CompletedTask;
         }
 
-        private void CalculateValues(Engine engine)
+        private void CalculateValues(Context context)
         {
             if (phases.Count == 0)
                 return;
@@ -163,8 +163,8 @@ namespace OzricEngine.logic
 
             //  Figure out what phase are we in
 
-            var sun = engine.home.GetEntityState("sun.sun");
-            var now = engine.home.GetTime();
+            var sun = context.engine.home.GetEntityState("sun.sun");
+            var now = context.engine.home.GetTime();
 
             int i = 1;
             var startTime = phases[0].GetStartTime(now, sun.attributes);

@@ -17,6 +17,9 @@ namespace OzricEngine
         {
             lock (this)
             {
+                if (obj != null)    // Ignore multiple assignment
+                    return;
+            
                 obj = t;
             }
             

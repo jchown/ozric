@@ -10,9 +10,10 @@ namespace OzricEngineTests
         public void skyBrightnessIsZeroAfterDusk()
         {
             SkyBrightness skyBrightness = new SkyBrightness();
-            MockHome home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
-            MockEngine engine = new MockEngine(home);
-            skyBrightness.OnInit(engine);
+            var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
+            var engine = new MockEngine(home);
+            var context = new MockContext(engine);
+            skyBrightness.OnInit(context);
             
             Assert.Equal(0f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
         }
@@ -22,15 +23,16 @@ namespace OzricEngineTests
         {
             var morning = DateTime.Parse("2021-11-30T07:51:25.459551+00:00");
             SkyBrightness skyBrightness = new SkyBrightness();
-            MockHome home = new MockHome(morning, "sun_morning", "weather_sunny");
-            MockEngine engine = new MockEngine(home);
+            var home = new MockHome(morning, "sun_morning", "weather_sunny");
+            var engine = new MockEngine(home);
+            var context = new MockContext(engine);
 
-            skyBrightness.OnInit(engine);
+            skyBrightness.OnInit(context);
             Assert.Equal(0.71f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value, 2);
 
             home.SetTime(morning.AddMinutes(10));
 
-            skyBrightness.OnUpdate(engine);
+            skyBrightness.OnUpdate(context);
             Assert.Equal(0.95f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value, 2);
         }
         
@@ -38,10 +40,11 @@ namespace OzricEngineTests
         public void skyBrightnessIsOneAtNoon()
         {
             SkyBrightness skyBrightness = new SkyBrightness();
-            MockHome home = new MockHome(DateTime.Parse("2021-11-30T12:21:25.459551+00:00"), "sun_daytime", "weather_sunny");
-            MockEngine engine = new MockEngine(home);
+            var home = new MockHome(DateTime.Parse("2021-11-30T12:21:25.459551+00:00"), "sun_daytime", "weather_sunny");
+            var engine = new MockEngine(home);
+            var context = new MockContext(engine);
 
-            skyBrightness.OnInit(engine);
+            skyBrightness.OnInit(context);
             
             Assert.Equal(1f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
         }
@@ -50,10 +53,11 @@ namespace OzricEngineTests
         public void skyBrightnessIsReducedIfCloudy()
         {
             SkyBrightness skyBrightness = new SkyBrightness();
-            MockHome home = new MockHome(DateTime.Parse("2021-11-30T12:21:25.459551+00:00"), "sun_daytime", "weather_cloudy");
-            MockEngine engine = new MockEngine(home);
+            var home = new MockHome(DateTime.Parse("2021-11-30T12:21:25.459551+00:00"), "sun_daytime", "weather_cloudy");
+            var engine = new MockEngine(home);
+            var context = new MockContext(engine);
 
-            skyBrightness.OnInit(engine);
+            skyBrightness.OnInit(context);
             
             Assert.Equal(0.6f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
         }

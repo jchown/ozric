@@ -61,15 +61,16 @@ namespace OzricEngineTests
         {
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
             var engine = new MockEngine(home);
+            var context = new MockContext(engine);
 
             var phases = new DayPhases("phase_id");
             phases.AddOutput("color", ValueType.Color);
             phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Midnight, 0, new Mode("am") ));
             phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Noon, 0, new Mode("pm") ));
 
-            await phases.OnInit(engine);
-            await engine.ProcessMockEvent("sun_event");
-            await phases.OnUpdate(engine);
+            await phases.OnInit(context);
+            engine.ProcessMockEvent("sun_event");
+            await phases.OnUpdate(context);
         }
     }
 }

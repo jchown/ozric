@@ -23,7 +23,7 @@ namespace OzricEngine
         private byte[] buffer = new byte[65536];
         private bool messagePumpRunning;
         private readonly BlockingCollection<ServerEvent> pendingEvents;
-        private readonly ConcurrentDictionary<int, AsyncObject<ServerResult>> asyncResults;
+        private readonly ConcurrentDictionary<int, TaskCompletionSource<ServerResult>> asyncResults;
 
         private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(60);
         private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
@@ -41,8 +41,7 @@ namespace OzricEngine
             this.llat = llat;
             
             pendingEvents = new BlockingCollection<ServerEvent>(new ConcurrentQueue<ServerEvent>());
-            asyncResults = new ConcurrentDictionary<int, AsyncObject<ServerResult>>();
-
+            asyncResults = new ConcurrentDictionary<int, TaskCompletionSource<ServerResult>>();
             minLogLevel = LogLevel.Debug;
         }
 
@@ -57,7 +56,7 @@ namespace OzricEngine
             await client.ConnectAsync(uri, cancellation.Token);
         }
 
-        private async Task Disconnect()
+        private void Disconnect()
         {
             try
             {
@@ -109,9 +108,17 @@ namespace OzricEngine
                 throw e.Rethrown($"while parsing {json}");
             }
         }
-        
+
         public async Task Send<T>(T t)
         {
+            if (t is ClientCommand cc && cc.id == 0)
+            {
+                lock (sendCommandLock)
+                {
+                    cc.id = nextCommandID++;
+                }
+            }
+            
             CancellationTokenSource cancellation = new CancellationTokenSource();
             cancellation.CancelAfter(SendTimeout);
 
@@ -163,17 +170,33 @@ namespace OzricEngine
                     throw new Exception($"Auth failed: Unexpected result: {authResult}");
             }
         }
-        
+
+        private static int nextCommandID = 1;
+        private static object sendCommandLock = new object();
+
         public async Task<ServerResult> SendCommand<T>(T command, int millisecondsTimeout) where T : ClientCommand
         {
             if (!messagePumpRunning)
                 throw new Exception("Message pump not running");
 
-            var receiver = WaitForResult(command.id, millisecondsTimeout);
+            TaskCompletionSource<ServerResult> result = new TaskCompletionSource<ServerResult>();
+            
+            Task send;
+            
+            lock (sendCommandLock)
+            {
+                command.id = nextCommandID++;
+                
+                if (!asyncResults.TryAdd(command.id, result))
+                    Log(LogLevel.Error, "Failed to register result handler for command {0}", command.id);
 
-            await Send(command);
+                Log(LogLevel.Trace, "Sending command {0}", command.id);
+                send = Send(command);
+            }
 
-            return await receiver;
+            await send;
+
+            return await result.Task;
         }
         
         /// <summary>
@@ -214,7 +237,9 @@ namespace OzricEngine
                             {
                                 if (asyncResults.TryGetValue(result.id, out var obj))
                                 {
-                                    obj.Set(result);
+                                    Log(LogLevel.Trace, "Got result for command {0}", result.id);
+                                    
+                                    obj.SetResult(result);
                                 }
                                 else
                                 {
@@ -243,7 +268,8 @@ namespace OzricEngine
                             {
                                 Log(LogLevel.Info, "Reconnecting...");
 
-                                await Disconnect();
+                                Disconnect();
+                                
                                 await Authenticate();
                                 await Send(new ClientEventSubscribe());
                                 await Receive<ServerEventSubscribed>();
@@ -271,38 +297,6 @@ namespace OzricEngine
                 messagePumpRunning = false;
             }
         }
-
-        /// <summary>
-        /// Start waiting for a ServerResult with the id given. The message pump must have been started.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="millisecondsTimeout"></param>
-        /// <returns></returns>
-
-        private async Task<ServerResult> WaitForResult(int id, int millisecondsTimeout)
-        {
-            if (!messagePumpRunning)
-                throw new Exception("Message pump not running");
-
-            var obj = new AsyncObject<ServerResult>();
-            
-            if (!asyncResults.TryAdd(id, obj))
-                return null;
-
-            try
-            {
-                return await obj.Get(millisecondsTimeout);
-            }
-            catch (Exception e)
-            {
-                return null;
-            }
-            finally
-            {
-                asyncResults.TryRemove(id, out _);
-            }
-        }
-
 
         /// <summary>
         /// Return and remove any events received. Will wait for the timeout period if none are already queued.

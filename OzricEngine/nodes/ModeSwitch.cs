@@ -27,14 +27,29 @@ namespace OzricEngine.logic
         {
             modeValues = new List<ModeValues>();
         }
+        
+        public void AddModeValues(string mode, params ValueTuple<string, Value>[] attributes)
+        {
+            foreach (var (key, value) in attributes)
+            {
+                if (!HasOutput(key))
+                    throw new Exception($"No output named {key}");
 
-        public override Task OnInit(Engine engine)
+                var expectedType = GetOutput(key).type;
+                if (expectedType != value.ValueType)
+                    throw new Exception($"Expected value of type {expectedType} for {key}, but was {value.ValueType}");
+            }
+            
+            modeValues.Add(new ModeValues(new Mode(mode), new Values(attributes)));
+        }
+
+        public override Task OnInit(Context context)
         {
             UpdateValue();
             return Task.CompletedTask;
         }
 
-        public override Task OnUpdate(Engine engine)
+        public override Task OnUpdate(Context context)
         {
             UpdateValue();
             return Task.CompletedTask;
@@ -57,25 +72,6 @@ namespace OzricEngine.logic
 
             throw new Exception($"Unknown mode {currentMode}");
         }
-        
-        public void AddModeValues(string mode, params ValueTuple<string, Value>[] attributes)
-        {
-            foreach (var attribute in attributes)
-            {
-                var key = attribute.Item1;
-                var value = attribute.Item2;
-
-                if (!HasOutput(key))
-                    throw new Exception($"No output named {key}");
-
-                var expectedType = GetOutput(key).type;
-                if (expectedType != value.ValueType)
-                    throw new Exception($"Expected value of type {expectedType} for {key}, but was {value.ValueType}");
-            }
-            
-            modeValues.Add(new ModeValues(new Mode(mode), new Values(attributes)));
-        }
-
     }
 
     public class Values: Dictionary<string, Value>

@@ -9,19 +9,19 @@ namespace OzricEngine.logic
         {
         }
             
-        public override Task OnInit(Engine engine)
+        public override Task OnInit(Context context)
         {
-            UpdateValue(engine);
+            UpdateValue(context);
             return Task.CompletedTask;
         }
 
-        public override Task OnUpdate(Engine engine)
+        public override Task OnUpdate(Context context)
         {
-            UpdateValue(engine);
+            UpdateValue(context);
             return Task.CompletedTask;
         }
 
-        private void UpdateValue(Engine engine)
+        private void UpdateValue(Context engine)
         {
             var on = false;
             foreach (var onOff in GetInputValues<OnOff>())

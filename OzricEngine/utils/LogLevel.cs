@@ -2,6 +2,6 @@ namespace OzricEngine
 {
     public enum LogLevel
     {
-        Debug, Info, Warning, Error
+        Trace, Debug, Info, Warning, Error
     }
 }

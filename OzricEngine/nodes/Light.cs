@@ -16,18 +16,21 @@ namespace OzricEngine.logic
             minLogLevel = LogLevel.Debug;
         }
 
-        public override async Task OnInit(Engine engine)
+        public override Task OnInit(Context context)
         {
-            await UpdateValue(engine);
+            UpdateValue(context);
+            return Task.CompletedTask;
         }
 
-        public override async Task OnUpdate(Engine engine)
+        public override Task OnUpdate(Context context)
         {
-            await UpdateValue(engine);
+            UpdateValue(context);
+            return Task.CompletedTask;
         }
 
-        private async Task UpdateValue(Engine engine)
+        private void UpdateValue(Context context)
         {
+            var engine = context.engine;
             if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
                 return;
             
@@ -207,9 +210,9 @@ namespace OzricEngine.logic
                 {
                     domain = "light",
                     service = desiredOn ? "turn_on" : "turn_off",
-                    target = new Dictionary<string, string>()
+                    target = new Attributes()
                     {
-                        { "entity_id", entityID }
+                        { "entity_id", new List<string> { entityID } }
                     },
                 };
 
@@ -218,7 +221,7 @@ namespace OzricEngine.logic
                     if (colorKey == null || colorValue == null)
                         throw new Exception("Internal error: No color chosen");
                     
-                    callServices.service_data = new Dictionary<string, object>()
+                    callServices.service_data = new Attributes()
                     {
                         { "brightness", brightness},
                         { colorKey, colorValue }
@@ -231,32 +234,24 @@ namespace OzricEngine.logic
                 
                 currentState.lastUpdatedByOzric = engine.home.GetTime();
 
-                var result = await engine.comms.SendCommand(callServices, COMMAND_TIMEOUT_MS);
-                if (result == null)
+                context.commandSender.Add(callServices, (result) =>
                 {
-                    Log(LogLevel.Warning, "Entity failed to respond");
-                }
-                else if (!result.success)
-                {
-                    Log(LogLevel.Warning, "Entity failed to update: {0} - {1}", result.error.code, result.error.message);
-                }
-                else
-                {
-                    if (desiredOn)
+                    if (result != null)
                     {
-                        currentState.attributes["brightness"] = brightness;
-                        currentState.attributes[colorKey] = colorValue;
+                        if (desiredOn)
+                        {
+                            currentState.attributes["brightness"] = brightness;
+                            currentState.attributes[colorKey] = colorValue;
+                        }
+                        else
+                        {
+                            currentState.attributes["brightness"] = 0;
+                        }
                     }
-                    else
-                    {
-                        currentState.attributes["brightness"] = 0;
-                    }
-                }
+                });
             }
         }
 
         private const double MIN_UPDATE_INTERVAL_SECS = 3;
-
-        private const int COMMAND_TIMEOUT_MS = 5000;
     }
 }

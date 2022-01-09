@@ -20,6 +20,10 @@ namespace OzricEngine.logic
             this.inputs = inputs ?? new List<Pin>();
             this.outputs = outputs ?? new List<Pin>();
         }
+        
+        public abstract Task OnInit(Context context);
+        
+        public abstract Task OnUpdate(Context context);
 
         public void AddInput(string name, ValueType type)
         {
@@ -50,10 +54,6 @@ namespace OzricEngine.logic
         {
             return inputs.Find(o => o.name == name);
         }
-
-        public abstract Task OnInit(Engine engine);
-        
-        public abstract Task OnUpdate(Engine engine);
         
         internal void SetOutputValue(string name, Value value)
         {

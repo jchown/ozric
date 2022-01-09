@@ -19,12 +19,14 @@ namespace OzricEngine.logic
 
             var homePM = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_morning");
             var engine = new MockEngine(homePM);
-            node.OnInit(engine);
+            var context = new MockContext(engine);
+
+            node.OnInit(context);
             Assert.Equal(ColorRGB.RED, node.GetOutputValue("shirts"));
             Assert.Equal(ColorRGB.RED, node.GetOutputValue("shorts"));
 
             node.SetInputValue("mode", new Mode("everton"));
-            node.OnUpdate(engine);
+            node.OnUpdate(context);
             Assert.Equal(ColorRGB.BLUE, node.GetOutputValue("shirts"));
             Assert.Equal(ColorRGB.WHITE, node.GetOutputValue("shorts"));
         }

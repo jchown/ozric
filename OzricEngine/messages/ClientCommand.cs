@@ -2,14 +2,16 @@ namespace OzricEngine
 {
     public class ClientCommand
     {
-        public int id { get; set; } = NextID++;
+        /// <summary>
+        /// Unique ID assigned by Comms just before sending
+        /// </summary>
+        public int id { get; set; }
+
         public string type { get; set; }
 
         protected ClientCommand(string type)
         {
             this.type = type;
         }
-        
-        private static int NextID = 1;
     }
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Globalization;
 using System.Text.Json;
 
 namespace OzricEngine.logic
@@ -42,7 +43,7 @@ namespace OzricEngine.logic
 
         private void _Log(string message)
         {
-            Console.WriteLine($"[{DateTime.Now.ToLongTimeString()}|{Name}] {message}");
+            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {Name}: {message}");
         }
 
         private void _Log(string format, params object[] args)

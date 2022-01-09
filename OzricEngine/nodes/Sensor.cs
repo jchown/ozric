@@ -13,20 +13,21 @@ namespace OzricEngine.logic
             this.entityID = entityID;
         }
 
-        public override Task OnInit(Engine engine)
+        public override Task OnInit(Context context)
         {
-            UpdateState(engine);
+            UpdateState(context);
             return Task.CompletedTask;
         }
 
-        public override Task OnUpdate(Engine engine)
+        public override Task OnUpdate(Context context)
         {
-            UpdateState(engine);
+            UpdateState(context);
             return Task.CompletedTask;
         }
 
-        private void UpdateState(Engine engine)
+        private void UpdateState(Context context)
         {
+            var engine = context.engine;
             var device = engine.home.GetEntityState(entityID) ?? throw new Exception($"Unknown device {entityID}");
             var value = new OnOff(device.state != "off");
 
