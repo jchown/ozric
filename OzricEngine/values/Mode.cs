@@ -42,6 +42,11 @@ namespace OzricEngine.logic
         
         public static bool operator !=(Mode lhs, Mode rhs) => !(lhs == rhs);
         
+        public override int GetHashCode()
+        {
+            return value.GetHashCode();
+        }
+        
         public override string ToString()
         {
             return value;

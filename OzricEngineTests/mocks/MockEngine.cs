@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
 using OzricEngine;
 using OzricEngine.ext;
 
@@ -18,13 +17,13 @@ namespace OzricEngineTests
         {
         }
 
-        public async Task ProcessMockEvent(string name)
+        public void ProcessMockEvent(string name)
         {
             var json = File.ReadAllText($"../../../events/{name}.json");
             try
             {
                  var ev = JsonSerializer.Deserialize<ServerEvent>(json, Comms.JsonOptions);
-                 await ProcessEvents( new List<ServerEvent> { ev });
+                 ProcessEvents( new List<ServerEvent> { ev });
             }
             catch (Exception e)
             {

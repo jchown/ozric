@@ -1,13 +1,11 @@
-using System;
 using OzricEngineTests;
 
 namespace OzricEngine.logic
 {
-    public class MockContext : EngineLifecycleContext
+    public class MockContext : Context
     {
-        public MockContext(MockEngine enginePm)
+        public MockContext(MockEngine engine): base(engine, new MockCommandSender())
         {
-            throw new NotImplementedException();
         }
     }
 }

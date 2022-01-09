@@ -17,6 +17,16 @@ namespace OzricEngine.logic
             this.value = value;
         }
 
+        public static bool operator ==(Scalar lhs, Scalar rhs)
+        {
+            if (lhs is null)
+                return rhs is null;
+
+            return lhs.Equals(rhs);
+        }
+        
+        public static bool operator !=(Scalar lhs, Scalar rhs) => !(lhs == rhs);
+
         public bool Equals(Scalar other)
         {
             return value == other.value;
@@ -25,6 +35,11 @@ namespace OzricEngine.logic
         public override bool Equals(object obj)
         {
             return ReferenceEquals(this, obj) || obj is Scalar other && Equals(other);
+        }
+        
+        public override int GetHashCode()
+        {
+            return value.GetHashCode();
         }
     }
 }

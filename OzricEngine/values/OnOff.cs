@@ -22,6 +22,16 @@ namespace OzricEngine.logic
             return value ? "On" : "Off";
         }
 
+        public static bool operator ==(OnOff lhs, OnOff rhs)
+        {
+            if (lhs is null)
+                return rhs is null;
+
+            return lhs.Equals(rhs);
+        }
+        
+        public static bool operator !=(OnOff lhs, OnOff rhs) => !(lhs == rhs);
+        
         public bool Equals(OnOff other)
         {
             return value == other.value;

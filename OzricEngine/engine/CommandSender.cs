@@ -4,9 +4,9 @@ using System.Threading.Tasks;
 
 namespace OzricEngine
 {
-    public class MergingCommandSender: Engine.ICommandSender
+    public class CommandSender: Engine.ICommandSender
     {
-        private readonly List<ClientCommand> commands = new List<ClientCommand>();
+        protected readonly List<ClientCommand> commands = new List<ClientCommand>();
         private readonly Dictionary<int, List<Action<ServerResult>>> handlers = new Dictionary<int, List<Action<ServerResult>>>();
         
         private const int COMMAND_TIMEOUT_MS = 5000;
@@ -47,6 +47,7 @@ namespace OzricEngine
             foreach (var task in tasks)
             {
                 var result = await task.Value;
+                
                 foreach (var handler in handlers[task.Key])
                 {
                     handler(result);

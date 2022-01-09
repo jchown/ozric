@@ -72,6 +72,16 @@ namespace OzricEngine.logic
             }
         }
 
+        public static bool operator ==(ColorHS lhs, ColorHS rhs)
+        {
+            if (lhs is null)
+                return rhs is null;
+
+            return lhs.Equals(rhs);
+        }
+        
+        public static bool operator !=(ColorHS lhs, ColorHS rhs) => !(lhs == rhs);
+        
         public override bool Equals(object o) => Equals(o as ColorHS);
 
         public bool Equals(ColorHS other)
@@ -79,6 +89,11 @@ namespace OzricEngine.logic
             return (other != null) && h == other.h && s == other.s && brightness == other.brightness;
         }
 
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(h, s, brightness);
+        }
+        
         public override string ToString()
         {
             return $"{h},{s} @ {((int) (brightness * 100))}%";

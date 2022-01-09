@@ -16,8 +16,13 @@ namespace OzricEngineTests
         {
             var a = new Attributes { { "a", 1 }, { "b", "two" }, { "c", new List<string> { "111", "222", "333" } } };  
             var b = new Attributes { { "a", 1 }, { "b", "two" }, { "c", new List<string> { "111", "222", "333" } } };
+            var c = new Attributes { { "a", 1 }, { "b", "two" }, { "c", new List<string> { "333", "222", "111" } } };
             
             Assert.Equal(a, b);
+            Assert.True(a == b);
+
+            Assert.NotEqual(a, c);
+            Assert.False(a == c);
         }
     }
 }

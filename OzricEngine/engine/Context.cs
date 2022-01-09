@@ -1,8 +1,8 @@
 namespace OzricEngine.logic
 {
-    public class EngineLifecycleContext
+    public class Context
     {
-        public EngineLifecycleContext(Engine engine, MergingCommandSender commandSender)
+        public Context(Engine engine, Engine.ICommandSender commandSender)
         {
             this.engine = engine;
             this.commandSender = commandSender;

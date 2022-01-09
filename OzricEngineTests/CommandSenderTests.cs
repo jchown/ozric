@@ -5,26 +5,78 @@ using System.Linq;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
+using OzricEngine.logic;
 using Xunit;
 
 namespace OzricEngineTests
 {
-    public class MessageTests
+    public class CommandSenderTests
     {
         [Fact]
-        public void canDeserialiseLightCommand()
+        public void canMergeCallServicesTurnOff()
         {
-            var json = "{ \"id\": 2, \"type\": \"event\", \"event\": { \"event_type\": \"call_service\", \"data\": { \"domain\": \"light\", \"service\": \"turn_on\", \"service_data\": { \"brightness\": 89, \"hs_color\": [36, 100], \"entity_id\": [\"light.hue_color_spot_1\"]} }, \"origin\": \"LOCAL\", \"time_fired\": \"2022-01-04T23:02:03.732935+00:00\", \"context\": { \"id\": \"3a007cd20bc2f88d564e31dd5d82e2c2\", \"parent_id\": null, \"user_id\": \"27568fb5326f49428f78e8d219212733\"} } }";
+            var sender = new MockCommandSender();
 
-            var message = JsonSerializer.Deserialize<ServerMessage>(json, Comms.JsonOptions);
+            var turnOff1 = TurnOff("1");
+            var turnOff2 = TurnOff("2");
+            
+            sender.Add(turnOff1, (r) => {});
+            sender.Add(turnOff2, (r) => {});
+            
+            Assert.Equal(1, sender.GetCommands().Count);
+            var entities = (sender.GetCommands()[0] as ClientCallService).target["entity_id"] as List<string>;
+            Assert.Equal(2, entities.Count);
+            Assert.True(entities.Contains("1"));
+            Assert.True(entities.Contains("2"));
+        }
 
-            var ev = message as ServerEvent;
+        [Fact]
+        public void canMergeCallServicesTurnOn()
+        {
+            var sender = new MockCommandSender();
 
-            Assert.Equal("call_service", ev.payload.event_type);
+            var turnOff1 = TurnOn("1");
+            var turnOff2 = TurnOn("2");
+            
+            sender.Add(turnOff1, (r) => {});
+            sender.Add(turnOff2, (r) => {});
+            
+            Assert.Equal(1, sender.GetCommands().Count);
+            var entities = (sender.GetCommands()[0] as ClientCallService).target["entity_id"] as List<string>;
+            Assert.Equal(2, entities.Count);
+            Assert.True(entities.Contains("1"));
+            Assert.True(entities.Contains("2"));
+        }
 
-            var call = ev.payload as EventCallService;
+        private ClientCallService TurnOff(string id)
+        {
+            return new ClientCallService
+            {
+                domain = "light",
+                service = "turn_off",
+                target = new Attributes()
+                {
+                    { "entity_id", new List<string> { id } }
+                },
+            };
+        }
 
-            Assert.Equal(89, call.data.service_data.brightness);
+        private ClientCallService TurnOn(string id)
+        {
+            return new ClientCallService
+            {
+                domain = "light",
+                service = "turn_on",
+                target = new Attributes
+                {
+                    { "entity_id", new List<string> { id } }
+                },
+                service_data = new Attributes
+                {
+                    { "brightness", 100},
+                    { "rgb_color", "100,100,100" }
+                },
+            };
         }
     }
 }
