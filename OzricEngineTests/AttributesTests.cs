@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -20,9 +21,21 @@ namespace OzricEngineTests
             
             Assert.Equal(a, b);
             Assert.True(a == b);
+            Assert.False(a != b);
 
             Assert.NotEqual(a, c);
             Assert.False(a == c);
+            Assert.True(a != c);
+        }
+
+        [Fact]
+        public void serializeRoundTripWorks()
+        {
+            var a = new Attributes { { "a", 1 }, { "b", "two" }, { "c", new List<string> { "111", "222", "333" } } };
+            var json = JsonSerializer.Serialize(a);
+            var b = JsonSerializer.Deserialize<Attributes>(json, Comms.JsonOptions);
+            
+            Assert.Equal(a, b);
         }
     }
 }

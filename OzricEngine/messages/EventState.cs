@@ -15,7 +15,7 @@ namespace OzricEngine
         public string manufacturer { get; set; }
         
         public string state { get; set; }
-        public Dictionary<string,object> attributes { get; set; }
+        public Attributes attributes { get; set; }
         
         public override string ToString()
         {

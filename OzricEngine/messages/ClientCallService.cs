@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace OzricEngine
 {
-    public class ClientCallService : ClientCommand, IMergable
+    public class ClientCallService : ClientCommand, IMergable, IEquatable<ClientCallService>
     {
         public ClientCallService() : base("call_service") { }
         
@@ -33,6 +33,26 @@ namespace OzricEngine
             var entityID = target["entity_id"] as List<string> ?? throw new Exception("Missing entity_id");
             entityID.AddRange(other.target["entity_id"] as List<string> ?? throw new Exception("Missing entity_id"));
             return true;
+        }
+
+        public bool Equals(ClientCallService other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return domain == other.domain && service == other.service && Equals(service_data, other.service_data) && Equals(target, other.target);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((ClientCallService)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(domain, service, service_data, target);
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -9,16 +10,16 @@ namespace OzricEngine
     /// Convert a dictionary of object values into their natural JSON equivalents and back again.
     /// See https://josef.codes/custom-dictionary-string-object-jsonconverter-for-system-text-json/
     /// </summary>
-    public class JsonConverterDictionaryObjectValues : JsonConverter<Dictionary<string, object>>
+    public class JsonConverterAttributes : JsonConverter<Attributes>
     {
-        public override Dictionary<string, object> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override Attributes Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)
             {
                 throw new JsonException($"JsonTokenType was of type {reader.TokenType}, only objects are supported");
             }
 
-            var dictionary = new Dictionary<string, object>();
+            var dictionary = new Attributes();
             while (reader.Read())
             {
                 if (reader.TokenType == JsonTokenType.EndObject)
@@ -46,9 +47,9 @@ namespace OzricEngine
             return dictionary;
         }
 
-        public override void Write(Utf8JsonWriter writer, Dictionary<string, object> value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, Attributes value, JsonSerializerOptions options)
         {
-            JsonSerializer.Serialize(writer, value, options);
+            JsonSerializer.Serialize(writer, (Dictionary<string, object>) value, options);
         }
 
         private object ExtractValue(ref Utf8JsonReader reader, JsonSerializerOptions options)
@@ -57,34 +58,66 @@ namespace OzricEngine
             {
                 case JsonTokenType.String:
                     if (reader.TryGetDateTime(out var date))
-                    {
                         return date;
-                    }
 
                     return reader.GetString();
+
                 case JsonTokenType.False:
                     return false;
+
                 case JsonTokenType.True:
                     return true;
+
                 case JsonTokenType.Null:
                     return null;
+
                 case JsonTokenType.Number:
-                    if (reader.TryGetInt64(out var result))
-                    {
-                        return result;
-                    }
+                    if (reader.TryGetInt32(out var i))
+                        return i;
+
+                    if (reader.TryGetSingle(out var f))
+                        return f;
 
                     return reader.GetDecimal();
+
                 case JsonTokenType.StartObject:
                     return Read(ref reader, null, options);
+
                 case JsonTokenType.StartArray:
                     var list = new List<object>();
+                    Type type = null;
+                    bool setType = false;
                     while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
                     {
-                        list.Add(ExtractValue(ref reader, options));
+                        var item = ExtractValue(ref reader, options);
+
+                        if (!setType)
+                        {
+                            if (item != null)
+                            {
+                                setType = true;
+                                type = item.GetType();
+                            }
+                        }
+                        else if (type != item.GetType())
+                            type = null;
+                        
+                        list.Add(item);
                     }
 
+                    if (type != null)
+                    {
+                        var listType = typeof(List<>).MakeGenericType(type);
+                        IList typed = (IList)Activator.CreateInstance(listType);
+                        
+                        foreach (var item in list)
+                            typed.Add(item);
+
+                        return typed;
+                    }
+    
                     return list;
+                
                 default:
                     throw new JsonException($"'{reader.TokenType}' is not supported");
             }

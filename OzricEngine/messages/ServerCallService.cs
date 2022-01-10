@@ -11,8 +11,7 @@ namespace OzricEngine
         public string domain { get; set; }
         public string service { get; set; }
         
-        [JsonConverter(typeof(JsonConverterDictionaryObjectValues))]
-        public Dictionary<string, object> service_data { get; set; }
-        public Dictionary<string, string> target { get; set; }
+        public Attributes service_data { get; set; }
+        public Attributes target { get; set; }
     }
 }

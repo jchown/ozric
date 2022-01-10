@@ -1,9 +1,11 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace OzricEngine
 {
+    [JsonConverter(typeof(JsonConverterAttributes))]
     public class Attributes: Dictionary<string, object>, IEquatable<Attributes>
     {
         public static bool operator ==(Attributes lhs, Attributes rhs)

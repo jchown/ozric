@@ -11,8 +11,7 @@ namespace OzricEngine
     {
         public string entity_id { get; set; }
         public string state { get; set; }
-        [JsonConverter(typeof(JsonConverterDictionaryObjectValues))]
-        public Dictionary<string, object> attributes { get; set; }
+        public Attributes attributes { get; set; }
         public DateTime last_changed { get; set; }
         public DateTime last_updated { get; set; }
         public StateContext context { get; set; }

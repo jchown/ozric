@@ -122,7 +122,7 @@ namespace OzricEngine
             CancellationTokenSource cancellation = new CancellationTokenSource();
             cancellation.CancelAfter(SendTimeout);
 
-            var json = JsonSerializer.Serialize(t, JsonOptions);
+            var json = JsonSerializer.Serialize(t, t.GetType(), JsonOptions);
 
             Log(LogLevel.Debug,  ">> {0}", json);
 

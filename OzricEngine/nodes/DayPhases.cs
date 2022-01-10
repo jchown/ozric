@@ -12,6 +12,15 @@ namespace OzricEngine.logic
     /// </summary>
     public class DayPhases: Node
     {
+        private List<PhaseStart> phases { get; }
+            
+        public DayPhases(string id) : base(id, null, new List<Pin> { new Pin("mode", ValueType.Mode) })
+        {
+            phases = new List<PhaseStart>();
+            minLogLevel = LogLevel.Debug;
+        }
+
+
         public enum SunPhase
         {
             /// <summary>
@@ -127,13 +136,6 @@ namespace OzricEngine.logic
             }
         }
 
-        private List<PhaseStart> phases { get; }
-            
-        public DayPhases(string id) : base(id, null, new List<Pin> { new Pin("mode", ValueType.Mode) })
-        {
-            phases = new List<PhaseStart>();
-        }
-         
         public override Task OnInit(Context context)
         {
             CalculateValues(context);            

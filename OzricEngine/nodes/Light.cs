@@ -13,7 +13,6 @@ namespace OzricEngine.logic
         public Light(string id, string entityID) : base(id, entityID, new List<Pin> { new Pin("color", ValueType.Color) }, null)
         {
             secondsToAllowOverrideByOthers = 10 * 60;
-            minLogLevel = LogLevel.Debug;
         }
 
         public override Task OnInit(Context context)

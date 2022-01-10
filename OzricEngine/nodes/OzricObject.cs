@@ -9,7 +9,7 @@ namespace OzricEngine.logic
     {
         public abstract string Name { get; }
         
-        protected LogLevel minLogLevel = LogLevel.Info;
+        protected LogLevel minLogLevel = LogLevel.Debug;
         
         protected void Log(LogLevel level, string message)
         {
