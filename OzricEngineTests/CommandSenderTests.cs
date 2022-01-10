@@ -23,11 +23,12 @@ namespace OzricEngineTests
             sender.Add(turnOff1, (r) => {});
             sender.Add(turnOff2, (r) => {});
             
-            Assert.Equal(1, sender.GetCommands().Count);
-            var entities = (sender.GetCommands()[0] as ClientCallService).target["entity_id"] as List<string>;
+            Assert.Single(sender.GetCommands());
+            var entities = (sender.GetCommands()[0] as ClientCallService)?.target["entity_id"] as List<string>;
+            Assert.NotNull(entities);
             Assert.Equal(2, entities.Count);
-            Assert.True(entities.Contains("1"));
-            Assert.True(entities.Contains("2"));
+            Assert.Contains("1", entities);
+            Assert.Contains("2", entities);
         }
 
         [Fact]

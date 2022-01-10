@@ -1,0 +1,47 @@
+{
+  "id": 2,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "binary_sensor.sensor_1",
+      "old_state": {
+        "entity_id": "binary_sensor.sensor_1",
+        "state": "off",
+        "attributes": {
+          "device_class": "motion",
+          "friendly_name": "Sensor 1"
+        },
+        "last_changed": "2022-01-10T22:05:04.945607+00:00",
+        "last_updated": "2022-01-10T22:05:04.945607+00:00",
+        "context": {
+          "id": "08a890e7077d22c61742cbf235e18191",
+          "parent_id": null,
+          "user_id": null
+        }
+      },
+      "new_state": {
+        "entity_id": "binary_sensor.sensor_1",
+        "state": "on",
+        "attributes": {
+          "device_class": "motion",
+          "friendly_name": "Sensor 1"
+        },
+        "last_changed": "2022-01-10T22:06:18.943505+00:00",
+        "last_updated": "2022-01-10T22:06:18.943505+00:00",
+        "context": {
+          "id": "970744ed530c9ca3a90a8b5897341149",
+          "parent_id": null,
+          "user_id": null
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-10T22:06:18.943505+00:00",
+    "context": {
+      "id": "970744ed530c9ca3a90a8b5897341149",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

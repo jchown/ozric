@@ -42,7 +42,6 @@ namespace OzricEngine
             
             pendingEvents = new BlockingCollection<ServerEvent>(new ConcurrentQueue<ServerEvent>());
             asyncResults = new ConcurrentDictionary<int, TaskCompletionSource<ServerResult>>();
-            minLogLevel = LogLevel.Debug;
         }
 
         private async Task Connect()
@@ -223,7 +222,11 @@ namespace OzricEngine
                 {
                     try
                     {
+                        Log(LogLevel.Trace, "... waiting for messages ...");
+                        
                         var message = await Receive<ServerMessage>();
+
+                        Log(LogLevel.Trace, "... checking {0} ...", message.type);
 
                         switch (message)
                         {
@@ -239,7 +242,7 @@ namespace OzricEngine
                                 {
                                     Log(LogLevel.Trace, "Got result for command {0}", result.id);
                                     
-                                    obj.SetResult(result);
+                                    Task.Run(() => obj.SetResult(result));
                                 }
                                 else
                                 {

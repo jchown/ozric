@@ -16,7 +16,7 @@ namespace OzricEngine.logic
 
         public EntityState GetEntityState(string entityID)
         {
-            return states[entityID] ?? throw new Exception("Unknown entity");
+            return states.GetValueOrDefault(entityID);
         }
 
         public virtual DateTime GetTime()

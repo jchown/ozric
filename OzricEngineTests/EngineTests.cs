@@ -30,7 +30,7 @@ namespace OzricEngineTests
 
             var engine = new MockEngine();
             foreach (var node in nodes)
-                engine.Add(node);
+                engine.AddNode(node);
             
             engine.Connect(new OutputSelector { nodeID = "s1", outputName = "activity"}, new InputSelector { nodeID = "o1", inputName = "i1" });
             engine.Connect(new OutputSelector { nodeID = "s2", outputName = "activity"}, new InputSelector { nodeID = "o1", inputName = "i2" });
@@ -71,6 +71,24 @@ namespace OzricEngineTests
             await phases.OnInit(context);
             engine.ProcessMockEvent("sun_event");
             await phases.OnUpdate(context);
+        }
+
+        [Fact]
+        async Task sensorEventWillTriggerStateChange()
+        {
+            var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sensor_1");
+            var engine = new MockEngine(home);
+            var context = new MockContext(engine);
+
+            var sensor = new Sensor("sensor_1", "binary_sensor.sensor_1");
+            engine.AddNode(sensor);
+            
+            await sensor.OnInit(context);
+            Assert.Equal(new OnOff(false), sensor.GetOutputOnOff("activity"));
+            
+            engine.ProcessMockEvent("sensor_1_on");
+            await sensor.OnUpdate(context);
+            Assert.Equal(new OnOff(true), sensor.GetOutputOnOff("activity"));
         }
     }
 }

@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OzricEngine.logic;
 
 namespace OzricEngine
 {
-    public class CommandSender: Engine.ICommandSender
+    public class CommandSender: OzricObject, Engine.ICommandSender
     {
         protected readonly List<ClientCommand> commands = new List<ClientCommand>();
         private readonly Dictionary<int, List<Action<ServerResult>>> handlers = new Dictionary<int, List<Action<ServerResult>>>();
@@ -54,5 +55,7 @@ namespace OzricEngine
                 }
             }
         }
+
+        public override string Name => "CommandSender";
     }
 }

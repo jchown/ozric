@@ -30,8 +30,9 @@ namespace OzricEngine.logic
         private void UpdateValue(Context context)
         {
             var engine = context.engine;
-            if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
-                return;
+            
+            //if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
+            //    return;
             
             var input = GetInput("color");
             if (input == null || input.value == null)

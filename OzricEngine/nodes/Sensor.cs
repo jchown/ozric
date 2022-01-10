@@ -11,7 +11,6 @@ namespace OzricEngine.logic
         public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new Pin("activity", ValueType.OnOff) })
         {
             this.entityID = entityID;
-            minLogLevel = LogLevel.Debug;
         }
 
         public override Task OnInit(Context context)

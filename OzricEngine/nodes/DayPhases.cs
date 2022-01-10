@@ -17,9 +17,7 @@ namespace OzricEngine.logic
         public DayPhases(string id) : base(id, null, new List<Pin> { new Pin("mode", ValueType.Mode) })
         {
             phases = new List<PhaseStart>();
-            minLogLevel = LogLevel.Debug;
         }
-
 
         public enum SunPhase
         {
