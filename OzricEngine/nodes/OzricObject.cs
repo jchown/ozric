@@ -14,47 +14,57 @@ namespace OzricEngine.logic
         protected void Log(LogLevel level, string message)
         {
             if (level >= minLogLevel)
-                _Log(message);
+                _Log(level, message);
         }
         
         protected void Log<T0>(LogLevel level, string message, T0 arg0)
         {
             if (level >= minLogLevel)
-                _Log(message, arg0);
+                _Log(level, message, arg0);
         }
         
         protected void Log<T0,T1>(LogLevel level, string message, T0 arg0, T1 arg1)
         {
             if (level >= minLogLevel)
-                _Log(message, arg0, arg1);
+                _Log(level, message, arg0, arg1);
         }
         
         protected void Log<T0,T1,T2>(LogLevel level, string message, T0 arg0, T1 arg1, T2 arg2)
         {
             if (level >= minLogLevel)
-                _Log(message, arg0, arg1, arg2);
+                _Log(level, message, arg0, arg1, arg2);
         }
         
         protected void Log<T0,T1,T2,T3>(LogLevel level, string message, T0 arg0, T1 arg1, T2 arg2, T3 arg3)
         {
             if (level >= minLogLevel)
-                _Log(message, arg0, arg1, arg2, arg3);
+                _Log(level, message, arg0, arg1, arg2, arg3);
         }
 
-        private void _Log(string message)
+        private static readonly string[] colours =
         {
-            Console.WriteLine($"{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {Name}: {message}");
+            "\u001b[90m",   // Trace
+            "\u001b[37m",   // Debug
+            "\u001b[97m",   // Info
+            "\u001b[93m",   // Warning
+            "\u001b[91m",   // Error
+            "\u001b[93m\u001b[101m",   // Fatal
+        };
+
+        private void _Log(LogLevel level, string message)
+        {
+            Console.WriteLine($"{colours[(int)level]}{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {Name}: {message}\u001b[0m");
         }
 
-        private void _Log(string format, params object[] args)
+        private void _Log(LogLevel level, string format, params object[] args)
         {
-            for (int i = 0; i < args.Length; i++)
+            for (var i = 0; i < args.Length; i++)
             {
                 if (args[i] is ICollection)
                     args[i] = JsonSerializer.Serialize(args[i]);
             }
             
-            _Log(string.Format(format, args));
+            _Log(level, string.Format(format, args));
         }
     }
 }

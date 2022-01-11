@@ -132,6 +132,8 @@ namespace OzricEngine
                 Log(LogLevel.Warning, "Unknown entity {0}", newState.entity_id);
                 return false;
             }
+            
+            Log(LogLevel.Info, "{0}: {1}", newState.entity_id, newState.state);
 
             var now = home.GetTime();
             var expected = entity.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS);

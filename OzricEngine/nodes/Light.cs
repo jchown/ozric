@@ -236,17 +236,28 @@ namespace OzricEngine.logic
 
                 context.commandSender.Add(callServices, (result) =>
                 {
-                    if (result != null)
+                    if (result == null)
                     {
-                        if (desiredOn)
-                        {
-                            currentState.attributes["brightness"] = brightness;
-                            currentState.attributes[colorKey] = colorValue;
-                        }
-                        else
-                        {
-                            currentState.attributes["brightness"] = 0;
-                        }
+                        Log(LogLevel.Warning, "Service call did not ");
+                        return;
+                    }
+
+                    if (!result.success)
+                    {
+                        Log(LogLevel.Warning, "Service call failed ({1}) - {2}",  result.error.code, result.error.message);
+                        return;
+                    }
+                    
+                    //  Success, record the state
+
+                    if (desiredOn)
+                    {
+                        currentState.attributes["brightness"] = brightness;
+                        currentState.attributes[colorKey] = colorValue;
+                    }
+                    else
+                    {
+                        currentState.attributes["brightness"] = 0;
                     }
                 });
             }

@@ -90,5 +90,26 @@ namespace OzricEngineTests
             await sensor.OnUpdate(context);
             Assert.Equal(new OnOff(true), sensor.GetOutputOnOff("activity"));
         }
+
+        class VerboseObject : OzricObject
+        {
+            public override string Name => "Logger";
+
+            public void ExampleLog(LogLevel level)
+            {
+                Log(level, "Log level {0}", level);
+            }
+        }
+
+        [Fact]
+        void canSendLogsOfAllLevel()
+        {
+            var vo = new VerboseObject();
+            
+            foreach (var level in Enum.GetValues(typeof(LogLevel)))
+            {
+                vo.ExampleLog((LogLevel)level);
+            }
+        }
     }
 }
