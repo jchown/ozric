@@ -2,8 +2,8 @@ using System.Collections.Generic;
 
 namespace OzricEngine
 {
-    [TypeKey("hacs/status")]
-    public class EventHACSStatus: Event
+    [TypeKey("hacs/repository")]
+    public class EventHACSRepository: Event
     {
         public Attributes data { get; set; }
     }

@@ -1,0 +1,15 @@
+{
+  "id": 2,
+  "type": "event",
+  "event": {
+    "event_type": "hacs/repository",
+    "data": {},
+    "origin": "LOCAL",
+    "time_fired": "2022-01-11T22:17:15.697829+00:00",
+    "context": {
+      "id": "af12c6bd972244432c500f6e0e4849d4",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

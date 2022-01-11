@@ -72,7 +72,7 @@ namespace OzricEngine.logic
             /// <param name="sunAttributes">The attributes from the HA sun state, see https://www.home-assistant.io/integrations/sun/</param>
             /// <returns></returns>
 
-            public DateTime GetStartTime(DateTime now, Dictionary<string, object> sunAttributes)
+            public DateTime GetStartTime(DateTime now, Attributes sunAttributes)
             {
                 var attributeName = GetStartTimeAttribute();
                 var attributeValue = sunAttributes.Get(attributeName) ?? throw new Exception($"Unknown sun attribute '{attributeName}', expected one of {sunAttributes.Keys.Join(",")}");
