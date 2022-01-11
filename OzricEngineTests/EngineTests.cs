@@ -28,18 +28,18 @@ namespace OzricEngineTests
             };
             nodes.Shuffle();
 
-            var engine = new MockEngine();
+            var graph = new Graph();
             foreach (var node in nodes)
-                engine.AddNode(node);
+                graph.AddNode(node);
             
-            engine.Connect(new OutputSelector { nodeID = "s1", outputName = "activity"}, new InputSelector { nodeID = "o1", inputName = "i1" });
-            engine.Connect(new OutputSelector { nodeID = "s2", outputName = "activity"}, new InputSelector { nodeID = "o1", inputName = "i2" });
-            engine.Connect(new OutputSelector { nodeID = "s3", outputName = "activity"}, new InputSelector { nodeID = "o2", inputName = "i1" });
-            engine.Connect(new OutputSelector { nodeID = "s4", outputName = "activity"}, new InputSelector { nodeID = "o2", inputName = "i2" });
-            engine.Connect(new OutputSelector { nodeID = "o1", outputName = "output"}, new InputSelector { nodeID = "o3", inputName = "i1" });
-            engine.Connect(new OutputSelector { nodeID = "o2", outputName = "output"}, new InputSelector { nodeID = "o3", inputName = "i2" });
+            graph.Connect(new OutputSelector { nodeID = "s1", outputName = "activity"}, new InputSelector { nodeID = "o1", inputName = "i1" });
+            graph.Connect(new OutputSelector { nodeID = "s2", outputName = "activity"}, new InputSelector { nodeID = "o1", inputName = "i2" });
+            graph.Connect(new OutputSelector { nodeID = "s3", outputName = "activity"}, new InputSelector { nodeID = "o2", inputName = "i1" });
+            graph.Connect(new OutputSelector { nodeID = "s4", outputName = "activity"}, new InputSelector { nodeID = "o2", inputName = "i2" });
+            graph.Connect(new OutputSelector { nodeID = "o1", outputName = "output"}, new InputSelector { nodeID = "o3", inputName = "i1" });
+            graph.Connect(new OutputSelector { nodeID = "o2", outputName = "output"}, new InputSelector { nodeID = "o3", inputName = "i2" });
 
-            var ordered = engine.GetNodesInOrder();
+            var ordered = graph.GetNodesInOrder();
             AssertOrder("s1", "o1", ordered);
             AssertOrder("s2", "o1", ordered);
             AssertOrder("s3", "o2", ordered);
@@ -90,7 +90,7 @@ namespace OzricEngineTests
             var context = new MockContext(engine);
 
             var sensor = new Sensor("sensor_1", "binary_sensor.sensor_1");
-            engine.AddNode(sensor);
+            engine.graph.AddNode(sensor);
             
             await sensor.OnInit(context);
             Assert.Equal(new OnOff(false), sensor.GetOutputOnOff("activity"));
