@@ -51,7 +51,7 @@ namespace OzricEngine.logic
             
             var attributes = currentState.LightAttributes;
 
-            bool on = (currentState.state == "on");
+            bool on = (currentState.state == "on") && attributes.brightness > 0;
             Log(LogLevel.Debug, "{0}.on = {1}", entityID, on);
             if (on)
                 Log(LogLevel.Debug, "brightness = {0}", attributes.brightness);
