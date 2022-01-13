@@ -1,0 +1,15 @@
+{
+  "id": 4496,
+  "type": "event",
+  "event": {
+    "event_type": "hacs/config",
+    "data": {},
+    "origin": "LOCAL",
+    "time_fired": "2022-01-12T14:17:15.643695+00:00",
+    "context": {
+      "id": "c327a810dad3e8bc68f3a8f9899afc0b",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

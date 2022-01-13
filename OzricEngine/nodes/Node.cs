@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using OzricEngine.ext;
 
@@ -8,6 +9,7 @@ namespace OzricEngine.logic
 {
     public abstract class Node: OzricObject
     {
+        [JsonIgnore]
         public override string Name => id;
 
         public string id  { get; }
@@ -58,6 +60,10 @@ namespace OzricEngine.logic
         internal void SetOutputValue(string name, Value value)
         {
             var output = GetOutput(name) ?? throw new Exception($"Unknown output {name}");
+            
+            if (output.value != value)
+                Log(LogLevel.Info, "{0} = {1}", name, value);
+            
             output.SetValue(value);
         }
 

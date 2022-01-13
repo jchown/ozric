@@ -1,7 +1,7 @@
 namespace OzricEngine
 {
-    [TypeKey("hacs/status")]
-    public class EventHACSStatus: Event
+    [TypeKey("hacs/config")]
+    public class EventHACSConfig: Event
     {
         public Attributes data { get; set; }
     }

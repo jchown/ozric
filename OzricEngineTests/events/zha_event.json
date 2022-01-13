@@ -1,0 +1,20 @@
+{
+  "id": 4496,
+  "type": "event",
+  "event": {
+    "event_type": "zha_event",
+    "data": {
+      "device_ieee": "00:21:2e:ff:ff:07:a2:24",
+      "unique_id": "00:21:2e:ff:ff:07:a2:24",
+      "device_id": "161c352da0c8e90eb46b0d631d21d6f6",
+      "device_event_type": "device_offline"
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-12T14:18:29.632859+00:00",
+    "context": {
+      "id": "11bd7102e18f9ba40d44c9fad29124f0",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

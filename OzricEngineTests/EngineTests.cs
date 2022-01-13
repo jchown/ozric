@@ -31,13 +31,13 @@ namespace OzricEngineTests
             var graph = new Graph();
             foreach (var node in nodes)
                 graph.AddNode(node);
-            
-            graph.Connect(new OutputSelector { nodeID = "s1", outputName = "activity"}, new InputSelector { nodeID = "o1", inputName = "i1" });
-            graph.Connect(new OutputSelector { nodeID = "s2", outputName = "activity"}, new InputSelector { nodeID = "o1", inputName = "i2" });
-            graph.Connect(new OutputSelector { nodeID = "s3", outputName = "activity"}, new InputSelector { nodeID = "o2", inputName = "i1" });
-            graph.Connect(new OutputSelector { nodeID = "s4", outputName = "activity"}, new InputSelector { nodeID = "o2", inputName = "i2" });
-            graph.Connect(new OutputSelector { nodeID = "o1", outputName = "output"}, new InputSelector { nodeID = "o3", inputName = "i1" });
-            graph.Connect(new OutputSelector { nodeID = "o2", outputName = "output"}, new InputSelector { nodeID = "o3", inputName = "i2" });
+
+            graph.Connect("s1", "activity", "o1", "i1");
+            graph.Connect("s2", "activity", "o1", "i2");
+            graph.Connect("s3", "activity", "o2", "i1");
+            graph.Connect("s4", "activity", "o2", "i2");
+            graph.Connect("o1", "output", "o3", "i1");
+            graph.Connect("o2", "output", "o3", "i2");
 
             var ordered = graph.GetNodesInOrder();
             AssertOrder("s1", "o1", ordered);
@@ -55,7 +55,7 @@ namespace OzricEngineTests
             Assert.False(bi == -1 || ai == -1);
             Assert.True(bi < ai);
         }
-    
+
         [Fact]
         async Task canProcessSunEvents()
         {
@@ -65,8 +65,8 @@ namespace OzricEngineTests
 
             var phases = new DayPhases("phase_id");
             phases.AddOutput("color", ValueType.Color);
-            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Midnight, 0, new Mode("am") ));
-            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Noon, 0, new Mode("pm") ));
+            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Midnight, 0, new Mode("am")));
+            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Noon, 0, new Mode("pm")));
 
             await phases.OnInit(context);
             engine.ProcessMockEvent("sun_event");
@@ -78,8 +78,19 @@ namespace OzricEngineTests
         {
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
             var engine = new MockEngine(home);
-            
+
             engine.ProcessMockEvent("hacs_repository");
+
+            engine.ProcessMockEvent("hacs_config");
+        }
+
+        [Fact]
+        void canProcessZHAEvents()
+        {
+            var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
+            var engine = new MockEngine(home);
+
+            engine.ProcessMockEvent("zha_event");
         }
 
         [Fact]
@@ -91,10 +102,10 @@ namespace OzricEngineTests
 
             var sensor = new Sensor("sensor_1", "binary_sensor.sensor_1");
             engine.graph.AddNode(sensor);
-            
+
             await sensor.OnInit(context);
             Assert.Equal(new OnOff(false), sensor.GetOutputOnOff("activity"));
-            
+
             engine.ProcessMockEvent("sensor_1_on");
             await sensor.OnUpdate(context);
             Assert.Equal(new OnOff(true), sensor.GetOutputOnOff("activity"));
@@ -114,7 +125,7 @@ namespace OzricEngineTests
         void canSendLogsOfAllLevel()
         {
             var vo = new VerboseObject();
-            
+
             foreach (var level in Enum.GetValues(typeof(LogLevel)))
             {
                 vo.ExampleLog((LogLevel)level);

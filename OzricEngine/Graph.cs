@@ -14,13 +14,13 @@ namespace OzricEngine
     {
         public override string Name => "Graph";
 
-        private Dictionary<string, Node> nodes { get; }
-        private Dictionary<OutputSelector, List<InputSelector>> edges { get; }
+        public Dictionary<string, Node> nodes { get; }
+        public Dictionary<String, Dictionary<string, List<InputSelector>>> edges { get; }
 
         public Graph()
         {
             nodes = new Dictionary<string, Node>();
-            edges = new Dictionary<OutputSelector, List<InputSelector>>();
+            edges = new Dictionary<string, Dictionary<string, List<InputSelector>>>();
         }
         
         public IEnumerable<string> GetNodeIDs()
@@ -35,25 +35,32 @@ namespace OzricEngine
         
         public void AddNode(Node node)
         {
+            if (nodes.ContainsKey(node.id))
+                throw new Exception($"A node with ID {node.id} already exists");
+            
             nodes[node.id] = node;
         }
 
-        public void Connect(OutputSelector output, InputSelector input)
+        public void Connect(string outputNodeID, string outputPinName, string inputNodeID, string inputPinName)
         {
-            if (!nodes.ContainsKey(output.nodeID))
-                throw new Exception();
+            if (!nodes.ContainsKey(outputNodeID))
+                throw new Exception($"No node found with ID {outputNodeID}");
 
-            if (!nodes.ContainsKey(input.nodeID))
-                throw new Exception();
+            if (!nodes.ContainsKey(inputNodeID))
+                throw new Exception($"No node found with ID {inputNodeID}");
 
-            edges.GetOrSet(output, () => new List<InputSelector>()).Add(input);
+            var nodeOutputs = edges.GetOrSet(outputNodeID, () => new Dictionary<string, List<InputSelector>>());
+            var pinOutputs = nodeOutputs.GetOrSet(outputPinName, () => new List<InputSelector>()); 
+            pinOutputs.Add(new InputSelector { inputName = inputPinName, nodeID = inputNodeID} );
 
-            Log(LogLevel.Debug, "{0}.{1} -> {2}.{3}", output.nodeID, output.outputName, input.nodeID, input.inputName);
+            Log(LogLevel.Debug, "{0}.{1} -> {2}.{3}", outputNodeID, outputPinName, inputNodeID, inputPinName);
         }
 
-        public void Disconnect(OutputSelector output, InputSelector input)
+        public void Disconnect(string outputNodeID, string outputPinName, string inputNodeID, string inputPinName)
         {
-            edges.Get(output).Remove(input);
+            edges[outputNodeID][outputPinName].Remove(new InputSelector { inputName = inputPinName, nodeID = inputNodeID});
+
+            Log(LogLevel.Debug, "{0}.{1} xx {2}.{3}", outputNodeID, outputPinName, inputNodeID, inputPinName);
         }
         
         /// <summary>
@@ -77,19 +84,21 @@ namespace OzricEngine
 
             var nodeEdges = new Dictionary<string, NodeEdges>();
 
-            foreach (var (outputSelector, inputSelectors) in edges)
+            foreach (var (fromID, outputs) in edges)
             {
-                var fromID = outputSelector.nodeID;
                 var fromNodeEdges = nodeEdges.GetOrSet(fromID, () => new NodeEdges());
 
-                foreach (var output in inputSelectors)
+                foreach (var inputs in outputs.Values)
                 {
-                    var toID = output.nodeID;
+                    foreach (var input in inputs)
+                    {
+                        var toID = input.nodeID;
 
-                    var toNodeEdges = nodeEdges.GetOrSet(toID, () => new NodeEdges());
+                        var toNodeEdges = nodeEdges.GetOrSet(toID, () => new NodeEdges());
 
-                    fromNodeEdges.outputNodeIDs.Add(toID);
-                    toNodeEdges.inputNodeIDs.Add(fromID);
+                        fromNodeEdges.outputNodeIDs.Add(toID);
+                        toNodeEdges.inputNodeIDs.Add(fromID);
+                    }
                 }
             }
 
@@ -106,12 +115,15 @@ namespace OzricEngine
             //  Work out the dependencies for each node
 
             var dependencies = new Dictionary<string, List<string>>();
-            foreach (var edge in edges)
+            foreach (var (outputNodeID, outputs) in edges)
             {
-                var output = edge.Key.nodeID;
-
-                foreach (var input in edge.Value)
-                    dependencies.GetOrSet(input.nodeID, () => new List<string>()).Add(output);
+                foreach (var inputs in outputs.Values)
+                {
+                    foreach (var input in inputs)
+                    {
+                        dependencies.GetOrSet(input.nodeID, () => new List<string>()).Add(outputNodeID);
+                    }
+                }
             }
 
             //  Some nodes have no edges
@@ -163,19 +175,25 @@ namespace OzricEngine
         {
             foreach (var output in node.outputs)
             {
-                var selector = new OutputSelector { nodeID = node.id, outputName = output.name };
                 var value = output.value;
 
-                if (!edges.ContainsKey(selector))
+                var nodeOutputs = edges.GetValueOrDefault(node.id);
+                if (nodeOutputs == null)
                 {
-                    Log(LogLevel.Warning, "Missing output selector for {0}.{1}", node.id, output.name);
+                    Log(LogLevel.Warning, "Missing outputs for node {0}", node.id);
                     continue;
                 }
 
-                foreach (var input in edges[selector])
+                var outputs = nodeOutputs.GetValueOrDefault(output.name);
+                if (outputs == null)
+                {
+                    Log(LogLevel.Warning, "Missing outputs for {0}.{1}", node.id, output.name);
+                    continue;
+                }
+
+                foreach (var input in outputs)
                 {
                     Log(LogLevel.Debug, "{0}.{1} = {2}", input.nodeID, input.inputName, value);
-
                     nodes[input.nodeID].SetInputValue(input.inputName, value);
                 }
             }

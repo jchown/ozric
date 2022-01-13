@@ -1,0 +1,19 @@
+{
+  "id": 4496,
+  "type": "event",
+  "event": {
+    "event_type": "automation_triggered",
+    "data": {
+      "name": "Evening Scene at Dusk",
+      "entity_id": "automation.evening_scene_at_dusk",
+      "source": "sunset with offset"
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-12T15:48:19.410055+00:00",
+    "context": {
+      "id": "f2d93670acf5c0ca527f032dc2480793",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

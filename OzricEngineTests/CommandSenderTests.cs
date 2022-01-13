@@ -1,10 +1,5 @@
 ﻿using OzricEngine;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Threading.Tasks;
 using OzricEngine.logic;
 using Xunit;
 
@@ -42,11 +37,11 @@ namespace OzricEngineTests
             sender.Add(turnOff1, (r) => {});
             sender.Add(turnOff2, (r) => {});
             
-            Assert.Equal(1, sender.GetCommands().Count);
+            Assert.Single(sender.GetCommands());
             var entities = (sender.GetCommands()[0] as ClientCallService).target["entity_id"] as List<string>;
             Assert.Equal(2, entities.Count);
-            Assert.True(entities.Contains("1"));
-            Assert.True(entities.Contains("2"));
+            Assert.Contains("1", entities);
+            Assert.Contains("2", entities);
         }
 
         private ClientCallService TurnOff(string id)
