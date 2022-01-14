@@ -7,8 +7,11 @@ namespace OzricEngine.logic
     /// <summary>
     /// Combines dawn & dusk times with the current weather to determine the overall light level. 1 = bright sunshine, 0 = darkness
     /// </summary>
+    [TypeKey(NodeType.SkyBrightness)]
     public class SkyBrightness: Node
     {
+        public override NodeType nodeType => NodeType.SkyBrightness;
+
         private const string ID = "sky-brightness";
         
         public const string sun = "sun";

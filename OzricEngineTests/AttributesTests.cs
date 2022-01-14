@@ -32,8 +32,8 @@ namespace OzricEngineTests
         public void serializeRoundTripWorks()
         {
             var a = new Attributes { { "a", 1 }, { "b", "two" }, { "c", new List<string> { "111", "222", "333" } } };
-            var json = JsonSerializer.Serialize(a);
-            var b = JsonSerializer.Deserialize<Attributes>(json, Comms.JsonOptions);
+            var json = Json.Serialize(a);
+            var b = Json.Deserialize<Attributes>(json);
             
             Assert.Equal(a, b);
         }

@@ -1,11 +1,17 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace OzricEngine.logic
 {
+    /// <summary>
+    /// A <see cref="ColorValue"/> defined by Hue and Saturation. 
+    /// </summary>
     public sealed class ColorHS: ColorValue, IEquatable<ColorHS>
     {
         public static readonly ColorHS WHITE = new ColorHS(1f,1f,1f);
+
+        public override ColorType ColorType => ColorType.HS;
 
         public float h { get; }
         public float s { get; }
@@ -97,6 +103,30 @@ namespace OzricEngine.logic
         public override string ToString()
         {
             return $"{h},{s} @ {((int) (brightness * 100))}%";
+        }
+        
+        public override void WriteAsJSON(Utf8JsonWriter writer)
+        {
+            base.WriteAsJSON(writer);
+            writer.WriteNumber("h", h);
+            writer.WriteNumber("s", s);
+        }
+
+        public new static ColorValue ReadFromJSON(ref Utf8JsonReader reader)
+        {
+            var brightness = ReadBrightnessFromJSON(ref reader);
+            
+            if (!reader.Read() || reader.GetString() != "h" || !reader.Read())
+                throw new Exception();
+
+            float h = reader.GetSingle();
+            
+            if (!reader.Read() || reader.GetString() != "s"|| !reader.Read())
+                throw new Exception();
+
+            float s = reader.GetSingle();
+
+            return new ColorHS(h, s, brightness);
         }
     }
 }

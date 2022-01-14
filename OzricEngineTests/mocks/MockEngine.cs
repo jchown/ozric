@@ -26,7 +26,7 @@ namespace OzricEngineTests
             var json = File.ReadAllText($"../../../events/{name}.json");
             try
             {
-                 var ev = JsonSerializer.Deserialize<ServerEvent>(json, Comms.JsonOptions);
+                 var ev = Json.Deserialize<ServerEvent>(json);
                  ProcessEvents( new List<ServerEvent> { ev });
             }
             catch (Exception e)

@@ -3,12 +3,15 @@ using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
+    [TypeKey(NodeType.IfAny)]
     public class IfAny: VariableInputs
     {
+        public override NodeType nodeType => NodeType.IfAny;
+
         public IfAny(string id): base(id, ValueType.OnOff, new List<Pin> { new Pin("output", ValueType.OnOff) })
         {
         }
-            
+
         public override Task OnInit(Context context)
         {
             UpdateValue(context);

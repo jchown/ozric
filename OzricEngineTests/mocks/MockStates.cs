@@ -13,7 +13,7 @@ namespace OzricEngineTests
             var json = File.ReadAllText($"../../../states/{name}.json");
             try
             {
-                return JsonSerializer.Deserialize<EntityState>(json, Comms.JsonOptions);
+                return Json.Deserialize<EntityState>(json);
             }
             catch (Exception e)
             {

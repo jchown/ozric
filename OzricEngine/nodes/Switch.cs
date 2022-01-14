@@ -7,8 +7,11 @@ namespace OzricEngine.logic
     /// <summary>
     /// Choose from two values based on the state of an OnOff input
     /// </summary>
+    [TypeKey(NodeType.Switch)]
     public class Switch: Node
     {
+        public override NodeType nodeType => NodeType.Switch;
+
         public Switch(string id, ValueType type): base(id, new List<Pin> { new Pin("on", type), new Pin("off", type), new Pin("switch", ValueType.OnOff) }, new List<Pin> { new Pin("output", type) })
         {
         }

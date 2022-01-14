@@ -1,3 +1,4 @@
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace OzricEngine.logic
@@ -8,7 +9,9 @@ namespace OzricEngine.logic
     /// </summary>
     public abstract class Value
     {
-        [JsonIgnore]
+        [JsonPropertyName("value-type")]
         public abstract ValueType ValueType { get; }
+
+        public abstract void WriteAsJSON(Utf8JsonWriter writer);
     }
 }

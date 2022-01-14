@@ -10,8 +10,11 @@ namespace OzricEngine.logic
     /// <summary>
     /// Split the day into phases, emitting a Mode for each one.
     /// </summary>
+    [TypeKey(NodeType.DayPhases)]
     public class DayPhases: Node
     {
+        public override NodeType nodeType => NodeType.DayPhases;
+
         private List<PhaseStart> phases { get; }
             
         public DayPhases(string id) : base(id, null, new List<Pin> { new Pin("mode", ValueType.Mode) })

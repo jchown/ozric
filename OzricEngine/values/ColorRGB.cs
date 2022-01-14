@@ -1,8 +1,12 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace OzricEngine.logic
 {
+    /// <summary>
+    /// A <see cref="ColorValue"/> defined as Red, Green and Blue components. 
+    /// </summary>
     public sealed class ColorRGB: ColorValue, IEquatable<ColorRGB>
     {
         public static readonly ColorRGB WHITE = new ColorRGB(1f,1f,1f,1f);
@@ -10,6 +14,8 @@ namespace OzricEngine.logic
         public static readonly ColorRGB GREEN = new ColorRGB(0f,1f,0f,1f);
         public static readonly ColorRGB BLUE = new ColorRGB(0f,0f,1f,1f);
         public static readonly ColorRGB YELLOW = new ColorRGB(1f,1f,1f,1f);
+
+        public override ColorType ColorType => ColorType.RGB;
 
         public ColorRGB()
         {
@@ -57,7 +63,7 @@ namespace OzricEngine.logic
 
         public bool Equals(ColorRGB other)
         {
-            return (other != null) && (r == other.r && g == other.g && b == other.b && brightness == other.brightness);
+            return (other != null) && (ToRGB24() == other.ToRGB24() && brightness == other.brightness);
         }
 
         public override int GetHashCode()
@@ -70,12 +76,67 @@ namespace OzricEngine.logic
             if (brightness == 0)
                 return "off";
             
-            return $"{ToHex(r)}{ToHex(g)}{ToHex(b)} @ {(int) (brightness * 100)}%";
+            return $"{ToRGB24().ToString("X6")} @ {(int) (brightness * 100)}%";
         }
 
-        private string ToHex(float x)
+        public int ToRGB24()
         {
-            return ((int) (x * 255)).ToString("X2");
+            int r8 = (int)(r * 255f + 0.5f);
+            int g8 = (int)(g * 255f + 0.5f);
+            int b8 = (int)(b * 255f + 0.5f);
+            return (r8 << 16) | (g8 << 8) | b8;
+        }
+
+        private string ToHex(float f)
+        {
+            return ((int) (f * 255 + 0.5f)).ToString("X2");
+        }
+
+        public override void WriteAsJSON(Utf8JsonWriter writer)
+        {
+            base.WriteAsJSON(writer);
+            writer.WriteString("rgb", $"{ToHex(r)}{ToHex(g)}{ToHex(b)}");
+        }
+
+        public new static ColorValue ReadFromJSON(ref Utf8JsonReader reader)
+        {
+            var brightness = ReadBrightnessFromJSON(ref reader);
+            
+            if (!reader.Read() || reader.GetString() != "rgb"|| !reader.Read())
+                throw new Exception();
+
+            return FromHex(reader.GetString(), brightness);
+        }
+
+        private static ColorRGB FromHex(string hexString, float brightness)
+        {
+            var r = FromHex(hexString, 0);
+            var g = FromHex(hexString, 2);
+            var b = FromHex(hexString, 4);
+            return new ColorRGB(r, g, b, brightness);
+        }
+
+        private static float FromHex(string hexString, int offset)
+        {
+            return (FromHex(hexString[offset]) * 16 + FromHex(hexString[offset + 1])) / 255f;
+        }
+
+        private static int FromHex(char hexChar)
+        {
+            switch (hexChar)
+            {
+                case var ch when ch >= '0' && ch <= '9':
+                    return ch - '0';
+                
+                case var ch when ch >= 'a' && ch <= 'f':
+                    return ch - 'a' + 10;
+                
+                case var ch when ch >= 'A' && ch <= 'F':
+                    return ch - 'A' + 10;
+                
+                default:
+                    throw new Exception($"{hexChar} is not a hex digit");
+            }
         }
     }
 }

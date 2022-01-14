@@ -12,9 +12,16 @@ namespace OzricEngine.logic
         [JsonIgnore]
         public override string Name => id;
 
-        public string id  { get; }
-        public List<Pin> inputs { get; }
-        public List<Pin> outputs { get; }
+        [JsonPropertyName("node-type")]
+        public abstract NodeType nodeType { get; }
+        
+        public string id { get; set; }
+        public List<Pin> inputs { get; set; }
+        public List<Pin> outputs { get; set; }
+
+        protected Node()
+        {
+        }
 
         protected Node(string id, List<Pin> inputs, List<Pin> outputs)
         {

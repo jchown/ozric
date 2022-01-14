@@ -6,8 +6,11 @@ using OzricEngine.ext;
 
 namespace OzricEngine.logic
 {
+    [TypeKey(NodeType.Light)]
     public class Light: EntityNode
     {
+        public override NodeType nodeType => NodeType.Light;
+
         private int secondsToAllowOverrideByOthers { get; set; }
 
         public Light(string id, string entityID) : base(id, entityID, new List<Pin> { new Pin("color", ValueType.Color) }, null)
@@ -60,7 +63,7 @@ namespace OzricEngine.logic
             if (desired == null)
                 throw new Exception($"${entityID}.input[color] is a {input.value.GetType().Name}, not a {nameof(ColorValue)}");
             
-            var brightness = ((int)(desired.brightness * 255));
+            var brightness = ((int)(desired.brightness * 255 + 0.5f));
             var desiredOn = brightness > 0;
 
             bool needsUpdate = desiredOn != on || (on && brightness != attributes.brightness);
@@ -147,11 +150,11 @@ namespace OzricEngine.logic
                         {
                             Log(LogLevel.Debug, "color#temp = {0}", attributes.color_temp);
 
-                            needsUpdate |= (attributes.color_temp != temp.t);
+                            needsUpdate |= (attributes.color_temp != temp.temp);
                         }
 
                         colorKey = "color_temp";
-                        colorValue = temp.t;
+                        colorValue = temp.temp;
                         break;
                     }
 

@@ -4,8 +4,11 @@ using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
+    [TypeKey(NodeType.Sensor)]
     public class Sensor : Node
     {
+        public override NodeType nodeType => NodeType.Sensor;
+
         private readonly string entityID;
 
         public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new Pin("activity", ValueType.OnOff) })

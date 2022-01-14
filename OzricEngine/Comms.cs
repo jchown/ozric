@@ -28,12 +28,6 @@ namespace OzricEngine
         private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(60);
         private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
 
-        public static readonly JsonSerializerOptions JsonOptions = new JsonSerializerOptions
-        {
-            IgnoreNullValues = true,
-            Converters = { new JsonConverterServerMessage(), new JsonConverterEvent() }
-        };
-
         private readonly string llat;
 
         public Comms(string llat)
@@ -100,7 +94,7 @@ namespace OzricEngine
 
             try
             {
-                return JsonSerializer.Deserialize<T>(json, JsonOptions);
+                return Json.Deserialize<T>(json);
             }
             catch (Exception e)
             {
@@ -121,7 +115,7 @@ namespace OzricEngine
             CancellationTokenSource cancellation = new CancellationTokenSource();
             cancellation.CancelAfter(SendTimeout);
 
-            var json = JsonSerializer.Serialize(t, t.GetType(), JsonOptions);
+            var json = Json.Serialize(t, t.GetType());
 
             Log(LogLevel.Debug,  ">> {0}", json);
 

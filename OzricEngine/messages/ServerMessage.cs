@@ -8,12 +8,12 @@ namespace OzricEngine
     /// </summary>
     [UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
     public abstract class ServerMessage
-    {
+   {
         public string type { get; set; }
 
         public override string ToString()
         {
-            return JsonSerializer.Serialize(this, GetType());
+            return Json.Serialize(this, GetType());
         }
     }
 }

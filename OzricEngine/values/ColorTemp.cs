@@ -1,20 +1,26 @@
 using System;
+using System.Text.Json;
 using System.Text.Json.Serialization;
 
 namespace OzricEngine.logic
 {
+    /// <summary>
+    /// A <see cref="ColorValue"/> as a (white) temperature. 
+    /// </summary>
     public sealed class ColorTemp: ColorValue, IEquatable<ColorTemp>
     {
+        public override ColorType ColorType => ColorType.Temp;
+
         public ColorTemp()
         {
         }
 
-        public ColorTemp(int t, float brightness): base(brightness)
+        public ColorTemp(int temp, float brightness): base(brightness)
         {
-            this.t = t;
+            this.temp = temp;
         }
 
-        public int t { get; }
+        public int temp { get; }
         
         [JsonIgnore]
         public override float luminance => brightness;
@@ -33,12 +39,12 @@ namespace OzricEngine.logic
 
         public bool Equals(ColorTemp other)
         {
-            return other != null && t == other.t;
+            return other != null && temp == other.temp;
         }
         
         public override int GetHashCode()
         {
-            return HashCode.Combine(t, brightness);
+            return HashCode.Combine(temp, brightness);
         }
         
         public override string ToString()
@@ -46,7 +52,23 @@ namespace OzricEngine.logic
             if (brightness == 0)
                 return "off";
             
-            return $"{t:F1} @ {(int) (brightness * 100)}%";
+            return $"{temp:F1} @ {(int) (brightness * 100)}%";
+        }
+
+        public override void WriteAsJSON(Utf8JsonWriter writer)
+        {
+            base.WriteAsJSON(writer);    
+            writer.WriteNumber("temp", temp);
+        }
+        
+        public new static ColorValue ReadFromJSON(ref Utf8JsonReader reader)
+        {
+            var brightness = ReadBrightnessFromJSON(ref reader);
+            
+            if (!reader.Read() || reader.GetString() != "temp" || !reader.Read())
+                throw new Exception();
+
+            return new ColorTemp(reader.GetInt32(), brightness);
         }
     }
 }

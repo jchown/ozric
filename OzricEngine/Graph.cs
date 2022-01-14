@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using OzricEngine.ext;
 using OzricEngine.logic;
 
@@ -10,12 +12,13 @@ namespace OzricEngine
     /// The nodes & edges (connections between nodes) that make up the logical flow of our system.
     /// More stricly a Directed Acyclic Graph (DAG).  
     /// </summary>
-    public class Graph: OzricObject
+    public class Graph: OzricObject, IEquatable<Graph>
     {
+        [JsonIgnore]
         public override string Name => "Graph";
 
-        public Dictionary<string, Node> nodes { get; }
-        public Dictionary<String, Dictionary<string, List<InputSelector>>> edges { get; }
+        public Dictionary<string, Node> nodes { get; set; }
+        public Dictionary<String, Dictionary<string, List<InputSelector>>> edges { get; set; }
 
         public Graph()
         {
@@ -197,6 +200,26 @@ namespace OzricEngine
                     nodes[input.nodeID].SetInputValue(input.inputName, value);
                 }
             }
+        }
+
+        public bool Equals(Graph other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Equals(nodes, other.nodes) && Equals(edges, other.edges);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != this.GetType()) return false;
+            return Equals((Graph)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(nodes, edges);
         }
     }
 }

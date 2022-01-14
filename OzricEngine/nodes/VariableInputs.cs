@@ -5,16 +5,16 @@ namespace OzricEngine.logic
 {
     public abstract class VariableInputs: Node
     {
-        private readonly ValueType type;
+        private readonly ValueType valueType;
 
-        public VariableInputs(string id, ValueType type, List<Pin> outputs): base(id, null, outputs)
+        public VariableInputs(string id, ValueType valueType, List<Pin> outputs): base(id, null, outputs)
         {
-            this.type = type;
+            this.valueType = valueType;
         }
 
         public void AddInput(string name)
         {
-            inputs.Add(new Pin(name, type));            
+            inputs.Add(new Pin(name, valueType));            
         }
 
         protected IEnumerable<TValue> GetInputValues<TValue>() where TValue: Value

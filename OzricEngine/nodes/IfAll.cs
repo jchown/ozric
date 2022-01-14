@@ -3,8 +3,11 @@ using System.Threading.Tasks;
 
 namespace OzricEngine.logic
 {
+    [TypeKey(NodeType.IfAll)]
     public class IfAll: VariableInputs
     {
+        public override NodeType nodeType => NodeType.IfAny;
+
         public IfAll(string id): base(id, ValueType.OnOff, new List<Pin> { new Pin("output", ValueType.OnOff) })
         {
         }

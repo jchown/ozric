@@ -18,7 +18,7 @@ namespace OzricEngine
 
         public override string ToString()
         {
-            return JsonSerializer.Serialize(this);
+            return Json.Serialize(this);
         }
     }
 }

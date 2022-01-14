@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 
 namespace OzricEngine.logic
 {
@@ -15,6 +16,19 @@ namespace OzricEngine.logic
         public OnOff(bool value)
         {
             this.value = value;
+        }
+
+        public override void WriteAsJSON(Utf8JsonWriter writer)
+        {
+            writer.WriteBoolean("value", value);
+        }
+
+        public static Value ReadFromJSON(ref Utf8JsonReader reader)
+        {
+            if (!reader.Read() || reader.GetString() != "value" || !reader.Read())
+                throw new Exception();
+            
+            return new OnOff(reader.GetBoolean());
         }
 
         public override string ToString()

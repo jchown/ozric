@@ -7,8 +7,11 @@ namespace OzricEngine.logic
     /// <summary>
     /// Choose from a number of values based on the value of a Mode input
     /// </summary>
+    [TypeKey(NodeType.ModeSwitch)]
     public class ModeSwitch: Node
     {
+        public override NodeType nodeType => NodeType.ModeSwitch;
+
         public class ModeValues
         {
             public ModeValues(Mode mode, Values values)

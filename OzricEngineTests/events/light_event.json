@@ -1,0 +1,27 @@
+{
+  "id": 6,
+  "type": "event",
+  "event": {
+    "event_type": "call_service",
+    "data": {
+      "domain": "light",
+      "service": "turn_on",
+      "service_data": {
+        "entity_id": "light.hue_color_spot_1",
+        "brightness": 133,
+        "effect": "none",
+        "hs_color": [
+          28.812,
+          79.216
+        ]
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-13T15:49:55.083261+00:00",
+    "context": {
+      "id": "309ed64939f0c0e249474d9fec34bcb1",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

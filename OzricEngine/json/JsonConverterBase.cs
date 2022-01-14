@@ -64,7 +64,7 @@ namespace OzricEngine
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            throw new NotImplementedException();
+            JsonSerializer.Serialize(writer, (object) value, options);
         }
     }
 }

@@ -23,11 +23,11 @@ namespace OzricEngine
         public override string Name => (attributes.Get("friendly_name") as string ?? entity_id).Trim();
 
         [JsonIgnore]
-        public LightAttributes LightAttributes => JsonSerializer.Deserialize<LightAttributes>(JsonSerializer.Serialize(attributes));
+        public LightAttributes LightAttributes => Json.Deserialize<LightAttributes>(Json.Serialize(attributes));
 
         public override string ToString()
         {
-            return JsonSerializer.Serialize(this);
+            return Json.Serialize(this);
         }
         
         /// <summary>

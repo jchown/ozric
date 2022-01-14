@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 
 namespace OzricEngine.logic
 {
@@ -18,6 +19,19 @@ namespace OzricEngine.logic
         public Mode(string value)
         {
             this.value = value;
+        }
+                
+        public override void WriteAsJSON(Utf8JsonWriter writer)
+        {
+            writer.WriteString("value", value);
+        }
+
+        public static Value ReadFromJSON(ref Utf8JsonReader reader)
+        {
+            if (!reader.Read() || reader.GetString() != "value" || !reader.Read())
+                throw new Exception();
+            
+            return new Mode(reader.GetString());
         }
         
         public bool Equals(Mode other)

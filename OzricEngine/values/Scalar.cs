@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 
 namespace OzricEngine.logic
 {
@@ -15,6 +16,19 @@ namespace OzricEngine.logic
         public Scalar(float value)
         {
             this.value = value;
+        }
+        
+        public override void WriteAsJSON(Utf8JsonWriter writer)
+        {
+            writer.WriteNumber("value", value);
+        }
+
+        public static Value ReadFromJSON(ref Utf8JsonReader reader)
+        {
+            if (!reader.Read() || reader.GetString() != "value" || !reader.Read())
+                throw new Exception();
+            
+            return new Scalar(reader.GetSingle());
         }
 
         public static bool operator ==(Scalar lhs, Scalar rhs)

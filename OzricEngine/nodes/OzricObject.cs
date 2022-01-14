@@ -62,10 +62,15 @@ namespace OzricEngine.logic
             for (var i = 0; i < args.Length; i++)
             {
                 if (args[i] is ICollection)
-                    args[i] = JsonSerializer.Serialize(args[i]);
+                    args[i] = Json.Serialize(args[i]);
             }
             
             _Log(level, string.Format(format, args));
+        }
+
+        public override string ToString()
+        {
+            return Json.Serialize(this, GetType());
         }
     }
 }
