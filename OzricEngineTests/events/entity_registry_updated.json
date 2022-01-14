@@ -1,0 +1,21 @@
+{
+  "id": 4,
+  "type": "event",
+  "event": {
+    "event_type": "entity_registry_updated",
+    "data": {
+      "action": "update",
+      "entity_id": "sensor.sm_g991b_battery_level",
+      "changes": {
+        "original_icon": "mdi:battery-50"
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-14T20:14:06.583941+00:00",
+    "context": {
+      "id": "07cfed4fc444d316d065f11bf7c700ed",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

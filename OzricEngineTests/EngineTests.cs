@@ -103,6 +103,15 @@ namespace OzricEngineTests
         }
 
         [Fact]
+        void canProcessEntityRegistryUpdatedEvents()
+        {
+            var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
+            var engine = new MockEngine(home);
+
+            engine.ProcessMockEvent("entity_registry_updated");
+        }
+
+        [Fact]
         async Task sensorEventWillTriggerStateChange()
         {
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sensor_1");
