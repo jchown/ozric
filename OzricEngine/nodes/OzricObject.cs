@@ -1,8 +1,7 @@
 using System;
 using System.Collections;
 using System.Globalization;
-using System.Text.Json;
-using System.Text.Json.Serialization;
+using Humanizer;
 
 namespace OzricEngine.logic
 {
@@ -54,7 +53,7 @@ namespace OzricEngine.logic
 
         private void _Log(LogLevel level, string message)
         {
-            Console.WriteLine($"{colours[(int)level]}{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {Name}: {message}\u001b[0m");
+            Console.WriteLine($"{colours[(int)level]}{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {Name.Truncate(32, Name, TruncateFrom.Left).PadRight(32)} | {message}\u001b[0m");
         }
 
         private void _Log(LogLevel level, string format, params object[] args)

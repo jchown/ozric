@@ -103,7 +103,7 @@ namespace OzricEngine.logic
             var brightness = ReadBrightnessFromJSON(ref reader);
             
             if (!reader.Read() || reader.GetString() != "rgb"|| !reader.Read())
-                throw new Exception();
+                throw new JsonException();
 
             return FromHex(reader.GetString(), brightness);
         }

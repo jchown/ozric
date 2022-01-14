@@ -31,11 +31,11 @@ namespace OzricEngine
         public static TObject DeserializeViaEnum<TObject, TEnum>(ref Utf8JsonReader reader, IDictionary<TEnum, CreateObject<TObject>> creators) where TEnum : new()
         {
             if (!reader.Read() || reader.TokenType != JsonTokenType.String)
-                throw new Exception();
+                throw new JsonException();
             
             string enumName = reader.GetString();
             if (!Enum.TryParse(typeof(TEnum), enumName, out var enumType))
-                throw new Exception($"Unknown {nameof(TEnum)} {enumName}");
+                throw new JsonException($"Unknown {nameof(TEnum)} {enumName}");
 
             TEnum type = (TEnum) enumType;
             var creator = creators.GetOrSet(type, () => throw new Exception($"No {nameof(TEnum)} creator for {enumName}"));

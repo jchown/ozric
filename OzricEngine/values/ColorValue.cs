@@ -41,7 +41,7 @@ namespace OzricEngine.logic
         public static ColorValue ReadFromJSON(ref Utf8JsonReader reader)
         {
             if (!reader.Read() || reader.GetString() != "color-type")
-                throw new Exception();
+                throw new JsonException();
 
             return Json.DeserializeViaEnum(ref reader, creators);
         }
@@ -49,7 +49,7 @@ namespace OzricEngine.logic
         protected static float ReadBrightnessFromJSON(ref Utf8JsonReader reader)
         {
             if (!reader.Read() || reader.GetString() != "brightness" || !reader.Read())
-                throw new Exception();
+                throw new JsonException();
 
             return reader.GetSingle();
         }

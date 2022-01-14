@@ -117,12 +117,12 @@ namespace OzricEngine.logic
             var brightness = ReadBrightnessFromJSON(ref reader);
             
             if (!reader.Read() || reader.GetString() != "h" || !reader.Read())
-                throw new Exception();
+                throw new JsonException();
 
             float h = reader.GetSingle();
             
             if (!reader.Read() || reader.GetString() != "s"|| !reader.Read())
-                throw new Exception();
+                throw new JsonException();
 
             float s = reader.GetSingle();
 

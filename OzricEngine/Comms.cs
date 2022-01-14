@@ -153,7 +153,7 @@ namespace OzricEngine
             switch (authResult)
             {
                 case ServerAuthOK _:
-                    Console.WriteLine("Auth OK");
+                    Log(LogLevel.Info, "Auth OK");
                     break;
                 
                 case ServerAuthInvalid invalid:

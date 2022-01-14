@@ -10,7 +10,7 @@ namespace OzricEngine.logic
     public abstract class Node: OzricObject
     {
         [JsonIgnore]
-        public override string Name => id;
+        public override string Name => $"{GetType().Name}.{id}";
 
         [JsonPropertyName("node-type")]
         public abstract NodeType nodeType { get; }

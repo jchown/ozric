@@ -66,7 +66,7 @@ namespace OzricEngine.logic
             var brightness = ReadBrightnessFromJSON(ref reader);
             
             if (!reader.Read() || reader.GetString() != "temp" || !reader.Read())
-                throw new Exception();
+                throw new JsonException();
 
             return new ColorTemp(reader.GetInt32(), brightness);
         }
