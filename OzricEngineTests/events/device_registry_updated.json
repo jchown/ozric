@@ -1,0 +1,18 @@
+{
+  "id": 4,
+  "type": "event",
+  "event": {
+    "event_type": "device_registry_updated",
+    "data": {
+      "action": "update",
+      "device_id": "a539d131296c6a400c5a9d19ad98cde7"
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-18T00:25:59.077754+00:00",
+    "context": {
+      "id": "de67da1e8f94d210916d024cb4746b9c",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

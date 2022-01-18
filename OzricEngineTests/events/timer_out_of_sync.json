@@ -1,0 +1,17 @@
+{
+  "id": 4,
+  "type": "event",
+  "event": {
+    "event_type": "timer_out_of_sync",
+    "data": {
+      "seconds": 1.1896248300000138
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-18T00:26:06.189707+00:00",
+    "context": {
+      "id": "c7824006d18762096b997e5040015245",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

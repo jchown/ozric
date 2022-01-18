@@ -1,0 +1,15 @@
+{
+  "id": 4,
+  "type": "event",
+  "event": {
+    "event_type": "persistent_notifications_updated",
+    "data": {},
+    "origin": "LOCAL",
+    "time_fired": "2022-01-18T00:26:14.190431+00:00",
+    "context": {
+      "id": "201061979b4a3b33bf7b31677af4396c",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

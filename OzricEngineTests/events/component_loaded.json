@@ -1,0 +1,17 @@
+{
+  "id": 4,
+  "type": "event",
+  "event": {
+    "event_type": "component_loaded",
+    "data": {
+      "component": "hassio"
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-18T00:25:45.183494+00:00",
+    "context": {
+      "id": "9faf7b616e4614e368029b824c45196f",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

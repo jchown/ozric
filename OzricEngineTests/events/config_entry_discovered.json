@@ -1,0 +1,15 @@
+{
+  "id": 4,
+  "type": "event",
+  "event": {
+    "event_type": "config_entry_discovered",
+    "data": {},
+    "origin": "LOCAL",
+    "time_fired": "2022-01-18T00:26:14.189698+00:00",
+    "context": {
+      "id": "43fb58125fc3850349070cacc37a54c0",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

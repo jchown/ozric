@@ -1,0 +1,18 @@
+{
+  "id": 4,
+  "type": "event",
+  "event": {
+    "event_type": "service_registered",
+    "data": {
+      "domain": "camera",
+      "service": "turn_off"
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-18T00:26:14.226328+00:00",
+    "context": {
+      "id": "356c990f8c021f543adb2b0575923613",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

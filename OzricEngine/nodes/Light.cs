@@ -48,7 +48,7 @@ namespace OzricEngine.logic
 
             if (currentState.IsOverridden(engine.home.GetTime(), secondsToAllowOverrideByOthers))
             {
-                Log(LogLevel.Warning, "{0} is being controlled by another service", entityID);
+                Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, currentState.GetNumSecondsSinceOverride(engine.home.GetTime()));
                 return;
             }
             

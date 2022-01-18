@@ -47,7 +47,13 @@ namespace OzricEngine
 
             return o;
         }
-
+        
+        public static string Prettify(string json)
+        {
+            var jDoc = JsonDocument.Parse(json);
+            return JsonSerializer.Serialize(jDoc, new JsonSerializerOptions { WriteIndented = true });
+        }
+        
         private static readonly JsonSerializerOptions options = new JsonSerializerOptions
         {
             IgnoreNullValues = true,

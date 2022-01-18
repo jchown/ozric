@@ -40,6 +40,11 @@ namespace OzricEngine
         {
             return lastUpdatedByOther != null && (now - lastUpdatedByOther.Value).TotalSeconds < secondsToAllowOverrideByOthers;
         }
+
+        public float GetNumSecondsSinceOverride(DateTime now)
+        {
+            return (float)(now - lastUpdatedByOther.Value).TotalSeconds;
+        }
         
         /// <summary>
         /// We would like to know if an event was (probably) due to something we did.

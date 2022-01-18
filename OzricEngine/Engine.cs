@@ -75,19 +75,29 @@ namespace OzricEngine
             {
                 Log(LogLevel.Trace, "Processing event: {0}", ev);
 
-                switch (ev.payload)
+                try
                 {
-                    case EventStateChanged stateChanged:
+                    switch (ev.payload)
                     {
-                        unexpected |= ProcessEvent(stateChanged);
-                        break;
-                    }
+                        case EventStateChanged stateChanged:
+                        {
+                            unexpected |= ProcessEvent(stateChanged);
+                            break;
+                        }
 
-                    case EventCallService callService:
-                    {
-                        Log(LogLevel.Debug, "Event {1}: {2}", callService.data.domain, callService.data.service_data.entity_id.Join(","), callService.data.service);
-                        break;
+                        case EventCallService callService:
+                        {
+                            var entityId = callService.data.service_data.entity_id;
+                            var source = entityId != null ? entityId.Join(",") : "<unknown entity>";
+
+                            Log(LogLevel.Debug, "Event {1}: {2} {3}", callService.data.domain, source, callService.data.service);
+                            break;
+                        }
                     }
+                }
+                catch (Exception e)
+                {
+                    Log(LogLevel.Error, "Failed to process event: {0}\nEvent: {1}", e, ev);
                 }
             }
 
