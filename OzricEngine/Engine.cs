@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using OzricEngine.engine;
 using OzricEngine.ext;
 using OzricEngine.logic;
 
@@ -233,5 +234,11 @@ namespace OzricEngine
         private const int SELF_EVENT_SECS = 30;
 
         public override string Name => "Engine";
+        
+        public EngineStatus Status => new EngineStatus { comms = comms.Status };
+
+        public void Dispose()
+        {
+        }
     }
 }
