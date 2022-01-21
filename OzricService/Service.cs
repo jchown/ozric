@@ -22,18 +22,25 @@ public class EngineService
 
     public async Task Start(CancellationToken cancellationToken)
     {
-        Graph graph;
+        Graph graph = new Graph();
 
         try
         {
-            var json = File.ReadAllText(GRAPH_FILENAME);
-            graph = Json.Deserialize<Graph>(json);
+            if (File.Exists(GRAPH_FILENAME))
+            {
+                var json = File.ReadAllText(GRAPH_FILENAME);
+                graph = Json.Deserialize<Graph>(json);
+                
+                Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count}");
+            }
+            else
+            {
+                Console.WriteLine("No graph files exists");
+            }
         }
         catch (Exception e)
         {
-            Console.WriteLine(e);
-            
-            graph = new Graph();
+            Console.WriteLine($"Failed to load graph: {e.Message}");
         }
 
         using (var connection = new Comms(Options.Instance.token))
