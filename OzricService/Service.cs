@@ -22,8 +22,19 @@ public class EngineService
 
     public async Task Start(CancellationToken cancellationToken)
     {
-        var json = File.ReadAllText(GRAPH_FILENAME);
-        var graph = Json.Deserialize<Graph>(json);
+        Graph graph;
+
+        try
+        {
+            var json = File.ReadAllText(GRAPH_FILENAME);
+            graph = Json.Deserialize<Graph>(json);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            
+            graph = new Graph();
+        }
 
         using (var connection = new Comms(Options.Instance.token))
         {
