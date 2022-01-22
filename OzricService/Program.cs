@@ -2,10 +2,14 @@ using OzricEngine;
 using OzricService;
 using OzricService.Model;
 
+const int HOME_ASSISTANT_INGRESS_PORT = 8099;
+
 var builder = WebApplication.CreateBuilder(args);
 
 var service = new Service();
 await service.Start(CancellationToken.None);
+
+builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenLocalhost(HOME_ASSISTANT_INGRESS_PORT));
 
 var app = builder.Build();
 
