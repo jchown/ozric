@@ -9,7 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 var service = new Service();
 await service.Start(CancellationToken.None);
 
-builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenLocalhost(HOME_ASSISTANT_INGRESS_PORT));
+builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(HOME_ASSISTANT_INGRESS_PORT));
 
 var app = builder.Build();
 
