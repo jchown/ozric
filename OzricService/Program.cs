@@ -4,7 +4,7 @@ using OzricService.Model;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var service = new EngineService();
+var service = new Service();
 await service.Start(CancellationToken.None);
 
 var app = builder.Build();

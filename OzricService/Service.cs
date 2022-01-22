@@ -6,7 +6,7 @@ using Graph = OzricEngine.Graph;
 
 namespace OzricService;
 
-public class EngineService
+public class Service
 {
     const string GRAPH_FILENAME = "/data/graph.json";
 
@@ -16,7 +16,7 @@ public class EngineService
     public EngineStatus Status => engine.Status;
     public Graph Graph => engine.graph;
 
-    public EngineService()
+    public Service()
     {
     }
 
