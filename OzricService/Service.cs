@@ -43,20 +43,19 @@ public class Service
             Console.WriteLine($"Failed to load graph: {e.Message}");
         }
 
-        using (var connection = new Comms(Options.Instance.token))
-        {
-            await connection.Authenticate();
+        var connection = new Comms(Options.Instance.token);
 
-            await connection.Send(new ClientGetStates());
+        await connection.Authenticate();
 
-            var states = await connection.Receive<ServerGetStates>();
+        await connection.Send(new ClientGetStates());
 
-            var home = new Home(states.result);
+        var states = await connection.Receive<ServerGetStates>();
 
-            engine = new Engine(home, graph, connection);
+        var home = new Home(states.result);
 
-            mainLoop = Task.Run(() => engine.MainLoop());
-        }
+        engine = new Engine(home, graph, connection);
+
+        mainLoop = Task.Run(() => engine.MainLoop());
     }
 
     public Task Stop(CancellationToken cancellationToken)
