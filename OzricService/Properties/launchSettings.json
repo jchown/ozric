@@ -12,7 +12,7 @@
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "launchUrl": "http://localhost:8809/graph",
+      "launchUrl": "http://localhost:8099/graph",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
