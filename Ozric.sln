@@ -1,10 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzricEngine", "OzricEngine\OzricEngine.csproj", "{9041AD3D-E7B9-49D3-B7DC-03BBE515A2C0}"
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32112.339
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OzricEngine", "OzricEngine\OzricEngine.csproj", "{9041AD3D-E7B9-49D3-B7DC-03BBE515A2C0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzricEngineTests", "OzricEngineTests\OzricEngineTests.csproj", "{E45D047B-F091-41E2-A95B-60AF1357ECDF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OzricEngineTests", "OzricEngineTests\OzricEngineTests.csproj", "{E45D047B-F091-41E2-A95B-60AF1357ECDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzricService", "OzricService\OzricService.csproj", "{8AC18F49-4988-4E26-9147-DF5C8431C7FC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzricService", "OzricService\OzricService.csproj", "{CD44D658-5FAD-4C3B-A79E-3B2F81D04432}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,9 +23,15 @@ Global
 		{E45D047B-F091-41E2-A95B-60AF1357ECDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E45D047B-F091-41E2-A95B-60AF1357ECDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E45D047B-F091-41E2-A95B-60AF1357ECDF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{8AC18F49-4988-4E26-9147-DF5C8431C7FC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{8AC18F49-4988-4E26-9147-DF5C8431C7FC}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{8AC18F49-4988-4E26-9147-DF5C8431C7FC}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{8AC18F49-4988-4E26-9147-DF5C8431C7FC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CD44D658-5FAD-4C3B-A79E-3B2F81D04432}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CD44D658-5FAD-4C3B-A79E-3B2F81D04432}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CD44D658-5FAD-4C3B-A79E-3B2F81D04432}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CD44D658-5FAD-4C3B-A79E-3B2F81D04432}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {8893A87E-0D7B-4141-9832-2D3F22A4D47B}
 	EndGlobalSection
 EndGlobal

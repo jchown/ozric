@@ -1,14 +1,13 @@
-using Microsoft.AspNetCore.Mvc.ViewEngines;
 using OzricEngine;
 using OzricService;
 using OzricService.Model;
 
-//const int HOME_ASSISTANT_INGRESS_PORT = 8099;
+const int HOME_ASSISTANT_INGRESS_PORT = 8099;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddRazorPages();
-//builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(HOME_ASSISTANT_INGRESS_PORT));
+builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(HOME_ASSISTANT_INGRESS_PORT));
 
 await Service.Instance.Start(CancellationToken.None);
 
