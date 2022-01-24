@@ -8,6 +8,8 @@ namespace OzricService;
 
 public class Service
 {
+    public static Service Instance { get; }
+
     const string GRAPH_FILENAME = "/data/graph.json";
 
     private Engine engine;
@@ -16,8 +18,9 @@ public class Service
     public EngineStatus Status => engine.Status;
     public Graph Graph => engine.graph;
 
-    public Service()
+    static Service()
     {
+        Instance = new Service();
     }
 
     public async Task Start(CancellationToken cancellationToken)

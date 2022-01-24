@@ -1,0 +1,29 @@
+@page
+@model OzricService.Pages.GraphModel
+
+@{
+    ViewData["Title"] = "Ozric Graph";
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Graph</title>
+</head>
+<body>
+
+<h2>Current Graph</h2>
+
+<div style="padding: 1em;">
+    <form method="post">
+        <textarea asp-for="GraphJSON"> </textarea>
+        <br/>
+        <br/>
+        <input type="submit" value="Update" />
+        <br/>
+    </form>
+</div>
+
+</body>
+</html>

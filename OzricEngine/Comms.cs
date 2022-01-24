@@ -16,7 +16,7 @@ namespace OzricEngine
     {
         public override string Name => "Comms";
 
-        public CommsStatus Status => new CommsStatus {  };
+        public CommsStatus Status => new CommsStatus { messagePump = messagePumpRunning };
 
         private Uri uri = new Uri("ws://homeassistant:8123/api/websocket");
 

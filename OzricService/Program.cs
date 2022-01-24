@@ -1,22 +1,30 @@
+using Microsoft.AspNetCore.Mvc.ViewEngines;
 using OzricEngine;
 using OzricService;
 using OzricService.Model;
 
-const int HOME_ASSISTANT_INGRESS_PORT = 8099;
+//const int HOME_ASSISTANT_INGRESS_PORT = 8099;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var service = new Service();
-await service.Start(CancellationToken.None);
+builder.Services.AddRazorPages();
+//builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(HOME_ASSISTANT_INGRESS_PORT));
 
-builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(HOME_ASSISTANT_INGRESS_PORT));
+await Service.Instance.Start(CancellationToken.None);
 
 var app = builder.Build();
 
-app.MapGet("/options", () => Options.Instance);
-app.MapGet("/status", () => service.Status);
-app.MapGet("/graph", () => service.Graph);
-app.MapPut("/graph", (Graph graph) => service.Restart(graph));
+if (!app.Environment.IsDevelopment())
+    app.UseExceptionHandler("/Error");
+
+
+app.UseStaticFiles();
+app.UseRouting();
+app.MapRazorPages();
+
+app.MapGet("/engine/options", () => Options.Instance);
+app.MapGet("/engine/status", () => Service.Instance.Status);
+app.MapGet("/engine/graph", () => Service.Instance.Graph);
+app.MapPut("/engine/graph", (Graph graph) => Service.Instance.Restart(graph));
 
 app.Run();
-
