@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Humanizer;
 using OzricEngine.ext;
@@ -13,11 +14,12 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.DayPhases)]
     public class DayPhases: Node
     {
+        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.DayPhases;
 
         public List<PhaseStart> phases { get; }
             
-        public DayPhases(string id) : base(id, null, new List<Pin> { new Pin("mode", ValueType.Mode) })
+        public DayPhases(string id) : base(id, null, new List<Pin> { new("mode", ValueType.Mode) })
         {
             phases = new List<PhaseStart>();
         }

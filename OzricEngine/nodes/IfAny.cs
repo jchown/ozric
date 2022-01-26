@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OzricEngine.logic
@@ -6,9 +7,10 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.IfAny)]
     public class IfAny: VariableInputs
     {
+        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.IfAny;
 
-        public IfAny(string id): base(id, ValueType.OnOff, new List<Pin> { new Pin("output", ValueType.OnOff) })
+        public IfAny(string id): base(id, ValueType.OnOff, new List<Pin> { new("output", ValueType.OnOff) })
         {
         }
 

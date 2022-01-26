@@ -42,7 +42,7 @@ namespace OzricEngineTests
             var b = Json.Deserialize<Graph>(json);
             
             Assert.Equal(3, b.nodes.Count);
-            Assert.Equal(1, b.nodes["b"].inputs.Count);
+            Assert.Single(b.nodes["b"].inputs);
         }
 
         private void AssertDependencies(HashSet<string> nodeIDs, params string[] expected)
@@ -53,7 +53,7 @@ namespace OzricEngineTests
         private static Graph GetSimpleGraph()
         {
             var graph = new Graph();
-            var a = new Constant("a", ValueType.OnOff, new OnOff());
+            var a = new Constant("a", new OnOff());
             var b = new IfAny("b");
             var c = new IfAny("c");
 

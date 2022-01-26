@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OzricEngine.logic
@@ -10,6 +11,7 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.Switch)]
     public class Switch: Node
     {
+        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.Switch;
 
         public Switch(string id, ValueType valueType): base(id, new List<Pin> { new("on", valueType), new("off", valueType), new("switch", ValueType.OnOff) }, new List<Pin> { new("output", valueType) })

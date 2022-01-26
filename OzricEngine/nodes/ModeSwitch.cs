@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OzricEngine.logic
@@ -10,6 +11,7 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.ModeSwitch)]
     public class ModeSwitch: Node
     {
+        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.ModeSwitch;
 
         public class ModeValues
