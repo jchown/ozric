@@ -1,0 +1,17 @@
+{
+  "id": 3,
+  "type": "event",
+  "event": {
+    "event_type": "hacs/stage",
+    "data": {
+      "stage": "waiting"
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-01-26T20:33:19.858588+00:00",
+    "context": {
+      "id": "c79da2ef84827a81134841c83ccb052b",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

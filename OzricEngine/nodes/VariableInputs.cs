@@ -5,7 +5,7 @@ namespace OzricEngine.logic
 {
     public abstract class VariableInputs: Node
     {
-        private readonly ValueType valueType;
+        public ValueType valueType { get; }
 
         public VariableInputs(string id, ValueType valueType, List<Pin> outputs): base(id, null, outputs)
         {

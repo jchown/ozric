@@ -4,8 +4,14 @@ namespace OzricEngine
 {
     public class InputSelector: IEquatable<InputSelector>
     {
-        public string nodeID { get; set; }
-        public string inputName { get; set; }
+        public string nodeID { get; }
+        public string inputName { get; }
+
+        public InputSelector(string nodeID, string inputName)
+        {
+            this.nodeID = nodeID;
+            this.inputName = inputName;
+        }
 
         public static bool operator ==(InputSelector lhs, InputSelector rhs)
         {

@@ -7,7 +7,7 @@ using OzricEngine.ext;
 
 namespace OzricEngine.logic
 {
-    public abstract class Node: OzricObject
+    public abstract class Node: OzricObject, IEquatable<Node>
     {
         [JsonIgnore]
         public override string Name => $"{GetType().Name}.{id}";
@@ -15,9 +15,9 @@ namespace OzricEngine.logic
         [JsonPropertyName("node-type")]
         public abstract NodeType nodeType { get; }
         
-        public string id { get; set; }
-        public List<Pin> inputs { get; set; }
-        public List<Pin> outputs { get; set; }
+        public string id { get; }
+        public List<Pin> inputs { get; }
+        public List<Pin> outputs { get; }
 
         protected Node()
         {
@@ -107,6 +107,26 @@ namespace OzricEngine.logic
         {
             var output = GetOutputValue(name);
             return output as OnOff ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(OnOff)}");
+        }
+
+        public bool Equals(Node other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return nodeType == other.nodeType && id == other.id && Equals(inputs, other.inputs) && Equals(outputs, other.outputs);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            if (ReferenceEquals(this, obj)) return true;
+            if (obj.GetType() != GetType()) return false;
+            return Equals((Node)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine((int)nodeType, id, inputs, outputs);
         }
     }
 }

@@ -54,14 +54,14 @@ namespace OzricEngine
 
             var nodeOutputs = edges.GetOrSet(outputNodeID, () => new Dictionary<string, List<InputSelector>>());
             var pinOutputs = nodeOutputs.GetOrSet(outputPinName, () => new List<InputSelector>()); 
-            pinOutputs.Add(new InputSelector { inputName = inputPinName, nodeID = inputNodeID} );
+            pinOutputs.Add(new InputSelector(inputNodeID, inputPinName));
 
             Log(LogLevel.Debug, "{0}.{1} -> {2}.{3}", outputNodeID, outputPinName, inputNodeID, inputPinName);
         }
 
         public void Disconnect(string outputNodeID, string outputPinName, string inputNodeID, string inputPinName)
         {
-            edges[outputNodeID][outputPinName].Remove(new InputSelector { inputName = inputPinName, nodeID = inputNodeID});
+            edges[outputNodeID][outputPinName].Remove(new InputSelector(inputNodeID, inputPinName));
 
             Log(LogLevel.Debug, "{0}.{1} xx {2}.{3}", outputNodeID, outputPinName, inputNodeID, inputPinName);
         }

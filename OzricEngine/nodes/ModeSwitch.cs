@@ -20,13 +20,13 @@ namespace OzricEngine.logic
                 this.values = values;
             }
 
-            public Mode mode { get; set; }
-            public Values values { get; set; }
+            public Mode mode { get; }
+            public Values values { get; }
         }
         
-        private readonly List<ModeValues> modeValues;
+        public List<ModeValues> modeValues { get; }
         
-        public ModeSwitch(string id): base(id, new List<Pin> { new Pin("mode", ValueType.Mode) }, null)
+        public ModeSwitch(string id): base(id, new List<Pin> { new("mode", ValueType.Mode) }, null)
         {
             modeValues = new List<ModeValues>();
         }

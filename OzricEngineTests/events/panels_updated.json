@@ -1,0 +1,15 @@
+{
+  "id": 3,
+  "type": "event",
+  "event": {
+    "event_type": "panels_updated",
+    "data": {},
+    "origin": "LOCAL",
+    "time_fired": "2022-01-26T20:33:13.196886+00:00",
+    "context": {
+      "id": "d4f091f1e93b5ac52841574cbcd38ee6",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

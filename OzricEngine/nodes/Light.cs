@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using OzricEngine.ext;
 
@@ -11,7 +12,8 @@ namespace OzricEngine.logic
     {
         public override NodeType nodeType => NodeType.Light;
 
-        private int secondsToAllowOverrideByOthers { get; set; }
+        [JsonIgnore]
+        private int secondsToAllowOverrideByOthers { get; }
 
         public Light(string id, string entityID) : base(id, entityID, new List<Pin> { new Pin("color", ValueType.Color) }, null)
         {

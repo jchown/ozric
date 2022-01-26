@@ -9,9 +9,9 @@ namespace OzricEngine.logic
     {
         public override NodeType nodeType => NodeType.Sensor;
 
-        private readonly string entityID;
+        public string entityID { get; }
 
-        public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new Pin("activity", ValueType.OnOff) })
+        public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new("activity", ValueType.OnOff) })
         {
             this.entityID = entityID;
         }

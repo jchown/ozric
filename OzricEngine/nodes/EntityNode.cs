@@ -7,7 +7,7 @@ namespace OzricEngine.logic
     /// </summary>
     public abstract class EntityNode: Node
     {
-        protected string entityID { get; }
+        public string entityID { get; }
 
         protected EntityNode(string id, string entityID, List<Pin> inputs, List<Pin> outputs): base(id, inputs, outputs)
         {

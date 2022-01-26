@@ -12,7 +12,7 @@ namespace OzricEngine.logic
     {
         public override NodeType nodeType => NodeType.Switch;
 
-        public Switch(string id, ValueType type): base(id, new List<Pin> { new Pin("on", type), new Pin("off", type), new Pin("switch", ValueType.OnOff) }, new List<Pin> { new Pin("output", type) })
+        public Switch(string id, ValueType valueType): base(id, new List<Pin> { new("on", valueType), new("off", valueType), new("switch", ValueType.OnOff) }, new List<Pin> { new("output", valueType) })
         {
         }
             

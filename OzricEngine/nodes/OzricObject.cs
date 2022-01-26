@@ -1,12 +1,14 @@
 using System;
 using System.Collections;
 using System.Globalization;
+using System.Text.Json.Serialization;
 using Humanizer;
 
 namespace OzricEngine.logic
 {
     public abstract class OzricObject
     {
+        [JsonIgnore]
         public abstract string Name { get; }
         
         protected LogLevel minLogLevel = LogLevel.Info;

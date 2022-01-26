@@ -4,8 +4,8 @@ namespace OzricEngine
 {
     public class OutputSelector: IEquatable<OutputSelector>
     {
-        public string nodeID { get; set; }
-        public string outputName { get; set; }
+        public string nodeID { get; }
+        public string outputName { get; }
 
         public static bool operator ==(OutputSelector lhs, OutputSelector rhs)
         {
