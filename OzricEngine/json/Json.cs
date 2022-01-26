@@ -18,12 +18,12 @@ namespace OzricEngine
         
         public static string Serialize(object o, Type t)
         {
-            return JsonSerializer.Serialize(o, t, options);
+            return JsonSerializer.Serialize(o, t, Options);
         }
         
         public static T Deserialize<T>(string json)
         {
-            return JsonSerializer.Deserialize<T>(json, options);
+            return JsonSerializer.Deserialize<T>(json, Options);
         }
 
         public delegate TObject CreateObject<out TObject>(ref Utf8JsonReader reader);
@@ -53,19 +53,24 @@ namespace OzricEngine
             var jDoc = JsonDocument.Parse(json);
             return JsonSerializer.Serialize(jDoc, new JsonSerializerOptions { WriteIndented = true });
         }
-        
-        private static readonly JsonSerializerOptions options = new JsonSerializerOptions
+
+        static Json()
         {
-            IgnoreNullValues = true,
-            Converters =
-            {
-                new JsonConverterAttributes(),
+            Options = new JsonSerializerOptions();
+            Configure(Options);
+        }
+
+        public static readonly JsonSerializerOptions Options;
+
+        public static void Configure(JsonSerializerOptions options)
+        {
+            options.IgnoreNullValues = true;
+            options.Converters.Add(new JsonConverterAttributes());
 //              new JsonConverterEntityID(),     - Only use explicitly
-                new JsonConverterEvent(),
-                new JsonConverterNode(),
-                new JsonConverterServerMessage(),
-                new JsonConverterValue(),
-            }
-        };
+            options.Converters.Add(new JsonConverterEvent()); 
+            options.Converters.Add(new JsonConverterNode());
+            options.Converters.Add(new JsonConverterServerMessage());
+            options.Converters.Add(new JsonConverterValue());
+        }
     }
 }
