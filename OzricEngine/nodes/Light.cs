@@ -10,7 +10,6 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.Light)]
     public class Light: EntityNode
     {
-        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.Light;
 
         [JsonIgnore]

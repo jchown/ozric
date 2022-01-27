@@ -11,7 +11,6 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.ModeSwitch)]
     public class ModeSwitch: Node
     {
-        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.ModeSwitch;
 
         public class ModeValues

@@ -11,7 +11,6 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.SkyBrightness)]
     public class SkyBrightness: Node
     {
-        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.SkyBrightness;
 
         private const string ID = "sky-brightness";

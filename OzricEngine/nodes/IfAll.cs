@@ -7,7 +7,6 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.IfAll)]
     public class IfAll: VariableInputs
     {
-        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.IfAny;
 
         public IfAll(string id): base(id, ValueType.OnOff, new List<Pin> { new("output", ValueType.OnOff) })

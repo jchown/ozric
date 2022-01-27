@@ -14,7 +14,6 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.DayPhases)]
     public class DayPhases: Node
     {
-        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.DayPhases;
 
         public List<PhaseStart> phases { get; }

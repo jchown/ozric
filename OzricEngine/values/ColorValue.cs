@@ -14,7 +14,6 @@ namespace OzricEngine.logic
     {
         public override ValueType ValueType => ValueType.Color;
 
-        [JsonPropertyName("color-type")]
         public abstract ColorType ColorType { get; }
 
         public float brightness { get; protected set; }

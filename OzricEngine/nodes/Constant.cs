@@ -7,7 +7,6 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.Constant)]
     public class Constant: Node
     {
-        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.Constant;
 
         public Value value { get; }

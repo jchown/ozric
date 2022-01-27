@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Humanizer;
@@ -65,6 +66,7 @@ namespace OzricEngine
 
         public static void Configure(JsonSerializerOptions options)
         {
+            options.PropertyNamingPolicy = new PropertyNamer();
             options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             options.Converters.Add(new JsonConverterAttributes());
 //              new JsonConverterEntityID(),     - Only use explicitly
@@ -72,6 +74,39 @@ namespace OzricEngine
             options.Converters.Add(new JsonConverterNode());
             options.Converters.Add(new JsonConverterServerMessage());
             options.Converters.Add(new JsonConverterValue());
+        }
+
+        public class PropertyNamer : JsonNamingPolicy
+        {
+            public override string ConvertName(string name)
+            {
+                StringBuilder sb = new StringBuilder();
+                foreach (var ch in name)
+                {
+                    if (Char.IsUpper(ch) && sb.Length > 0)
+                    {
+                        sb.Append("-");
+                        sb.Append(Char.ToLower(ch));
+                    }
+                    else
+                    {
+                        sb.Append(ch);
+                    }
+                }
+
+                int len = sb.Length;
+                if (len > 3)
+                {
+                    //  "ID" -> "-i-d" -> "-id"
+
+                    if (sb[len - 3] == 'i' && sb[len - 2] == '-' && sb[len - 1] == 'd')
+                    {
+                        sb.Remove(len - 2, 1);
+                    }
+                }
+
+                return sb.ToString();
+            }
         }
     }
 }

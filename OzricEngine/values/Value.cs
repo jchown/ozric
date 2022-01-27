@@ -9,7 +9,6 @@ namespace OzricEngine.logic
     /// </summary>
     public abstract class Value
     {
-        [JsonPropertyName("value-type")]
         public abstract ValueType ValueType { get; }
 
         public abstract void WriteAsJSON(Utf8JsonWriter writer);
