@@ -10,12 +10,13 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.Light)]
     public class Light: EntityNode
     {
+        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.Light;
 
         [JsonIgnore]
         private int secondsToAllowOverrideByOthers { get; }
 
-        public Light(string id, string entityID) : base(id, entityID, new List<Pin> { new Pin("color", ValueType.Color) }, null)
+        public Light(string id, string entityID) : base(id, entityID, new List<Pin> { new("color", ValueType.Color) }, null)
         {
             secondsToAllowOverrideByOthers = 10 * 60;
         }

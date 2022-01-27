@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OzricEngine.logic
@@ -10,6 +11,7 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.SkyBrightness)]
     public class SkyBrightness: Node
     {
+        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.SkyBrightness;
 
         private const string ID = "sky-brightness";
@@ -18,7 +20,7 @@ namespace OzricEngine.logic
         public const string clouds = "clouds";
         public const string brightness = "brightness";
 
-        public SkyBrightness() : base(ID, null, new List<Pin> { new Pin(sun, ValueType.Scalar), new Pin(clouds, ValueType.Scalar), new Pin(brightness, ValueType.Scalar)})
+        public SkyBrightness() : base(ID, null, new List<Pin> { new(sun, ValueType.Scalar), new(clouds, ValueType.Scalar), new(brightness, ValueType.Scalar)})
         {
         }
          

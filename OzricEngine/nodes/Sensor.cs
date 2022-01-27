@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OzricEngine.logic
@@ -7,8 +8,10 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.Sensor)]
     public class Sensor : Node
     {
+        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.Sensor;
 
+        [JsonPropertyName("entity-id")]
         public string entityID { get; }
 
         public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new("activity", ValueType.OnOff) })

@@ -9,7 +9,7 @@ const string dockerWwwRoot = "/ozric/wwwroot";
 
 var builder = WebApplication.CreateBuilder(args);
 
-StaticFileOptions staticFileOptions = null;
+StaticFileOptions? staticFileOptions;
     
 Console.WriteLine($"Web root: {builder.Environment.WebRootPath}");
 Console.WriteLine($"Content root: {builder.Environment.ContentRootPath}");

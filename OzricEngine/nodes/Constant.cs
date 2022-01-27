@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OzricEngine.logic
@@ -6,15 +7,12 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.Constant)]
     public class Constant: Node
     {
+        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.Constant;
 
-        public Value value { get; set; }
+        public Value value { get; }
 
-        public Constant()
-        {
-        }
-
-        public Constant(string id, ValueType type, Value value) : base(id, null, new List<Pin> { new Pin("value", type, value) })
+        public Constant(string id, Value value) : base(id, null, new List<Pin> { new("value", value.ValueType, value) })
         {
             this.value = value;
         }

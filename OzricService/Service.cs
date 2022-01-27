@@ -12,11 +12,11 @@ public class Service
 
     const string GRAPH_FILENAME = "/data/graph.json";
 
-    private Engine engine;
-    private Task mainLoop;
+    private Engine? engine;
+    private Task? mainLoop;
 
-    public EngineStatus Status => engine.Status;
-    public Graph Graph => engine.graph;
+    public EngineStatus? Status => engine?.Status;
+    public Graph? Graph => engine?.graph;
 
     static Service()
     {

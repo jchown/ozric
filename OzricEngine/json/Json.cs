@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Humanizer;
 using OzricEngine.ext;
 using OzricEngine.logic;
@@ -64,7 +65,7 @@ namespace OzricEngine
 
         public static void Configure(JsonSerializerOptions options)
         {
-            options.IgnoreNullValues = true;
+            options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             options.Converters.Add(new JsonConverterAttributes());
 //              new JsonConverterEntityID(),     - Only use explicitly
             options.Converters.Add(new JsonConverterEvent()); 

@@ -14,11 +14,12 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.DayPhases)]
     public class DayPhases: Node
     {
+        [JsonPropertyName("node-type")]
         public override NodeType nodeType => NodeType.DayPhases;
 
         public List<PhaseStart> phases { get; }
             
-        public DayPhases(string id) : base(id, null, new List<Pin> { new Pin("mode", ValueType.Mode) })
+        public DayPhases(string id) : base(id, null, new List<Pin> { new("mode", ValueType.Mode) })
         {
             phases = new List<PhaseStart>();
         }
