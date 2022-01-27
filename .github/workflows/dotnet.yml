@@ -25,8 +25,3 @@ jobs:
       run: dotnet test --no-build --verbosity normal
     - name: Publish
       run: dotnet publish --configuration Release
-    - name: Upload
-      uses: actions/upload-artifact@v2
-      with:
-        name: OrsonRelease
-        path: /home/runner/work/ozric/ozric/OzricEngine/bin/Release/netcoreapp3.1/publish/

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Humanizer;
 using OzricEngine.ext;
@@ -22,6 +23,7 @@ namespace OzricEngine.logic
             phases = new List<PhaseStart>();
         }
 
+        [JsonConverter(typeof(JsonStringEnumConverter))] 
         public enum SunPhase
         {
             /// <summary>
@@ -57,9 +59,9 @@ namespace OzricEngine.logic
 
         public class PhaseStart
         {
-            public SunPhase start;
-            public int startOffsetSeconds;
-            public Mode mode;
+            public SunPhase start { get; }
+            public int startOffsetSeconds { get; }
+            public Mode mode { get; }
 
             public PhaseStart(Mode mode, SunPhase start, int startOffsetSeconds = 0)
             {
