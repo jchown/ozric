@@ -1,0 +1,293 @@
+{
+  "nodes": {
+    "kitchen-sensor": {
+      "node-type": "Sensor",
+      "entity-id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_bbf0cbfe_ias_zone",
+      "id": "kitchen-sensor",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "activity",
+          "type": "OnOff"
+        }
+      ]
+    },
+    "kitchen-modes": {
+      "node-type": "DayPhases",
+      "phases": [
+        {
+          "start": "Midnight",
+          "start-offset-seconds": -600,
+          "mode": {
+            "Value-type": "Mode",
+            "value": "bedtime"
+          }
+        },
+        {
+          "start": "Midnight",
+          "start-offset-seconds": 21600,
+          "mode": {
+            "Value-type": "Mode",
+            "value": "daytime"
+          }
+        },
+        {
+          "start": "Setting",
+          "start-offset-seconds": -1800,
+          "mode": {
+            "Value-type": "Mode",
+            "value": "evening"
+          }
+        },
+        {
+          "start": "Midnight",
+          "start-offset-seconds": -14400,
+          "mode": {
+            "Value-type": "Mode",
+            "value": "night"
+          }
+        }
+      ],
+      "id": "kitchen-modes",
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "mode",
+          "type": "Mode"
+        }
+      ]
+    },
+    "kitchen-colours": {
+      "node-type": "ModeSwitch",
+      "mode-values": [
+        {
+          "mode": {
+            "Value-type": "Mode",
+            "value": "bedtime"
+          },
+          "values": {
+            "colour-on": {
+              "value-type": "Color",
+              "color-type": "HS",
+              "brightness": 0.35,
+              "h": 0.1,
+              "s": 1
+            },
+            "colour-off": {
+              "value-type": "Color",
+              "color-type": "HS",
+              "brightness": 0,
+              "h": 0,
+              "s": 0
+            }
+          }
+        },
+        {
+          "mode": {
+            "Value-type": "Mode",
+            "value": "daytime"
+          },
+          "values": {
+            "colour-on": {
+              "value-type": "Color",
+              "color-type": "Temp",
+              "brightness": 1,
+              "temp": 156
+            },
+            "colour-off": {
+              "value-type": "Color",
+              "color-type": "HS",
+              "brightness": 0,
+              "h": 0,
+              "s": 0
+            }
+          }
+        },
+        {
+          "mode": {
+            "Value-type": "Mode",
+            "value": "evening"
+          },
+          "values": {
+            "colour-on": {
+              "value-type": "Color",
+              "color-type": "Temp",
+              "brightness": 1,
+              "temp": 156
+            },
+            "colour-off": {
+              "value-type": "Color",
+              "color-type": "HS",
+              "brightness": 0.38039216,
+              "h": 0.078475,
+              "s": 0.87451
+            }
+          }
+        },
+        {
+          "mode": {
+            "Value-type": "Mode",
+            "value": "night"
+          },
+          "values": {
+            "colour-on": {
+              "value-type": "Color",
+              "color-type": "HS",
+              "brightness": 0.5,
+              "h": 0.108333334,
+              "s": 0.5
+            },
+            "colour-off": {
+              "value-type": "Color",
+              "color-type": "HS",
+              "brightness": 0.35,
+              "h": 0.1,
+              "s": 1
+            }
+          }
+        }
+      ],
+      "id": "kitchen-colours",
+      "inputs": [
+        {
+          "name": "mode",
+          "type": "Mode"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "colour-on",
+          "type": "Color"
+        },
+        {
+          "name": "colour-off",
+          "type": "Color"
+        }
+      ]
+    },
+    "kitchen-switch": {
+      "node-type": "Switch",
+      "id": "kitchen-switch",
+      "inputs": [
+        {
+          "name": "on",
+          "type": "Color"
+        },
+        {
+          "name": "off",
+          "type": "Color"
+        },
+        {
+          "name": "switch",
+          "type": "OnOff"
+        }
+      ],
+      "outputs": [
+        {
+          "name": "output",
+          "type": "Color"
+        }
+      ]
+    },
+    "kitchen-light-1": {
+      "node-type": "Light",
+      "entity-id": "light.hue_color_spot_1",
+      "id": "kitchen-light-1",
+      "inputs": [
+        {
+          "name": "color",
+          "type": "Color"
+        }
+      ],
+      "outputs": []
+    },
+    "kitchen-light-2": {
+      "node-type": "Light",
+      "entity-id": "light.hue_color_spot_2",
+      "id": "kitchen-light-2",
+      "inputs": [
+        {
+          "name": "color",
+          "type": "Color"
+        }
+      ],
+      "outputs": []
+    },
+    "kitchen-light-3": {
+      "node-type": "Light",
+      "entity-id": "light.hue_color_spot_3",
+      "id": "kitchen-light-3",
+      "inputs": [
+        {
+          "name": "color",
+          "type": "Color"
+        }
+      ],
+      "outputs": []
+    },
+    "kitchen-light-4": {
+      "node-type": "Light",
+      "entity-id": "light.hue_color_spot_4",
+      "id": "kitchen-light-4",
+      "inputs": [
+        {
+          "name": "color",
+          "type": "Color"
+        }
+      ],
+      "outputs": []
+    }
+  },
+  "edges": {
+    "kitchen-modes": {
+      "mode": [
+        {
+          "node-id": "kitchen-colours",
+          "input-name": "mode"
+        }
+      ]
+    },
+    "kitchen-colours": {
+      "colour-on": [
+        {
+          "node-id": "kitchen-switch",
+          "input-name": "on"
+        }
+      ],
+      "colour-off": [
+        {
+          "node-id": "kitchen-switch",
+          "input-name": "off"
+        }
+      ]
+    },
+    "kitchen-sensor": {
+      "activity": [
+        {
+          "node-id": "kitchen-switch",
+          "input-name": "switch"
+        }
+      ]
+    },
+    "kitchen-switch": {
+      "output": [
+        {
+          "node-id": "kitchen-light-1",
+          "input-name": "color"
+        },
+        {
+          "node-id": "kitchen-light-2",
+          "input-name": "color"
+        },
+        {
+          "node-id": "kitchen-light-3",
+          "input-name": "color"
+        },
+        {
+          "node-id": "kitchen-light-4",
+          "input-name": "color"
+        }
+      ]
+    }
+  }
+}

@@ -1,5 +1,6 @@
 ﻿using OzricEngine;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.Json;
 using OzricEngine.logic;
@@ -45,6 +46,15 @@ namespace OzricEngineTests
             Assert.Single(b.nodes["b"].inputs);
         }
 
+        [Fact]
+        public void canDeserialiseLargeGraph()
+        {
+            var json = File.ReadAllText("../../../graphs/chown_graph_1.json");
+            var graph = Json.Deserialize<Graph>(json);
+            
+            Assert.Equal("kitchen-sensor", graph.nodes["kitchen-sensor"].id);
+        }
+        
         private void AssertDependencies(HashSet<string> nodeIDs, params string[] expected)
         {
             Assert.Equal(expected.ToList(), nodeIDs.ToList().OrderBy(s => s));

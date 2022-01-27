@@ -80,7 +80,7 @@ namespace OzricEngineTests
             var engine = new MockEngine(home);
 
             engine.ProcessMockEvent("hacs_repository");
-
+            engine.ProcessMockEvent("hacs_stage");
             engine.ProcessMockEvent("hacs_config");
         }
 
