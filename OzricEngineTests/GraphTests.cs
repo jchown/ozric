@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text.Json;
 using OzricEngine.logic;
 using Xunit;
 
@@ -39,6 +38,10 @@ namespace OzricEngineTests
         public void canSerialiseRoundTrip()
         {
             var a = GetSimpleGraph();
+
+            Assert.Equal(3, a.nodes.Count);
+            Assert.Single(a.nodes["b"].inputs);
+
             var json = Json.Serialize(a);
             var b = Json.Deserialize<Graph>(json);
             

@@ -19,6 +19,8 @@ namespace OzricEngineTests
         [Fact]
         public void simpleSerializeRoundTripWorks()
         {
+            assertSerializeRoundTripWorks(new List<Pin> { new("input", ValueType.Color, ColorRGB.RED) });
+            assertSerializeRoundTripWorks(new InputSelector("a-node", "an-output"));
             assertSerializeRoundTripWorks(new Constant("red", ColorRGB.RED));
             assertSerializeRoundTripWorks(new DayPhases("work-times"));
             assertSerializeRoundTripWorks(new IfAll("all-right"));
@@ -40,10 +42,25 @@ namespace OzricEngineTests
             assertSerializeRoundTripWorks(ifAll);
         }
 
-        private void assertSerializeRoundTripWorks(Node node1)
+        private void assertSerializeRoundTripWorks(Node node)
         {
-            var json1 = Json.Serialize(node1);
-            var node2 = Json.Deserialize<Node>(json1);
+            assertSerializeRoundTripWorksGeneric(node);
+        }
+        
+        private void assertSerializeRoundTripWorks(InputSelector inSelector)
+        {
+            assertSerializeRoundTripWorksGeneric(inSelector);
+        }
+        
+        private void assertSerializeRoundTripWorks(List<Pin> pins)
+        {
+            assertSerializeRoundTripWorksGeneric(pins);
+        }
+        
+        private void assertSerializeRoundTripWorksGeneric<T>(T t)
+        {
+            var json1 = Json.Serialize(t);
+            var node2 = Json.Deserialize<T>(json1);
             var json2 = Json.Serialize(node2);
 
             Assert.Equal(json1, json2);

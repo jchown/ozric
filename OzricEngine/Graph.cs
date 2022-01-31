@@ -18,7 +18,7 @@ namespace OzricEngine
         public override string Name => "Graph";
 
         public Dictionary<string, Node> nodes { get; set; }
-        public Dictionary<String, Dictionary<string, List<InputSelector>>> edges { get; set; }
+        public Dictionary<string, Dictionary<string, List<InputSelector>>> edges { get; set; }
 
         public Graph()
         {
