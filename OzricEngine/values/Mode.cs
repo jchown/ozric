@@ -12,10 +12,6 @@ namespace OzricEngine.logic
 
         public string value { get; }
 
-        public Mode()
-        {
-        }
-        
         public Mode(string value)
         {
             this.value = value;

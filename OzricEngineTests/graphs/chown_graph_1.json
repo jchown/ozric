@@ -167,6 +167,7 @@
     },
     "kitchen-switch": {
       "node-type": "Switch",
+      "value-type": "Color",
       "id": "kitchen-switch",
       "inputs": [
         {

@@ -16,7 +16,7 @@ namespace OzricEngine.logic
     {
         public override NodeType nodeType => NodeType.DayPhases;
 
-        public List<PhaseStart> phases { get; }
+        public List<PhaseStart> phases { get; set; }
             
         public DayPhases(string id) : base(id, null, new List<Pin> { new("mode", ValueType.Mode) })
         {

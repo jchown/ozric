@@ -25,7 +25,7 @@ namespace OzricEngine.logic
             public Values values { get; }
         }
         
-        public List<ModeValues> modeValues { get; }
+        public List<ModeValues> modeValues { get; set; }
         
         public ModeSwitch(string id): base(id, new List<Pin> { new("mode", ValueType.Mode) }, null)
         {
@@ -75,15 +75,6 @@ namespace OzricEngine.logic
             }
 
             throw new Exception($"Unknown mode {currentMode}");
-        }
-    }
-
-    public class Values: Dictionary<string, Value>
-    {
-        public Values((string, Value)[] attributes)
-        {
-            foreach (var kv in attributes)
-                Add(kv.Item1, kv.Item2);
         }
     }
 }
