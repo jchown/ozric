@@ -96,4 +96,12 @@ public class Service
 
         await Start(cancellationToken);
     }
+
+    public void SetPaused(bool paused)
+    {
+        if (engine.paused != paused)
+        {
+            engine.paused = paused;
+        }
+    }
 }

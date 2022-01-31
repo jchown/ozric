@@ -17,6 +17,17 @@ namespace OzricEngine
         public readonly Graph graph;
         public readonly Comms comms;
 
+        private bool _paused;
+        public bool paused
+        {
+            get => _paused;
+            set
+            {
+                Log(LogLevel.Warning, "Paused: {0}", value);
+                _paused = value;
+            }
+        }
+        
         public Engine(Home home, Graph graph, Comms comms)
         {
             this.home = home;
@@ -48,7 +59,7 @@ namespace OzricEngine
                             break;
                         
                         var events = comms.TakePendingEvents(millisToWait);
-                        if (events.Count > 0)
+                        if (events.Count > 0 && !paused)
                         {
                             if (ProcessEvents(events))
                                 break;
@@ -235,7 +246,7 @@ namespace OzricEngine
 
         public override string Name => "Engine";
         
-        public EngineStatus Status => new EngineStatus { comms = comms.Status };
+        public EngineStatus Status => new EngineStatus { comms = comms.Status, paused = paused };
 
         public void Dispose()
         {

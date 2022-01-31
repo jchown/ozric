@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.Extensions.FileProviders;
 using OzricEngine;
+using OzricEngine.engine;
 using OzricService;
 using OzricService.Model;
 
@@ -44,6 +45,7 @@ app.UseRouting();
 
 app.MapGet("/api/options", () => Options.Instance);
 app.MapGet("/api/status", () => Service.Instance.Status);
+app.MapPut("/api/status", (EngineStatus status) => Service.Instance.SetPaused(status.paused));
 app.MapGet("/api/graph", () => Service.Instance.Graph);
 app.MapPut("/api/graph", async (Graph graph) => await Service.Instance.Restart(graph));
 
