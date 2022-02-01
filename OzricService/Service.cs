@@ -99,7 +99,7 @@ public class Service
 
     public void SetPaused(bool paused)
     {
-        if (engine.paused != paused)
+        if (engine != null && engine.paused != paused)
         {
             engine.paused = paused;
         }

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Http.Json;
+using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.FileProviders;
 using OzricEngine;
 using OzricEngine.engine;
@@ -39,9 +40,11 @@ await Service.Instance.Start(CancellationToken.None);
 
 var app = builder.Build();
 
+app.UseRewriter(new RewriteOptions().Add(Paths.RewritePagePaths));
 app.UseDefaultFiles();
 app.UseStaticFiles(staticFileOptions);
 app.UseRouting();
+app.UseDeveloperExceptionPage();
 
 app.MapGet("/api/options", () => Options.Instance);
 app.MapGet("/api/status", () => Service.Instance.Status);
