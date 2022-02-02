@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using OzricEngine.ext;
@@ -68,7 +69,10 @@ namespace OzricEngine.logic
             var brightness = ((int)(desired.brightness * 255 + 0.5f));
             var desiredOn = brightness > 0;
 
-            bool needsUpdate = desiredOn != on || (on && brightness != attributes.brightness);
+            var update = new UpdateReason();
+            update.Check(desiredOn != on);
+            update.Check(on && brightness != attributes.brightness);
+            
             bool needsConversion = false;
 
             string colorKey = null;
@@ -91,14 +95,15 @@ namespace OzricEngine.logic
                             }
                             else
                             {
-                                needsUpdate = true;
+                                update.Set("attributes.color_mode != \"hs\"");
                             }
                         }
                         else
                         {
                             Log(LogLevel.Debug, "color#hs = {0},{1}", attributes.hs_color[0], attributes.hs_color[1]);
 
-                            needsUpdate |= attributes.hs_color[0] != h || attributes.hs_color[1] != s;
+                            update.Check(attributes.hs_color[0] != h);
+                            update.Check(attributes.hs_color[1] != s);
                         }
 
                         colorKey = "hs_color";
@@ -120,14 +125,16 @@ namespace OzricEngine.logic
                             }
                             else
                             {
-                                needsUpdate = true;
+                                update.Set("attributes.color_mode != \"rgb\"");
                             }
                         }
                         else
                         {
                             Log(LogLevel.Debug, "color#rgb = {0},{1},{2}", attributes.rgb_color[0], attributes.rgb_color[1], attributes.rgb_color[2]);
 
-                            needsUpdate |= (attributes.rgb_color[0] != r) || (attributes.rgb_color[1] != g) || (attributes.rgb_color[2] != b);
+                            update.Check(attributes.rgb_color[0] != r);
+                            update.Check(attributes.rgb_color[1] != g);
+                            update.Check(attributes.rgb_color[2] != b);
                         }
 
                         colorKey = "color_rgb";
@@ -145,14 +152,14 @@ namespace OzricEngine.logic
                             }
                             else
                             {
-                                needsUpdate = true;
+                                update.Set("attributes.color_mode != \"color_temp\"");
                             }
                         }
                         else
                         {
                             Log(LogLevel.Debug, "color#temp = {0}", attributes.color_temp);
 
-                            needsUpdate |= (attributes.color_temp != temp.temp);
+                            update.Check(attributes.color_temp != temp.temp);
                         }
 
                         colorKey = "color_temp";
@@ -192,7 +199,12 @@ namespace OzricEngine.logic
                     colorValue = new List<float> { x, y };
                     //brightness = (int)(Y * brightness);
 
-                    needsUpdate = attributes.xy_color == null || (attributes.xy_color[0] != x) || (attributes.xy_color[1] != y) || (attributes.brightness != brightness);
+                    if (!update.Check(attributes.xy_color == null))
+                    {
+                        update.Check(attributes.xy_color[0] != x);
+                        update.Check(attributes.xy_color[1] != y);
+                        update.Check(attributes.brightness != brightness);
+                    }
                 }
                 /*
                 if (attributes.supported_color_modes.Contains("rgb"))
@@ -209,8 +221,10 @@ namespace OzricEngine.logic
                 }
             }
 
-            if (needsUpdate)
+            if (update.update)
             {
+                Log(LogLevel.Info, "Updated needed: {0}", update.reason);
+
                 var callServices = new ClientCallService
                 {
                     domain = "light",
@@ -268,6 +282,33 @@ namespace OzricEngine.logic
             }
         }
 
+        private void UpdateIf(string needsUpdate, bool b)
+        {
+            throw new NotImplementedException();
+        }
+
         private const double MIN_UPDATE_INTERVAL_SECS = 3;
+    }
+
+    internal struct UpdateReason
+    {
+        public bool update;
+        public string reason;
+
+        public bool Check(bool condition, [CallerArgumentExpression("condition")] string reason = null)
+        {
+            if (!update && condition)
+            {
+                update = true;
+                this.reason = reason;
+            }
+
+            return update;
+        }
+
+        public void Set(string reason)
+        {
+            Check(true, reason);
+        }
     }
 }

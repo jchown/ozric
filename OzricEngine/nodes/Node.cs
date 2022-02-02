@@ -49,7 +49,7 @@ namespace OzricEngine.logic
             return GetOutput(name) != null;
         }
 
-        protected Pin GetOutput(string name)
+        public Pin GetOutput(string name)
         {
             return outputs.Find(o => o.name == name);
         }

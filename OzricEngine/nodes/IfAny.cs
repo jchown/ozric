@@ -13,6 +13,12 @@ namespace OzricEngine.logic
         {
         }
 
+        public IfAny(string id, params string[] inputNames): this(id)
+        {
+            foreach (var inputName in inputNames)
+                AddInput(inputName);
+        }
+
         public override Task OnInit(Context context)
         {
             UpdateValue(context);
