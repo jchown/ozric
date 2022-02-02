@@ -77,11 +77,11 @@ namespace OzricEngine
         /// Process all the incoming events
         /// </summary>
         /// <param name="events"></param>
-        /// <returns>True if any events are unexpected</returns>
+        /// <returns>True if any events are external</returns>
 
         protected bool ProcessEvents(List<ServerEvent> events)
         {
-            var unexpected = false;
+            var external = false;
             
             foreach (var ev in events)
             {
@@ -93,7 +93,7 @@ namespace OzricEngine
                     {
                         case EventStateChanged stateChanged:
                         {
-                            unexpected |= ProcessEvent(stateChanged);
+                            external |= ProcessEvent(stateChanged);
                             break;
                         }
 
@@ -113,8 +113,14 @@ namespace OzricEngine
                 }
             }
 
-            return unexpected;
+            return external;
         }
+        
+        /// <summary>
+        /// Process an event, return true if it is external.
+        /// </summary>
+        /// <param name="events"></param>
+        /// <returns>True if any events are external</returns>
 
         private bool ProcessEvent(EventStateChanged stateChanged)
         {
@@ -126,8 +132,12 @@ namespace OzricEngine
                 Log(LogLevel.Warning, "Unknown entity {0}", newState.entity_id);
                 return false;
             }
-            
-            Log(LogLevel.Info, "{0}: {1}", newState.entity_id, newState.state);
+
+            if (newState.state == "unavailable")
+            {
+                Log(LogLevel.Debug, "Entity {0}: {1}, ignoring", newState.entity_id, newState.state);
+                return false;
+            }
 
             var now = home.GetTime();
             var expected = entity.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS);
@@ -135,14 +145,22 @@ namespace OzricEngine
             {
                 entity.lastUpdatedByOther = now;
                 if (!entity.entity_id.Contains("panasonic"))
-                    Log(LogLevel.Info, "{0} = {1}", newState.entity_id, stateChanged.data.new_state);
-                
+                {
+                    Log(LogLevel.Info, "External: {0}: {1}", newState.entity_id, newState.state);
+
+                    if (entity.entity_id.StartsWith("light"))
+                        Console.WriteLine(newState);
+                }
+
                 entity.state = newState.state;
                 entity.attributes = newState.attributes;
                 entity.last_updated = newState.last_updated;
                 entity.last_changed = newState.last_changed;
             }
-            
+            else
+            {
+                Log(LogLevel.Info, "Expected: {0}: {1}", newState.entity_id, newState.state);
+            }
 
             return !expected;
         }

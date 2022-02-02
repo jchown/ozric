@@ -23,6 +23,44 @@ namespace OzricEngine.logic
 
         public override Task OnInit(Context context)
         {
+            var state = context.engine.home.GetEntityState(entityID);
+            if (state != null)
+            {
+                var attributes = state.LightAttributes;
+                var brightness = ((int)(attributes.brightness * 255 + 0.5f));
+
+                if (brightness > 0)
+                {
+                    switch (attributes.color_mode)
+                    {
+                        case "temp":
+                        {
+                            Log(LogLevel.Info, "Initial color_temp = {0}, brightness: {1}", attributes.color_temp, brightness);
+                            break;
+                        }
+                        case "xy":
+                        {
+                            Log(LogLevel.Info, "Initial xy_color = {0}, brightness: {1}", attributes.xy_color, brightness);
+                            break;
+                        }
+                        case "hs":
+                        {
+                            Log(LogLevel.Info, "Initial hs_color = {0}, brightness: {1}", attributes.hs_color, brightness);
+                            break;
+                        }
+                        case "rgb":
+                        {
+                            Log(LogLevel.Info, "Initial rgb_color = {0}, brightness: {1}", attributes.rgb_color, brightness);
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    Log(LogLevel.Info, "Initial brightness: {0}", brightness);
+                }
+            }
+            
             UpdateValue(context);
             return Task.CompletedTask;
         }
