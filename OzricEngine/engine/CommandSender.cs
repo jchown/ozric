@@ -7,8 +7,8 @@ namespace OzricEngine
 {
     public class CommandSender: OzricObject, Engine.ICommandSender
     {
-        protected readonly List<ClientCommand> commands = new List<ClientCommand>();
-        private readonly Dictionary<int, List<Action<ServerResult>>> handlers = new Dictionary<int, List<Action<ServerResult>>>();
+        public readonly List<ClientCommand> commands = new();
+        private readonly Dictionary<int, List<Action<ServerResult>>> handlers = new();
         
         private const int COMMAND_TIMEOUT_MS = 5000;
 

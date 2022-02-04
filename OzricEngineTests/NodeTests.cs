@@ -31,15 +31,23 @@ namespace OzricEngineTests
             assertSerializeRoundTripWorks(new SkyBrightness());
             assertSerializeRoundTripWorks(new Switch("bot-colour", ValueType.Color));
         }
-
                 
         [Fact]
-        public void serializeRoundTripWorksWithInputs()
+        public void serializeRoundTripWorksWithInputs1()
         {
             var ifAll = new IfAll("all-right");
             ifAll.inputs.Add(new Pin("input-1", ValueType.OnOff));
             ifAll.inputs.Add(new Pin("input-2", ValueType.OnOff));
             assertSerializeRoundTripWorks(ifAll);
+        }
+                
+        [Fact]
+        public void serializeRoundTripWorksWithInputs2()
+        {
+            var ifAny = new IfAny("any-left");
+            ifAny.inputs.Add(new Pin("input-1", ValueType.OnOff));
+            ifAny.inputs.Add(new Pin("input-2", ValueType.OnOff));
+            assertSerializeRoundTripWorks(ifAny);
         }
 
         private void assertSerializeRoundTripWorks(Node node)

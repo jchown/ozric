@@ -1,0 +1,15 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "event_type": "homeassistant_started",
+    "data": {},
+    "origin": "LOCAL",
+    "time_fired": "2022-02-03T00:04:38.977784+00:00",
+    "context": {
+      "id": "111444a6ddfdd0fd1b67a2d1073efef3",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

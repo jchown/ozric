@@ -9,6 +9,11 @@ namespace OzricEngine.logic
     {
         public override NodeType nodeType => NodeType.IfAny;
 
+        public IfAny() : this(null)
+        {
+            
+        }
+
         public IfAny(string id): base(id, ValueType.OnOff, new List<Pin> { new("output", ValueType.OnOff) })
         {
         }

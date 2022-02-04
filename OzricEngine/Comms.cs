@@ -96,7 +96,9 @@ namespace OzricEngine
 
             try
             {
-                return Json.Deserialize<T>(json);
+                var t = Json.Deserialize<T>(json);
+                receiveHandler?.Invoke(json);
+                return t;
             }
             catch (Exception e)
             {
@@ -120,6 +122,7 @@ namespace OzricEngine
             var json = Json.Serialize(t, t.GetType());
 
             Log(LogLevel.Debug,  ">> {0}", json);
+            sendHandler?.Invoke(json);
 
             int length = Encoding.UTF8.GetBytes(json, 0, json.Length, buffer, 0);
             await client.SendAsync(new ArraySegment<byte>(buffer, 0, length), WebSocketMessageType.Text, true, cancellation.Token);
@@ -145,10 +148,7 @@ namespace OzricEngine
             var authReq = await Receive<ServerAuthRequired>();
             Log(LogLevel.Info, "Auth requested by HA {0}", authReq.ha_version);
 
-            var auth = new ClientAuth
-            {
-                access_token = llat
-            };
+            var auth = new ClientAuth(accessToken: llat);
             await Send(auth);
             
             var authResult = await Receive<ServerMessage>();
@@ -320,6 +320,19 @@ namespace OzricEngine
                 taken.Add(ev);
 
             return taken;
+        }
+
+        public delegate void MessageHandler(string message);
+        private MessageHandler sendHandler, receiveHandler;
+        
+        public void OnSend(MessageHandler action)
+        {
+            sendHandler += action;
+        }
+        
+        public void OnReceive(MessageHandler action)
+        {
+            receiveHandler += action;
         }
     }
 

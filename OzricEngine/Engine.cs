@@ -18,6 +18,8 @@ namespace OzricEngine
         public readonly Comms comms;
 
         private bool _paused;
+        private readonly List<SentCommand> sentCommands = new();
+
         public bool paused
         {
             get => _paused;
@@ -93,16 +95,12 @@ namespace OzricEngine
                     {
                         case EventStateChanged stateChanged:
                         {
-                            external |= ProcessEvent(stateChanged);
+                            external |= ProcessEventStateChanged(stateChanged);
                             break;
                         }
 
                         case EventCallService callService:
                         {
-                            var entityId = callService.data.service_data.entity_id;
-                            var source = entityId != null ? entityId.Join(",") : "<unknown entity>";
-
-                            Log(LogLevel.Debug, "Event {1}: {2} {3}", callService.data.domain, source, callService.data.service);
                             break;
                         }
                     }
@@ -115,14 +113,52 @@ namespace OzricEngine
 
             return external;
         }
-        
+
         /// <summary>
-        /// Process an event, return true if it is external.
+        /// Process a service call. Tries to find if it is due to one of our command sends. 
         /// </summary>
         /// <param name="events"></param>
         /// <returns>True if any events are external</returns>
 
-        private bool ProcessEvent(EventStateChanged stateChanged)
+        private void ProcessEventCallService(EventCallService callService)
+        {
+            var now = home.GetTime();
+
+            for (int i = 0; i < sentCommands.Count;)
+            {
+                if (sentCommands[i].Expired(now))
+                {
+                    sentCommands.RemoveAt(i);
+                    continue;
+                }
+
+                if (sentCommands[i].command is ClientCallService ccs)
+                {
+                    if (callService.data.DueTo(ccs))
+                    {
+                        sentCommands.RemoveAt(i);
+                        continue;
+                    }
+                }
+
+                i++;
+            }
+            
+            //  Not one of ours
+            
+            var entityId = callService.data.service_data["entity_id"];
+            var source = entityId != null ? entityId/*.Join(",")*/ : "<unknown entity>";
+
+            Log(LogLevel.Debug, "Event {1}: {2} {3}", callService.data.domain, source, callService.data.service);
+        }
+
+        /// <summary>
+        /// Process a state change event, return true if it is external (we weren't responsible).
+        /// </summary>
+        /// <param name="events"></param>
+        /// <returns>True if any events are external</returns>
+
+        private bool ProcessEventStateChanged(EventStateChanged stateChanged)
         {
             var newState = stateChanged.data.new_state;
 
@@ -149,7 +185,11 @@ namespace OzricEngine
                     Log(LogLevel.Info, "External: {0}: {1}", newState.entity_id, newState.state);
 
                     if (entity.entity_id.StartsWith("light"))
-                        Console.WriteLine(newState);
+                    {
+                        var oldState = stateChanged.data.old_state;
+                        Console.WriteLine("old => {0}", oldState);
+                        Console.WriteLine("new => {0}", newState);
+                    }
                 }
 
                 entity.state = newState.state;
@@ -241,7 +281,18 @@ namespace OzricEngine
 
             Task.WaitAll(tasks.ToArray());
 
-            await commandSender.Send(comms);
+            if (commandSender.commands.Count > 0)
+            {
+                //  Record the commands we are about to send, so we can match the response and grab the context ID 
+
+                var dateTime = home.GetTime();
+                foreach (var command in commandSender.commands)
+                    sentCommands.Add(new SentCommand(dateTime, command));
+
+                //  Fire them off and wait for results
+                
+                await commandSender.Send(comms);
+            }
         }
 
         /// <summary>
@@ -260,7 +311,7 @@ namespace OzricEngine
             }
         }
 
-        private const int SELF_EVENT_SECS = 30;
+        public const int SELF_EVENT_SECS = 30;
 
         public override string Name => "Engine";
         
@@ -268,6 +319,23 @@ namespace OzricEngine
 
         public void Dispose()
         {
+        }
+    }
+
+    internal class SentCommand
+    {
+        public readonly DateTime sent;
+        public readonly ClientCommand command;
+        
+        public SentCommand(DateTime now, ClientCommand command)
+        {
+            sent = now;
+            this.command = command;
+        }
+
+        public bool Expired(DateTime now)
+        {
+            return (now - sent).TotalSeconds > Engine.SELF_EVENT_SECS;
         }
     }
 }

@@ -1,0 +1,15 @@
+{
+  "id": 10,
+  "type": "event",
+  "event": {
+    "event_type": "core_config_updated",
+    "data": {},
+    "origin": "LOCAL",
+    "time_fired": "2022-02-03T00:04:38.977212+00:00",
+    "context": {
+      "id": "4333b2f9420e7c9d85d6eef73260a8dc",
+      "parent_id": null,
+      "user_id": null
+    }
+  }
+}

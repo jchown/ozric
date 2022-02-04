@@ -20,7 +20,7 @@ namespace OzricEngineTests
 
             var call = ev.payload as EventCallService;
 
-            Assert.Equal(89, call.data.service_data.brightness);
+            Assert.Equal(89, call.data.service_data["brightness"]);
         }
 
 

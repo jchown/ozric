@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace OzricEngine
 {
+    /*
     public class EventCallServiceServiceData
     {
         public int brightness { get; set; }
@@ -17,4 +18,5 @@ namespace OzricEngine
         [JsonConverter(typeof(JsonConverterEntityID))]
         public List<string> entity_id { get; set; }   // Either a string[] or string
     }
+    */
 }
