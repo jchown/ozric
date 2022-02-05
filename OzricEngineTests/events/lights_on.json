@@ -1,0 +1,31 @@
+{
+  "id": 2,
+  "type": "event",
+  "event": {
+    "event_type": "call_service",
+    "data": {
+      "domain": "light",
+      "service": "turn_on",
+      "service_data": {
+        "brightness": 128,
+        "xy_color": [
+          0.43747592,
+          0.41495752
+        ],
+        "entity_id": [
+          "light.hue_color_spot_4",
+          "light.hue_color_spot_3",
+          "light.hue_color_spot_2",
+          "light.hue_color_spot_1"
+        ]
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-02-03T22:26:05.218256+00:00",
+    "context": {
+      "id": "637be04433ad55d8e507499052f728e0",
+      "parent_id": null,
+      "user_id": "27568fb5326f49428f78e8d219212733"
+    }
+  }
+}

@@ -1,3 +1,5 @@
+using OzricEngine.logic;
+
 namespace OzricEngine
 {
     [TypeKey("call_service")]

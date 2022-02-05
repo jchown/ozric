@@ -1,0 +1,93 @@
+{
+  "id": 2,
+  "type": "event",
+  "event": {
+    "event_type": "state_changed",
+    "data": {
+      "entity_id": "light.hue_color_spot_2",
+      "old_state": {
+        "entity_id": "light.hue_color_spot_2",
+        "state": "on",
+        "attributes": {
+          "min_mireds": 153,
+          "max_mireds": 500,
+          "supported_color_modes": [
+            "color_temp",
+            "xy"
+          ],
+          "color_mode": "xy",
+          "brightness": 89,
+          "hs_color": [
+            31.765,
+            86.667
+          ],
+          "rgb_color": [
+            255,
+            151,
+            34
+          ],
+          "xy_color": [
+            0.5772,
+            0.3941
+          ],
+          "mode": "normal",
+          "dynamics": "none",
+          "friendly_name": "Hue color spot 2",
+          "supported_features": 40
+        },
+        "last_changed": "2022-02-03T16:28:30.443953+00:00",
+        "last_updated": "2022-02-03T22:23:53.411005+00:00",
+        "context": {
+          "id": "8d8a457dfd6857a61c2635757aa1e0cf",
+          "parent_id": null,
+          "user_id": "27568fb5326f49428f78e8d219212733"
+        }
+      },
+      "new_state": {
+        "entity_id": "light.hue_color_spot_2",
+        "state": "on",
+        "attributes": {
+          "min_mireds": 153,
+          "max_mireds": 500,
+          "supported_color_modes": [
+            "color_temp",
+            "xy"
+          ],
+          "color_mode": "xy",
+          "brightness": 128,
+          "hs_color": [
+            31.765,
+            86.667
+          ],
+          "rgb_color": [
+            255,
+            151,
+            34
+          ],
+          "xy_color": [
+            0.5772,
+            0.3941
+          ],
+          "mode": "normal",
+          "dynamics": "none",
+          "friendly_name": "Hue color spot 2",
+          "supported_features": 40
+        },
+        "last_changed": "2022-02-03T16:28:30.443953+00:00",
+        "last_updated": "2022-02-03T22:26:05.414287+00:00",
+        "context": {
+          "id": "637be04433ad55d8e507499052f728e0",
+          "parent_id": null,
+          "user_id": "27568fb5326f49428f78e8d219212733"
+        }
+      }
+    },
+    "origin": "LOCAL",
+    "time_fired": "2022-02-03T22:26:05.414287+00:00",
+    "context": {
+      "id": "637be04433ad55d8e507499052f728e0",
+      "parent_id": null,
+      "user_id": "27568fb5326f49428f78e8d219212733"
+    }
+  }
+}

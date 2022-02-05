@@ -72,6 +72,7 @@ namespace OzricEngine
 //              new JsonConverterEntityID(),     - Only use explicitly
             options.Converters.Add(new JsonConverterEvent()); 
             options.Converters.Add(new JsonConverterNode());
+            options.Converters.Add(new JsonConverterClientCommand());
             options.Converters.Add(new JsonConverterServerMessage());
             options.Converters.Add(new JsonConverterValue());
         }

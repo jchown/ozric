@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace OzricEngine
 {
+    [TypeKey("call_service")]
     public class ClientCallService : ClientCommand, IMergable, IEquatable<ClientCallService>
     {
         public ClientCallService() : base("call_service") { }
@@ -32,6 +33,7 @@ namespace OzricEngine
 
             var entityID = target["entity_id"] as List<string> ?? throw new Exception("Missing entity_id");
             entityID.AddRange(other.target["entity_id"] as List<string> ?? throw new Exception("Missing entity_id"));
+            entityID.Sort();
             return true;
         }
 

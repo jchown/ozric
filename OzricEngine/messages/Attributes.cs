@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -36,7 +37,7 @@ namespace OzricEngine
             return true;
         }
 
-        private bool AreSameValue(object value, object otherValue)
+        private static bool AreSameValue(object value, object otherValue)
         {
             if (value == null)
                 return otherValue == null;
@@ -47,7 +48,7 @@ namespace OzricEngine
             return AreSameList(value, otherValue);
         }
         
-        private bool AreSameList(object value1, object value2)
+        public static bool AreSameList(object value1, object value2)
         {
             if (!(value1 is IEnumerable list1))
                 return false;
@@ -89,6 +90,33 @@ namespace OzricEngine
         public override string ToString()
         {
             return JsonSerializer.Serialize(this);
+        }
+
+        public bool EqualsExcept(Attributes other, params string[] exceptKeys)
+        {
+            if (CountExcept(exceptKeys) != other.CountExcept(exceptKeys))
+                return false;
+
+            foreach (var kvp in this)
+            {
+                var key = kvp.Key;
+                if (exceptKeys.Contains(key))
+                    continue;
+                
+                if (!other.TryGetValue(key, out var otherValue))
+                    return false;
+
+                var value = kvp.Value;
+                if (!AreSameValue(value, otherValue))
+                    return false;
+            }
+            
+            return true;
+        }
+
+        private int CountExcept(string[] exceptKeys)
+        {
+            return this.Count(kv => !exceptKeys.Contains(kv.Key));
         }
     }
 }

@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OzricEngine.engine;
-using OzricEngine.ext;
 using OzricEngine.logic;
 
 namespace OzricEngine
@@ -19,6 +19,7 @@ namespace OzricEngine
 
         private bool _paused;
         private readonly List<SentCommand> sentCommands = new();
+        private readonly List<OriginatedContext> originatedContexts = new();
 
         public bool paused
         {
@@ -89,6 +90,13 @@ namespace OzricEngine
             {
                 Log(LogLevel.Trace, "Processing event: {0}", ev);
 
+                var contextID = ev.payload.context.id;
+                if (originatedContexts.Any(oc => oc.callService.context.id == contextID))
+                {
+                    Log(LogLevel.Trace, "Originated locally, ignored");
+                    continue;
+                }
+                    
                 try
                 {
                     switch (ev.payload)
@@ -101,6 +109,7 @@ namespace OzricEngine
 
                         case EventCallService callService:
                         {
+                            ProcessEventCallService(callService);
                             break;
                         }
                     }
@@ -110,6 +119,10 @@ namespace OzricEngine
                     Log(LogLevel.Error, "Failed to process event: {0}\nEvent: {1}", e, ev);
                 }
             }
+            
+            var now = home.GetTime();
+            sentCommands.RemoveAll(sc => sc.Expired(now));
+            originatedContexts.RemoveAll(oc => oc.Expired(now));
 
             return external;
         }
@@ -126,17 +139,14 @@ namespace OzricEngine
 
             for (int i = 0; i < sentCommands.Count;)
             {
-                if (sentCommands[i].Expired(now))
-                {
-                    sentCommands.RemoveAt(i);
-                    continue;
-                }
-
                 if (sentCommands[i].command is ClientCallService ccs)
                 {
-                    if (callService.data.DueTo(ccs))
+                    if (callService.data.OriginatedBy(ccs))
                     {
+                        //  This is a call service that we made. Record the context ID
+                        
                         sentCommands.RemoveAt(i);
+                        originatedContexts.Add(new OriginatedContext(now, callService));
                         continue;
                     }
                 }
@@ -283,16 +293,21 @@ namespace OzricEngine
 
             if (commandSender.commands.Count > 0)
             {
-                //  Record the commands we are about to send, so we can match the response and grab the context ID 
-
-                var dateTime = home.GetTime();
-                foreach (var command in commandSender.commands)
-                    sentCommands.Add(new SentCommand(dateTime, command));
-
-                //  Fire them off and wait for results
-                
-                await commandSender.Send(comms);
+                await SendCommands(commandSender);
             }
+        }
+
+        public async Task SendCommands(CommandSender commandSender)
+        {
+            //  Record the commands we are about to send, so we can match the response and grab the context ID 
+
+            var dateTime = home.GetTime();
+            foreach (var command in commandSender.commands)
+                sentCommands.Add(new SentCommand(dateTime, command));
+
+            //  Fire them off and wait for results
+
+            await commandSender.Send(comms);
         }
 
         /// <summary>
@@ -319,23 +334,6 @@ namespace OzricEngine
 
         public void Dispose()
         {
-        }
-    }
-
-    internal class SentCommand
-    {
-        public readonly DateTime sent;
-        public readonly ClientCommand command;
-        
-        public SentCommand(DateTime now, ClientCommand command)
-        {
-            sent = now;
-            this.command = command;
-        }
-
-        public bool Expired(DateTime now)
-        {
-            return (now - sent).TotalSeconds > Engine.SELF_EVENT_SECS;
         }
     }
 }

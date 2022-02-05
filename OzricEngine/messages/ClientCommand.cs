@@ -1,8 +1,6 @@
-using System.Text.Json.Serialization;
-
 namespace OzricEngine
 {
-    public class ClientCommand
+    public abstract class ClientCommand
     {
         /// <summary>
         /// Unique ID assigned by Comms just before sending

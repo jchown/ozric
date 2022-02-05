@@ -21,18 +21,22 @@ namespace OzricEngineTests
         {
         }
 
-        public void ProcessMockEvent(string name)
+        public ServerEvent LoadMockEvent(string name)
         {
             var json = File.ReadAllText($"../../../events/{name}.json");
             try
             {
-                 var ev = Json.Deserialize<ServerEvent>(json);
-                 ProcessEvents( new List<ServerEvent> { ev });
+                return Json.Deserialize<ServerEvent>(json);
             }
             catch (Exception e)
             {
-                throw e.Rethrown($"while parsing states/{name}.json");
+                throw e.Rethrown($"while parsing events/{name}.json");
             }
+        }
+
+        public bool ProcessMockEvent(string name)
+        {
+            return ProcessEvents(new() { LoadMockEvent(name) });
         }
     }
 }

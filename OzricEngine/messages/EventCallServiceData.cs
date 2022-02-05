@@ -9,7 +9,7 @@ namespace OzricEngine
         public Attributes service_data { get; set; }
         public string origin { get; set; }
         public DateTime time_fired { get; set; }
-        public StateContext context { get; set; }
+        public MessageContext context { get; set; }
         
         /// <summary>
         /// Does this data match the given command? 
@@ -18,15 +18,20 @@ namespace OzricEngine
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
 
-        public bool DueTo(ClientCallService ccs)
+        public bool OriginatedBy(ClientCallService ccs)
         {
             if (domain != ccs.domain)
                 return false;
             
             if (service != ccs.service)
                 return false;
+            
+            //  The entity ID(s) are in service_data in this event, but in the "target" in the client message
 
-            if (service_data != ccs.service_data)
+            if (!Attributes.AreSameList(service_data["entity_id"], ccs.target["entity_id"]))
+                return false;
+
+            if (!service_data.EqualsExcept(ccs.service_data, "entity_id"))
                 return false;
             
             return true;

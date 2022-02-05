@@ -99,7 +99,7 @@ namespace OzricEngineTests
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
             var engine = new MockEngine(home);
 
-            engine.ProcessMockEvent("light_event");
+            engine.ProcessMockEvent("light_on");
         }
 
         [Fact]
@@ -148,6 +148,19 @@ namespace OzricEngineTests
             {
                 vo.ExampleLog((LogLevel)level);
             }
+        }
+
+        [Fact]
+        async Task serviceCallsReconciled()
+        {
+            var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sensor_1");
+            var engine = new MockEngine(home);
+
+            var sender = new MockCommandSender("lights_on");
+            await engine.SendCommands(sender);
+
+            engine.ProcessMockEvent("lights_on");
+            Assert.False(engine.ProcessMockEvent("light_on"));
         }
     }
 }

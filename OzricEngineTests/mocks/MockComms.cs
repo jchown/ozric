@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using OzricEngine;
 
 namespace OzricEngineTests
@@ -6,6 +7,11 @@ namespace OzricEngineTests
     {
         public MockComms() : base("test-comms")
         {
+        }
+
+        public override Task<ServerResult> SendCommand<T>(T command, int millisecondsTimeout)
+        {
+            return Task.FromResult(ServerResult.Succeeded(command.id));
         }
     }
 }

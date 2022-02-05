@@ -169,7 +169,7 @@ namespace OzricEngine
         private static int nextCommandID = 1;
         private static object sendCommandLock = new object();
 
-        public async Task<ServerResult> SendCommand<T>(T command, int millisecondsTimeout) where T : ClientCommand
+        public virtual async Task<ServerResult> SendCommand<T>(T command, int millisecondsTimeout) where T : ClientCommand
         {
             if (!messagePumpRunning)
                 throw new Exception("Message pump not running");

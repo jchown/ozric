@@ -14,7 +14,7 @@ namespace OzricEngine
         public Attributes attributes { get; set; }
         public DateTime last_changed { get; set; }
         public DateTime last_updated { get; set; }
-        public StateContext context { get; set; }
+        public MessageContext context { get; set; }
 
         public DateTime? lastUpdatedByOzric;
         public DateTime? lastUpdatedByOther;
