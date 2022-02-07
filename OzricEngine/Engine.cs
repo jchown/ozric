@@ -74,6 +74,10 @@ namespace OzricEngine
             {
                 Log(LogLevel.Error, "Main loop threw exception: {0}", e);
             }
+            finally
+            {
+                Log(LogLevel.Info, "Main loop ended");
+            }
         }
         
         /// <summary>
@@ -166,7 +170,7 @@ namespace OzricEngine
         /// Process a state change event, return true if it is external (we weren't responsible).
         /// </summary>
         /// <param name="events"></param>
-        /// <returns>True if any events are external</returns>
+        /// <returns>True if the event was external</returns>
 
         private bool ProcessEventStateChanged(EventStateChanged stateChanged)
         {
@@ -206,6 +210,9 @@ namespace OzricEngine
                 entity.attributes = newState.attributes;
                 entity.last_updated = newState.last_updated;
                 entity.last_changed = newState.last_changed;
+
+                if (entity.entity_id.StartsWith("light."))
+                    entity.LogLightState();
             }
             else
             {
@@ -334,6 +341,7 @@ namespace OzricEngine
 
         public void Dispose()
         {
+            comms.Dispose();
         }
     }
 }

@@ -27,7 +27,7 @@ namespace OzricEngine.logic
             if (state != null)
             {
                 var attributes = state.LightAttributes;
-                var brightness = ((int)(attributes.brightness * 255 + 0.5f));
+                var brightness = attributes.brightness;
 
                 if (brightness > 0)
                 {
@@ -146,6 +146,35 @@ namespace OzricEngine.logic
 
                         colorKey = "hs_color";
                         colorValue = new List<int> { h, s };
+                        break;
+                    }
+
+                    case ColorXY xy:
+                    {
+                        float x = xy.x;
+                        float y = xy.y;
+
+                        if (attributes.color_mode != "xy")
+                        {
+                            if (!attributes.supported_color_modes.Contains("xy"))
+                            {
+                                needsConversion = true;
+                            }
+                            else
+                            {
+                                update.Set("attributes.color_mode != \"xy\"");
+                            }
+                        }
+                        else
+                        {
+                            Log(LogLevel.Debug, "color#xy = {0},{1}", attributes.xy_color[0], attributes.xy_color[1]);
+
+                            update.Check(attributes.xy_color[0] != x);
+                            update.Check(attributes.xy_color[1] != y);
+                        }
+
+                        colorKey = "xy_color";
+                        colorValue = new List<float> { x, y };
                         break;
                     }
 
@@ -305,12 +334,14 @@ namespace OzricEngine.logic
                         return;
                     }
                     
-                    //  Success, record the state
+                    //  Success, record the state (the actual color the light uses may be subtly different, if it's gamut doesn't support
+                    //  it, for example, so we assume that it is what we asked and then ignore the actual state changes from the device) 
 
                     if (desiredOn)
                     {
                         currentState.attributes["brightness"] = brightness;
                         currentState.attributes[colorKey] = colorValue;
+                        currentState.attributes["color_mode"] = colorKey == "color_temp" ? "color_temp" : colorKey.Substring(0, colorKey.Length - 6);
                     }
                     else
                     {
@@ -318,11 +349,6 @@ namespace OzricEngine.logic
                     }
                 });
             }
-        }
-
-        private void UpdateIf(string needsUpdate, bool b)
-        {
-            throw new NotImplementedException();
         }
 
         private const double MIN_UPDATE_INTERVAL_SECS = 3;

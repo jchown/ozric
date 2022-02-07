@@ -22,7 +22,11 @@ namespace OzricEngine
 
         public bool Equals(Attributes other)
         {
-            if (Count != other.Count) return false;
+            if (other == null)
+                return false;
+            
+            if (Count != other.Count)
+                return false;
 
             foreach (var kvp in this)
             {
@@ -94,6 +98,9 @@ namespace OzricEngine
 
         public bool EqualsExcept(Attributes other, params string[] exceptKeys)
         {
+            if (other == null)
+                return false;
+            
             if (CountExcept(exceptKeys) != other.CountExcept(exceptKeys))
                 return false;
 

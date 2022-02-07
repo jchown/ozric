@@ -57,6 +57,24 @@ namespace OzricEngine
         {
             return lastUpdatedByOzric != null && (now - lastUpdatedByOzric.Value).TotalSeconds < secondsRecent;
         }
+
+        public void LogLightState(LogLevel level = LogLevel.Info)
+        {
+            if (state == "on")
+            {
+                string colorMode = attributes["color_mode"].ToString();
+                string colorKey = colorMode switch
+                {
+                    "color_temp" => "color_temp",
+                    _ => $"{colorMode}_color"
+                };
+                Log(level, "{0}: on, brightness = {1}, {2} = {3}", entity_id, attributes["brightness"], colorMode, attributes[colorKey]);
+            }
+            else
+            {
+                Log(level, "{0}: {1}", entity_id, state);
+            }
+        }
     }
 
 

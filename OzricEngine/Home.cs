@@ -11,7 +11,12 @@ namespace OzricEngine.logic
         {
             states = new Dictionary<string, EntityState>();
             foreach (var state in stateList)
+            {
                 states.Add(state.entity_id, state);
+
+                if (state.entity_id.StartsWith("light."))
+                    state.LogLightState();
+            }
         }
 
         public EntityState GetEntityState(string entityID)

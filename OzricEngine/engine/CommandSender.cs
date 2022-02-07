@@ -43,7 +43,6 @@ namespace OzricEngine
             foreach (var command in commands)
             {
                 tasks[command.id] = comms.SendCommand(command, COMMAND_TIMEOUT_MS);
-//                sentCommands[command.id]
             }
 
             foreach (var task in tasks)

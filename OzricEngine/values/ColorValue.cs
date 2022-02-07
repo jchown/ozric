@@ -30,11 +30,12 @@ namespace OzricEngine.logic
             this.brightness = brightness;
         }
 
-        private static readonly Dictionary<ColorType, Json.CreateObject<ColorValue>> creators = new Dictionary<ColorType, Json.CreateObject<ColorValue>>
+        private static readonly Dictionary<ColorType, Json.CreateObject<ColorValue>> creators = new()
         {
-            { ColorType.Temp, ColorTemp.ReadFromJSON },
             { ColorType.HS, ColorHS.ReadFromJSON },
             { ColorType.RGB, ColorRGB.ReadFromJSON },
+            { ColorType.Temp, ColorTemp.ReadFromJSON },
+            { ColorType.XY, ColorXY.ReadFromJSON },
         };
             
         public static ColorValue ReadFromJSON(ref Utf8JsonReader reader)
