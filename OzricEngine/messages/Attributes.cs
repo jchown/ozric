@@ -125,5 +125,35 @@ namespace OzricEngine
         {
             return this.Count(kv => !exceptKeys.Contains(kv.Key));
         }
+
+        public bool EqualsKeys(Attributes other, string[] keys)
+        {
+            if (other == null)
+                return false;
+            
+            if (CountKeys(keys) != other.CountKeys(keys))
+                return false;
+
+            foreach (var kvp in this)
+            {
+                var key = kvp.Key;
+                if (!keys.Contains(key))
+                    continue;
+                
+                if (!other.TryGetValue(key, out var otherValue))
+                    return false;
+
+                var value = kvp.Value;
+                if (!AreSameValue(value, otherValue))
+                    return false;
+            }
+            
+            return true;
+        }
+
+        private int CountKeys(string[] keys)
+        {
+            return this.Count(kv => keys.Contains(kv.Key));
+        }
     }
 }

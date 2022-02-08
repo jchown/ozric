@@ -352,6 +352,7 @@ namespace OzricEngine.logic
         }
 
         private const double MIN_UPDATE_INTERVAL_SECS = 3;
+        public static readonly string[] ATTRIBUTE_KEYS = { "brightness", "color_mode", "xy_color", "hs_color", "rgb_color" };
     }
 
     internal struct UpdateReason

@@ -49,10 +49,10 @@ namespace OzricEngine
                 while (!(cancellationToken?.IsCancellationRequested ?? false))
                 {
                     await UpdateNodes();
-                    
+
                     //  Avoid spinning constantly by waiting for an event (that we aren't responsible for)
                     //  OR a period of time has elapsed.
-                    
+
                     DateTime waitTimeout = home.GetTime().AddSeconds(3);
 
                     while (true)
@@ -60,7 +60,7 @@ namespace OzricEngine
                         int millisToWait = (int)(waitTimeout - home.GetTime()).TotalMilliseconds;
                         if (millisToWait <= 0)
                             break;
-                        
+
                         var events = comms.TakePendingEvents(millisToWait);
                         if (events.Count > 0 && !paused)
                         {
@@ -189,23 +189,22 @@ namespace OzricEngine
                 return false;
             }
 
+            if (entity.entity_id.StartsWith("light."))
+            {
+                //  Check only the relevant details, ignoring timers etc.
+
+                if (entity.state == newState.state && entity.attributes.EqualsKeys(newState.attributes, Light.ATTRIBUTE_KEYS))
+                {
+                    Log(LogLevel.Debug, "Entity {0}: unchanged, ignoring", newState.entity_id);
+                    return false;
+                }
+            }
+
             var now = home.GetTime();
             var expected = entity.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS);
             if (!expected)
             {
                 entity.lastUpdatedByOther = now;
-                if (!entity.entity_id.Contains("panasonic"))
-                {
-                    Log(LogLevel.Info, "External: {0}: {1}", newState.entity_id, newState.state);
-
-                    if (entity.entity_id.StartsWith("light"))
-                    {
-                        var oldState = stateChanged.data.old_state;
-                        Console.WriteLine("old => {0}", oldState);
-                        Console.WriteLine("new => {0}", newState);
-                    }
-                }
-
                 entity.state = newState.state;
                 entity.attributes = newState.attributes;
                 entity.last_updated = newState.last_updated;

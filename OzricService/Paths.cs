@@ -12,7 +12,7 @@ public static class Paths
     public static void RewritePagePaths(RewriteContext context)
     {
         var request = context.HttpContext.Request;
-        var path = request.Path.Value;
+        var path = request.Path.Value ?? "/";
 
         if (pagePaths.ContainsKey(path))
         {
