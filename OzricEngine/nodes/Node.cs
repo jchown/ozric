@@ -14,7 +14,7 @@ namespace OzricEngine.logic
 
         public abstract NodeType nodeType { get; }
         
-        public string id { get; }
+        public string id { get; set; }
         public List<Pin> inputs { get; set; }
         public List<Pin> outputs { get; set; }
 

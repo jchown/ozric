@@ -7,8 +7,8 @@ namespace OzricEngine.logic
     /// </summary>
     public class Pin
     {
-        public string name { get; }
-        public ValueType type { get; }
+        public string name { get; set; }
+        public ValueType type { get; set; }
         public Value value { get; set; }
 
         public Pin(string name, ValueType type, Value value = null)
