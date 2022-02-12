@@ -44,7 +44,7 @@ namespace OzricEngine
                     await file.WriteAsync($"{message.timestamp} - {message.message}\n");
                     await file.FlushAsync();
                 }
-                catch (InvalidOperationException e)
+                catch (InvalidOperationException)
                 {
                     return;
                 }

@@ -238,7 +238,7 @@ namespace OzricEngine
                                 {
                                     Log(LogLevel.Trace, "Got result for command {0}", result.id);
                                     
-                                    Task.Run(() => obj.SetResult(result));
+                                    _ = Task.Run(() => obj.SetResult(result));
                                 }
                                 else
                                 {
