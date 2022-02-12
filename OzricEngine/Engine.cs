@@ -176,8 +176,8 @@ namespace OzricEngine
         {
             var newState = stateChanged.data.new_state;
 
-            var entity = home.GetEntityState(newState.entity_id);
-            if (entity == null)
+            var entityState = home.GetEntityState(newState.entity_id);
+            if (entityState == null)
             {
                 Log(LogLevel.Warning, "Unknown entity {0}", newState.entity_id);
                 return false;
@@ -189,11 +189,11 @@ namespace OzricEngine
                 return false;
             }
 
-            if (entity.entity_id.StartsWith("light."))
+            if (entityState.entity_id.StartsWith("light."))
             {
                 //  Check only the relevant details, ignoring timers etc.
 
-                if (entity.state == newState.state && entity.attributes.EqualsKeys(newState.attributes, Light.ATTRIBUTE_KEYS))
+                if (entityState.state == newState.state && entityState.attributes.EqualsKeys(newState.attributes, Light.ATTRIBUTE_KEYS))
                 {
                     Log(LogLevel.Debug, "Entity {0}: unchanged, ignoring", newState.entity_id);
                     return false;
@@ -201,17 +201,20 @@ namespace OzricEngine
             }
 
             var now = home.GetTime();
-            var expected = entity.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS);
+            var expected = entityState.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS);
             if (!expected)
             {
-                entity.lastUpdatedByOther = now;
-                entity.state = newState.state;
-                entity.attributes = newState.attributes;
-                entity.last_updated = newState.last_updated;
-                entity.last_changed = newState.last_changed;
+                lock (entityState)
+                {
+                    entityState.lastUpdatedByOther = now;
+                    entityState.state = newState.state;
+                    entityState.attributes = newState.attributes;
+                    entityState.last_updated = newState.last_updated;
+                    entityState.last_changed = newState.last_changed;
 
-                if (entity.entity_id.StartsWith("light."))
-                    entity.LogLightState();
+                    if (entityState.entity_id.StartsWith("light."))
+                        entityState.LogLightState();
+                }
             }
             else
             {

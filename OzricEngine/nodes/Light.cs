@@ -85,17 +85,17 @@ namespace OzricEngine.logic
                 return;
             }
 
-            var currentState = engine.home.GetEntityState(entityID);
+            var entityState = engine.home.GetEntityState(entityID);
 
-            if (currentState.IsOverridden(engine.home.GetTime(), secondsToAllowOverrideByOthers))
+            if (entityState.IsOverridden(engine.home.GetTime(), secondsToAllowOverrideByOthers))
             {
-                Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, currentState.GetNumSecondsSinceOverride(engine.home.GetTime()));
+                Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, entityState.GetNumSecondsSinceOverride(engine.home.GetTime()));
                 return;
             }
             
-            var attributes = currentState.LightAttributes;
+            var attributes = entityState.LightAttributes;
 
-            bool on = (currentState.state == "on") && attributes.brightness > 0;
+            bool on = (entityState.state == "on") && attributes.brightness > 0;
             Log(LogLevel.Debug, "{0}.on = {1}", entityID, on);
             if (on)
                 Log(LogLevel.Debug, "brightness = {0}", attributes.brightness);
@@ -290,7 +290,8 @@ namespace OzricEngine.logic
 
             if (update.update)
             {
-                Log(LogLevel.Info, "Updated needed: {0}", update.reason);
+                entityState.LogLightState(LogLevel.Info);
+                Log(LogLevel.Info, "Update needed: {0}", update.reason);
 
                 var callServices = new ClientCallService
                 {
@@ -318,7 +319,7 @@ namespace OzricEngine.logic
                 else
                     Log(LogLevel.Info, "call service {0}", callServices.service);
                 
-                currentState.lastUpdatedByOzric = engine.home.GetTime();
+                entityState.lastUpdatedByOzric = engine.home.GetTime();
 
                 context.commandSender.Add(callServices, (result) =>
                 {
@@ -337,15 +338,18 @@ namespace OzricEngine.logic
                     //  Success, record the state (the actual color the light uses may be subtly different, if it's gamut doesn't support
                     //  it, for example, so we assume that it is what we asked and then ignore the actual state changes from the device) 
 
-                    if (desiredOn)
+                    lock (entityState)
                     {
-                        currentState.attributes["brightness"] = brightness;
-                        currentState.attributes[colorKey] = colorValue;
-                        currentState.attributes["color_mode"] = colorKey == "color_temp" ? "color_temp" : colorKey.Substring(0, colorKey.Length - 6);
-                    }
-                    else
-                    {
-                        currentState.attributes["brightness"] = 0;
+                        if (desiredOn)
+                        {
+                            entityState.attributes["brightness"] = brightness;
+                            entityState.attributes[colorKey] = colorValue;
+                            entityState.attributes["color_mode"] = colorKey == "color_temp" ? "color_temp" : colorKey.Substring(0, colorKey.Length - 6);
+                        }
+                        else
+                        {
+                            entityState.attributes["brightness"] = 0;
+                        }
                     }
                 });
             }
