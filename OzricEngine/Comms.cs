@@ -276,7 +276,7 @@ namespace OzricEngine
                                 Log(LogLevel.Info, "Reconnected");
                                 break;
                             }
-                            catch (WebSocketException)
+                            catch (Exception)
                             {
                             }
                         }
