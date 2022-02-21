@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -107,7 +108,17 @@ namespace OzricEngine
 
             return nodeEdges;
         }
-        
+                
+        /// <summary>
+        /// All the Home entity IDs referenced by this graph.
+        /// </summary>
+        /// <returns></returns>
+
+        public List<string> GetInterestedEntityIDs()
+        {
+            return nodes.Values.Select(node => node as EntityNode).Where(node => node != null).Select(node => node.entityID).Distinct().ToList();
+        }
+
         /// <summary>
         /// Get the nodes in update order, such that all inputs
         /// can be read after being written by their upstream outputs.

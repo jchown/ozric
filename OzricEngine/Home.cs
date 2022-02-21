@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
 
 namespace OzricEngine.logic
 {
@@ -27,6 +29,13 @@ namespace OzricEngine.logic
         public virtual DateTime GetTime()
         {
             return DateTime.Now;
+        }
+
+        public List<EntityState> GetEntityStates(List<string> entityIDs)
+        {
+            var selected = states.Values.Where(es => entityIDs.Contains(es.entity_id)).ToList();
+            selected.Sort((e1, e2) => string.CompareOrdinal(e1.entity_id, e2.entity_id));
+            return selected;
         }
     }
 }

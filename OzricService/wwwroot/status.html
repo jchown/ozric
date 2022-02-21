@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Ozric</title>
+    <title>Ozric Status</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css" integrity="sha384-HSMxcRTRxnN+Bdg0JdbxYKrThecOKuH5zCYotlSAcp1+c8xmyTe9GYg1l9a69psu" crossorigin="anonymous">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap-theme.min.css" integrity="sha384-6pzBo3FDv/PJ8r2KRkGHifhEocL+1X2rVCTTkUfGk7/0pbek5mMa1upzvWbrUbOZ" crossorigin="anonymous">
 </head>
@@ -35,6 +35,11 @@
 
     <form>
         <div class="form-group">
+
+            <div class="form-group">
+                <textarea id="states-json"></textarea>
+            </div>
+
             <input class="form-check-input" type="checkbox" value="" id="status-paused">
             <label class="form-check-label" for="status-paused">
                 Engine paused
@@ -52,6 +57,7 @@
 <script>
     $(document).ready(function () {
         $.getJSON("api/status", function(data) {
+            $("#states-json").val(JSON.stringify(data["states"], null, 2))
             $("#status-paused").prop('checked', data["paused"])
             $("#update-status").prop("disabled", false)
         });

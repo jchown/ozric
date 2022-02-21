@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -339,7 +340,12 @@ namespace OzricEngine
 
         public override string Name => "Engine";
         
-        public EngineStatus Status => new EngineStatus { comms = comms.Status, paused = paused };
+        public EngineStatus Status => new EngineStatus
+        {
+            comms = comms.Status,
+            states = home.GetEntityStates(graph.GetInterestedEntityIDs()),
+            paused = paused
+        };
 
         public void Dispose()
         {
