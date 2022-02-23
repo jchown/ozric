@@ -325,13 +325,13 @@ namespace OzricEngine.logic
                 {
                     if (result == null)
                     {
-                        Log(LogLevel.Warning, "Service call did not ");
+                        Log(LogLevel.Warning, "Service call did not respond");
                         return;
                     }
 
                     if (!result.success)
                     {
-                        Log(LogLevel.Warning, "Service call failed ({1}) - {2}",  result.error.code, result.error.message);
+                        Log(LogLevel.Warning, "Service call failed ({0}) - {1}",  result.error.code, result.error.message);
                         return;
                     }
                     
@@ -350,6 +350,8 @@ namespace OzricEngine.logic
                         {
                             entityState.attributes["brightness"] = 0;
                         }
+                        
+                        entityState.LogLightState();
                     }
                 });
             }

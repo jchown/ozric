@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,6 +18,7 @@ namespace OzricEngine
         public readonly Comms comms;
 
         private bool _paused;
+        private bool _serial = true;
         private readonly List<SentCommand> sentCommands = new();
         private readonly List<OriginatedContext> originatedContexts = new();
 
@@ -227,12 +227,18 @@ namespace OzricEngine
 
         public async Task InitNodes()
         {
-            await ProcessNodes((node, context) => node.OnInit(context));
+            if (_serial)
+                await ProcessNodesSerial((node, context) => node.OnInit(context));
+            else
+                await ProcessNodesParallel((node, context) => node.OnInit(context));
         }
 
         public async Task UpdateNodes()
         {
-            await ProcessNodes((node, context) => node.OnUpdate(context));
+            if (_serial)
+                await ProcessNodesSerial((node, context) => node.OnUpdate(context));
+            else
+                await ProcessNodesParallel((node, context) => node.OnUpdate(context));
         }
 
         public interface ICommandSender
@@ -244,7 +250,7 @@ namespace OzricEngine
         /// Process all nodes, ordering according to dependencies.
         /// </summary>
         /// <param name="nodeProcessor"></param>
-        private async Task ProcessNodes(Func<Node, Context, Task> nodeProcessor)
+        private async Task ProcessNodesParallel(Func<Node, Context, Task> nodeProcessor)
         {
             var commandSender = new CommandSender();
             var context = new Context(this, commandSender);
@@ -324,15 +330,23 @@ namespace OzricEngine
         /// Process all nodes, one at a time. May be useful when debugging.
         /// </summary>
         /// <param name="nodeProcessor"></param>
-        public async Task ProcessNodesSerial(Func<Node, Task> nodeProcessor)
+        public async Task ProcessNodesSerial(Func<Node, Context, Task> nodeProcessor)
         {
+            var commandSender = new CommandSender();
+            var context = new Context(this, commandSender);
+
             foreach (var nodeID in graph.GetNodesInOrder())
             {
                 var node = graph.GetNode(nodeID);
 
-                await nodeProcessor(node);
+                await nodeProcessor(node, context);
 
                 graph.CopyNodeOutputValues(node);
+            }
+
+            if (commandSender.commands.Count > 0)
+            {
+                await SendCommands(commandSender);
             }
         }
 
