@@ -342,12 +342,16 @@ namespace OzricEngine.logic
                     {
                         if (desiredOn)
                         {
+                            Log(LogLevel.Info, "Command succeeded, light is on");
+
                             entityState.attributes["brightness"] = brightness;
                             entityState.attributes[colorKey] = colorValue;
                             entityState.attributes["color_mode"] = colorKey == "color_temp" ? "color_temp" : colorKey.Substring(0, colorKey.Length - 6);
                         }
                         else
                         {
+                            Log(LogLevel.Info, "Command succeeded, light is off");
+
                             entityState.attributes["brightness"] = 0;
                         }
                         
