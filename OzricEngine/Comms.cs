@@ -1,29 +1,33 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.Net.NetworkInformation;
 using System.Net.WebSockets;
 using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Threading.Tasks.Dataflow;
 using OzricEngine.ext;
 using OzricEngine.logic;
+using WatsonWebsocket;
 
 namespace OzricEngine
 {
-    public class Comms: OzricObject, IDisposable
+    public class Comms : OzricObject, IDisposable
     {
         public override string Name => "Comms";
 
         public CommsStatus Status => new() { messagePump = messagePumpRunning };
 
-        private Uri uri = new Uri("ws://homeassistant:8123/api/websocket");
+        private Uri uri = new("ws://homeassistant:8123/api/websocket");
 
-        private ClientWebSocket client;
+        private WatsonWsClient client;
 
-        private byte[] buffer = new byte[65536];
         private bool messagePumpRunning;
+        private readonly BufferBlock<string> receivedMessages;
         private readonly BlockingCollection<ServerEvent> pendingEvents;
         private readonly ConcurrentDictionary<int, TaskCompletionSource<ServerResult>> asyncResults;
 
@@ -35,27 +39,31 @@ namespace OzricEngine
         public Comms(string llat)
         {
             this.llat = llat;
-            
+
+            receivedMessages = new BufferBlock<string>();
             pendingEvents = new BlockingCollection<ServerEvent>(new ConcurrentQueue<ServerEvent>());
             asyncResults = new ConcurrentDictionary<int, TaskCompletionSource<ServerResult>>();
         }
 
         private async Task Connect()
         {
-            client = new ClientWebSocket();
-//              client("User-Agent", "Ozric/0.1");
+            client = new WatsonWsClient(uri);
+            client.ConfigureOptions(options => options.SetRequestHeader("User-Agent", "OzricEngine/0.7"));
+            client.MessageReceived += OnMessageReceived;
 
-            CancellationTokenSource cancellation = new CancellationTokenSource();
-            cancellation.CancelAfter(ReceiveTimeout);
+            await client.StartWithTimeoutAsync(ReceiveTimeout.Seconds);
+        }
 
-            await client.ConnectAsync(uri, cancellation.Token);
+        private void OnMessageReceived(object? sender, MessageReceivedEventArgs args)
+        {
+            receivedMessages.Post(Encoding.UTF8.GetString(args.Data));
         }
 
         private void Disconnect()
         {
             try
             {
-                client.Abort();
+                client.Stop();
                 client.Dispose();
             }
             catch (Exception)
@@ -69,40 +77,26 @@ namespace OzricEngine
 
         public async Task<T> Receive<T>()
         {
-            CancellationTokenSource cancellation = new CancellationTokenSource();
-            cancellation.CancelAfter(ReceiveTimeout);
-
-            string json;
-            using (var ms = new MemoryStream())
-            {
-                var bytes = new ArraySegment<byte>(buffer);
-                WebSocketReceiveResult received;
-                do
-                {
-                    received = await client.ReceiveAsync(bytes, cancellation.Token);
-                    ms.Write(bytes.Array, bytes.Offset, received.Count);
-                }
-                while (!received.EndOfMessage);
-
-                ms.Seek(0, SeekOrigin.Begin);
-                
-                using (var reader = new StreamReader(ms, Encoding.UTF8))
-                {
-                    json = reader.ReadToEnd();
-                }
-            }
-
-            Log(LogLevel.Debug,  "<< {0}", json);
-
             try
             {
-                var t = Json.Deserialize<T>(json);
-                receiveHandler?.Invoke(json);
-                return t;
+                string json = await receivedMessages.ReceiveAsync(ReceiveTimeout);
+
+                Log(LogLevel.Debug, "<< {0}", json);
+
+                try
+                {
+                    var t = Json.Deserialize<T>(json);
+                    receiveHandler?.Invoke(json);
+                    return t;
+                }
+                catch (Exception e)
+                {
+                    throw e.Rethrown($"while parsing {json}");
+                }
             }
-            catch (Exception e)
+            catch (TimeoutException)
             {
-                throw e.Rethrown($"while parsing {json}");
+                return default;
             }
         }
 
@@ -115,17 +109,16 @@ namespace OzricEngine
                     cc.id = nextCommandID++;
                 }
             }
-            
+
             CancellationTokenSource cancellation = new CancellationTokenSource();
             cancellation.CancelAfter(SendTimeout);
 
             var json = Json.Serialize(t, t.GetType());
 
-            Log(LogLevel.Debug,  ">> {0}", json);
+            Log(LogLevel.Debug, ">> {0}", json);
             sendHandler?.Invoke(json);
 
-            int length = Encoding.UTF8.GetBytes(json, 0, json.Length, buffer, 0);
-            await client.SendAsync(new ArraySegment<byte>(buffer, 0, length), WebSocketMessageType.Text, true, cancellation.Token);
+            await client.SendAsync(json, WebSocketMessageType.Text, cancellation.Token);
         }
 
         private void WriteLine(string s)
@@ -144,30 +137,30 @@ namespace OzricEngine
         public async Task Authenticate()
         {
             await Connect();
-            
+
             var authReq = await Receive<ServerAuthRequired>();
             Log(LogLevel.Info, "Auth requested by HA {0}", authReq.ha_version);
 
             var auth = new ClientAuth(accessToken: llat);
             await Send(auth);
-            
+
             var authResult = await Receive<ServerMessage>();
             switch (authResult)
             {
                 case ServerAuthOK _:
                     Log(LogLevel.Info, "Auth OK");
                     break;
-                
+
                 case ServerAuthInvalid invalid:
                     throw new Exception($"Auth failed: {invalid.message}");
-                
+
                 default:
                     throw new Exception($"Auth failed: Unexpected result: {authResult}");
             }
         }
 
         private static int nextCommandID = 1;
-        private static object sendCommandLock = new object();
+        private static readonly object sendCommandLock = new object();
 
         public virtual async Task<ServerResult> SendCommand<T>(T command, int millisecondsTimeout) where T : ClientCommand
         {
@@ -175,13 +168,13 @@ namespace OzricEngine
                 throw new Exception("Message pump not running");
 
             TaskCompletionSource<ServerResult> result = new TaskCompletionSource<ServerResult>();
-            
+
             Task send;
-            
+
             lock (sendCommandLock)
             {
                 command.id = nextCommandID++;
-                
+
                 if (!asyncResults.TryAdd(command.id, result))
                     Log(LogLevel.Error, "Failed to register result handler for command {0}", command.id);
 
@@ -193,12 +186,11 @@ namespace OzricEngine
 
             return await result.Task;
         }
-        
+
         /// <summary>
         /// Start the message pump which will continuously receive messages from HA and dispatch to thread-safe queues. 
         /// </summary>
         /// <param name="engine"></param>
-
         public async Task StartMessagePump(Engine engine)
         {
             await Send(new ClientEventSubscribe());
@@ -209,7 +201,7 @@ namespace OzricEngine
 
             _ = Task.Run(() => MessagePump(engine));
         }
-        
+
         private async Task MessagePump(Engine engine)
         {
             try
@@ -219,43 +211,21 @@ namespace OzricEngine
                     try
                     {
                         Log(LogLevel.Trace, "... waiting for messages ...");
-                        
+
                         var message = await Receive<ServerMessage>();
 
-                        Log(LogLevel.Trace, "... checking {0} ...", message.type);
-
-                        switch (message)
+                        if (message == null)
                         {
-                            case ServerEvent ev:
-                            {
-                                pendingEvents.Add(ev);
-                                break;
-                            }
+                            //  No messages? Check server is still reachable
 
-                            case ServerResult result:
-                            {
-                                if (asyncResults.TryGetValue(result.id, out var obj))
-                                {
-                                    Log(LogLevel.Trace, "Got result for command {0}", result.id);
-                                    
-                                    _ = Task.Run(() => obj.SetResult(result));
-                                }
-                                else
-                                {
-                                    Log(LogLevel.Warning, "No task waiting for result of client message {0}, ignored", result.id);
-                                }
-
-                                break;
-                            }
-
-                            default:
-                            {
-                                Log(LogLevel.Warning, "Unknown message type ({0}), ignored", message.type);
-                                break;
-                            }
+                            await PingPong();
+                        }
+                        else
+                        {
+                            HandleMessage(message);
                         }
                     }
-                    catch (WebSocketException e)
+                    catch (Exception e)
                     {
                         Log(LogLevel.Error, "Error receiving message: {0}", e);
 
@@ -268,7 +238,7 @@ namespace OzricEngine
                                 Log(LogLevel.Info, "Reconnecting...");
 
                                 Disconnect();
-                                
+
                                 await Authenticate();
                                 await Send(new ClientEventSubscribe());
                                 await Receive<ServerEventSubscribed>();
@@ -280,10 +250,6 @@ namespace OzricEngine
                             {
                             }
                         }
-                    }
-                    catch (Exception e)
-                    {
-                        Log(LogLevel.Error, "Error handling message: {0}", e);
                     }
                 }
             }
@@ -297,12 +263,73 @@ namespace OzricEngine
             }
         }
 
+        private void HandleMessage(ServerMessage message)
+        {
+            Log(LogLevel.Trace, "... checking {0} ...", message.type);
+
+            try
+            {
+                switch (message)
+                {
+                    case ServerEvent ev:
+                    {
+                        pendingEvents.Add(ev);
+                        break;
+                    }
+
+                    case ServerResult result:
+                    {
+                        if (asyncResults.TryGetValue(result.id ?? -1, out var obj))
+                        {
+                            Log(LogLevel.Trace, "Got result for command {0}", result.id);
+
+                            _ = Task.Run(() => obj.SetResult(result));
+                        }
+                        else
+                        {
+                            Log(LogLevel.Warning, "No task waiting for result of client message ID {0}, ignored", result.id);
+                        }
+
+
+                        break;
+                    }
+
+                    default:
+                    {
+                        Log(LogLevel.Warning, "Unknown message type ({0}), ignored", message.type);
+                        break;
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                Log(LogLevel.Error, "Error handling message: {0}", e);
+            }
+        }
+
+        private async Task PingPong()
+        {
+            await Send(new ClientPing());
+            while (true)
+            {
+                var response = await Receive<ServerMessage>();
+                if (response == null)
+                    throw new Exception("No reply from ping");
+
+                if (response is ServerPong)
+                    break;
+
+                //  Oops, this wasn't the reply
+
+                HandleMessage(response);
+            }
+        }
+
         /// <summary>
         /// Return and remove any events received. Will wait for the timeout period if none are already queued.
         /// </summary>
         /// <param name="millisecondsTimeout"></param>
         /// <returns></returns>
-
         public List<ServerEvent> TakePendingEvents(int millisecondsTimeout)
         {
             if (!messagePumpRunning)
@@ -323,13 +350,14 @@ namespace OzricEngine
         }
 
         public delegate void MessageHandler(string message);
+
         private MessageHandler sendHandler, receiveHandler;
-        
+
         public void OnSend(MessageHandler action)
         {
             sendHandler += action;
         }
-        
+
         public void OnReceive(MessageHandler action)
         {
             receiveHandler += action;
