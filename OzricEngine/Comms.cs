@@ -51,7 +51,7 @@ namespace OzricEngine
             client.ConfigureOptions(options => options.SetRequestHeader("User-Agent", "OzricEngine/0.7"));
             client.MessageReceived += OnMessageReceived;
 
-            await client.StartWithTimeoutAsync(ReceiveTimeout.Seconds);
+            await client.StartWithTimeoutAsync((int)ReceiveTimeout.TotalSeconds);
         }
 
         private void OnMessageReceived(object? sender, MessageReceivedEventArgs args)
