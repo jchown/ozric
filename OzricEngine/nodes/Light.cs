@@ -122,115 +122,29 @@ namespace OzricEngine.logic
                 {
                     case ColorHS hs:
                     {
-                        int h = (int)(hs.h * 360);
-                        int s = (int)(hs.s * 100);
-
-                        if (attributes.color_mode != "hs")
-                        {
-                            if (!attributes.supported_color_modes.Contains("hs"))
-                            {
-                                needsConversion = true;
-                            }
-                            else
-                            {
-                                update.Set("attributes.color_mode != \"hs\"");
-                            }
-                        }
-                        else
-                        {
-                            Log(LogLevel.Debug, "color#hs = {0},{1}", attributes.hs_color[0], attributes.hs_color[1]);
-
-                            update.Check(attributes.hs_color[0] != h);
-                            update.Check(attributes.hs_color[1] != s);
-                        }
-
+                        colorValue = CalcColorValueHS(hs, attributes, update, ref needsConversion);
                         colorKey = "hs_color";
-                        colorValue = new List<int> { h, s };
                         break;
                     }
 
                     case ColorXY xy:
                     {
-                        float x = xy.x;
-                        float y = xy.y;
-
-                        if (attributes.color_mode != "xy")
-                        {
-                            if (!attributes.supported_color_modes.Contains("xy"))
-                            {
-                                needsConversion = true;
-                            }
-                            else
-                            {
-                                update.Set("attributes.color_mode != \"xy\"");
-                            }
-                        }
-                        else
-                        {
-                            Log(LogLevel.Debug, "color#xy = {0},{1}", attributes.xy_color[0], attributes.xy_color[1]);
-
-                            update.Check(attributes.xy_color[0] != x);
-                            update.Check(attributes.xy_color[1] != y);
-                        }
-
+                        colorValue = CalcColorValueXY(xy, attributes, update, ref needsConversion);
                         colorKey = "xy_color";
-                        colorValue = new List<float> { x, y };
                         break;
                     }
 
                     case ColorRGB rgb:
                     {
-                        int r = (int)(rgb.r * 255);
-                        int g = (int)(rgb.g * 255);
-                        int b = (int)(rgb.b * 255);
-
-                        if (attributes.color_mode != "rgb")
-                        {
-                            if (!attributes.supported_color_modes.Contains("rgb"))
-                            {
-                                needsConversion = true;
-                            }
-                            else
-                            {
-                                update.Set("attributes.color_mode != \"rgb\"");
-                            }
-                        }
-                        else
-                        {
-                            Log(LogLevel.Debug, "color#rgb = {0},{1},{2}", attributes.rgb_color[0], attributes.rgb_color[1], attributes.rgb_color[2]);
-
-                            update.Check(attributes.rgb_color[0] != r);
-                            update.Check(attributes.rgb_color[1] != g);
-                            update.Check(attributes.rgb_color[2] != b);
-                        }
-
+                        colorValue = CalcColorValueRGB(rgb, attributes, update, ref needsConversion);
                         colorKey = "color_rgb";
-                        colorValue = new List<int> { r, g, b };
                         break;
                     }
 
                     case ColorTemp temp:
                     {
-                        if (attributes.color_mode != "color_temp")
-                        {
-                            if (!attributes.supported_color_modes.Contains("color_temp"))
-                            {
-                                needsConversion = true;
-                            }
-                            else
-                            {
-                                update.Set("attributes.color_mode != \"color_temp\"");
-                            }
-                        }
-                        else
-                        {
-                            Log(LogLevel.Debug, "color#temp = {0}", attributes.color_temp);
-
-                            update.Check(attributes.color_temp != temp.temp);
-                        }
-
+                        colorValue = CalcColorValueTemp(attributes, update, temp, ref needsConversion);
                         colorKey = "color_temp";
-                        colorValue = temp.temp;
                         break;
                     }
 
@@ -247,31 +161,8 @@ namespace OzricEngine.logic
 
                 if (attributes.supported_color_modes.Contains("xy"))
                 {
-                    //  See https://gist.github.com/popcorn245/30afa0f98eea1c2fd34d
-
-                    desired.GetRGB(out var red, out var green, out var blue);
-                    
-                    red = (red > 0.04045f) ? MathF.Pow((red + 0.055f) / (1.0f + 0.055f), 2.4f) : (red / 12.92f);
-                    green = (green > 0.04045f) ? MathF.Pow((green + 0.055f) / (1.0f + 0.055f), 2.4f) : (green / 12.92f);
-                    blue = (blue > 0.04045f) ? MathF.Pow((blue + 0.055f) / (1.0f + 0.055f), 2.4f) : (blue / 12.92f);
-                    
-                    float X = red * 0.649926f + green * 0.103455f + blue * 0.197109f;
-                    float Y = red * 0.234327f + green * 0.743075f + blue * 0.022598f;
-                    float Z = red * 0.0000000f + green * 0.053077f + blue * 1.035763f;
-
-                    float x = X / (X + Y + Z);
-                    float y = Y / (X + Y + Z);
-
+                    colorValue = ConvertToXY(desired, update, attributes, brightness);
                     colorKey = "xy_color";
-                    colorValue = new List<float> { x, y };
-                    //brightness = (int)(Y * brightness);
-
-                    if (!update.Check(attributes.xy_color == null))
-                    {
-                        update.Check(attributes.xy_color[0] != x);
-                        update.Check(attributes.xy_color[1] != y);
-                        update.Check(attributes.brightness != brightness);
-                    }
                 }
                 /*
                 if (attributes.supported_color_modes.Contains("rgb"))
@@ -359,6 +250,151 @@ namespace OzricEngine.logic
                     }
                 });
             }
+        }
+
+        private static object ConvertToXY(ColorValue desired, UpdateReason update, LightAttributes attributes, int brightness)
+        {
+            object colorValue;
+            //  See https://gist.github.com/popcorn245/30afa0f98eea1c2fd34d
+
+            desired.GetRGB(out var red, out var green, out var blue);
+
+            red = (red > 0.04045f) ? MathF.Pow((red + 0.055f) / (1.0f + 0.055f), 2.4f) : (red / 12.92f);
+            green = (green > 0.04045f) ? MathF.Pow((green + 0.055f) / (1.0f + 0.055f), 2.4f) : (green / 12.92f);
+            blue = (blue > 0.04045f) ? MathF.Pow((blue + 0.055f) / (1.0f + 0.055f), 2.4f) : (blue / 12.92f);
+
+            float X = red * 0.649926f + green * 0.103455f + blue * 0.197109f;
+            float Y = red * 0.234327f + green * 0.743075f + blue * 0.022598f;
+            float Z = red * 0.0000000f + green * 0.053077f + blue * 1.035763f;
+
+            float x = X / (X + Y + Z);
+            float y = Y / (X + Y + Z);
+
+            colorValue = new List<float> { x, y };
+            //brightness = (int)(Y * brightness);
+
+            if (!update.Check(attributes.xy_color == null))
+            {
+                update.Check(attributes.xy_color[0] != x);
+                update.Check(attributes.xy_color[1] != y);
+                update.Check(attributes.brightness != brightness);
+            }
+
+            return colorValue;
+        }
+
+        private object CalcColorValueTemp(LightAttributes attributes, UpdateReason update, ColorTemp temp, ref bool needsConversion)
+        {
+            object colorValue;
+            if (attributes.color_mode != "color_temp")
+            {
+                if (!attributes.supported_color_modes.Contains("color_temp"))
+                {
+                    needsConversion = true;
+                }
+                else
+                {
+                    update.Set("attributes.color_mode != \"color_temp\"");
+                }
+            }
+            else
+            {
+                Log(LogLevel.Debug, "color#temp = {0}", attributes.color_temp);
+
+                update.Check(attributes.color_temp != temp.temp);
+            }
+
+            colorValue = temp.temp;
+            return colorValue;
+        }
+
+        private object CalcColorValueRGB(ColorRGB rgb, LightAttributes attributes, UpdateReason update, ref bool needsConversion)
+        {
+            object colorValue;
+            int r = (int)(rgb.r * 255);
+            int g = (int)(rgb.g * 255);
+            int b = (int)(rgb.b * 255);
+
+            if (attributes.color_mode != "rgb")
+            {
+                if (!attributes.supported_color_modes.Contains("rgb"))
+                {
+                    needsConversion = true;
+                }
+                else
+                {
+                    update.Set("attributes.color_mode != \"rgb\"");
+                }
+            }
+            else
+            {
+                Log(LogLevel.Debug, "color#rgb = {0},{1},{2}", attributes.rgb_color[0], attributes.rgb_color[1], attributes.rgb_color[2]);
+
+                update.Check(attributes.rgb_color[0] != r);
+                update.Check(attributes.rgb_color[1] != g);
+                update.Check(attributes.rgb_color[2] != b);
+            }
+
+            colorValue = new List<int> { r, g, b };
+            return colorValue;
+        }
+
+        private object CalcColorValueXY(ColorXY xy, LightAttributes attributes, UpdateReason update, ref bool needsConversion)
+        {
+            object colorValue;
+            float x = xy.x;
+            float y = xy.y;
+
+            if (attributes.color_mode != "xy")
+            {
+                if (!attributes.supported_color_modes.Contains("xy"))
+                {
+                    needsConversion = true;
+                }
+                else
+                {
+                    update.Set("attributes.color_mode != \"xy\"");
+                }
+            }
+            else
+            {
+                Log(LogLevel.Debug, "color#xy = {0},{1}", attributes.xy_color[0], attributes.xy_color[1]);
+
+                update.Check(attributes.xy_color[0] != x);
+                update.Check(attributes.xy_color[1] != y);
+            }
+
+            colorValue = new List<float> { x, y };
+            return colorValue;
+        }
+
+        private object CalcColorValueHS(ColorHS hs, LightAttributes attributes, UpdateReason update, ref bool needsConversion)
+        {
+            object colorValue;
+            int h = (int)(hs.h * 360);
+            int s = (int)(hs.s * 100);
+
+            if (attributes.color_mode != "hs")
+            {
+                if (!attributes.supported_color_modes.Contains("hs"))
+                {
+                    needsConversion = true;
+                }
+                else
+                {
+                    update.Set("attributes.color_mode != \"hs\"");
+                }
+            }
+            else
+            {
+                Log(LogLevel.Debug, "color#hs = {0},{1}", attributes.hs_color[0], attributes.hs_color[1]);
+
+                update.Check(attributes.hs_color[0] != h);
+                update.Check(attributes.hs_color[1] != s);
+            }
+
+            colorValue = new List<int> { h, s };
+            return colorValue;
         }
 
         private const double MIN_UPDATE_INTERVAL_SECS = 3;
