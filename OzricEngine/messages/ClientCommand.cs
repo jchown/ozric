@@ -13,5 +13,10 @@ namespace OzricEngine
         {
             this.type = type;
         }
+
+        public override string ToString()
+        {
+            return Json.Serialize(this);
+        }
     }
 }

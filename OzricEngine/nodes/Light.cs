@@ -235,6 +235,7 @@ namespace OzricEngine.logic
                         {
                             Log(LogLevel.Info, "Command succeeded, light is on");
 
+                            entityState.state = "on";
                             entityState.attributes["brightness"] = brightness;
                             entityState.attributes[colorKey] = colorValue;
                             entityState.attributes["color_mode"] = colorKey == "color_temp" ? "color_temp" : colorKey.Substring(0, colorKey.Length - 6);
@@ -243,7 +244,7 @@ namespace OzricEngine.logic
                         {
                             Log(LogLevel.Info, "Command succeeded, light is off");
 
-                            entityState.attributes["brightness"] = 0;
+                            entityState.state = "off";
                         }
                         
                         entityState.LogLightState();

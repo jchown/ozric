@@ -178,7 +178,7 @@ namespace OzricEngine
                 if (!asyncResults.TryAdd(command.id, result))
                     Log(LogLevel.Error, "Failed to register result handler for command {0}", command.id);
 
-                Log(LogLevel.Trace, "Sending command {0}", command.id);
+                Log(LogLevel.Info, "Sending command: {0}", command);
                 send = Send(command);
             }
 
