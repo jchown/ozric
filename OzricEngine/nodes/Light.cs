@@ -75,8 +75,8 @@ namespace OzricEngine.logic
         {
             var engine = context.engine;
             
-            //if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
-            //    return;
+            if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
+                return;
             
             var input = GetInput("color");
             if (input == null || input.value == null)
@@ -168,11 +168,12 @@ namespace OzricEngine.logic
                 if (attributes.supported_color_modes.Contains("rgb"))
                 {
                     
-                }
+                }*/
                 else if (attributes.supported_color_modes.Contains("hs"))
                 {
-                    
-                }*/
+                    colorValue = ConvertToHS(desired, update, attributes, brightness);
+                    colorKey = "hs_color";
+                }
                 else
                 {
                     throw new Exception($"Don't know how to convert from {desired.GetType().Name} to a supported mode: [{attributes.supported_color_modes.Join(",")}]");
@@ -188,7 +189,7 @@ namespace OzricEngine.logic
                 {
                     domain = "light",
                     service = desiredOn ? "turn_on" : "turn_off",
-                    target = new Attributes()
+                    target = new Attributes
                     {
                         { "entity_id", new List<string> { entityID } }
                     },
@@ -199,13 +200,39 @@ namespace OzricEngine.logic
                     if (colorKey == null || colorValue == null)
                         throw new Exception("Internal error: No color chosen");
                     
-                    callServices.service_data = new Attributes()
+                    //  Cheap lights don't like changing brightness AND color mode at the same time
+
+                    if (!on || attributes.color_mode != colorKey && brightness != attributes.brightness)
                     {
-                        { "brightness", brightness},
-                        { colorKey, colorValue }
-                    };
-                    
-                    Log(LogLevel.Info, "call service {0}, {1}={2}, brightness {3}", callServices.service, colorKey, colorValue, brightness);
+                        //  Change brightness first
+                        
+                        callServices.service_data = new Attributes
+                        {
+                            { "brightness", brightness}
+                        };
+
+                        Log(LogLevel.Info, "call service {0}, brightness {1} (color mode deferred)", callServices.service, brightness);
+                        colorKey = null;
+                    }
+                    else if (brightness == attributes.brightness)
+                    {
+                        callServices.service_data = new Attributes
+                        {
+                            { colorKey, colorValue }
+                        };
+
+                        Log(LogLevel.Info, "call service {0}, {1}={2}", callServices.service, colorKey, colorValue, brightness);
+                    }
+                    else
+                    {
+                        callServices.service_data = new Attributes
+                        {
+                            { "brightness", brightness },
+                            { colorKey, colorValue }
+                        };
+
+                        Log(LogLevel.Info, "call service {0}, {1}={2}, brightness {3}", callServices.service, colorKey, colorValue, brightness);
+                    }
                 }
                 else
                     Log(LogLevel.Info, "call service {0}", callServices.service);
@@ -237,8 +264,12 @@ namespace OzricEngine.logic
 
                             entityState.state = "on";
                             entityState.attributes["brightness"] = brightness;
-                            entityState.attributes[colorKey] = colorValue;
-                            entityState.attributes["color_mode"] = colorKey == "color_temp" ? "color_temp" : colorKey.Substring(0, colorKey.Length - 6);
+
+                            if (colorKey != null)
+                            {
+                                entityState.attributes[colorKey] = colorValue;
+                                entityState.attributes["color_mode"] = GetColorMode(colorKey);
+                            }
                         }
                         else
                         {
@@ -253,9 +284,13 @@ namespace OzricEngine.logic
             }
         }
 
+        private static string GetColorMode(string colorKey)
+        {
+            return colorKey == "color_temp" ? "color_temp" : colorKey.Substring(0, colorKey.Length - 6);
+        }
+
         private static object ConvertToXY(ColorValue desired, UpdateReason update, LightAttributes attributes, int brightness)
         {
-            object colorValue;
             //  See https://gist.github.com/popcorn245/30afa0f98eea1c2fd34d
 
             desired.GetRGB(out var red, out var green, out var blue);
@@ -271,13 +306,62 @@ namespace OzricEngine.logic
             float x = X / (X + Y + Z);
             float y = Y / (X + Y + Z);
 
-            colorValue = new List<float> { x, y };
+            object colorValue = new List<float> { x, y };
             //brightness = (int)(Y * brightness);
 
             if (!update.Check(attributes.xy_color == null))
             {
                 update.Check(attributes.xy_color[0] != x);
                 update.Check(attributes.xy_color[1] != y);
+                update.Check(attributes.brightness != brightness);
+            }
+
+            return colorValue;
+        }
+
+        
+        private static object ConvertToHS(ColorValue desired, UpdateReason update, LightAttributes attributes, int brightness)
+        {
+            desired.GetRGB(out var r, out var g, out var b);
+
+            //  See https://www.cs.rit.edu/~ncs/color/t_convert.html
+
+            float min = MathF.Min(r, MathF.Min(g, b));
+            float max = MathF.Max(r, MathF.Max(g, b));
+
+            var delta = max - min;
+
+            float h, s;
+
+            if (max == 0)
+            {
+                // r = g = b = 0		// s = 0, v is undefined
+                s = 0;
+                h = 0;
+            }
+            else
+            {
+                s = delta / max; // s
+
+                if (r == max)
+                    h = (g - b) / delta; // between yellow & magenta
+                else if (g == max)
+                    h = 2 + (b - r) / delta; // between cyan & yellow
+                else
+                    h = 4 + (r - g) / delta; // between magenta & cyan
+
+                h *= 60; // degrees
+                if (h < 0)
+                    h += 360;
+            }
+
+            object colorValue = new List<float> { h, s };
+            //brightness = (int)(Y * brightness);
+
+            if (!update.Check(attributes.hs_color == null))
+            {
+                update.Check(attributes.hs_color[0] != h);
+                update.Check(attributes.hs_color[1] != s);
                 update.Check(attributes.brightness != brightness);
             }
 
@@ -398,11 +482,11 @@ namespace OzricEngine.logic
             return colorValue;
         }
 
-        private const double MIN_UPDATE_INTERVAL_SECS = 3;
+        private const double MIN_UPDATE_INTERVAL_SECS = 0.2f;
         public static readonly string[] ATTRIBUTE_KEYS = { "brightness", "color_mode", "xy_color", "hs_color", "rgb_color" };
     }
 
-    internal struct UpdateReason
+    internal class UpdateReason
     {
         public bool update;
         public string reason;

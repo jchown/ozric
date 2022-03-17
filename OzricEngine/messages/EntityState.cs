@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using OzricEngine.ext;
 using OzricEngine.logic;
@@ -62,13 +60,21 @@ namespace OzricEngine
         {
             if (state == "on")
             {
-                string colorMode = attributes["color_mode"].ToString();
-                string colorKey = colorMode switch
+                if (attributes.ContainsKey("color_mode"))
                 {
-                    "color_temp" => "color_temp",
-                    _ => $"{colorMode}_color"
-                };
-                Log(level, "{0}: on, brightness = {1}, {2} = {3}", entity_id, attributes["brightness"], colorMode, attributes[colorKey]);
+                    string colorMode = attributes["color_mode"].ToString();
+                    string colorKey = colorMode switch
+                    {
+                        "color_temp" => "color_temp",
+                        _ => $"{colorMode}_color"
+                    };
+
+                    Log(level, "{0}: on, brightness = {1}, {2} = {3}", entity_id, attributes["brightness"], colorMode, attributes[colorKey]);
+                }
+                else
+                {
+                    Log(level, "{0}: on, brightness = {1}", entity_id, attributes["brightness"]);
+                }
             }
             else
             {

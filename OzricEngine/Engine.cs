@@ -54,7 +54,7 @@ namespace OzricEngine
                     //  Avoid spinning constantly by waiting for an event (that we aren't responsible for)
                     //  OR a period of time has elapsed.
 
-                    DateTime waitTimeout = home.GetTime().AddSeconds(3);
+                    DateTime waitTimeout = home.GetTime().AddMilliseconds(100);
 
                     while (true)
                     {
