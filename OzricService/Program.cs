@@ -1,8 +1,10 @@
+using System.Collections;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.FileProviders;
 using OzricEngine;
 using OzricEngine.engine;
+using OzricEngine.ext;
 using OzricService;
 using OzricService.Model;
 
@@ -15,6 +17,11 @@ StaticFileOptions? staticFileOptions;
     
 Console.WriteLine($"Web root: {builder.Environment.WebRootPath}");
 Console.WriteLine($"Content root: {builder.Environment.ContentRootPath}");
+
+Console.WriteLine("Environment:");
+var env = Environment.GetEnvironmentVariables();
+foreach (DictionaryEntry o in env)
+    Console.WriteLine($"  {o.Key}={o.Value}");
 
 if (Directory.Exists(dockerWwwRoot))
 {
