@@ -75,9 +75,6 @@ namespace OzricEngine.logic
         {
             var engine = context.engine;
             
-            if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
-                return;
-            
             var input = GetInput("color");
             if (input == null || input.value == null)
             {
@@ -86,6 +83,8 @@ namespace OzricEngine.logic
             }
 
             var entityState = engine.home.GetEntityState(entityID);
+            if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
+                return;
 
             if (entityState.IsOverridden(engine.home.GetTime(), secondsToAllowOverrideByOthers))
             {
@@ -200,31 +199,35 @@ namespace OzricEngine.logic
                     if (colorKey == null || colorValue == null)
                         throw new Exception("Internal error: No color chosen");
                     
-                    //  Cheap lights don't like changing brightness AND color mode at the same time
-
-                    if (!on || attributes.color_mode != colorKey && brightness != attributes.brightness)
+                    // Cheap lights (in my case model tuyatec_zn9wyqtr_rh3040) don't like
+                    // changing brightness AND color mode at the same time
+                    
+                    if (on && brightness == attributes.brightness || attributes.color_mode != GetColorMode(colorKey))
                     {
-                        //  Change brightness first
+                        //  Just change color
                         
-                        callServices.service_data = new Attributes
-                        {
-                            { "brightness", brightness}
-                        };
-
-                        Log(LogLevel.Info, "call service {0}, brightness {1} (color mode deferred)", callServices.service, brightness);
-                        colorKey = null;
-                    }
-                    else if (brightness == attributes.brightness)
-                    {
                         callServices.service_data = new Attributes
                         {
                             { colorKey, colorValue }
                         };
 
-                        Log(LogLevel.Info, "call service {0}, {1}={2}", callServices.service, colorKey, colorValue, brightness);
+                        Log(LogLevel.Info, "call service {0}, {1}={2}", callServices.service, colorKey, colorValue);
+                    }
+                    else if (on && brightness != attributes.brightness && attributes.color_mode == GetColorMode(colorKey))
+                    {
+                        //  Just change brightness
+                        
+                        callServices.service_data = new Attributes
+                        {
+                            { "brightness", brightness },
+                        };
+
+                        Log(LogLevel.Info, "call service {0}, brightness {1}", callServices.service, brightness);
                     }
                     else
                     {
+                        //  Already in right color mode, so safe to change everything
+                        
                         callServices.service_data = new Attributes
                         {
                             { "brightness", brightness },
@@ -237,9 +240,10 @@ namespace OzricEngine.logic
                 else
                     Log(LogLevel.Info, "call service {0}", callServices.service);
                 
+                entityState.last_updated = engine.home.GetTime();
                 entityState.lastUpdatedByOzric = engine.home.GetTime();
 
-                context.commandSender.Add(callServices, (result) =>
+                context.commandSender.Add(callServices, result =>
                 {
                     if (result == null)
                     {
@@ -253,6 +257,7 @@ namespace OzricEngine.logic
                         return;
                     }
                     
+                    /*
                     //  Success, record the state (the actual color the light uses may be subtly different, if it's gamut doesn't support
                     //  it, for example, so we assume that it is what we asked and then ignore the actual state changes from the device) 
 
@@ -279,7 +284,7 @@ namespace OzricEngine.logic
                         }
                         
                         entityState.LogLightState();
-                    }
+                    }*/
                 });
             }
         }
@@ -311,8 +316,8 @@ namespace OzricEngine.logic
 
             if (!update.Check(attributes.xy_color == null))
             {
-                update.Check(attributes.xy_color[0] != x);
-                update.Check(attributes.xy_color[1] != y);
+                update.CheckApprox(attributes.xy_color[0], x, 0.1f);
+                update.CheckApprox(attributes.xy_color[1], y, 0.1f);
                 update.Check(attributes.brightness != brightness);
             }
 
@@ -360,8 +365,8 @@ namespace OzricEngine.logic
 
             if (!update.Check(attributes.hs_color == null))
             {
-                update.Check(attributes.hs_color[0] != h);
-                update.Check(attributes.hs_color[1] != s);
+                update.CheckApprox(attributes.hs_color[0], h, 0.5f);
+                update.CheckApprox(attributes.hs_color[1], s, 0.5f);
                 update.Check(attributes.brightness != brightness);
             }
 
@@ -474,8 +479,8 @@ namespace OzricEngine.logic
             {
                 Log(LogLevel.Debug, "color#hs = {0},{1}", attributes.hs_color[0], attributes.hs_color[1]);
 
-                update.Check(attributes.hs_color[0] != h);
-                update.Check(attributes.hs_color[1] != s);
+                update.CheckApprox(attributes.hs_color[0], h, 0.5f);
+                update.CheckApprox(attributes.hs_color[1], s, 0.5f);
             }
 
             colorValue = new List<int> { h, s };
@@ -491,12 +496,21 @@ namespace OzricEngine.logic
         public bool update;
         public string reason;
 
-        public bool Check(bool condition, [CallerArgumentExpression("condition")] string reason = null)
+        public void CheckApprox(float v0, float v1, float epsilon, [CallerArgumentExpression("condition")] string v0s = null, [CallerArgumentExpression("condition")] string v1s = null)
+        {
+            if (!update && Math.Abs(v0 - v1) < epsilon)
+            {
+                update = true;
+                reason = $"{v0s} !~= {v1s}";
+            }
+        }
+
+        public bool Check(bool condition, [CallerArgumentExpression("condition")] string conditionString = null)
         {
             if (!update && condition)
             {
                 update = true;
-                this.reason = reason;
+                reason = conditionString;
             }
 
             return update;

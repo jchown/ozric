@@ -63,10 +63,17 @@ namespace OzricEngine
                             break;
 
                         var events = comms.TakePendingEvents(millisToWait);
-                        if (events.Count > 0 && !paused)
+                        if (events.Count > 0)
                         {
-                            if (ProcessEvents(events))
-                                break;
+                            if (!paused)
+                            {
+                                if (ProcessEvents(events))
+                                    break;
+                            }
+                            else
+                            {
+                                Log(LogLevel.Debug, "Paused: Discarding events");
+                            }
                         }
                     }
                 }
@@ -90,18 +97,21 @@ namespace OzricEngine
         protected bool ProcessEvents(List<ServerEvent> events)
         {
             var external = false;
-            
+
             foreach (var ev in events)
             {
-                Log(LogLevel.Trace, "Processing event: {0}", ev);
+                Log(LogLevel.Debug, "Processing event: {0}", ev);
 
-                var contextID = ev.payload.context.id;
-                if (originatedContexts.Any(oc => oc.callService.context.id == contextID))
+                if (IGNORE_OWN_STATE_CHANGES)
                 {
-                    Log(LogLevel.Trace, "Originated locally, ignored");
-                    continue;
+                    var contextID = ev.payload.context.id;
+                    if (originatedContexts.Any(oc => oc.callService.context.id == contextID))
+                    {
+                        Log(LogLevel.Info, "Originated locally, ignored");
+                        continue;
+                    }
                 }
-                    
+
                 try
                 {
                     switch (ev.payload)
@@ -131,6 +141,14 @@ namespace OzricEngine
 
             return external;
         }
+        
+        /// <summary>
+        /// One tactic to "the color we set is not the color the light uses" is to ignore the actual
+        /// state that gets sent back and assume it did what we asked. This doesn't work if the
+        /// setting mechanism isn't robust and we need to retry.
+        /// </summary>
+
+        private const bool IGNORE_OWN_STATE_CHANGES = false;
 
         /// <summary>
         /// Process a service call. Tries to find if it is due to one of our command sends. 
@@ -144,7 +162,7 @@ namespace OzricEngine
 
             for (int i = 0; i < sentCommands.Count;)
             {
-                if (sentCommands[i].command is ClientCallService ccs)
+                if (IGNORE_OWN_STATE_CHANGES && sentCommands[i].command is ClientCallService ccs)
                 {
                     if (callService.data.OriginatedBy(ccs))
                     {
@@ -177,6 +195,12 @@ namespace OzricEngine
         {
             var newState = stateChanged.data.new_state;
 
+            if (newState.state == "unavailable")
+            {
+                Log(LogLevel.Debug, "Entity {0}: {1}, ignoring", newState.entity_id, newState.state);
+                return false;
+            }
+
             var entityState = home.GetEntityState(newState.entity_id);
             if (entityState == null)
             {
@@ -184,45 +208,39 @@ namespace OzricEngine
                 return false;
             }
 
-            if (newState.state == "unavailable")
-            {
-                Log(LogLevel.Debug, "Entity {0}: {1}, ignoring", newState.entity_id, newState.state);
-                return false;
-            }
+            Log(LogLevel.Info, "Event - {0}: {1}", newState.entity_id, newState.state);
 
-            if (entityState.entity_id.StartsWith("light."))
+            lock (entityState)
             {
-                //  Check only the relevant details, ignoring timers etc.
-
-                if (entityState.state == newState.state && entityState.attributes.EqualsKeys(newState.attributes, Light.ATTRIBUTE_KEYS))
+                if (entityState.entity_id.StartsWith("light."))
                 {
-                    Log(LogLevel.Debug, "Entity {0}: unchanged, ignoring", newState.entity_id);
-                    return false;
+                    //  Check only the relevant details, ignoring timers etc.
+
+                    if (entityState.state == newState.state && entityState.attributes.EqualsKeys(newState.attributes, Light.ATTRIBUTE_KEYS))
+                    {
+                        Log(entityState.entity_id.Contains("panasonic") ? LogLevel.Debug : LogLevel.Info, "Entity {0}: unchanged, ignoring", newState.entity_id);
+                        return false;
+                    }
                 }
-            }
 
-            var now = home.GetTime();
-            var expected = entityState.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS);
-            if (!expected)
-            {
-                lock (entityState)
+                var now = home.GetTime();
+                var expected = IGNORE_OWN_STATE_CHANGES && entityState.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS);
+                if (!expected)
                 {
-                    entityState.lastUpdatedByOther = now;
                     entityState.state = newState.state;
                     entityState.attributes = newState.attributes;
-                    entityState.last_updated = newState.last_updated;
-                    entityState.last_changed = newState.last_changed;
+                    entityState.last_updated = now;
 
                     if (entityState.entity_id.StartsWith("light."))
                         entityState.LogLightState();
                 }
-            }
-            else
-            {
-                Log(LogLevel.Info, "Expected: {0}: {1}", newState.entity_id, newState.state);
-            }
+                else
+                {
+                    Log(LogLevel.Info, "Expected: {0}: {1}", newState.entity_id, newState.state);
+                }
 
-            return !expected;
+                return !expected;
+            }
         }
 
         public async Task InitNodes()

@@ -1,12 +1,8 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.IO;
-using System.Net.NetworkInformation;
 using System.Net.WebSockets;
 using System.Text;
-using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
@@ -160,7 +156,7 @@ namespace OzricEngine
         }
 
         private static int nextCommandID = 1;
-        private static readonly object sendCommandLock = new object();
+        private static readonly object sendCommandLock = new();
 
         public virtual async Task<ServerResult> SendCommand<T>(T command, int millisecondsTimeout) where T : ClientCommand
         {
@@ -337,14 +333,13 @@ namespace OzricEngine
 
             var taken = new List<ServerEvent>();
 
-            if (pendingEvents.Count == 0)
+            if (pendingEvents.TryTake(out var ev1, millisecondsTimeout))
             {
-                if (pendingEvents.TryTake(out var ev, millisecondsTimeout))
-                    taken.Add(ev);
-            }
+                taken.Add(ev1);
 
-            while (pendingEvents.TryTake(out var ev))
-                taken.Add(ev);
+                while (pendingEvents.TryTake(out var ev2))
+                    taken.Add(ev2);
+            }
 
             return taken;
         }
