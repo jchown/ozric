@@ -17,7 +17,7 @@ namespace OzricEngine
         public override string Name => "Comms";
 
         public static Uri INGRESS_API = new("ws://supervisor/core/websocket");
-        public static Uri CORE_API = new("ws://homeassistant:8123/api/websocket")
+        public static Uri CORE_API = new("ws://homeassistant:8123/api/websocket");
 
         public CommsStatus Status => new() { messagePump = messagePumpRunning };
 
@@ -57,7 +57,7 @@ namespace OzricEngine
             await client.StartWithTimeoutAsync((int)ReceiveTimeout.TotalSeconds);
         }
 
-        private void OnMessageReceived(object? sender, MessageReceivedEventArgs args)
+        private void OnMessageReceived(object sender, MessageReceivedEventArgs args)
         {
             receivedMessages.Post(Encoding.UTF8.GetString(args.Data));
         }
