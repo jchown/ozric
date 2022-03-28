@@ -498,7 +498,7 @@ namespace OzricEngine.logic
 
         public void CheckApprox(float v0, float v1, float epsilon, [CallerArgumentExpression("v0")] string v0s = null, [CallerArgumentExpression("v1")] string v1s = null)
         {
-            if (!update && Math.Abs(v0 - v1) < epsilon)
+            if (!update && Math.Abs(v0 - v1) > epsilon)
             {
                 update = true;
                 reason = $"{v0s} ({v0:F2}) !~= {v1s} ({v1:F2}), ε={epsilon:F2}";
