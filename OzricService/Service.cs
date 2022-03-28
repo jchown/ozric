@@ -46,7 +46,22 @@ public class Service
             Console.WriteLine($"Failed to load graph: {e.Message}");
         }
 
-        var connection = new Comms(Options.Instance.token);
+        string token;
+        Uri uri;
+
+        if (Options.Instance.token == "")
+        {
+            uri = Comms.INGRESS_API;
+            token = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN") ?? throw new Exception("No supervisor token");
+        }
+        else
+        {
+            uri = Comms.CORE_API;
+            token = Options.Instance.token;
+        }
+        
+
+        var connection = new Comms(uri, token);
 
         await connection.Authenticate();
 

@@ -16,10 +16,12 @@ namespace OzricEngine
     {
         public override string Name => "Comms";
 
+        public static Uri INGRESS_API = new("ws://supervisor/core/websocket");
+        public static Uri CORE_API = new("ws://homeassistant:8123/api/websocket")
+
         public CommsStatus Status => new() { messagePump = messagePumpRunning };
 
-        private Uri uri = new("ws://homeassistant:8123/api/websocket");
-
+        private readonly Uri uri;
         private WatsonWsClient client;
 
         private bool messagePumpRunning;
@@ -32,8 +34,13 @@ namespace OzricEngine
 
         private readonly string llat;
 
-        public Comms(string llat)
+        public Comms(string llat): this(CORE_API, llat)
         {
+        }
+
+        public Comms(Uri uri, string llat)
+        {
+            this.uri = uri;
             this.llat = llat;
 
             receivedMessages = new BufferBlock<string>();
