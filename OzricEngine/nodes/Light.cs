@@ -501,7 +501,7 @@ namespace OzricEngine.logic
             if (!update && Math.Abs(v0 - v1) < epsilon)
             {
                 update = true;
-                reason = $"{v0s} !~= {v1s}";
+                reason = $"{v0s} ({v0:F2}) !~= {v1s} ({v1:F2}), ε={epsilon:F2}";
             }
         }
 
