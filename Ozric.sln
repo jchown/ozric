@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OzricEngineTests", "OzricEn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzricService", "OzricService\OzricService.csproj", "{CD44D658-5FAD-4C3B-A79E-3B2F81D04432}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OzricUI", "OzricUI\OzricUI.csproj", "{1AC89A96-291C-49A6-802D-A21EE6F6EE69}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{CD44D658-5FAD-4C3B-A79E-3B2F81D04432}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CD44D658-5FAD-4C3B-A79E-3B2F81D04432}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CD44D658-5FAD-4C3B-A79E-3B2F81D04432}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1AC89A96-291C-49A6-802D-A21EE6F6EE69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1AC89A96-291C-49A6-802D-A21EE6F6EE69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1AC89A96-291C-49A6-802D-A21EE6F6EE69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1AC89A96-291C-49A6-802D-A21EE6F6EE69}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

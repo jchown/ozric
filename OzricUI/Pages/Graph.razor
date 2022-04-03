@@ -1,0 +1,34 @@
+﻿@page "/graph"
+
+<PageTitle>Graph</PageTitle>
+
+@using OzricUI.Data
+@inject OzricEngineService ozricEngine
+
+<h1>Graph</h1>
+
+@if (graph == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <ul>
+    @foreach (var node in graph.nodes)
+    {
+        <li>@node.Value.id</li>
+    }
+    </ul>
+    <pre>
+        @graph.edges.Count edges loaded
+    </pre>
+}
+
+@code {
+    private OzricEngine.Graph? graph;
+
+    protected override async Task OnInitializedAsync()
+    {
+        graph = await ozricEngine.GetGraphAsync();
+    }
+}

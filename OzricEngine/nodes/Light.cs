@@ -487,7 +487,7 @@ namespace OzricEngine.logic
             return colorValue;
         }
 
-        private const double MIN_UPDATE_INTERVAL_SECS = 0.2f;
+        private const double MIN_UPDATE_INTERVAL_SECS = 0.5f;
         public static readonly string[] ATTRIBUTE_KEYS = { "brightness", "color_mode", "xy_color", "hs_color", "rgb_color" };
     }
 

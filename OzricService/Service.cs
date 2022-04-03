@@ -29,39 +29,17 @@ public class Service
 
         try
         {
-            if (File.Exists(GRAPH_FILENAME))
-            {
-                var json = File.ReadAllText(GRAPH_FILENAME);
-                graph = Json.Deserialize<Graph>(json);
-                
-                Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count}");
-            }
-            else
-            {
-                Console.WriteLine("No graph files exists");
-            }
+            var json = File.ReadAllText(GRAPH_FILENAME);
+            graph = Json.Deserialize<Graph>(json);
+            
+            Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count}");
         }
         catch (Exception e)
         {
             Console.WriteLine($"Failed to load graph: {e.Message}");
         }
 
-        string token;
-        Uri uri;
-
-        if (Options.Instance.token == "")
-        {
-            uri = Comms.INGRESS_API;
-            token = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN") ?? throw new Exception("No supervisor token");
-        }
-        else
-        {
-            uri = Comms.CORE_API;
-            token = Options.Instance.token;
-        }
-        
-
-        var connection = new Comms(uri, token);
+        var connection = Connect();
 
         await connection.Authenticate();
 
@@ -74,6 +52,25 @@ public class Service
         engine = new Engine(home, graph, connection);
 
         mainLoop = Task.Run(() => engine.MainLoop());
+    }
+
+    private static Comms Connect()
+    {
+        var supervisor = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN");
+        if (supervisor != null)
+        {
+            var connection = new Comms(Comms.INGRESS_API, supervisor);
+            return connection;
+        }
+        
+        var core = Environment.GetEnvironmentVariable("CORE_TOKEN");
+        if (core != null)
+        {
+            var connection = new Comms(Comms.CORE_API, core);
+            return connection;
+        }
+        
+        throw new Exception("No tokens");
     }
 
     public Task Stop(CancellationToken cancellationToken)
