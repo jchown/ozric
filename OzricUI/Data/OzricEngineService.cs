@@ -14,6 +14,27 @@ public class OzricEngineService
         return Get<Graph>("api/graph");
     }
 
+    public async Task<GraphLayout> GetGraphLayoutAsync()
+    {
+        try
+        {
+            var json = await File.ReadAllTextAsync("/data/graph_layout.json");
+            var graphLayout = Json.Deserialize<GraphLayout>(json);
+            return graphLayout;
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Failed to load graph layout: {e}");
+            return new GraphLayout();
+        }
+    }
+
+    public async Task SetGraphLayoutAsync(GraphLayout graphLayout)
+    {
+        var json = Json.Serialize<GraphLayout>(graphLayout);
+        await File.WriteAllTextAsync("/data/graph_layout.json", json);
+    }
+
     private async Task<TObject> Get<TObject>(string apiPath)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:8099/{apiPath}")

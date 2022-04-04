@@ -11,7 +11,7 @@ namespace OzricEngine
 {
     /// <summary>
     /// The nodes & edges (connections between nodes) that make up the logical flow of our system.
-    /// More stricly a Directed Acyclic Graph (DAG).  
+    /// More strictly a Directed Acyclic Graph (DAG).  
     /// </summary>
     public class Graph: OzricObject, IEquatable<Graph>
     {
