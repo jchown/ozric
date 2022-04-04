@@ -10,4 +10,8 @@
     <ProjectReference Include="..\OzricEngine\OzricEngine.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Z.Blazor.Diagrams" Version="2.1.6" />
+  </ItemGroup>
+
 </Project>
