@@ -11,6 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="MatBlazor" Version="2.8.0" />
     <PackageReference Include="Z.Blazor.Diagrams" Version="2.1.6" />
   </ItemGroup>
 

@@ -1,5 +1,4 @@
-using Microsoft.AspNetCore.Components;
-using Microsoft.AspNetCore.Components.Web;
+using MatBlazor;
 using OzricUI.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -9,6 +8,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<OzricEngineService>();
+builder.Services.AddMatBlazor();
 
 var app = builder.Build();
 

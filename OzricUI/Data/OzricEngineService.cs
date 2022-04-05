@@ -24,7 +24,7 @@ public class OzricEngineService
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Failed to load graph layout: {e}");
+            Console.WriteLine($"Failed to load graph layout: {e.Message}");
             return new GraphLayout();
         }
     }

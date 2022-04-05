@@ -8,8 +8,15 @@
 @using OzricEngine.logic
 @inject OzricEngineService ozricEngine
 
-<h1>Graph</h1>
+<div class="top-row px-4">
+
+    <MatButton Icon="edit" @onclick="SetEditMode" aria-readonly="@IsNotEditable">
+        Edit
+    </MatButton>
     
+</div>
+
+
 @if (graph == null)
 {
     <p><em>Loading...</em></p>
@@ -24,6 +31,21 @@ else
 }
 
 @code {
+
+    enum EditMode
+    {
+        View, EditOffline, EditOnline
+    }
+    
+    enum OnlineMode
+    {
+        Realtime, Simulated
+    }
+
+    private EditMode mode = EditMode.View;
+    
+    public bool IsNotEditable => mode != EditMode.View;
+
     private OzricEngine.Graph? graph;
     private GraphLayout? graphLayout;
     private Dictionary<string, NodeModel> nodesInDiagram = new();
@@ -56,13 +78,18 @@ else
         
         PopulateDiagram();
     }
+
+    private void SetEditMode()
+    {
+        mode = EditMode.EditOffline;
+    }
         
     private void PopulateDiagram()
     {
         nodesInDiagram.Clear();
         edgesInDiagram.Clear();
 
-        int x = 0, y = 0, w = 160, h = 120, cols = 8; 
+        int x = 0, y = 0, w = 160, h = 120, cols = 6; 
         
         foreach (var node in graph.nodes)
         {
@@ -109,4 +136,5 @@ else
         nodeModel.AddPort(PortAlignment.Right);
         return nodeModel;
     }
+
 }

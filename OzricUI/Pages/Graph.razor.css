@@ -1,4 +1,4 @@
 .diagram-container {
-    width: 600px;
-    height: 400px;
+    width: 100%;
+    height: calc(100% - 1.5rem);
 }
