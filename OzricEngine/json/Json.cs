@@ -34,6 +34,18 @@ namespace OzricEngine
                 throw e.Rethrown($"... while parsing {json}");
             }
         }
+        
+        /// <summary>
+        /// Use JSON serialisation to take a deep copy of an object 
+        /// </summary>
+        /// <param name="original"></param>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+
+        public static T Clone<T>(T original)
+        {
+            return Deserialize<T>(Serialize(original));
+        }
 
         public delegate TObject CreateObject<out TObject>(ref Utf8JsonReader reader);
 

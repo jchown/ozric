@@ -4,14 +4,23 @@
 
 @using OzricUI.Data
 @using Blazor.Diagrams.Components
+@using OzricEngine
 @using OzricEngine.ext
 @using OzricEngine.logic
 @inject OzricEngineService ozricEngine
 
-<div class="top-row px-4">
+<div class="top-row px-2 py-2">
 
-    <MatButton Icon="edit" @onclick="SetEditMode" aria-readonly="@IsNotEditable">
+    <MatButton Icon="edit" Raised="true" @onclick="OnClickEdit" Disabled="@IsEditing" hidden="@IsEditing">
         Edit
+    </MatButton>
+
+    <MatButton Icon="cancel" Raised="true" @onclick="OnClickCancel" Disabled="@IsNotEditing" hidden="@IsNotEditing">
+        Cancel
+    </MatButton>
+
+    <MatButton Icon="save" Raised="true" @onclick="OnClickSave" Disabled="@IsChanged" hidden="@IsNotEditing">
+        Save
     </MatButton>
     
 </div>
@@ -44,11 +53,18 @@ else
 
     private EditMode mode = EditMode.View;
     
-    public bool IsNotEditable => mode != EditMode.View;
+    private bool IsEditing => mode != EditMode.View;
+    private bool IsNotEditing => mode == EditMode.View;
+    private bool IsChanged => (graph != null && !graph.Equals(editGraph)) || (graphLayout != null && !graphLayout.Equals(editGraphLayout));
 
     private OzricEngine.Graph? graph;
     private GraphLayout? graphLayout;
-    private Dictionary<string, NodeModel> nodesInDiagram = new();
+    
+    private OzricEngine.Graph? editGraph;
+    private GraphLayout? editGraphLayout;
+    
+    private Dictionary<string, NodeModel> graphNodeIDsToDiagramNodes = new();
+    private Dictionary<string, string> diagramNodeIDsToGraphIDs = new();
     private Dictionary<string, LinkModel> edgesInDiagram = new();
     private Diagram? diagram { get; set; }
 
@@ -79,14 +95,41 @@ else
         PopulateDiagram();
     }
 
-    private void SetEditMode()
+    private void OnClickEdit()
     {
         mode = EditMode.EditOffline;
+
+        editGraph = Json.Clone(graph);
+        editGraphLayout = Json.Clone(graphLayout);
+    }
+
+    private async Task OnClickSave()
+    {
+        if (graphLayout != null && !graphLayout.Equals(editGraphLayout))
+        {
+            await ozricEngine.SetGraphLayoutAsync(editGraphLayout);
+            graphLayout = editGraphLayout;
+            editGraphLayout = null;
+        }
+
+        mode = EditMode.EditOffline;
+    }
+
+    private void OnClickCancel()
+    {
+        mode = EditMode.View;
+        graph = editGraph;
+        graphLayout = editGraphLayout;
+        editGraph = null;
+        editGraphLayout = null;
+        
+        PopulateDiagram();
     }
         
     private void PopulateDiagram()
     {
-        nodesInDiagram.Clear();
+        graphNodeIDsToDiagramNodes.Clear();
+        diagramNodeIDsToGraphIDs.Clear();
         edgesInDiagram.Clear();
 
         int x = 0, y = 0, w = 160, h = 120, cols = 6; 
@@ -104,7 +147,8 @@ else
                 return point;
             }));
             
-            nodesInDiagram[node.Key] = diagramNode;
+            graphNodeIDsToDiagramNodes[node.Key] = diagramNode;
+            diagramNodeIDsToGraphIDs[diagramNode.Id] = node.Value.id;
             diagram.Nodes.Add(diagramNode);
         }
 
@@ -117,8 +161,8 @@ else
             {
                 foreach (var toInput in fromOutputs[fromOutput])
                 {
-                    var fromD = nodesInDiagram[fromNodeID]; 
-                    var toD = nodesInDiagram[toInput.nodeID];
+                    var fromD = graphNodeIDsToDiagramNodes[fromNodeID]; 
+                    var toD = graphNodeIDsToDiagramNodes[toInput.nodeID];
                     
                     diagram.Links.Add(new LinkModel(fromD.GetPort(PortAlignment.Right), toD.GetPort(PortAlignment.Left)));
                 }
@@ -134,7 +178,18 @@ else
         nodeModel.AddPort(PortAlignment.Top);
         nodeModel.AddPort(PortAlignment.Left);
         nodeModel.AddPort(PortAlignment.Right);
+        nodeModel.Moving += OnNodeModelMoving;
         return nodeModel;
     }
 
+    private void OnNodeModelMoving(NodeModel nodeModel)
+    {
+        var nodeID = diagramNodeIDsToGraphIDs[nodeModel.Id];
+        if (nodeID == null)
+            throw new Exception("Node not found");
+
+        Console.WriteLine($"{nodeID} = {nodeModel.Position}");
+
+        editGraphLayout.nodeLayout[nodeID] = nodeModel.Position;
+    }
 }
