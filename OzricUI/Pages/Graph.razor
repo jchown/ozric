@@ -165,14 +165,14 @@ else
         {
             var diagramNode = NewNode(node.Value, graphLayout.nodeLayout.GetOrSet(node.Key, () =>
             {
-                var point = new Point(x * w, y * h);
+                var point = new LayoutPoint(x * w, y * h);
                 if (++x == cols)
                 {
                     x = 0;
                     ++y;
                 }
                 return point;
-            }));
+            }).ToPoint());
             
             graphNodeIDsToDiagramNodes[node.Key] = diagramNode;
             diagramNodeIDsToGraphIDs[diagramNode.Id] = node.Value.id;
@@ -218,7 +218,9 @@ else
         if (nodeID == null)
             throw new Exception("Node not found");
 
-        editGraphLayout.nodeLayout[nodeID] = nodeModel.Position;
+        editGraphLayout.nodeLayout[nodeID] = LayoutPoint.FromPoint(nodeModel.Position);
+
+        StateHasChanged();
     }
     
     private void SetLocked(bool locked)

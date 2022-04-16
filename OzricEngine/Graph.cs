@@ -213,11 +213,12 @@ namespace OzricEngine
             }
         }
 
+        #region Comparison
         public bool Equals(Graph other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(nodes, other.nodes) && Equals(edges, other.edges);
+            return nodes.SequenceEqual(other.nodes) && edges.SequenceEqual(other.edges);
         }
 
         public override bool Equals(object obj)
@@ -232,5 +233,6 @@ namespace OzricEngine
         {
             return HashCode.Combine(nodes, edges);
         }
+        #endregion
     }
 }
