@@ -23,11 +23,11 @@
         Save
     </MatButton>
 
-    <MatButton Icon="undo" Raised="true" @onclick="OnClickUndo" Disabled="@CanUndo" hidden="@IsNotEditing">
+    <MatButton Icon="undo" Raised="true" @onclick="OnClickUndo" Disabled="@CanNotUndo" hidden="@IsNotEditing">
         Undo
     </MatButton>
 
-    <MatButton Icon="redo" Raised="true" @onclick="OnClickRedo" Disabled="@CanRedo" hidden="@IsNotEditing">
+    <MatButton Icon="redo" Raised="true" @onclick="OnClickRedo" Disabled="@CanNotRedo" hidden="@IsNotEditing">
         Redo
     </MatButton>
     
@@ -66,6 +66,8 @@ else
     private bool IsChanged => (graph != null && !graph.Equals(editGraph)) || (graphLayout != null && !graphLayout.Equals(editGraphLayout));
     private bool CanUndo => history?.CanUndo() ?? false;
     private bool CanRedo => history?.CanRedo() ?? false;
+    private bool CanNotUndo => !CanUndo;
+    private bool CanNotRedo => !CanRedo;
 
     private OzricEngine.Graph? graph;
     private GraphLayout? graphLayout;
