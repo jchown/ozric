@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using OzricEngine.ext;
 using OzricEngine.logic;
+using OzricEngine.nodes;
 
 namespace OzricEngine
 {
@@ -18,14 +17,8 @@ namespace OzricEngine
         [JsonIgnore]
         public override string Name => "Graph";
 
-        public Dictionary<string, Node> nodes { get; set; }
-        public Dictionary<string, Dictionary<string, List<InputSelector>>> edges { get; set; }
-
-        public Graph()
-        {
-            nodes = new Dictionary<string, Node>();
-            edges = new Dictionary<string, Dictionary<string, List<InputSelector>>>();
-        }
+        public Dictionary<string, Node> nodes { get; set; } = new();
+        public Dictionary<string, Edge> edges { get; set; } = new();
         
         public IEnumerable<string> GetNodeIDs()
         {
@@ -53,16 +46,16 @@ namespace OzricEngine
             if (!nodes.ContainsKey(inputNodeID))
                 throw new Exception($"No node found with ID {inputNodeID}");
 
-            var nodeOutputs = edges.GetOrSet(outputNodeID, () => new Dictionary<string, List<InputSelector>>());
-            var pinOutputs = nodeOutputs.GetOrSet(outputPinName, () => new List<InputSelector>()); 
-            pinOutputs.Add(new InputSelector(inputNodeID, inputPinName));
+            var edge = new Edge(new(outputNodeID, outputPinName), new (inputNodeID, inputPinName));
+            edges[edge.id] = edge;
 
             Log(LogLevel.Debug, "{0}.{1} -> {2}.{3}", outputNodeID, outputPinName, inputNodeID, inputPinName);
         }
 
         public void Disconnect(string outputNodeID, string outputPinName, string inputNodeID, string inputPinName)
         {
-            edges[outputNodeID][outputPinName].Remove(new InputSelector(inputNodeID, inputPinName));
+            var edgeID = Edge.GetID(outputNodeID, outputPinName, inputNodeID, inputPinName);
+            edges.Remove(edgeID);
 
             Log(LogLevel.Debug, "{0}.{1} xx {2}.{3}", outputNodeID, outputPinName, inputNodeID, inputPinName);
         }
@@ -73,8 +66,8 @@ namespace OzricEngine
 
         public class NodeEdges
         {
-            public readonly HashSet<string> inputNodeIDs = new HashSet<string>();
-            public readonly HashSet<string> outputNodeIDs = new HashSet<string>();
+            public readonly HashSet<string> inputNodeIDs = new();
+            public readonly HashSet<string> outputNodeIDs = new();
         }
 
         /// <summary>
@@ -88,22 +81,16 @@ namespace OzricEngine
 
             var nodeEdges = new Dictionary<string, NodeEdges>();
 
-            foreach (var (fromID, outputs) in edges)
+            foreach (var (edgeID, edge) in edges)
             {
+                var fromID = edge.from.nodeID;
+                var toID = edge.to.nodeID;
+
                 var fromNodeEdges = nodeEdges.GetOrSet(fromID, () => new NodeEdges());
+                var toNodeEdges = nodeEdges.GetOrSet(toID, () => new NodeEdges());
 
-                foreach (var inputs in outputs.Values)
-                {
-                    foreach (var input in inputs)
-                    {
-                        var toID = input.nodeID;
-
-                        var toNodeEdges = nodeEdges.GetOrSet(toID, () => new NodeEdges());
-
-                        fromNodeEdges.outputNodeIDs.Add(toID);
-                        toNodeEdges.inputNodeIDs.Add(fromID);
-                    }
-                }
+                fromNodeEdges.outputNodeIDs.Add(toID);
+                toNodeEdges.inputNodeIDs.Add(fromID);
             }
 
             return nodeEdges;
@@ -129,15 +116,9 @@ namespace OzricEngine
             //  Work out the dependencies for each node
 
             var dependencies = new Dictionary<string, List<string>>();
-            foreach (var (outputNodeID, outputs) in edges)
+            foreach (var edge in edges.Values)
             {
-                foreach (var inputs in outputs.Values)
-                {
-                    foreach (var input in inputs)
-                    {
-                        dependencies.GetOrSet(input.nodeID, () => new List<string>()).Add(outputNodeID);
-                    }
-                }
+                dependencies.GetOrSet(edge.to.nodeID, () => new List<string>()).Add(edge.from.nodeID);
             }
 
             //  Some nodes have no edges
@@ -187,29 +168,11 @@ namespace OzricEngine
         /// <param name="node"></param>
         public void CopyNodeOutputValues(Node node)
         {
-            foreach (var output in node.outputs)
+            foreach (var edge in edges.Values.Where(edge => edge.from.nodeID == node.id).ToList())
             {
-                var value = output.value;
-
-                var nodeOutputs = edges.GetValueOrDefault(node.id);
-                if (nodeOutputs == null)
-                {
-                    Log(LogLevel.Warning, "Missing outputs for node {0}", node.id);
-                    continue;
-                }
-
-                var outputs = nodeOutputs.GetValueOrDefault(output.name);
-                if (outputs == null)
-                {
-                    Log(LogLevel.Warning, "Missing outputs for {0}.{1}", node.id, output.name);
-                    continue;
-                }
-
-                foreach (var input in outputs)
-                {
-                    Log(LogLevel.Debug, "{0}.{1} = {2}", input.nodeID, input.inputName, value);
-                    nodes[input.nodeID].SetInputValue(input.inputName, value);
-                }
+                var value = node.GetOutputValue(edge.from.outputName);
+                Log(LogLevel.Debug, "{0}.{1} = {2}", edge.to.nodeID, edge.to.inputName, value);
+                nodes[edge.to.nodeID].SetInputValue(edge.to.inputName, value);
             }
         }
 
@@ -225,7 +188,7 @@ namespace OzricEngine
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
-            if (obj.GetType() != this.GetType()) return false;
+            if (obj.GetType() != GetType()) return false;
             return Equals((Graph)obj);
         }
 

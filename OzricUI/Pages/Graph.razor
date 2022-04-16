@@ -179,23 +179,14 @@ else
             diagram.Nodes.Add(diagramNode);
         }
 
-        foreach (var edge in graph.edges)
+        foreach (var edge in graph.edges.Values)
         {
-            var fromNodeID = edge.Key;
-            var fromOutputs = edge.Value;
+            var fromD = graphNodeIDsToDiagramNodes[edge.from.nodeID]; 
+            var toD = graphNodeIDsToDiagramNodes[edge.to.nodeID];
 
-            foreach (var fromOutput in fromOutputs.Keys)
-            {
-                foreach (var toInput in fromOutputs[fromOutput])
-                {
-                    var fromD = graphNodeIDsToDiagramNodes[fromNodeID]; 
-                    var toD = graphNodeIDsToDiagramNodes[toInput.nodeID];
-
-                    var link = new LinkModel(fromD.GetPort(PortAlignment.Right), toD.GetPort(PortAlignment.Left));
-                    link.Locked = IsNotEditing; 
-                    diagram.Links.Add(link);
-                }
-            }
+            var link = new LinkModel(fromD.GetPort(PortAlignment.Right), toD.GetPort(PortAlignment.Left));
+            link.Locked = IsNotEditing; 
+            diagram.Links.Add(link);
         }
     }
 
