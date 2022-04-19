@@ -7,6 +7,8 @@
 @using OzricEngine
 @using OzricEngine.ext
 @using OzricEngine.logic
+@using OzricEngine.nodes
+@using OzricUI.Model
 @inject OzricEngineService ozricEngine
 
 <div class="top-row px-2 py-2">
@@ -19,7 +21,7 @@
         Cancel
     </MatButton>
 
-    <MatButton Icon="save" Raised="true" @onclick="OnClickSave" Disabled="@IsChanged" hidden="@IsNotEditing">
+    <MatButton Icon="save" Raised="true" @onclick="OnClickSave" Disabled="@IsNotChanged" hidden="@IsNotEditing">
         Save
     </MatButton>
 
@@ -63,7 +65,8 @@ else
     
     private bool IsEditing => mode != EditMode.View;
     private bool IsNotEditing => mode == EditMode.View;
-    private bool IsChanged => (graph != null && !graph.Equals(editGraph)) || (graphLayout != null && !graphLayout.Equals(editGraphLayout));
+    private bool IsChanged => history?.IsAtCheckpoint() ?? false;
+    private bool IsNotChanged => !IsChanged;
     private bool CanUndo => history?.CanUndo() ?? false;
     private bool CanRedo => history?.CanRedo() ?? false;
     private bool CanNotUndo => !CanUndo;
@@ -72,19 +75,21 @@ else
     private OzricEngine.Graph? graph;
     private GraphLayout? graphLayout;
     
-    private OzricEngine.Graph? editGraph;
-    private GraphLayout? editGraphLayout;
-    
-    private Dictionary<string, NodeModel> graphNodeIDsToDiagramNodes = new();
-    private Dictionary<string, string> diagramNodeIDsToGraphIDs = new();
-    private Dictionary<string, LinkModel> edgesInDiagram = new();
+    private Mapping<Node, GraphNodeModel> nodeMappings = new();
+    private Mapping<Edge, LinkModel> edgeMappings = new();
+
     private Diagram? diagram { get; set; }
     private DiagramHistory? history;
 
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        await Load();
+    }
     
+    private async Task Load()
+    {
         graph = await ozricEngine.GetGraphAsync();
         graphLayout = await ozricEngine.GetGraphLayoutAsync();
         
@@ -114,33 +119,20 @@ else
     {
         mode = EditMode.EditOffline;
 
-        editGraph = Json.Clone(graph);
-        editGraphLayout = Json.Clone(graphLayout);
-
         SetLocked(false);
     }
 
     private async Task OnClickSave()
     {
-        if (graphLayout != null && !graphLayout.Equals(editGraphLayout))
-        {
-            await ozricEngine.SetGraphLayoutAsync(editGraphLayout);
-            graphLayout = editGraphLayout;
-            editGraphLayout = null;
-        }
-
-        mode = EditMode.EditOffline;
+        await ozricEngine.SetGraphLayoutAsync(graphLayout);
+        history.SetCheckpoint();
     }
 
-    private void OnClickCancel()
+    private async Task OnClickCancel()
     {
         mode = EditMode.View;
-        graph = editGraph;
-        graphLayout = editGraphLayout;
-        editGraph = null;
-        editGraphLayout = null;
-        
-        PopulateDiagram();
+
+        Load();
     }
 
     private void OnClickUndo()
@@ -155,9 +147,8 @@ else
         
     private void PopulateDiagram()
     {
-        graphNodeIDsToDiagramNodes.Clear();
-        diagramNodeIDsToGraphIDs.Clear();
-        edgesInDiagram.Clear();
+        nodeMappings.Clear();
+        edgeMappings.Clear();
 
         int x = 0, y = 0, w = 160, h = 120, cols = 6; 
         
@@ -174,42 +165,79 @@ else
                 return point;
             }).ToPoint());
             
-            graphNodeIDsToDiagramNodes[node.Key] = diagramNode;
-            diagramNodeIDsToGraphIDs[diagramNode.Id] = node.Value.id;
+            nodeMappings.Add(node.Value, diagramNode);
             diagram.Nodes.Add(diagramNode);
         }
 
         foreach (var edge in graph.edges.Values)
         {
-            var fromD = graphNodeIDsToDiagramNodes[edge.from.nodeID]; 
-            var toD = graphNodeIDsToDiagramNodes[edge.to.nodeID];
+            var fromD = nodeMappings.GetDiagram(edge.from.nodeID); 
+            var toD = nodeMappings.GetDiagram(edge.to.nodeID);
 
             var link = new LinkModel(fromD.GetPort(PortAlignment.Right), toD.GetPort(PortAlignment.Left));
-            link.Locked = IsNotEditing; 
+            link.Locked = IsNotEditing;
+            
+            edgeMappings.Add(edge, link);
             diagram.Links.Add(link);
         }
     }
 
-    private NodeModel NewNode(Node node, Point point)
+    private GraphNodeModel NewNode(Node node, Point? point = null)
     {
-        var nodeModel = new NodeModel(point);
-        nodeModel.Title = node.id;
-        nodeModel.AddPort(PortAlignment.Bottom);
-        nodeModel.AddPort(PortAlignment.Top);
-        nodeModel.AddPort(PortAlignment.Left);
-        nodeModel.AddPort(PortAlignment.Right);
-        nodeModel.Moving += OnNodeModelMoving;
-        nodeModel.Locked = IsNotEditing; 
-        return nodeModel;
+        GraphNodeModel model;
+        switch (node)
+        {
+            case Light l:
+            {
+                model = new LightModel(l, point);
+                break;
+            }
+            case Sensor s:
+            {
+                model = new SensorModel(s, point);
+                break;
+            }
+            case Switch s:
+            {
+                model = new SwitchModel(s, point);
+                break;
+            }
+            case ModeSwitch ms:
+            {
+                model = new ModeSwitchModel(ms, point);
+                break;
+            }
+            case IfAny ia:
+            {
+                model = new IfAnyModel(ia, point);
+                break;
+            }
+            case DayPhases dp:
+            {
+                model = new DayPhasesModel(dp, point);
+                break;
+            }
+            default:
+            {
+                throw new Exception($"Unhandled type {node.GetType()}");
+            }
+        }
+        model.Moving += OnNodeModelMoving;
+        model.Locked = IsNotEditing; 
+        return model;
     }
 
     private void OnNodeModelMoving(NodeModel nodeModel)
     {
-        var nodeID = diagramNodeIDsToGraphIDs[nodeModel.Id];
+        var nodeID = nodeMappings.GetGraph(nodeModel.Id).id;
         if (nodeID == null)
             throw new Exception("Node not found");
 
-        editGraphLayout.nodeLayout[nodeID] = LayoutPoint.FromPoint(nodeModel.Position);
+        var from = graphLayout.nodeLayout[nodeID].ToPoint();
+        var to = nodeModel.Position;
+        
+        graphLayout.nodeLayout[nodeID] = LayoutPoint.FromPoint(to);
+        history.Node_Moved(nodeModel, from, to);
 
         StateHasChanged();
     }
@@ -222,5 +250,5 @@ else
         foreach (var link in diagram.Nodes)
             link.Locked = locked;
     }
-
+    
 }

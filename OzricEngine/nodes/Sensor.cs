@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace OzricEngine.logic
@@ -12,7 +11,9 @@ namespace OzricEngine.logic
 
         public string entityID { get; }
 
-        public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new("activity", ValueType.OnOff) })
+        public const string OUTPUT_NAME = "activity";
+
+        public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new(OUTPUT_NAME, ValueType.OnOff) })
         {
             this.entityID = entityID;
         }
@@ -38,5 +39,20 @@ namespace OzricEngine.logic
             Log(LogLevel.Debug, "activity = {0}", value);
             SetOutputValue("activity", value);
         }
+
+        #region Comparison
+        public override bool Equals(object obj)
+        {
+            if (!(obj is Sensor sensor))
+                return false;
+        
+            return base.Equals(obj) && entityID == sensor.entityID;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(GetHashCode(), entityID);
+        }
+        #endregion
     }
 }

@@ -1,4 +1,5 @@
 using Blazor.Diagrams.Core;
+using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using Microsoft.AspNetCore.Components.Web;
 
@@ -6,14 +7,49 @@ namespace OzricUI.Shared;
 
 public class DiagramHistory
 {
-    public class GraphAction
+    public interface GraphAction
     {
-        public enum ActionType { AddNode, RemoveNode, AddLink, RemoveLink }
+        void Undo(Diagram diagram);
+        void Redo(Diagram diagram);
 
-        public ActionType actionType;
+        record AddNode(NodeModel node): GraphAction
+        {
+            public void Undo(Diagram diagram)
+            {
+                diagram.Nodes.Remove(node);
+            }
 
-        public object actionData;
+            public void Redo(Diagram diagram)
+            {
+                diagram.Nodes.Add(node);
+            }
+        }
 
+        record MoveNode(NodeModel nodeModel, Point @from, Point to): GraphAction
+        {
+            public void Undo(Diagram diagram)
+            {
+                nodeModel.Position = from;
+            }
+
+            public void Redo(Diagram diagram)
+            {
+                nodeModel.Position = to;
+            }
+        }
+
+        record RemoveNode(NodeModel node): GraphAction
+        {
+            public void Undo(Diagram diagram)
+            {
+                diagram.Nodes.Add(node);
+            }
+
+            public void Redo(Diagram diagram)
+            {
+                diagram.Nodes.Remove(node);
+            }
+        }
     }
     
     private readonly Diagram diagram;
@@ -21,6 +57,7 @@ public class DiagramHistory
     private readonly List<GraphAction> redoActionList;
     private int actionHistoryMaxSize = 200;
     private bool isTrackingHistory, undoActionFlag, redoActionFlag;
+    private int checkpoint = 0;
 
     public DiagramHistory(Diagram diagram)
     {
@@ -30,7 +67,11 @@ public class DiagramHistory
         redoActionList = new();
         isTrackingHistory = true;
 
-        diagram.KeyDown += KeyboardHandle; //This should be on Init too
+        diagram.KeyDown += KeyboardHandle;
+        diagram.Links.Added += Links_Added;
+        diagram.Links.Removed += Links_Removed;
+        diagram.Nodes.Added += Nodes_Added;
+        diagram.Nodes.Removed += Nodes_Removed;
     }
 
     private void KeyboardHandle(KeyboardEventArgs e)
@@ -76,21 +117,7 @@ public class DiagramHistory
 
     private void RevertAction(GraphAction action)
     {
-        switch (action.actionType)
-        {
-            case GraphAction.ActionType.AddNode:
-                diagram.Nodes.Remove((NodeModel)action.actionData);
-                break;
-            case GraphAction.ActionType.RemoveNode:
-                diagram.Nodes.Add((NodeModel)action.actionData);
-                break;
-            case GraphAction.ActionType.AddLink:
-                diagram.Links.Remove((LinkModel)action.actionData);
-                break;
-            case GraphAction.ActionType.RemoveLink:
-                diagram.Links.Add((LinkModel)action.actionData);
-                break;
-        }
+        action.Undo(diagram);
     }
 
     private void RemoveLastUndoAction()
@@ -100,9 +127,9 @@ public class DiagramHistory
     }
 
     private void ClearRedoList() => redoActionList.Clear();
-    private void RegisterRedoHistoryAction(GraphAction.ActionType _actionType, object _data)
+    
+    private void RegisterRedoHistoryAction(GraphAction action)
     {
-        var action = new GraphAction { actionType = _actionType, actionData = _data };
         redoActionList.Add(action);
     }
 
@@ -112,34 +139,29 @@ public class DiagramHistory
             redoActionList.RemoveAt(redoActionList.Count - 1);
     }
 
-    private void RegisterUndoHistoryAction(GraphAction.ActionType _actionType, object _data)
+    private void RegisterUndoHistoryAction(GraphAction action)
     {
         if (!isTrackingHistory) return;
 
         if (undoActionFlag && !redoActionFlag)
         {
-            RegisterRedoHistoryAction(_actionType, _data);
+            RegisterRedoHistoryAction(action);
             undoActionFlag = false;
             return;
         }
+        
         if (redoActionFlag)
             redoActionFlag = false;
         else
             ClearRedoList();
 
-        var action = new GraphAction { actionType = _actionType, actionData = _data };
         if (undoActionList.Count > actionHistoryMaxSize)
+        {
             undoActionList.RemoveAt(0);
+            checkpoint--;
+        }
 
         undoActionList.Add(action);
-    }
-    
-    private void EventsSubscription()
-    {
-        diagram.Links.Added += Links_Added;
-        diagram.Links.Removed += Links_Removed;
-        diagram.Nodes.Added += Nodes_Added;
-        diagram.Nodes.Removed += Nodes_Removed;
     }
 
     private void Links_Added(Blazor.Diagrams.Core.Models.Base.BaseLinkModel link)
@@ -148,7 +170,7 @@ public class DiagramHistory
             link.TargetPortChanged += Link_Connected; //In case its a empty link being dragged (listen for its connection)
         else
             //In case it was connected instantaneously (via code)
-            RegisterUndoHistoryAction(GraphAction.ActionType.AddLink, link); 
+            RegisterUndoHistoryAction(new GraphAction.AddLink, link); 
     }
 
        
@@ -166,12 +188,26 @@ public class DiagramHistory
 
     private void Nodes_Added(NodeModel obj)
     {
-        RegisterUndoHistoryAction(GraphAction.ActionType.AddNode, obj);
+        RegisterUndoHistoryAction(new GraphAction.AddNode(obj));
     }
-
 
     private void Nodes_Removed(NodeModel obj)
     {
-        RegisterUndoHistoryAction(GraphAction.ActionType.RemoveNode, obj);
+        RegisterUndoHistoryAction(new GraphAction.RemoveNode(obj));
+    }
+
+    public void Node_Moved(NodeModel obj, Point from, Point to)
+    {
+        RegisterUndoHistoryAction(new GraphAction.MoveNode(obj, from, to));
+    }
+
+    public void SetCheckpoint()
+    {
+        checkpoint = undoActionList.Count;
+    }
+
+    public bool IsAtCheckpoint()
+    {
+        return checkpoint == undoActionList.Count;
     }
 }

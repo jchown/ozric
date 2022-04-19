@@ -7,7 +7,7 @@ using OzricEngine.ext;
 
 namespace OzricEngine.logic
 {
-    public abstract class Node: OzricObject, IEquatable<Node>
+    public abstract class Node: OzricObject, IGraphObject, IEquatable<Node>
     {
         [JsonIgnore]
         public override string Name => $"{GetType().Name}.{id}";
@@ -123,5 +123,10 @@ namespace OzricEngine.logic
         {
             return HashCode.Combine((int)nodeType, id, inputs, outputs);
         }
+    }
+
+    public interface IGraphObject
+    {
+        public string id { get; }
     }
 }

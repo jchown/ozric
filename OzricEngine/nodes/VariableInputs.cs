@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -21,5 +22,21 @@ namespace OzricEngine.logic
         {
             return inputs.Select(input => input.value as TValue);
         }
+        
+        #region Comparison
+        public override bool Equals(object obj)
+        {
+            if (!(obj is VariableInputs vi))
+                return false;
+        
+            return base.Equals(obj) && valueType == vi.valueType;
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine(GetHashCode(), valueType);
+        }
+        #endregion
+
     }
 }

@@ -18,7 +18,9 @@ namespace OzricEngine.logic
 
         public List<PhaseStart> phases { get; set; }
             
-        public DayPhases(string id) : base(id, null, new List<Pin> { new("mode", ValueType.Mode) })
+        public const string OUTPUT_NAME = "mode";
+        
+        public DayPhases(string id) : base(id, null, new List<Pin> { new(OUTPUT_NAME, ValueType.Mode) })
         {
             phases = new List<PhaseStart>();
         }

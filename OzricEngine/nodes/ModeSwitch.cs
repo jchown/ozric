@@ -11,6 +11,8 @@ namespace OzricEngine.logic
     [TypeKey(NodeType.ModeSwitch)]
     public class ModeSwitch: Node
     {
+        public const string INPUT_NAME = "mode";
+        
         public override NodeType nodeType => NodeType.ModeSwitch;
 
         public class ModeValues
@@ -27,7 +29,7 @@ namespace OzricEngine.logic
         
         public List<ModeValues> modeValues { get; set; }
         
-        public ModeSwitch(string id): base(id, new List<Pin> { new("mode", ValueType.Mode) }, null)
+        public ModeSwitch(string id): base(id, new List<Pin> { new(INPUT_NAME, ValueType.Mode) }, null)
         {
             modeValues = new List<ModeValues>();
         }
@@ -61,7 +63,7 @@ namespace OzricEngine.logic
 
         private void UpdateValue()
         {
-            var currentMode = GetInput("mode").value as Mode ?? throw new Exception("No 'mode' found");
+            var currentMode = GetInput(INPUT_NAME).value as Mode ?? throw new Exception("No 'mode' found");
 
             foreach (var modeValue in modeValues)
             {
