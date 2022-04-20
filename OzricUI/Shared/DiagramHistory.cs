@@ -1,6 +1,7 @@
 using Blazor.Diagrams.Core;
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
+using Blazor.Diagrams.Core.Models.Base;
 using Microsoft.AspNetCore.Components.Web;
 
 namespace OzricUI.Shared;
@@ -25,16 +26,21 @@ public class DiagramHistory
             }
         }
 
-        record MoveNode(NodeModel nodeModel, Point @from, Point to): GraphAction
+        record MoveNode(NodeModel node, Point @from, Point to): GraphAction
         {
             public void Undo(Diagram diagram)
             {
-                nodeModel.Position = from;
+                node.SetPosition(from.X, from.Y);
             }
 
             public void Redo(Diagram diagram)
             {
-                nodeModel.Position = to;
+                node.SetPosition(to.X, to.Y);
+            }
+
+            public GraphAction WithTo(Point to)
+            {
+                return new MoveNode(node, from, to);
             }
         }
 
@@ -50,13 +56,39 @@ public class DiagramHistory
                 diagram.Nodes.Remove(node);
             }
         }
+        
+        record AddLink(BaseLinkModel link): GraphAction
+        {
+            public void Undo(Diagram diagram)
+            {
+                diagram.Links.Remove(link);
+            }
+
+            public void Redo(Diagram diagram)
+            {
+                diagram.Links.Add(link);
+            }
+        }
+        
+        record RemoveLink(BaseLinkModel link): GraphAction
+        {
+            public void Undo(Diagram diagram)
+            {
+                diagram.Links.Add(link);
+            }
+
+            public void Redo(Diagram diagram)
+            {
+                diagram.Links.Remove(link);
+            }
+        }
     }
     
     private readonly Diagram diagram;
     private readonly List<GraphAction> undoActionList;
     private readonly List<GraphAction> redoActionList;
     private int actionHistoryMaxSize = 200;
-    private bool isTrackingHistory, undoActionFlag, redoActionFlag;
+    private bool isTrackingHistory, isDoing;
     private int checkpoint = 0;
 
     public DiagramHistory(Diagram diagram)
@@ -100,60 +132,52 @@ public class DiagramHistory
     {
         if (!undoActionList.Any()) return;
 
-        undoActionFlag = true;
-        RevertAction(undoActionList[^1]);
+        isDoing = true;
+        undoActionList[^1].Undo(diagram);
         RemoveLastUndoAction();
         diagram.UnselectAll();
+        isDoing = false;
     }
 
     public void RedoLastAction()
     {
         if (!redoActionList.Any()) return;
-        redoActionFlag = true;
-        RevertAction(redoActionList[^1]);
+
+        isDoing = true;
+        redoActionList[^1].Redo(diagram);
         RemoveLastRedoAction();
         diagram.UnselectAll();
-    }
-
-    private void RevertAction(GraphAction action)
-    {
-        action.Undo(diagram);
+        isDoing = false;
     }
 
     private void RemoveLastUndoAction()
     {
         if (undoActionList.Any())
+        {
+            var action = undoActionList.Last();
             undoActionList.RemoveAt(undoActionList.Count - 1);
+            redoActionList.Add(action);
+        }
     }
-
-    private void ClearRedoList() => redoActionList.Clear();
     
-    private void RegisterRedoHistoryAction(GraphAction action)
-    {
-        redoActionList.Add(action);
-    }
-
     private void RemoveLastRedoAction()
     {
         if (redoActionList.Any())
+        {
+            var action = redoActionList.Last();
             redoActionList.RemoveAt(redoActionList.Count - 1);
+            undoActionList.Add(action);
+        }
     }
+
+    private void ClearRedoList() => redoActionList.Clear();
 
     private void RegisterUndoHistoryAction(GraphAction action)
     {
-        if (!isTrackingHistory) return;
-
-        if (undoActionFlag && !redoActionFlag)
-        {
-            RegisterRedoHistoryAction(action);
-            undoActionFlag = false;
+        if (!isTrackingHistory)
             return;
-        }
-        
-        if (redoActionFlag)
-            redoActionFlag = false;
-        else
-            ClearRedoList();
+
+        ClearRedoList();
 
         if (undoActionList.Count > actionHistoryMaxSize)
         {
@@ -164,41 +188,58 @@ public class DiagramHistory
         undoActionList.Add(action);
     }
 
-    private void Links_Added(Blazor.Diagrams.Core.Models.Base.BaseLinkModel link)
+    private void Links_Added(BaseLinkModel link)
     {
         if (link.TargetNode is null)
             link.TargetPortChanged += Link_Connected; //In case its a empty link being dragged (listen for its connection)
         else
             //In case it was connected instantaneously (via code)
-            RegisterUndoHistoryAction(new GraphAction.AddLink, link); 
+            RegisterUndoHistoryAction(new GraphAction.AddLink(link)); 
     }
 
        
-    private void Link_Connected(Blazor.Diagrams.Core.Models.Base.BaseLinkModel arg1, PortModel _, PortModel outPort)
+    private void Link_Connected(BaseLinkModel arg1, PortModel _, PortModel outPort)
     {
         arg1.SourcePortChanged -= Link_Connected;
-        RegisterUndoHistoryAction(GraphAction.ActionType.AddLink, arg1);
+        RegisterUndoHistoryAction(new GraphAction.AddLink(arg1));
     }
 
-    private void Links_Removed(Blazor.Diagrams.Core.Models.Base.BaseLinkModel link)
+    private void Links_Removed(BaseLinkModel link)
     {
         if (link.IsAttached)
-            RegisterUndoHistoryAction(GraphAction.ActionType.RemoveLink, link);
+            RegisterUndoHistoryAction(new GraphAction.RemoveLink(link));
     }
 
-    private void Nodes_Added(NodeModel obj)
+    private void Nodes_Added(NodeModel node)
     {
-        RegisterUndoHistoryAction(new GraphAction.AddNode(obj));
+        RegisterUndoHistoryAction(new GraphAction.AddNode(node));
     }
 
-    private void Nodes_Removed(NodeModel obj)
+    private void Nodes_Removed(NodeModel node)
     {
-        RegisterUndoHistoryAction(new GraphAction.RemoveNode(obj));
+        RegisterUndoHistoryAction(new GraphAction.RemoveNode(node));
     }
 
-    public void Node_Moved(NodeModel obj, Point from, Point to)
+    public void Node_Moved(NodeModel node, Point from, Point to)
     {
-        RegisterUndoHistoryAction(new GraphAction.MoveNode(obj, from, to));
+        if (isDoing)
+            return;
+        
+        if (undoActionList.Any())
+        {
+            //  Compress moves of the same object
+
+            if (undoActionList.Last() is GraphAction.MoveNode lastMove)
+            {
+                if (lastMove.node == node)
+                {
+                    undoActionList[^1] = lastMove.WithTo(to);
+                    return;
+                }
+            }
+        }
+        
+        RegisterUndoHistoryAction(new GraphAction.MoveNode(node, from, to));
     }
 
     public void SetCheckpoint()

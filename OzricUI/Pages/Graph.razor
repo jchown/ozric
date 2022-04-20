@@ -65,8 +65,8 @@ else
     
     private bool IsEditing => mode != EditMode.View;
     private bool IsNotEditing => mode == EditMode.View;
-    private bool IsChanged => history?.IsAtCheckpoint() ?? false;
-    private bool IsNotChanged => !IsChanged;
+    private bool IsChanged => !IsNotChanged;
+    private bool IsNotChanged => history?.IsAtCheckpoint() ?? true;
     private bool CanUndo => history?.CanUndo() ?? false;
     private bool CanRedo => history?.CanRedo() ?? false;
     private bool CanNotUndo => !CanUndo;
