@@ -17,7 +17,7 @@ namespace OzricEngine.logic
         
         public const string INPUT_NAME_ON = "on";
         public const string INPUT_NAME_OFF = "off";
-        public const string INPUT_NAME_SWITCH = "output";
+        public const string INPUT_NAME_SWITCH = "switch";
         public const string OUTPUT_NAME = "output";
         
         public Switch(string id, ValueType valueType): base(id, new List<Pin> { new(INPUT_NAME_ON, valueType), new(INPUT_NAME_OFF, valueType), new(INPUT_NAME_SWITCH, ValueType.OnOff) }, new List<Pin> { new(OUTPUT_NAME, valueType) })

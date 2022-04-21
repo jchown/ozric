@@ -1,5 +1,6 @@
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
+using OzricEngine.ext;
 using OzricEngine.logic;
 using ValueType = OzricEngine.logic.ValueType;
 
@@ -7,7 +8,7 @@ namespace OzricUI.Model;
 
 public class GraphNodeModel: NodeModel
 {
-    public GraphNodeModel(Node node, Point? point = null) : base(point)
+    public GraphNodeModel(Node node, Point? point = null) : base(node.id, point)
     {
         Title = node.Name;
     }
@@ -54,4 +55,8 @@ public class GraphNodeModel: NodeModel
         }
     }
 
+    public PortModel GetPort(string id)
+    {
+        return Ports.FirstOrDefault(p => p.Id == id) ?? throw new Exception($"Port id {id} not found in [{Ports.Select(p => p.Id).Join(",")}]");
+    }
 }

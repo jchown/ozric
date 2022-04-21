@@ -171,12 +171,17 @@ else
 
         foreach (var edge in graph.edges.Values)
         {
-            var fromD = nodeMappings.GetDiagram(edge.from.nodeID); 
-            var toD = nodeMappings.GetDiagram(edge.to.nodeID);
-
-            var link = new LinkModel(fromD.GetPort(PortAlignment.Right), toD.GetPort(PortAlignment.Left));
-            link.Locked = IsNotEditing;
+            var fromD = nodeMappings.GetDiagram(edge.from.nodeID);
+            var fromPortID = $"{edge.from.nodeID}.{edge.from.outputName}"; 
             
+            var toD = nodeMappings.GetDiagram(edge.to.nodeID);
+            var toPortID = $"{edge.to.nodeID}.{edge.to.inputName}";
+
+            var link = new LinkModel(fromD.GetPort(fromPortID), toD.GetPort(toPortID))
+            {
+                Locked = IsNotEditing
+            };
+
             edgeMappings.Add(edge, link);
             diagram.Links.Add(link);
         }
@@ -245,8 +250,13 @@ else
     private void SetLocked(bool locked)
     {
         foreach (var node in diagram.Nodes)
+        {
             node.Locked = locked;
-        
+
+            foreach (var port in node.Ports)
+                port.Locked = locked;
+        }
+
         foreach (var link in diagram.Nodes)
             link.Locked = locked;
     }
