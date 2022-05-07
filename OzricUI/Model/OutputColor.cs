@@ -2,7 +2,7 @@ using Blazor.Diagrams.Core.Models;
 
 namespace OzricUI.Model;
 
-internal class OutputColor : PortModel
+internal class OutputColor : OutputPortModel
 {
     public OutputColor(string name, NodeModel parent) : base($"{parent.Id}.{name}", parent, PortAlignment.Right)
     {

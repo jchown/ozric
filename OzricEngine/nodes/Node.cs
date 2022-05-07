@@ -53,12 +53,22 @@ namespace OzricEngine.logic
         {
             return outputs.Find(o => o.name == name);
         }
+        
+        public int GetOutputIndex(string name)
+        {
+            return outputs.FindIndex(o => o.name == name);
+        }
 
         protected Pin GetInput(string name)
         {
             return inputs.Find(o => o.name == name);
         }
         
+        public int GetInputIndex(string name)
+        {
+            return inputs.FindIndex(o => o.name == name);
+        }
+
         internal void SetOutputValue(string name, Value value)
         {
             var output = GetOutput(name) ?? throw new Exception($"Unknown output {name}");
@@ -104,6 +114,7 @@ namespace OzricEngine.logic
             return output as OnOff ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(OnOff)}");
         }
 
+        #region Comparison
         public bool Equals(Node other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -123,6 +134,7 @@ namespace OzricEngine.logic
         {
             return HashCode.Combine((int)nodeType, id, inputs, outputs);
         }
+        #endregion
     }
 
     public interface IGraphObject

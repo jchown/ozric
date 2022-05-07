@@ -4,12 +4,14 @@
 
 @using OzricUI.Data
 @using Blazor.Diagrams.Components
-@using OzricEngine
 @using OzricEngine.ext
 @using OzricEngine.logic
 @using OzricEngine.nodes
+@using OzricUI.Components
 @using OzricUI.Model
 @inject OzricEngineService ozricEngine
+
+<script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
 
 <div class="top-row px-2 py-2">
 
@@ -35,7 +37,6 @@
     
 </div>
 
-
 @if (graph == null)
 {
     <p><em>Loading...</em></p>
@@ -50,6 +51,8 @@ else
 }
 
 @code {
+
+    private Diagram? diagram { get; set; }
 
     enum EditMode
     {
@@ -74,12 +77,10 @@ else
 
     private OzricEngine.Graph? graph;
     private GraphLayout? graphLayout;
-    
-    private Mapping<Node, GraphNodeModel> nodeMappings = new();
-    private Mapping<Edge, LinkModel> edgeMappings = new();
-
-    private Diagram? diagram { get; set; }
     private DiagramHistory? history;
+    
+    private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
+    private readonly Mapping<Edge, LinkModel> edgeMappings = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -109,6 +110,9 @@ else
         };
         
         diagram = new Diagram(options);
+        diagram.RegisterModelComponent<IfAnyModel, IfAnyComponent>();
+        diagram.RegisterModelComponent<SensorModel, SensorComponent>();
+        diagram.RegisterModelComponent<LightModel, LightComponent>();
         
         PopulateDiagram();
         
@@ -152,9 +156,9 @@ else
 
         int x = 0, y = 0, w = 160, h = 120, cols = 6; 
         
-        foreach (var node in graph.nodes)
+        foreach (var node in graph.nodes.Values)
         {
-            var diagramNode = NewNode(node.Value, graphLayout.nodeLayout.GetOrSet(node.Key, () =>
+            var position = graphLayout.nodeLayout.GetOrSet(node.id, () =>
             {
                 var point = new LayoutPoint(x * w, y * h);
                 if (++x == cols)
@@ -163,10 +167,17 @@ else
                     ++y;
                 }
                 return point;
-            }).ToPoint());
+            }).ToPoint();
             
-            nodeMappings.Add(node.Value, diagramNode);
+            var diagramNode = NewNode(node, position);
+            
+            nodeMappings.Add(node, diagramNode);
             diagram.Nodes.Add(diagramNode);
+            
+            for (int i = 0; i < node.inputs.Count; i++)
+            {
+                diagramNode.Ports[i].Position = position.Add(0f, i * 20f);
+            }
         }
 
         foreach (var edge in graph.edges.Values)

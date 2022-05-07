@@ -2,7 +2,7 @@ using Blazor.Diagrams.Core.Models;
 
 namespace OzricUI.Model;
 
-internal class InputMode : PortModel
+internal class InputMode : InputPortModel
 {
     public InputMode(string name, NodeModel parent) : base($"{parent.Id}.{name}",parent, PortAlignment.Left)
     {
