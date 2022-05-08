@@ -6,7 +6,7 @@ using ValueType = OzricEngine.logic.ValueType;
 
 namespace OzricUI.Model;
 
-public class GraphNodeModel: NodeModel
+public abstract class GraphNodeModel: NodeModel
 {
     public GraphNodeModel(Node node, Point? point = null) : base(node.id, point)
     {
@@ -59,4 +59,7 @@ public class GraphNodeModel: NodeModel
     {
         return Ports.FirstOrDefault(p => p.Id == id) ?? throw new Exception($"Port id {id} not found in [{Ports.Select(p => p.Id).Join(",")}]");
     }
+    
+    
+    public abstract string Icon { get; }
 }

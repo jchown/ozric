@@ -10,4 +10,6 @@ public class IfAnyModel: VariableInputsModel
     {
         AddPort(new OutputOnOff(IfAny.OUTPUT_NAME, this));
     }
+    
+    public override string Icon => "mdi:gate-or";
 }

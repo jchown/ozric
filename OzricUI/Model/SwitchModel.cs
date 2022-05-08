@@ -12,4 +12,6 @@ public class SwitchModel: GraphNodeModel
         AddInput(s.valueType, Switch.INPUT_NAME_OFF);
         AddOutput(s.valueType, Switch.OUTPUT_NAME);
     }
+    
+    public override string Icon => "mdi:switch";
 }

@@ -9,4 +9,6 @@ public class LightModel: GraphNodeModel
     {
         AddPort(new InputColor(Light.INPUT_NAME, this));
     }
+    
+    public override string Icon => "mdi:lightbulb";
 }

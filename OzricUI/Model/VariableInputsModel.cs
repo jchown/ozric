@@ -3,7 +3,7 @@ using OzricEngine.logic;
 
 namespace OzricUI.Model;
 
-public class VariableInputsModel: GraphNodeModel
+public abstract class VariableInputsModel: GraphNodeModel
 {
     public VariableInputsModel(VariableInputs node, Point? point = null) : base(node, point)
     {

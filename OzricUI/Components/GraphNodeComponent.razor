@@ -1,14 +1,14 @@
 @using Blazor.Diagrams.Components.Renderers;
 @using OzricUI.Model
 
-<div class="ozric-node sensor-node @(Node.Selected ? " selected" : "")">
-    <div class="ozric-node-icon"><span class="iconify" data-icon="mdi:motion-sensor"></span></div>
+<div class="ozric-node @(Node.Selected ? " selected" : "")">
+    <div class="ozric-node-icon"><span class="iconify" data-icon="@(Node.Icon)"></span></div>
     <div class="ozric-node-title">@(Node.Id)</div>
     @foreach (var port in Node.Ports)
     {
         <div class="@(port is InputPortModel ? "input-port" : "output-port")">
             <PortRenderer Port="@port" Class="@(port is InputPortModel ? "input-port" : "output-port")">
-                &nbsp
+                <span class="iconify" data-icon="akar-icons:circle"></span>
             </PortRenderer>
         </div>
     }
@@ -16,5 +16,5 @@
 
 @code {
     [Parameter]
-    public SensorModel Node { get; set; }
+    public GraphNodeModel Node { get; set; }
 }

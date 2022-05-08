@@ -9,4 +9,6 @@ public class SensorModel: GraphNodeModel
     {
         AddPort(new OutputOnOff(Sensor.OUTPUT_NAME, this));
     }
+    
+    public override string Icon => "mdi:motion-sensor";
 }

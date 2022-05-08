@@ -11,8 +11,6 @@
 @using OzricUI.Model
 @inject OzricEngineService ozricEngine
 
-<script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
-
 <div class="top-row px-2 py-2">
 
     <MatButton Icon="edit" Raised="true" @onclick="OnClickEdit" Disabled="@IsEditing" hidden="@IsEditing">
@@ -110,9 +108,12 @@ else
         };
         
         diagram = new Diagram(options);
-        diagram.RegisterModelComponent<IfAnyModel, IfAnyComponent>();
-        diagram.RegisterModelComponent<SensorModel, SensorComponent>();
-        diagram.RegisterModelComponent<LightModel, LightComponent>();
+        diagram.RegisterModelComponent<IfAnyModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<SwitchModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<DayPhasesModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<SensorModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<LightModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<ModeSwitchModel, GraphNodeComponent>();
         
         PopulateDiagram();
         

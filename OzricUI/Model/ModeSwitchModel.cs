@@ -13,6 +13,7 @@ public class ModeSwitchModel: GraphNodeModel
         {
             AddOutput(output.type, output.name);
         }
-
     }
+    
+    public override string Icon => "fluent:table-switch-28-regular";
 }
