@@ -1,5 +1,5 @@
-using MatBlazor;
 using OzricUI.Data;
+using MudBlazor.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,7 +8,7 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<OzricEngineService>();
-builder.Services.AddMatBlazor();
+builder.Services.AddMudServices();
 
 var app = builder.Build();
 

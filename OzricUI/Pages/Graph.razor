@@ -13,9 +13,9 @@
 
 <div class="top-row px-2 py-2">
 
-    <MatButton Icon="edit" Raised="true" @onclick="OnClickEdit" Disabled="@IsEditing" hidden="@IsEditing">
+    <MudIconButton Icon="@Icons.Material.Filled.Edit" Color="Color.Primary" aria-label="Edit" Raised="true" OnClick="@OnClickEdit" Disabled="@IsEditing" hidden="@IsEditing">
         Edit
-    </MatButton>
+    </MudIconButton>
 
     <MatButton Icon="cancel" Raised="true" @onclick="OnClickCancel" Disabled="@IsNotEditing" hidden="@IsNotEditing">
         Cancel
@@ -78,7 +78,7 @@ else
     private DiagramHistory? history;
     
     private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
-    private readonly Mapping<Edge, LinkModel> edgeMappings = new();
+    private readonly Mapping<OzricEngine.nodes.Edge, LinkModel> edgeMappings = new();
 
     protected override async Task OnInitializedAsync()
     {
