@@ -3,17 +3,37 @@
 <MudThemeProvider/>
 <MudDialogProvider/>
 <MudSnackbarProvider/>
+<MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode"/>
 
-<PageTitle>OzricUI</PageTitle>
+<MudLayout>
+    <MudAppBar>
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
+        Ozric
+    </MudAppBar>
+    <MudDrawer @bind-Open="@_drawerOpen">
+        <NavMenu/>
+    </MudDrawer>
+    <MudMainContent>
+        @Body
+    </MudMainContent>
+</MudLayout>
 
-<div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
+@code {
+    bool _drawerOpen = true;
+    private bool _isDarkMode;
+    private MudThemeProvider _mudThemeProvider;
 
-    <main>
-        <article class="content px-4">
-            @Body
-        </article>
-    </main>
-</div>
+    void DrawerToggle()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+    
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            StateHasChanged();
+        }
+    }
+}
