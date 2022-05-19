@@ -1,48 +1,26 @@
-﻿@page "/graph"
-
-<PageTitle>Ozric - Graph</PageTitle>
-
-@using OzricUI.Data
-@using Blazor.Diagrams.Components
-@using OzricEngine.ext
 @using OzricEngine.logic
-@using OzricEngine.nodes
-@using OzricUI.Components
 @using OzricUI.Model
-@inject OzricEngineService ozricEngine
+@using OzricEngine.ext
 
-<MudToolBar>
-    
-</MudToolBar>
-
-<div style="height: 100%">
-@if (graph == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-}
+<div class="diagram-container">
+    <CascadingValue Value="diagram">
+        <DiagramCanvas></DiagramCanvas>
+    </CascadingValue>
 </div>
 
 @code {
 
+    [Parameter]
+    public OzricEngine.Graph? graph { get; set; }
+    
+    [Parameter]
+    public GraphLayout? graphLayout { get; set; }
+    
+    [Parameter]
+    public GraphEditState? graphEditState { get; set; }
+
     private Diagram? diagram { get; set; }
-
-    enum EditMode
-    {
-        View, EditOffline, EditOnline
-    }
     
-    enum OnlineMode
-    {
-        Realtime, Simulated
-    }
-
-    private EditMode mode = EditMode.View;
-    
-    private bool IsEditing => mode != EditMode.View;
-    private bool IsNotEditing => mode == EditMode.View;
     private bool IsChanged => !IsNotChanged;
     private bool IsNotChanged => history?.IsAtCheckpoint() ?? true;
     private bool CanUndo => history?.CanUndo() ?? false;
@@ -50,8 +28,6 @@ else
     private bool CanNotUndo => !CanUndo;
     private bool CanNotRedo => !CanRedo;
 
-    private OzricEngine.Graph? graph;
-    private GraphLayout? graphLayout;
     private DiagramHistory? history;
     
     private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
@@ -61,14 +37,6 @@ else
     {
         await base.OnInitializedAsync();
 
-        await Load();
-    }
-    
-    private async Task Load()
-    {
-        graph = await ozricEngine.GetGraphAsync();
-        graphLayout = await ozricEngine.GetGraphLayoutAsync();
-        
         var options = new DiagramOptions
         {
             DeleteKey = "Delete", // What key deletes the selected nodes/links
@@ -99,11 +67,11 @@ else
 
     private void OnClickEdit()
     {
-        mode = EditMode.EditOffline;
-
+        graphEditState.mode = GraphEditState.EditMode.EditOffline;
         SetLocked(false);
     }
 
+    /*
     private async Task OnClickSave()
     {
         await ozricEngine.SetGraphLayoutAsync(graphLayout);
@@ -115,7 +83,7 @@ else
         mode = EditMode.View;
 
         Load();
-    }
+    }*/
 
     private void OnClickUndo()
     {
@@ -168,7 +136,7 @@ else
 
             var link = new LinkModel(fromD.GetPort(fromPortID), toD.GetPort(toPortID))
             {
-                Locked = IsNotEditing
+                Locked = !graphEditState.IsEditing
             };
 
             edgeMappings.Add(edge, link);
@@ -217,7 +185,7 @@ else
             }
         }
         model.Moving += OnNodeModelMoving;
-        model.Locked = IsNotEditing; 
+        model.Locked = !graphEditState.IsEditing; 
         return model;
     }
 

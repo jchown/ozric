@@ -1,4 +1,6 @@
-﻿@inherits LayoutComponentBase
+﻿@using OzricUI.Data
+@inherits LayoutComponentBase
+@inject OzricEngineService ozricEngine
 
 <MudThemeProvider/>
 <MudDialogProvider/>
@@ -7,14 +9,49 @@
 
 <MudLayout>
     <MudAppBar>
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((e) => DrawerToggle())" />
-        Ozric
+        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((_) => DrawerToggle())" />
+        
+        <MudText>Ozric</MudText>
+        
+        <MudSpacer></MudSpacer>
+        
+        <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickEdit" Disabled="@IsEditing" Hidden="@IsEditing">
+            Edit
+        </MudButton>
+
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" @onclick="OnClickCancel" Disabled="@(!IsEditing)" hidden="@(!IsEditing)">
+            Cancel
+        </MudButton>
+
+        <MudButton StartIcon="@Icons.Material.Filled.Save" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickSave" Disabled="@(!IsChanged)" hidden="@(!IsEditing)">
+            Save
+        </MudButton>
+
+        <MudButton StartIcon="@Icons.Material.Filled.Undo" Variant="Variant.Filled" @onclick="OnClickUndo" Disabled="@(!CanUndo)" hidden="@(!IsEditing)">
+            Undo
+        </MudButton>
+
+        <MudButton StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" @onclick="OnClickRedo" Disabled="@(!CanRedo)" hidden="@(!IsEditing)">
+            Redo
+        </MudButton>
+
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen">
         <NavMenu/>
     </MudDrawer>
     <MudMainContent>
-        @Body
+        
+        <div style="height: 100%">
+        @if (Graph == null || GraphLayout == null)
+        {
+            <p><em>Loading...</em></p>
+        }
+        else
+        {
+            <GraphEditor graph="@Graph" graphLayout="@GraphLayout" graphEditState="@GraphEditState">
+            </GraphEditor>
+        }
+        </div>
     </MudMainContent>
 </MudLayout>
 
@@ -22,6 +59,10 @@
     bool _drawerOpen = true;
     private bool _isDarkMode;
     private MudThemeProvider _mudThemeProvider;
+    
+    private OzricEngine.Graph? Graph { get; set; }
+    private GraphLayout? GraphLayout { get; set; }
+    private GraphEditState? GraphEditState { get; set; } = new GraphEditState();
 
     void DrawerToggle()
     {
@@ -36,4 +77,41 @@
             StateHasChanged();
         }
     }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await base.OnInitializedAsync();
+
+        Graph = await ozricEngine.GetGraphAsync();
+        GraphLayout = await ozricEngine.GetGraphLayoutAsync();
+    }
+
+    private void OnClickEdit()
+    {
+        GraphEditState.OnEdit();
+    }
+
+    private void OnClickCancel()
+    {
+        GraphEditState.OnCancel();
+    }
+
+    private void OnClickSave()
+    {
+    }
+
+    private void OnClickUndo()
+    {
+        throw new NotImplementedException();
+    }
+
+    private void OnClickRedo()
+    {
+        throw new NotImplementedException();
+    }
+
+    public bool IsEditing { get; set; }
+    public bool IsChanged { get; set; }
+    public bool CanUndo { get; set; }
+    public bool CanRedo { get; set; }
 }
