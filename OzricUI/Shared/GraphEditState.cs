@@ -12,6 +12,8 @@ public class GraphEditState
         Realtime, Simulated
     }
 
+    public event Action OnChanged;
+
     public EditMode mode { get; set; } = EditMode.View;
     
     public bool IsEditing => mode != EditMode.View;
@@ -22,10 +24,12 @@ public class GraphEditState
     public void OnEdit()
     {
         mode = EditMode.EditOffline;
+        OnChanged();
     }
 
     public void OnCancel()
     {
         mode = EditMode.View;
+        OnChanged();
     }
 }

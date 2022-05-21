@@ -1,4 +1,6 @@
 ﻿@using OzricUI.Data
+@using OzricEngine
+@using OzricUI.Components 
 @inherits LayoutComponentBase
 @inject OzricEngineService ozricEngine
 
@@ -15,11 +17,12 @@
         
         <MudSpacer></MudSpacer>
         
+        <MudButtonGroup>
         <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickEdit" Disabled="@IsEditing" Hidden="@IsEditing">
             Edit
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" @onclick="OnClickCancel" Disabled="@(!IsEditing)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Tertiary" @onclick="OnClickCancel" Disabled="@(!IsEditing)" hidden="@(!IsEditing)">
             Cancel
         </MudButton>
 
@@ -27,13 +30,14 @@
             Save
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.Undo" Variant="Variant.Filled" @onclick="OnClickUndo" Disabled="@(!CanUndo)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.Undo" Variant="Variant.Filled" Color="Color.Tertiary" @onclick="OnClickUndo" Disabled="@(!CanUndo)" hidden="@(!IsEditing)">
             Undo
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" @onclick="OnClickRedo" Disabled="@(!CanRedo)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" Color="Color.Tertiary" @onclick="OnClickRedo" Disabled="@(!CanRedo)" hidden="@(!IsEditing)">
             Redo
         </MudButton>
+        </MudButtonGroup>
 
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen">
@@ -48,8 +52,10 @@
         }
         else
         {
-            <GraphEditor graph="@Graph" graphLayout="@GraphLayout" graphEditState="@GraphEditState">
-            </GraphEditor>
+            <div id="another_unique_identifier" class="ma-0" style="height: calc(100% - 1.5rem); overflow: auto;">
+                <GraphEditor graph="@Graph" graphLayout="@GraphLayout" GraphEditState="@GraphEditState" />
+                </div>
+            <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Edit" Class="object-right-bottom relative"  />
         }
         </div>
     </MudMainContent>
@@ -60,9 +66,9 @@
     private bool _isDarkMode;
     private MudThemeProvider _mudThemeProvider;
     
-    private OzricEngine.Graph? Graph { get; set; }
+    private Graph? Graph { get; set; }
     private GraphLayout? GraphLayout { get; set; }
-    private GraphEditState? GraphEditState { get; set; } = new GraphEditState();
+    private GraphEditState GraphEditState { get; set; } = new GraphEditState();
 
     void DrawerToggle()
     {
@@ -73,7 +79,7 @@
     {
         if (firstRender)
         {
-            _isDarkMode = await _mudThemeProvider.GetSystemPreference();
+            _isDarkMode = false;//await _mudThemeProvider.GetSystemPreference();
             StateHasChanged();
         }
     }
@@ -110,8 +116,8 @@
         throw new NotImplementedException();
     }
 
-    public bool IsEditing { get; set; }
-    public bool IsChanged { get; set; }
-    public bool CanUndo { get; set; }
-    public bool CanRedo { get; set; }
+    public bool IsEditing => GraphEditState.IsEditing;
+    public bool IsChanged => GraphEditState.IsChanged;
+    public bool CanUndo => GraphEditState.CanUndo;
+    public bool CanRedo => GraphEditState.CanRedo;
 }

@@ -1,8 +1,10 @@
 @using OzricEngine.logic
 @using OzricUI.Model
 @using OzricEngine.ext
+@using Blazor.Diagrams.Components
+@implements IDisposable
 
-<div class="diagram-container">
+<div class="diagram-container" style="height: 400px"><!-- Not sure why need to be hardcoded -->
     <CascadingValue Value="diagram">
         <DiagramCanvas></DiagramCanvas>
     </CascadingValue>
@@ -11,13 +13,13 @@
 @code {
 
     [Parameter]
-    public OzricEngine.Graph? graph { get; set; }
+    public OzricEngine.Graph graph { get; set; }
     
     [Parameter]
-    public GraphLayout? graphLayout { get; set; }
+    public GraphLayout graphLayout { get; set; }
     
     [Parameter]
-    public GraphEditState? graphEditState { get; set; }
+    public GraphEditState GraphEditState { get; set; }
 
     private Diagram? diagram { get; set; }
     
@@ -36,6 +38,8 @@
     protected override async Task OnInitializedAsync()
     {
         await base.OnInitializedAsync();
+
+        GraphEditState.OnChanged += OnGraphEditStateChanged;
 
         var options = new DiagramOptions
         {
@@ -64,11 +68,30 @@
         
         history = new DiagramHistory(diagram);
     }
-
-    private void OnClickEdit()
+    
+    public void Dispose()
     {
-        graphEditState.mode = GraphEditState.EditMode.EditOffline;
-        SetLocked(false);
+        GraphEditState.OnChanged -= OnGraphEditStateChanged;
+    }
+
+    private void OnGraphEditStateChanged()
+    {
+        StateHasChanged();
+
+        switch (GraphEditState.mode)
+        {
+            case GraphEditState.EditMode.View:
+                SetLocked(true);
+                break;
+                
+            case GraphEditState.EditMode.EditOffline:
+            case GraphEditState.EditMode.EditOnline:
+                SetLocked(false);
+                break;
+                
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 
     /*
@@ -136,7 +159,7 @@
 
             var link = new LinkModel(fromD.GetPort(fromPortID), toD.GetPort(toPortID))
             {
-                Locked = !graphEditState.IsEditing
+                Locked = !GraphEditState.IsEditing
             };
 
             edgeMappings.Add(edge, link);
@@ -185,7 +208,7 @@
             }
         }
         model.Moving += OnNodeModelMoving;
-        model.Locked = !graphEditState.IsEditing; 
+        model.Locked = !GraphEditState.IsEditing; 
         return model;
     }
 
@@ -201,9 +224,17 @@
         graphLayout.nodeLayout[nodeID] = LayoutPoint.FromPoint(to);
         history.Node_Moved(nodeModel, from, to);
 
+        OnHistoryChanged();
+    }
+
+    private void OnHistoryChanged()
+    {
+        GraphEditState.CanUndo = history.CanUndo();
+        GraphEditState.CanRedo = history.CanRedo();
+        GraphEditState.IsChanged = !history.IsAtCheckpoint();
         StateHasChanged();
     }
-    
+
     private void SetLocked(bool locked)
     {
         foreach (var node in diagram.Nodes)
