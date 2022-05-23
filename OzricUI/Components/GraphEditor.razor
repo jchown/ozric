@@ -40,6 +40,8 @@
         await base.OnInitializedAsync();
 
         GraphEditState.OnChanged += OnGraphEditStateChanged;
+        GraphEditState.OnDoUndo += OnDoUndo;
+        GraphEditState.OnDoRedo += OnDoRedo;
 
         var options = new DiagramOptions
         {
@@ -72,6 +74,8 @@
     public void Dispose()
     {
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
+        GraphEditState.OnDoUndo -= OnDoUndo;
+        GraphEditState.OnDoRedo -= OnDoRedo;
     }
 
     private void OnGraphEditStateChanged()
@@ -108,12 +112,12 @@
         Load();
     }*/
 
-    private void OnClickUndo()
+    private void OnDoUndo()
     {
         history?.UndoLastAction();
     }
 
-    private void OnClickRedo()
+    private void OnDoRedo()
     {
         history?.RedoLastAction();
     }
@@ -229,10 +233,7 @@
 
     private void OnHistoryChanged()
     {
-        GraphEditState.CanUndo = history.CanUndo();
-        GraphEditState.CanRedo = history.CanRedo();
-        GraphEditState.IsChanged = !history.IsAtCheckpoint();
-        StateHasChanged();
+        GraphEditState.SetHistoryState(history);
     }
 
     private void SetLocked(bool locked)

@@ -1,6 +1,7 @@
 ﻿@using OzricUI.Data
 @using OzricEngine
 @using OzricUI.Components 
+@using Size = MudBlazor.Size
 @inherits LayoutComponentBase
 @inject OzricEngineService ozricEngine
 
@@ -48,7 +49,9 @@
         <div style="height: 100%">
         @if (Graph == null || GraphLayout == null)
         {
-            <p><em>Loading...</em></p>
+            <MudPaper Class="pa-16 ma-2" Outlined="true">
+                <MudText>Loading...&#160;&#160;&#160;<MudProgressCircular Size="Size.Small" Indeterminate="true"/></MudText>
+            </MudPaper>
         }
         else
         {
@@ -90,6 +93,12 @@
 
         Graph = await ozricEngine.GetGraphAsync();
         GraphLayout = await ozricEngine.GetGraphLayoutAsync();
+        GraphEditState.OnChanged += OnGraphEditStateChanged;
+    }
+
+    private void OnGraphEditStateChanged()
+    {
+        StateHasChanged();
     }
 
     private void OnClickEdit()
@@ -108,12 +117,12 @@
 
     private void OnClickUndo()
     {
-        throw new NotImplementedException();
+        GraphEditState.DoUndo();
     }
 
     private void OnClickRedo()
     {
-        throw new NotImplementedException();
+        GraphEditState.DoRedo();
     }
 
     public bool IsEditing => GraphEditState.IsEditing;

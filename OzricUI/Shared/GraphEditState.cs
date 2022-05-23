@@ -13,6 +13,8 @@ public class GraphEditState
     }
 
     public event Action OnChanged;
+    public event Action OnDoUndo;
+    public event Action OnDoRedo;
 
     public EditMode mode { get; set; } = EditMode.View;
     
@@ -30,6 +32,24 @@ public class GraphEditState
     public void OnCancel()
     {
         mode = EditMode.View;
+        OnChanged();
+    }
+
+    public void DoUndo()
+    {
+        OnDoUndo();
+    }
+
+    public void DoRedo()
+    {
+        OnDoRedo();
+    }
+
+    public void SetHistoryState(DiagramHistory history)
+    {
+        CanUndo = history.CanUndo();
+        CanRedo = history.CanRedo();
+        IsChanged = !history.IsAtCheckpoint();
         OnChanged();
     }
 }
