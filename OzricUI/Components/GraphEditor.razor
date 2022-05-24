@@ -115,11 +115,13 @@
     private void OnDoUndo()
     {
         history?.UndoLastAction();
+        OnHistoryChanged();
     }
 
     private void OnDoRedo()
     {
         history?.RedoLastAction();
+        OnHistoryChanged();
     }
         
     private void PopulateDiagram()

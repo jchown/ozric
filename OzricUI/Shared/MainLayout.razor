@@ -18,27 +18,25 @@
         
         <MudSpacer></MudSpacer>
         
-        <MudButtonGroup>
         <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickEdit" Disabled="@IsEditing" Hidden="@IsEditing">
             Edit
         </MudButton>
-
-        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Tertiary" @onclick="OnClickCancel" Disabled="@(!IsEditing)" hidden="@(!IsEditing)">
+        
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickCancel" Disabled="@(!IsEditing)" hidden="@(!IsEditing)">
             Cancel
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.Save" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickSave" Disabled="@(!IsChanged)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.Save" Variant="Variant.Filled" Color="Color.Tertiary" @onclick="OnClickSave" Disabled="@(!IsChanged)" hidden="@(!IsEditing)">
             Save
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.Undo" Variant="Variant.Filled" Color="Color.Tertiary" @onclick="OnClickUndo" Disabled="@(!CanUndo)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.Undo" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickUndo" Disabled="@(!CanUndo)" hidden="@(!IsEditing)">
             Undo
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" Color="Color.Tertiary" @onclick="OnClickRedo" Disabled="@(!CanRedo)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickRedo" Disabled="@(!CanRedo)" hidden="@(!IsEditing)">
             Redo
         </MudButton>
-        </MudButtonGroup>
 
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen">
@@ -55,10 +53,7 @@
         }
         else
         {
-            <div id="another_unique_identifier" class="ma-0" style="height: calc(100% - 1.5rem); overflow: auto;">
-                <GraphEditor graph="@Graph" graphLayout="@GraphLayout" GraphEditState="@GraphEditState" />
-                </div>
-            <MudFab Color="Color.Secondary" StartIcon="@Icons.Material.Filled.Edit" Class="object-right-bottom relative"  />
+            <GraphEditor graph="@Graph" graphLayout="@GraphLayout" GraphEditState="@GraphEditState" />
         }
         </div>
     </MudMainContent>
