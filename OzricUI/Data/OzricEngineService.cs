@@ -31,7 +31,7 @@ public class OzricEngineService
 
     public async Task SetGraphLayoutAsync(GraphLayout graphLayout)
     {
-        var json = Json.Serialize<GraphLayout>(graphLayout);
+        var json = Json.Serialize(graphLayout);
         await File.WriteAllTextAsync("/data/graph_layout.json", json);
     }
 

@@ -1,4 +1,3 @@
-using Blazor.Diagrams.Core.Geometry;
 using OzricEngine;
 
 namespace OzricUI;

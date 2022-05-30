@@ -42,6 +42,7 @@
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnDoUndo += OnDoUndo;
         GraphEditState.OnDoRedo += OnDoRedo;
+        GraphEditState.OnDoSetCheckpoint += OnDoSetCheckpoint;
 
         var options = new DiagramOptions
         {
@@ -76,6 +77,7 @@
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
         GraphEditState.OnDoUndo -= OnDoUndo;
         GraphEditState.OnDoRedo -= OnDoRedo;
+        GraphEditState.OnDoSetCheckpoint -= OnDoSetCheckpoint;
     }
 
     private void OnGraphEditStateChanged()
@@ -98,20 +100,6 @@
         }
     }
 
-    /*
-    private async Task OnClickSave()
-    {
-        await ozricEngine.SetGraphLayoutAsync(graphLayout);
-        history.SetCheckpoint();
-    }
-
-    private async Task OnClickCancel()
-    {
-        mode = EditMode.View;
-
-        Load();
-    }*/
-
     private void OnDoUndo()
     {
         history?.UndoLastAction();
@@ -123,7 +111,13 @@
         history?.RedoLastAction();
         OnHistoryChanged();
     }
-        
+
+    private void OnDoSetCheckpoint()
+    {
+        history?.SetCheckpoint();
+        OnHistoryChanged();
+    }
+
     private void PopulateDiagram()
     {
         nodeMappings.Clear();

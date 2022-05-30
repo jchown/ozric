@@ -15,6 +15,7 @@ public class GraphEditState
     public event Action OnChanged;
     public event Action OnDoUndo;
     public event Action OnDoRedo;
+    public event Action OnDoSetCheckpoint; 
 
     public EditMode mode { get; set; } = EditMode.View;
     
@@ -45,11 +46,22 @@ public class GraphEditState
         OnDoRedo();
     }
 
+    public void DoSetCheckpoint()
+    {
+        OnDoSetCheckpoint();
+    }
+
     public void SetHistoryState(DiagramHistory history)
     {
         CanUndo = history.CanUndo();
         CanRedo = history.CanRedo();
         IsChanged = !history.IsAtCheckpoint();
+        OnChanged();
+    }
+
+    public void OnLock(bool locked)
+    {
+        mode = locked ? EditMode.View : EditMode.EditOffline;
         OnChanged();
     }
 }

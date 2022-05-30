@@ -15,19 +15,28 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((_) => DrawerToggle())" />
         
         <MudText>Ozric</MudText>
-        
+ 
         <MudSpacer></MudSpacer>
         
         <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickEdit" Disabled="@IsEditing" Hidden="@IsEditing">
             Edit
         </MudButton>
         
-        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickCancel" Disabled="@(!IsEditing)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickCancel" Disabled="@(Saving || !IsEditing)" hidden="@(!IsEditing)">
             Cancel
         </MudButton>
-
-        <MudButton StartIcon="@Icons.Material.Filled.Save" Variant="Variant.Filled" Color="Color.Tertiary" @onclick="OnClickSave" Disabled="@(!IsChanged)" hidden="@(!IsEditing)">
-            Save
+               
+        <MudButton Color="Color.Tertiary" Variant="Variant.Filled"  @onclick="OnClickSave" Disabled="@(Saving || !IsChanged)" hidden="@(!IsEditing)">
+            @if (Saving)
+            {
+                <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+                <MudText Class="ms-2">Saving</MudText>
+            }
+            else
+            {
+                <MudIcon Variant="Variant.Filled" Icon="@Icons.Material.Filled.Save" />
+                <MudText>Save</MudText>
+            }
         </MudButton>
 
         <MudButton StartIcon="@Icons.Material.Filled.Undo" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickUndo" Disabled="@(!CanUndo)" hidden="@(!IsEditing)">
@@ -68,6 +77,13 @@
     private GraphLayout? GraphLayout { get; set; }
     private GraphEditState GraphEditState { get; set; } = new GraphEditState();
 
+    private bool Saving { get; set; }
+    
+    public bool IsEditing => GraphEditState.IsEditing;
+    public bool IsChanged => GraphEditState.IsChanged;
+    public bool CanUndo => GraphEditState.CanUndo && !Saving;
+    public bool CanRedo => GraphEditState.CanRedo && !Saving;
+
     void DrawerToggle()
     {
         _drawerOpen = !_drawerOpen;
@@ -103,11 +119,37 @@
 
     private void OnClickCancel()
     {
-        GraphEditState.OnCancel();
+//        mode = EditMode.View;
+//        Load();
     }
 
     private void OnClickSave()
     {
+//        GraphEditState.OnLock(true);
+        Saving = true; 
+        _ = Task.Run(async () =>
+        {
+            try
+            {
+                await Task.Delay(1000);
+                await ozricEngine.SetGraphLayoutAsync(GraphLayout);
+
+                InvokeAsync(() => GraphEditState.DoSetCheckpoint());
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.ToString());
+            }
+            finally
+            {
+                InvokeAsync(() =>
+                {
+                    Saving = false;
+                    StateHasChanged();
+                });
+    //                GraphEditState.OnLock(false);
+            }
+        });
     }
 
     private void OnClickUndo()
@@ -119,9 +161,4 @@
     {
         GraphEditState.DoRedo();
     }
-
-    public bool IsEditing => GraphEditState.IsEditing;
-    public bool IsChanged => GraphEditState.IsChanged;
-    public bool CanUndo => GraphEditState.CanUndo;
-    public bool CanRedo => GraphEditState.CanRedo;
 }
