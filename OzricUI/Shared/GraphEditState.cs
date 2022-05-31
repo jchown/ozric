@@ -4,7 +4,7 @@ public class GraphEditState
 {
     public enum EditMode
     {
-        View, EditOffline, EditOnline
+        View, Saving, EditOffline, EditOnline
     }
     
     public enum OnlineMode
@@ -27,6 +27,12 @@ public class GraphEditState
     public void OnEdit()
     {
         mode = EditMode.EditOffline;
+        OnChanged();
+    }
+
+    public void OnSaving()
+    {
+        mode = EditMode.Saving;
         OnChanged();
     }
 
@@ -56,12 +62,6 @@ public class GraphEditState
         CanUndo = history.CanUndo();
         CanRedo = history.CanRedo();
         IsChanged = !history.IsAtCheckpoint();
-        OnChanged();
-    }
-
-    public void OnLock(bool locked)
-    {
-        mode = locked ? EditMode.View : EditMode.EditOffline;
         OnChanged();
     }
 }

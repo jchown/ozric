@@ -62,7 +62,7 @@
         }
         else
         {
-            <GraphEditor graph="@Graph" graphLayout="@GraphLayout" GraphEditState="@GraphEditState" />
+            <GraphEditor Graph="@Graph" GraphLayout="@GraphLayout" GraphEditState="@GraphEditState" />
         }
         </div>
     </MudMainContent>
@@ -71,13 +71,13 @@
 @code {
     bool _drawerOpen = true;
     private bool _isDarkMode;
-    private MudThemeProvider _mudThemeProvider;
+    private MudThemeProvider? _mudThemeProvider;
     
     private Graph? Graph { get; set; }
     private GraphLayout? GraphLayout { get; set; }
     private GraphEditState GraphEditState { get; set; } = new GraphEditState();
 
-    private bool Saving { get; set; }
+    private bool Saving => GraphEditState.mode == GraphEditState.EditMode.Saving;
     
     public bool IsEditing => GraphEditState.IsEditing;
     public bool IsChanged => GraphEditState.IsChanged;
@@ -102,9 +102,22 @@
     {
         await base.OnInitializedAsync();
 
+        await LoadGraph();
+    }
+
+    private async Task LoadGraph()
+    {
         Graph = await ozricEngine.GetGraphAsync();
         GraphLayout = await ozricEngine.GetGraphLayoutAsync();
         GraphEditState.OnChanged += OnGraphEditStateChanged;
+    }
+
+    private void UnloadGraph()
+    {
+        GraphEditState.OnChanged -= OnGraphEditStateChanged;
+        Graph = null;
+        GraphLayout = null;
+        GraphEditState = new GraphEditState();
     }
 
     private void OnGraphEditStateChanged()
@@ -119,19 +132,34 @@
 
     private void OnClickCancel()
     {
-//        mode = EditMode.View;
-//        Load();
+        if (!GraphEditState.IsChanged)
+        {
+            GraphEditState.OnCancel();
+            return;
+        }
+     
+        //  Tear down and rebuild. It would be nice to do something less brutal.
+        
+        UnloadGraph();
+        
+        _ = Task.Run(async () =>
+        {
+            await LoadGraph();
+            InvokeAsync(StateHasChanged);
+        });
     }
 
     private void OnClickSave()
     {
-//        GraphEditState.OnLock(true);
-        Saving = true; 
+        if (GraphLayout == null)
+            throw new Exception();
+        
+        GraphEditState.OnSaving();
         _ = Task.Run(async () =>
         {
             try
             {
-                await Task.Delay(1000);
+                await Task.Delay(100);
                 await ozricEngine.SetGraphLayoutAsync(GraphLayout);
 
                 InvokeAsync(() => GraphEditState.DoSetCheckpoint());
@@ -144,10 +172,8 @@
             {
                 InvokeAsync(() =>
                 {
-                    Saving = false;
-                    StateHasChanged();
+                    GraphEditState.OnEdit();
                 });
-    //                GraphEditState.OnLock(false);
             }
         });
     }

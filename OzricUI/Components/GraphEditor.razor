@@ -2,6 +2,7 @@
 @using OzricUI.Model
 @using OzricEngine.ext
 @using Blazor.Diagrams.Components
+@using OzricEngine
 @implements IDisposable
 
 <div class="diagram-container" style="height: 400px"><!-- Not sure why need to be hardcoded -->
@@ -13,10 +14,10 @@
 @code {
 
     [Parameter]
-    public OzricEngine.Graph graph { get; set; }
+    public Graph Graph { get; set; }
     
     [Parameter]
-    public GraphLayout graphLayout { get; set; }
+    public GraphLayout GraphLayout { get; set; }
     
     [Parameter]
     public GraphEditState GraphEditState { get; set; }
@@ -25,10 +26,8 @@
     
     private bool IsChanged => !IsNotChanged;
     private bool IsNotChanged => history?.IsAtCheckpoint() ?? true;
-    private bool CanUndo => history?.CanUndo() ?? false;
-    private bool CanRedo => history?.CanRedo() ?? false;
-    private bool CanNotUndo => !CanUndo;
-    private bool CanNotRedo => !CanRedo;
+    private bool CanUndo => GraphEditState.IsEditing && (history?.CanUndo() ?? false);
+    private bool CanRedo => GraphEditState.IsEditing && (history?.CanRedo() ?? false);
 
     private DiagramHistory? history;
     
@@ -71,7 +70,7 @@
         
         history = new DiagramHistory(diagram);
     }
-    
+
     public void Dispose()
     {
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
@@ -87,6 +86,7 @@
         switch (GraphEditState.mode)
         {
             case GraphEditState.EditMode.View:
+            case GraphEditState.EditMode.Saving:
                 SetLocked(true);
                 break;
                 
@@ -125,9 +125,9 @@
 
         int x = 0, y = 0, w = 160, h = 120, cols = 6; 
         
-        foreach (var node in graph.nodes.Values)
+        foreach (var node in Graph.nodes.Values)
         {
-            var position = graphLayout.nodeLayout.GetOrSet(node.id, () =>
+            var position = GraphLayout.nodeLayout.GetOrSet(node.id, () =>
             {
                 var point = new LayoutPoint(x * w, y * h);
                 if (++x == cols)
@@ -149,7 +149,7 @@
             }
         }
 
-        foreach (var edge in graph.edges.Values)
+        foreach (var edge in Graph.edges.Values)
         {
             var fromD = nodeMappings.GetDiagram(edge.from.nodeID);
             var fromPortID = $"{edge.from.nodeID}.{edge.from.outputName}"; 
@@ -218,10 +218,10 @@
         if (nodeID == null)
             throw new Exception("Node not found");
 
-        var from = graphLayout.nodeLayout[nodeID].ToPoint();
+        var from = GraphLayout.nodeLayout[nodeID].ToPoint();
         var to = nodeModel.Position;
         
-        graphLayout.nodeLayout[nodeID] = LayoutPoint.FromPoint(to);
+        GraphLayout.nodeLayout[nodeID] = LayoutPoint.FromPoint(to);
         history.Node_Moved(nodeModel, from, to);
 
         OnHistoryChanged();
