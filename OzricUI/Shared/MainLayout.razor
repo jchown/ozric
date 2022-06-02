@@ -1,7 +1,10 @@
 ﻿@using OzricUI.Data
 @using OzricEngine
+@using OzricEngine.logic
 @using OzricUI.Components 
+@using OzricUI.Model
 @using Size = MudBlazor.Size
+@inject IDialogService DialogService
 @inherits LayoutComponentBase
 @inject OzricEngineService ozricEngine
 
@@ -45,6 +48,10 @@
 
         <MudButton StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickRedo" Disabled="@(!CanRedo)" hidden="@(!IsEditing)">
             Redo
+        </MudButton>
+
+        <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickAdd" Disabled="@(!IsEditing)" hidden="@(!IsEditing)">
+            Add
         </MudButton>
 
     </MudAppBar>
@@ -186,5 +193,29 @@
     private void OnClickRedo()
     {
         GraphEditState.DoRedo();
+    }
+    
+    private void OnClickAdd()
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            Position = DialogPosition.TopCenter,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var parameters = new DialogParameters();
+        parameters.Add("Choices", new AddNodeChoices
+        {
+            Logic = new List<AddNodeChoice>
+            {
+                new("If Any - OR", IfAnyModel.ICON, g => g.AddNode(new IfAny(g.CreateNodeID("ifany-"), "input1", "input2"))),
+                new("If All - AND", IfAllModel.ICON, g => g.AddNode(new IfAny(g.CreateNodeID("ifall-"), "input1", "input2")))
+            }
+        });
+        
+        DialogService.Show<AddNodesDialog>("Add Nodes", parameters, options);
     }
 }

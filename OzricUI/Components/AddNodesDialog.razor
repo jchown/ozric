@@ -1,0 +1,47 @@
+<MudDialog>
+    <DialogContent>
+        
+        <MudExpansionPanel Text="Devices" MaxHeight="400">
+            @foreach (var choice in Choices.Devices)
+            {
+                <div>
+                    <span class="iconify" data-icon="@choice.Icon"></span>
+                <MudCheckBox Checked="@IsSelected(choice)" Label="@choice.Name" />
+                </div>
+            }
+        </MudExpansionPanel>
+        
+        <MudExpansionPanel Text="Logic" MaxHeight="400">
+            @foreach (var choice in Choices.Logic)
+            {
+                <div>
+                    <span class="iconify" data-icon="@choice.Icon"></span>
+                    <MudCheckBox Checked="@IsSelected(choice)" Label="@choice.Name" />
+                </div>
+            }
+        </MudExpansionPanel>
+        
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!Selected)">Add</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+    
+    [Parameter] public AddNodeChoices Choices { get; set; }
+
+    private bool Selected => Selection.Count == 0;
+
+    private List<AddNodeChoice> Selection = new List<AddNodeChoice>();
+
+    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Cancel() => MudDialog.Cancel();
+
+    private bool IsSelected(AddNodeChoice choice)
+    {
+        return Selection.Contains(choice);
+    }
+}
