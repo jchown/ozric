@@ -38,6 +38,14 @@ namespace OzricEngine
             nodes[node.id] = node;
         }
 
+        public void RemoveNode(Node node)
+        {
+            if (!nodes.ContainsKey(node.id))
+                throw new Exception($"The node with ID {node.id} does not exist");
+
+            nodes.Remove(node.id);
+        }
+
         public void Connect(string outputNodeID, string outputPinName, string inputNodeID, string inputPinName)
         {
             if (!nodes.ContainsKey(outputNodeID))
@@ -197,5 +205,13 @@ namespace OzricEngine
             return HashCode.Combine(nodes, edges);
         }
         #endregion
+
+        public string CreateNodeID(string prefix)
+        {
+            int i = nodes.Count;
+            while (nodes.ContainsKey($"{prefix}{i}"))
+                i++;
+            return $"{prefix}{i}";
+        }
     }
 }

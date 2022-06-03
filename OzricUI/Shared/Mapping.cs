@@ -14,6 +14,14 @@ public class Mapping<GType, DType> where GType: IGraphObject where DType: Blazor
         idToGType[d.Id] = g;
     }
 
+    public DType Remove(GType g)
+    {
+        var d = idToDType[g.id];
+        idToDType.Remove(g.id);
+        idToGType.Remove(d.Id);
+        return d;
+    }
+
     public DType GetDiagram(GType g)
     {
         return GetDiagram(g.id);

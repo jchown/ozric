@@ -16,7 +16,7 @@
             {
                 <div>
                     <span class="iconify" data-icon="@choice.Icon"></span>
-                    <MudCheckBox Checked="@IsSelected(choice)" Label="@choice.Name" />
+                    <MudCheckBox Checked="@IsSelected(choice)" CheckedChanged="(bool _) => SelectedChoice(choice)" Label="@choice.Name" />
                 </div>
             }
         </MudExpansionPanel>
@@ -33,15 +33,23 @@
     
     [Parameter] public AddNodeChoices Choices { get; set; }
 
-    private bool Selected => Selection.Count == 0;
+    private bool Selected => selection.Count > 0;
+    private readonly List<AddNodeChoice> selection = new();
 
-    private List<AddNodeChoice> Selection = new List<AddNodeChoice>();
-
-    void Submit() => MudDialog.Close(DialogResult.Ok(true));
+    void Submit() => MudDialog.Close(DialogResult.Ok(selection));
     void Cancel() => MudDialog.Cancel();
 
     private bool IsSelected(AddNodeChoice choice)
     {
-        return Selection.Contains(choice);
+        return selection.Contains(choice);
     }
+
+    private void SelectedChoice(AddNodeChoice choice)
+    {
+        if (IsSelected(choice))
+            selection.Remove(choice);
+        else
+            selection.Add(choice);
+    }
+
 }

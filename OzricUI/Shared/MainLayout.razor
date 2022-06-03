@@ -84,7 +84,7 @@
     private GraphLayout? GraphLayout { get; set; }
     private GraphEditState GraphEditState { get; set; } = new GraphEditState();
 
-    private bool Saving => GraphEditState.mode == GraphEditState.EditMode.Saving;
+    private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
     
     public bool IsEditing => GraphEditState.IsEditing;
     public bool IsChanged => GraphEditState.IsChanged;
@@ -195,7 +195,7 @@
         GraphEditState.DoRedo();
     }
     
-    private void OnClickAdd()
+    private async Task OnClickAdd()
     {
         var options = new DialogOptions
         {
@@ -211,11 +211,19 @@
         {
             Logic = new List<AddNodeChoice>
             {
-                new("If Any - OR", IfAnyModel.ICON, g => g.AddNode(new IfAny(g.CreateNodeID("ifany-"), "input1", "input2"))),
-                new("If All - AND", IfAllModel.ICON, g => g.AddNode(new IfAny(g.CreateNodeID("ifall-"), "input1", "input2")))
+                new("If Any - OR", IfAnyModel.ICON, () => new IfAny(Graph.CreateNodeID("ifany-"), "input1", "input2")),
+                new("If All - AND", IfAllModel.ICON, () => new IfAny(Graph.CreateNodeID("ifall-"), "input1", "input2"))
             }
         });
         
-        DialogService.Show<AddNodesDialog>("Add Nodes", parameters, options);
+        var result = await DialogService.Show<AddNodesDialog>("Add Nodes", parameters, options).Result;
+        if (result.Cancelled)
+            return;
+
+        var selected = result.Data as List<AddNodeChoice>;
+        if (selected == null)
+            return;
+
+        GraphEditState.DoAdd(selected.Select(anc => anc.Create).ToList());
     }
 }

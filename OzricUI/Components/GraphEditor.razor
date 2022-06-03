@@ -22,14 +22,14 @@
     [Parameter]
     public GraphEditState GraphEditState { get; set; }
 
-    private Diagram? diagram { get; set; }
+    public Diagram? diagram { get; set; }
     
     private bool IsChanged => !IsNotChanged;
     private bool IsNotChanged => history?.IsAtCheckpoint() ?? true;
     private bool CanUndo => GraphEditState.IsEditing && (history?.CanUndo() ?? false);
     private bool CanRedo => GraphEditState.IsEditing && (history?.CanRedo() ?? false);
 
-    private DiagramHistory? history;
+    private EditHistory? history;
     
     private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
     private readonly Mapping<OzricEngine.nodes.Edge, LinkModel> edgeMappings = new();
@@ -42,6 +42,7 @@
         GraphEditState.OnDoUndo += OnDoUndo;
         GraphEditState.OnDoRedo += OnDoRedo;
         GraphEditState.OnDoSetCheckpoint += OnDoSetCheckpoint;
+        GraphEditState.OnDoAdd += OnDoAdd;
 
         var options = new DiagramOptions
         {
@@ -68,7 +69,7 @@
         
         PopulateDiagram();
         
-        history = new DiagramHistory(diagram);
+        history = new EditHistory(this);
     }
 
     public void Dispose()
@@ -83,7 +84,7 @@
     {
         StateHasChanged();
 
-        switch (GraphEditState.mode)
+        switch (GraphEditState.Mode)
         {
             case GraphEditState.EditMode.View:
             case GraphEditState.EditMode.Saving:
@@ -117,6 +118,16 @@
         history?.SetCheckpoint();
         OnHistoryChanged();
     }
+    
+    private void OnDoAdd(List<Func<Node>> creators)
+    {
+        history?.Record(() =>
+        {
+            var ids = CreateNodes(creators);
+            return new EditHistory.GraphAction.AddNodes(creators, ids);
+        });
+        OnHistoryChanged();
+    }
 
     private void PopulateDiagram()
     {
@@ -137,16 +148,8 @@
                 }
                 return point;
             }).ToPoint();
-            
-            var diagramNode = NewNode(node, position);
-            
-            nodeMappings.Add(node, diagramNode);
-            diagram.Nodes.Add(diagramNode);
-            
-            for (int i = 0; i < node.inputs.Count; i++)
-            {
-                diagramNode.Ports[i].Position = position.Add(0f, i * 20f);
-            }
+
+            AddNode(node, position);
         }
 
         foreach (var edge in Graph.edges.Values)
@@ -165,6 +168,30 @@
             edgeMappings.Add(edge, link);
             diagram.Links.Add(link);
         }
+    }
+    
+    /// Take an existing node in the Graph and add it as the equivalent model object in the Diagram.
+    /// The caller is expected to have added it to the DiagramLayout
+
+    public void AddNode(Node node, Point position)
+    {
+        var diagramNode = NewNode(node, position);
+
+        nodeMappings.Add(node, diagramNode);
+        diagram.Nodes.Add(diagramNode);
+
+        for (int i = 0; i < node.inputs.Count; i++)
+        {
+            diagramNode.Ports[i].Position = position.Add(0f, i * 20f);
+        }
+    }
+    
+    /// Remove the model object that represents the give node in the Graph from the Diagram
+
+    public void RemoveNode(Node node)
+    {
+        var diagramNode = nodeMappings.Remove(node);
+        diagram.Nodes.Remove(diagramNode);
     }
 
     private GraphNodeModel NewNode(Node node, Point? point = null)
@@ -245,4 +272,23 @@
         foreach (var link in diagram.Nodes)
             link.Locked = locked;
     }
+
+    public List<string> CreateNodes(List<Func<Node>> nodeCreators)
+    {
+        var pos = new Point(20, 20);
+        var nodeIDs = new List<string>(nodeCreators.Count);
+                
+        foreach (var nodeCreator in nodeCreators)
+        {
+            var node = nodeCreator();
+            Graph.AddNode(node);
+            GraphLayout.nodeLayout[node.id] = LayoutPoint.FromPoint(pos);
+            AddNode(node, pos);
+            pos = pos.Add(20, 0);
+            nodeIDs.Add(node.id);
+        }
+
+        return nodeIDs;
+    }
+
 }

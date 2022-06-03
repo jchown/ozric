@@ -3,37 +3,61 @@ using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using Blazor.Diagrams.Core.Models.Base;
 using Microsoft.AspNetCore.Components.Web;
+using OzricEngine;
+using OzricEngine.logic;
+using OzricUI.Components;
 
 namespace OzricUI.Shared;
 
-public class DiagramHistory
+public class EditHistory
 {
     public interface GraphAction
     {
-        void Undo(Diagram diagram);
-        void Redo(Diagram diagram);
+        void Undo(GraphEditor editor);
+        void Redo(GraphEditor editor);
+
+        record AddNodes(List<Func<Node>> nodeCreators, List<string> nodeIDs): GraphAction
+        {
+            public void Undo(GraphEditor editor)
+            {
+                foreach (var nodeID in nodeIDs)
+                {
+                    var node = editor.Graph.GetNode(nodeID);
+                    editor.RemoveNode(node);
+                    editor.Graph.RemoveNode(node);
+                }
+            }
+
+            public void Redo(GraphEditor editor)
+            {
+                //  Node IDs are currently deterministic so re-recording IDs is defensive only
+                
+                nodeIDs.Clear();
+                nodeIDs.AddRange(editor.CreateNodes(nodeCreators));
+            }
+        }
 
         record AddNode(NodeModel node): GraphAction
         {
-            public void Undo(Diagram diagram)
+            public void Undo(GraphEditor editor)
             {
-                diagram.Nodes.Remove(node);
+                editor.diagram.Nodes.Remove(node);
             }
 
-            public void Redo(Diagram diagram)
+            public void Redo(GraphEditor editor)
             {
-                diagram.Nodes.Add(node);
+                editor.diagram.Nodes.Add(node);
             }
         }
 
         record MoveNode(NodeModel node, Point @from, Point to): GraphAction
         {
-            public void Undo(Diagram diagram)
+            public void Undo(GraphEditor editor)
             {
                 node.SetPosition(from.X, from.Y);
             }
 
-            public void Redo(Diagram diagram)
+            public void Redo(GraphEditor editor)
             {
                 node.SetPosition(to.X, to.Y);
             }
@@ -46,64 +70,64 @@ public class DiagramHistory
 
         record RemoveNode(NodeModel node): GraphAction
         {
-            public void Undo(Diagram diagram)
+            public void Undo(GraphEditor editor)
             {
-                diagram.Nodes.Add(node);
+                editor.diagram.Nodes.Add(node);
             }
 
-            public void Redo(Diagram diagram)
+            public void Redo(GraphEditor editor)
             {
-                diagram.Nodes.Remove(node);
+                editor.diagram.Nodes.Remove(node);
             }
         }
         
         record AddLink(BaseLinkModel link): GraphAction
         {
-            public void Undo(Diagram diagram)
+            public void Undo(GraphEditor editor)
             {
-                diagram.Links.Remove(link);
+                editor.diagram.Links.Remove(link);
             }
 
-            public void Redo(Diagram diagram)
+            public void Redo(GraphEditor editor)
             {
-                diagram.Links.Add(link);
+                editor.diagram.Links.Add(link);
             }
         }
         
         record RemoveLink(BaseLinkModel link): GraphAction
         {
-            public void Undo(Diagram diagram)
+            public void Undo(GraphEditor editor)
             {
-                diagram.Links.Add(link);
+                editor.diagram.Links.Add(link);
             }
 
-            public void Redo(Diagram diagram)
+            public void Redo(GraphEditor editor)
             {
-                diagram.Links.Remove(link);
+                editor.diagram.Links.Remove(link);
             }
         }
     }
     
-    private readonly Diagram diagram;
+    private readonly GraphEditor editor;
     private readonly List<GraphAction> undoActionList;
     private readonly List<GraphAction> redoActionList;
     private int actionHistoryMaxSize = 200;
     private bool isTrackingHistory, isDoing;
     private int checkpoint = 0;
 
-    public DiagramHistory(Diagram diagram)
+    public EditHistory(GraphEditor editor)
     {
-        this.diagram = diagram;
+        this.editor = editor;
 
         undoActionList = new();
         redoActionList = new();
         isTrackingHistory = true;
 
-        diagram.KeyDown += KeyboardHandle;
-        diagram.Links.Added += Links_Added;
-        diagram.Links.Removed += Links_Removed;
-        diagram.Nodes.Added += Nodes_Added;
-        diagram.Nodes.Removed += Nodes_Removed;
+        editor.diagram.KeyDown += KeyboardHandle;
+        editor.diagram.Links.Added += Links_Added;
+        editor.diagram.Links.Removed += Links_Removed;
+        editor.diagram.Nodes.Added += Nodes_Added;
+        editor.diagram.Nodes.Removed += Nodes_Removed;
     }
 
     private void KeyboardHandle(KeyboardEventArgs e)
@@ -133,9 +157,9 @@ public class DiagramHistory
         if (!undoActionList.Any()) return;
 
         isDoing = true;
-        undoActionList[^1].Undo(diagram);
+        undoActionList[^1].Undo(editor);
         RemoveLastUndoAction();
-        diagram.UnselectAll();
+        editor.diagram.UnselectAll();
         isDoing = false;
     }
 
@@ -144,9 +168,9 @@ public class DiagramHistory
         if (!redoActionList.Any()) return;
 
         isDoing = true;
-        redoActionList[^1].Redo(diagram);
+        redoActionList[^1].Redo(editor);
         RemoveLastRedoAction();
-        diagram.UnselectAll();
+        editor.diagram.UnselectAll();
         isDoing = false;
     }
 
@@ -250,5 +274,22 @@ public class DiagramHistory
     public bool IsAtCheckpoint()
     {
         return checkpoint == undoActionList.Count;
+    }
+
+    public void Record(Func<GraphAction> action)
+    {
+        if (isDoing)
+            throw new Exception("Cannot nest history recording");
+        
+        isDoing = true;
+        try
+        {
+            var undo = action();
+            RegisterUndoHistoryAction(undo);
+        }
+        finally
+        {
+            isDoing = false;
+        }
     }
 }

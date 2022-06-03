@@ -1,3 +1,5 @@
+using OzricEngine.logic;
+
 namespace OzricUI.Shared;
 
 public class GraphEditState
@@ -12,56 +14,62 @@ public class GraphEditState
         Realtime, Simulated
     }
 
-    public event Action OnChanged;
-    public event Action OnDoUndo;
-    public event Action OnDoRedo;
-    public event Action OnDoSetCheckpoint; 
+    public event Action? OnChanged;
+    public event Action? OnDoUndo;
+    public event Action? OnDoRedo;
+    public event Action? OnDoSetCheckpoint;
+    public event Action<List<Func<Node>>>? OnDoAdd; 
 
-    public EditMode mode { get; set; } = EditMode.View;
+    public EditMode Mode { get; private set; } = EditMode.View;
     
-    public bool IsEditing => mode != EditMode.View;
-    public bool IsChanged { get; set; }
-    public bool CanUndo { get; set; }
-    public bool CanRedo { get; set; }
+    public bool IsEditing => Mode != EditMode.View;
+    public bool IsChanged { get; private set; }
+    public bool CanUndo { get; private set; }
+    public bool CanRedo { get; private set; }
 
     public void OnEdit()
     {
-        mode = EditMode.EditOffline;
-        OnChanged();
+        Mode = EditMode.EditOffline;
+        OnChanged?.Invoke();
     }
 
     public void OnSaving()
     {
-        mode = EditMode.Saving;
-        OnChanged();
+        Mode = EditMode.Saving;
+        OnChanged?.Invoke();
     }
 
     public void OnCancel()
     {
-        mode = EditMode.View;
-        OnChanged();
+        Mode = EditMode.View;
+        OnChanged?.Invoke();
     }
 
     public void DoUndo()
     {
-        OnDoUndo();
+        OnDoUndo?.Invoke();
     }
 
     public void DoRedo()
     {
-        OnDoRedo();
+        OnDoRedo?.Invoke();
     }
 
     public void DoSetCheckpoint()
     {
-        OnDoSetCheckpoint();
+        OnDoSetCheckpoint?.Invoke();
     }
 
-    public void SetHistoryState(DiagramHistory history)
+    public void DoAdd(List<Func<Node>> nodeCreators)
+    {
+        OnDoAdd?.Invoke(nodeCreators);
+    }
+
+    public void SetHistoryState(EditHistory history)
     {
         CanUndo = history.CanUndo();
         CanRedo = history.CanRedo();
         IsChanged = !history.IsAtCheckpoint();
-        OnChanged();
+        OnChanged?.Invoke();
     }
 }
