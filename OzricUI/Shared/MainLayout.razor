@@ -19,6 +19,16 @@
         
         <MudText>Ozric</MudText>
  
+        <MudSpacer />
+
+        <MudTooltip Text="Add" Arrow="true" Placement="Placement.Top">
+            <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickAdd" Disabled="@(!IsEditing)" hidden="@(!IsEditing)" />
+        </MudTooltip>
+
+        <MudTooltip Text="Delete" Arrow="true" Placement="Placement.Top">
+            <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDel" Disabled="@(!HasSelection)" hidden="@(!IsEditing)" />
+        </MudTooltip>
+
         <MudSpacer></MudSpacer>
         
         <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickEdit" Disabled="@IsEditing" Hidden="@IsEditing">
@@ -42,18 +52,14 @@
             }
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.Undo" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickUndo" Disabled="@(!CanUndo)" hidden="@(!IsEditing)">
-            Undo
-        </MudButton>
-
-        <MudButton StartIcon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickRedo" Disabled="@(!CanRedo)" hidden="@(!IsEditing)">
-            Redo
-        </MudButton>
-
-        <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickAdd" Disabled="@(!IsEditing)" hidden="@(!IsEditing)">
-            Add
-        </MudButton>
-
+        <MudTooltip Text="Undo" Arrow="true" Placement="Placement.Top">
+            <MudIconButton Icon="@Icons.Material.Filled.Undo" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickUndo" Disabled="@(!CanUndo)" hidden="@(!IsEditing)" />
+        </MudTooltip>
+        
+        <MudTooltip Text="Redo" Arrow="true" Placement="Placement.Top">
+            <MudIconButton Icon="@Icons.Material.Filled.Redo" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickRedo" Disabled="@(!CanRedo)" hidden="@(!IsEditing)" />
+        </MudTooltip>
+        
     </MudAppBar>
     <MudDrawer @bind-Open="@_drawerOpen">
         <NavMenu/>
@@ -85,7 +91,8 @@
     private GraphEditState GraphEditState { get; set; } = new GraphEditState();
 
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
-    
+    private bool HasSelection => GraphEditState.Selected.Count > 0; 
+
     public bool IsEditing => GraphEditState.IsEditing;
     public bool IsChanged => GraphEditState.IsChanged;
     public bool CanUndo => GraphEditState.CanUndo && !Saving;
@@ -226,5 +233,10 @@
             return;
 
         GraphEditState.DoAdd(selected.Select(anc => anc.Create).ToList());
+    }
+
+    private void OnClickDel()
+    {
+        
     }
 }

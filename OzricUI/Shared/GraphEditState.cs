@@ -1,3 +1,4 @@
+using Blazor.Diagrams.Core.Models.Base;
 using OzricEngine.logic;
 
 namespace OzricUI.Shared;
@@ -26,6 +27,8 @@ public class GraphEditState
     public bool IsChanged { get; private set; }
     public bool CanUndo { get; private set; }
     public bool CanRedo { get; private set; }
+
+    public List<SelectableModel> Selected { get; private set; } = new();
 
     public void OnEdit()
     {
@@ -70,6 +73,12 @@ public class GraphEditState
         CanUndo = history.CanUndo();
         CanRedo = history.CanRedo();
         IsChanged = !history.IsAtCheckpoint();
+        OnChanged?.Invoke();
+    }
+    
+    public void SetSelected(List<SelectableModel> models)
+    {
+        Selected = models;
         OnChanged?.Invoke();
     }
 }

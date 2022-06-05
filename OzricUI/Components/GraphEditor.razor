@@ -2,6 +2,7 @@
 @using OzricUI.Model
 @using OzricEngine.ext
 @using Blazor.Diagrams.Components
+@using Blazor.Diagrams.Core.Models.Base
 @using OzricEngine
 @implements IDisposable
 
@@ -22,7 +23,7 @@
     [Parameter]
     public GraphEditState GraphEditState { get; set; }
 
-    public Diagram? diagram { get; set; }
+    public Diagram diagram { get; set; }
     
     private bool IsChanged => !IsNotChanged;
     private bool IsNotChanged => history?.IsAtCheckpoint() ?? true;
@@ -66,6 +67,7 @@
         diagram.RegisterModelComponent<SensorModel, GraphNodeComponent>();
         diagram.RegisterModelComponent<LightModel, GraphNodeComponent>();
         diagram.RegisterModelComponent<ModeSwitchModel, GraphNodeComponent>();
+        diagram.SelectionChanged += OnSelectionChanged;
         
         PopulateDiagram();
         
@@ -289,6 +291,11 @@
         }
 
         return nodeIDs;
+    }
+
+    private void OnSelectionChanged(SelectableModel obj)
+    {
+        GraphEditState.SetSelected(diagram.GetSelectedModels().ToList());
     }
 
 }
