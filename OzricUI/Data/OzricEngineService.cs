@@ -1,3 +1,4 @@
+using System.Text;
 using Microsoft.Net.Http.Headers;
 using OzricEngine;
 
@@ -6,12 +7,18 @@ namespace OzricUI.Data;
 public class OzricEngineService
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private const string CLIENT_USER_AGENT = "OzricUI";
 
     public OzricEngineService(IHttpClientFactory httpClientFactory) => _httpClientFactory = httpClientFactory;
 
     public Task<Graph> GetGraphAsync()
     {
         return Get<Graph>("api/graph");
+    }
+
+    public Task SetGraphAsync(Graph g)
+    {
+        return Put<Graph>("api/graph", g);
     }
 
     public async Task<GraphLayout> GetGraphLayoutAsync()
@@ -42,15 +49,32 @@ public class OzricEngineService
             Headers =
             {
                 { HeaderNames.Accept, "application/json" },
-                { HeaderNames.UserAgent, "OzricUI" }
+                { HeaderNames.UserAgent, CLIENT_USER_AGENT }
             }
         };
 
         var client = _httpClientFactory.CreateClient();
         var response = await client.SendAsync(request);
         if (!response.IsSuccessStatusCode)
-            throw new Exception($"Request to {apiPath} failed: {response.StatusCode}/{response.ReasonPhrase}");
+            throw new Exception($"Get request to {apiPath} failed: {response.StatusCode}/{response.ReasonPhrase}");
 
         return Json.Deserialize<TObject>(await response.Content.ReadAsStringAsync());
+    }
+    
+    private async Task Put<TObject>(string apiPath, TObject entity)
+    {
+        var request = new HttpRequestMessage(HttpMethod.Put, $"http://localhost:8099/{apiPath}")
+        {
+            Headers =
+            {
+                { HeaderNames.UserAgent, CLIENT_USER_AGENT }
+            },
+            Content = new StringContent(Json.Serialize(entity), Encoding.UTF8, "application/json")
+        };
+
+        var client = _httpClientFactory.CreateClient();
+        var response = await client.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+            throw new Exception($"Put request to {apiPath} failed: {response.StatusCode}/{response.ReasonPhrase}");
     }
 }
