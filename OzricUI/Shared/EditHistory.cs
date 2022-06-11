@@ -14,70 +14,73 @@ public class EditHistory
     public interface GraphAction
     {
         void Undo(GraphEditor editor);
-        void Redo(GraphEditor editor);
+        void Do(GraphEditor editor);
 
-        record AddNodes(List<Func<Node>> nodeCreators, List<string> nodeIDs): GraphAction
+        record AddNodes(List<Func<Node>> nodeCreators): GraphAction
         {
+            public void Do(GraphEditor editor)
+            {
+                //  Node IDs are currently deterministic so re-recording IDs is defensive only
+                
+                nodeIDs = editor.CreateNodes(nodeCreators);
+            }
+            
             public void Undo(GraphEditor editor)
             {
                 foreach (var nodeID in nodeIDs)
                 {
                     var node = editor.Graph.GetNode(nodeID);
                     editor.RemoveNode(node);
-                    editor.Graph.RemoveNode(node);
                 }
             }
 
-            public void Redo(GraphEditor editor)
-            {
-                //  Node IDs are currently deterministic so re-recording IDs is defensive only
-                
-                nodeIDs.Clear();
-                nodeIDs.AddRange(editor.CreateNodes(nodeCreators));
-            }
+            private List<string> nodeIDs;
         }
 
         record AddNode(NodeModel node): GraphAction
         {
+            public void Do(GraphEditor editor)
+            {
+                editor.diagram.Nodes.Add(node);
+            }
+
             public void Undo(GraphEditor editor)
             {
                 editor.diagram.Nodes.Remove(node);
-            }
-
-            public void Redo(GraphEditor editor)
-            {
-                editor.diagram.Nodes.Add(node);
             }
         }
 
         record MoveNode(NodeModel node, Point @from, Point to): GraphAction
         {
-            public void Undo(GraphEditor editor)
-            {
-                node.SetPosition(from.X, from.Y);
-            }
-
-            public void Redo(GraphEditor editor)
+            public void Do(GraphEditor editor)
             {
                 node.SetPosition(to.X, to.Y);
             }
 
+            public void Undo(GraphEditor editor)
+            {
+                node.SetPosition(from.X, from.Y);
+            }
+            
             public GraphAction WithTo(Point to)
             {
                 return new MoveNode(node, from, to);
             }
         }
 
-        record RemoveNode(NodeModel node): GraphAction
+        record RemoveNode(Node node): GraphAction
         {
-            public void Undo(GraphEditor editor)
+            private Point position;
+
+            public void Do(GraphEditor editor)
             {
-                editor.diagram.Nodes.Add(node);
+                position = editor.GetPosition(node);
+                editor.RemoveNode(node);
             }
 
-            public void Redo(GraphEditor editor)
+            public void Undo(GraphEditor editor)
             {
-                editor.diagram.Nodes.Remove(node);
+                editor.AddNode(node, position);
             }
         }
         
@@ -88,7 +91,7 @@ public class EditHistory
                 editor.diagram.Links.Remove(link);
             }
 
-            public void Redo(GraphEditor editor)
+            public void Do(GraphEditor editor)
             {
                 editor.diagram.Links.Add(link);
             }
@@ -101,7 +104,7 @@ public class EditHistory
                 editor.diagram.Links.Add(link);
             }
 
-            public void Redo(GraphEditor editor)
+            public void Do(GraphEditor editor)
             {
                 editor.diagram.Links.Remove(link);
             }
@@ -127,7 +130,7 @@ public class EditHistory
         editor.diagram.Links.Added += Links_Added;
         editor.diagram.Links.Removed += Links_Removed;
         editor.diagram.Nodes.Added += Nodes_Added;
-        editor.diagram.Nodes.Removed += Nodes_Removed;
+//        editor.diagram.Nodes.Removed += Nodes_Removed;
     }
 
     private void KeyboardHandle(KeyboardEventArgs e)
@@ -154,7 +157,8 @@ public class EditHistory
 
     public void UndoLastAction()
     {
-        if (!undoActionList.Any()) return;
+        if (!undoActionList.Any())
+            return;
 
         isDoing = true;
         undoActionList[^1].Undo(editor);
@@ -165,10 +169,11 @@ public class EditHistory
 
     public void RedoLastAction()
     {
-        if (!redoActionList.Any()) return;
+        if (!redoActionList.Any())
+            return;
 
         isDoing = true;
-        redoActionList[^1].Redo(editor);
+        redoActionList[^1].Do(editor);
         RemoveLastRedoAction();
         editor.diagram.UnselectAll();
         isDoing = false;
@@ -176,22 +181,22 @@ public class EditHistory
 
     private void RemoveLastUndoAction()
     {
-        if (undoActionList.Any())
-        {
-            var action = undoActionList.Last();
-            undoActionList.RemoveAt(undoActionList.Count - 1);
-            redoActionList.Add(action);
-        }
+        if (!undoActionList.Any())
+            return;
+        
+        var action = undoActionList.Last();
+        undoActionList.RemoveAt(undoActionList.Count - 1);
+        redoActionList.Add(action);
     }
     
     private void RemoveLastRedoAction()
     {
-        if (redoActionList.Any())
-        {
-            var action = redoActionList.Last();
-            redoActionList.RemoveAt(redoActionList.Count - 1);
-            undoActionList.Add(action);
-        }
+        if (!redoActionList.Any())
+            return;
+        
+        var action = redoActionList.Last();
+        redoActionList.RemoveAt(redoActionList.Count - 1);
+        undoActionList.Add(action);
     }
 
     private void ClearRedoList() => redoActionList.Clear();
@@ -239,11 +244,13 @@ public class EditHistory
         RegisterUndoHistoryAction(new GraphAction.AddNode(node));
     }
 
+    /*
     private void Nodes_Removed(NodeModel node)
     {
         RegisterUndoHistoryAction(new GraphAction.RemoveNode(node));
     }
-
+    */
+    
     public void Node_Moved(NodeModel node, Point from, Point to)
     {
         if (isDoing)
@@ -286,6 +293,23 @@ public class EditHistory
         {
             var undo = action();
             RegisterUndoHistoryAction(undo);
+        }
+        finally
+        {
+            isDoing = false;
+        }
+    }
+    
+    public void Do(GraphAction action)
+    {
+        if (isDoing)
+            throw new Exception("Cannot nest history recording");
+        
+        isDoing = true;
+        try
+        {
+            action.Do(editor);
+            RegisterUndoHistoryAction(action);
         }
         finally
         {

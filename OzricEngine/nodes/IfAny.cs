@@ -42,7 +42,7 @@ namespace OzricEngine.logic
         {
             var on = false;
             foreach (var onOff in GetInputValues<OnOff>())
-                on |= onOff.value;
+                on |= onOff?.value ?? false;
 
             var value = new OnOff(on);
             Log(LogLevel.Debug, "output = {0}", value);

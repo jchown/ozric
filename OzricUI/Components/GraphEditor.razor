@@ -4,9 +4,10 @@
 @using Blazor.Diagrams.Components
 @using Blazor.Diagrams.Core.Models.Base
 @using OzricEngine
+@using _Imports = OzricUI._Imports
 @implements IDisposable
 
-<div class="diagram-container" style="height: 400px"><!-- Not sure why need to be hardcoded -->
+<div class="diagram-container">
     <CascadingValue Value="diagram">
         <DiagramCanvas></DiagramCanvas>
     </CascadingValue>
@@ -68,10 +69,20 @@
         diagram.RegisterModelComponent<LightModel, GraphNodeComponent>();
         diagram.RegisterModelComponent<ModeSwitchModel, GraphNodeComponent>();
         diagram.SelectionChanged += OnSelectionChanged;
-        
+        diagram.Nodes.Removed += OnNodeRemoved;
+       
         PopulateDiagram();
         
         history = new EditHistory(this);
+    }
+    
+    /// Callback for when the diagram removes a node (user hits delete key)
+    
+    private void OnNodeRemoved(NodeModel nodeModel)
+    {
+        var node = nodeMappings.GetGraph((GraphNodeModel) nodeModel);
+        history?.Do(new EditHistory.GraphAction.RemoveNode(node));
+        OnHistoryChanged();
     }
 
     public void Dispose()
@@ -123,11 +134,7 @@
     
     private void OnDoAdd(List<Func<Node>> creators)
     {
-        history?.Record(() =>
-        {
-            var ids = CreateNodes(creators);
-            return new EditHistory.GraphAction.AddNodes(creators, ids);
-        });
+        history?.Do(new EditHistory.GraphAction.AddNodes(creators));
         OnHistoryChanged();
     }
 
@@ -193,7 +200,9 @@
     public void RemoveNode(Node node)
     {
         var diagramNode = nodeMappings.Remove(node);
-        diagram.Nodes.Remove(diagramNode);
+        if (diagram.Nodes.Contains(diagramNode))
+            diagram.Nodes.Remove(diagramNode);
+        Graph.RemoveNode(node);
     }
 
     private GraphNodeModel NewNode(Node node, Point? point = null)
@@ -296,6 +305,11 @@
     private void OnSelectionChanged(SelectableModel obj)
     {
         GraphEditState.SetSelected(diagram.GetSelectedModels().ToList());
+    }
+
+    public Point GetPosition(Node node)
+    {
+        return GraphLayout.nodeLayout[node.id].ToPoint();
     }
 
 }
