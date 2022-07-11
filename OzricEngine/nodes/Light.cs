@@ -18,6 +18,11 @@ public class Light: EntityNode
     [JsonIgnore]
     private int secondsToAllowOverrideByOthers { get; }
 
+    public Light(): this(null, null)
+    {
+        
+    }
+
     public Light(string id, string entityID) : base(id, entityID, new List<Pin> { new(INPUT_NAME, ValueType.Color) }, null)
     {
         secondsToAllowOverrideByOthers = 10 * 60;

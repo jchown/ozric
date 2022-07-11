@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using JetBrains.Annotations;
 using OzricEngine.ext;
 using OzricEngine.logic;
 using OzricEngine.nodes;
@@ -212,6 +213,11 @@ namespace OzricEngine
             while (nodes.ContainsKey($"{prefix}{i}"))
                 i++;
             return $"{prefix}{i}";
+        }
+
+        public EntityNode GetDevicesNode(string entityID)
+        {
+            return nodes.Values.Select(node => node as EntityNode).FirstOrDefault(node => node?.entityID == entityID);
         }
     }
 }

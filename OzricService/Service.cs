@@ -17,6 +17,7 @@ public class Service
 
     public EngineStatus? Status => engine?.Status;
     public Graph? Graph => engine?.graph;
+    public Home? Home => engine?.home;
 
     static Service()
     {

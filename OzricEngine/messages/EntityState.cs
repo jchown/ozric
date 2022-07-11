@@ -81,6 +81,16 @@ namespace OzricEngine
                 Log(level, "{0}: {1}", entity_id, state);
             }
         }
+
+        public bool IsLight()
+        {
+            return entity_id.StartsWith("light.");
+        }
+
+        public bool IsSensor()
+        {
+            return entity_id.StartsWith("binary_sensor.");
+        }
     }
 
 

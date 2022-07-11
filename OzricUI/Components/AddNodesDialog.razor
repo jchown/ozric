@@ -1,17 +1,19 @@
 <MudDialog>
     <DialogContent>
         
-        <MudExpansionPanel Text="Devices" MaxHeight="400">
+        <MudExpansionPanel Text="Devices" MaxHeight="400" Style="overflow-y: scroll">
+            <div>
             @foreach (var choice in Choices.Devices)
             {
                 <div>
                     <span class="iconify" data-icon="@choice.Icon"></span>
-                <MudCheckBox Checked="@IsSelected(choice)" Label="@choice.Name" />
+                    <MudCheckBox Checked="@IsSelected(choice)" Label="@choice.Name" />
                 </div>
             }
+            </div>
         </MudExpansionPanel>
         
-        <MudExpansionPanel Text="Logic" MaxHeight="400">
+        <MudExpansionPanel Text="Logic" MaxHeight="400" Style="overflow-y: scroll">
             @foreach (var choice in Choices.Logic)
             {
                 <div>

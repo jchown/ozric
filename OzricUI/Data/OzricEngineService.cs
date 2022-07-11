@@ -1,6 +1,7 @@
 using System.Text;
 using Microsoft.Net.Http.Headers;
 using OzricEngine;
+using OzricEngine.logic;
 
 namespace OzricUI.Data;
 
@@ -10,6 +11,11 @@ public class OzricEngineService
     private const string CLIENT_USER_AGENT = "OzricUI";
 
     public OzricEngineService(IHttpClientFactory httpClientFactory) => _httpClientFactory = httpClientFactory;
+
+    public Task<Home> GetHomeAsync()
+    {
+        return Get<Home>("api/home");
+    }
 
     public Task<Graph> GetGraphAsync()
     {

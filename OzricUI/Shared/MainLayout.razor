@@ -213,10 +213,31 @@
             MaxWidth = MaxWidth.Medium,
             FullWidth = true
         };
+        
+        var devices = (await ozricEngine.GetHomeAsync()).states;
+        var deviceChoices = devices.Select(device =>
+        {
+            AddNodeChoice? choice = null;
+
+            if (Graph?.GetDevicesNode(device.Key) == null)
+            {
+                if (device.Value.IsLight())
+                {
+                    choice = new AddNodeChoice(device.Key, LightModel.ICON, () => new Light(Graph.CreateNodeID("light"), device.Key));
+                }
+                else if (device.Value.IsSensor())
+                {
+                    choice = new AddNodeChoice(device.Key, SensorModel.ICON, () => new Sensor(Graph.CreateNodeID("sensor"), device.Key));
+                }
+            }
+
+            return choice;
+        }).Where(choices => choices != null).ToList();
 
         var parameters = new DialogParameters();
         parameters.Add("Choices", new AddNodeChoices
         {
+            Devices = deviceChoices,
             Logic = new List<AddNodeChoice>
             {
                 new("If Any - OR", IfAnyModel.ICON, () => new IfAny(Graph.CreateNodeID("ifany-"), "input1", "input2")),

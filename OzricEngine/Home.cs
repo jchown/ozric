@@ -7,7 +7,11 @@ namespace OzricEngine.logic
 {
     public class Home
     {
-        private Dictionary<string, EntityState> states;
+        public Dictionary<string, EntityState> states { get; set; } = new();
+
+        public Home()
+        {
+        }
 
         public Home(List<EntityState> stateList)
         {
