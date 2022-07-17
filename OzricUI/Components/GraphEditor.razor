@@ -37,7 +37,7 @@
     private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
     private readonly Mapping<OzricEngine.nodes.Edge, LinkModel> edgeMappings = new();
 
-    protected override async Task OnInitializedAsync()
+    protected override void OnInitialized()
     {
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnDoUndo += OnDoUndo;

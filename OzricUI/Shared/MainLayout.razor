@@ -10,6 +10,7 @@
 @inject IDialogService DialogService
 @inherits LayoutComponentBase
 @inject DataService Data
+@inject IEngineService EngineService
 
 <MudThemeProvider/>
 <MudDialogProvider/>
@@ -124,7 +125,7 @@
 
     private async Task LoadGraph()
     {
-        Graph = Service.Instance.Graph;
+        Graph = EngineService.Graph;
         GraphLayout = await Data.GetGraphLayoutAsync();
         GraphEditState.OnChanged += OnGraphEditStateChanged;
     }
@@ -177,7 +178,7 @@
             try
             {
                 await Task.Delay(100);
-                await Service.Instance.Restart(Graph);
+                await EngineService.Restart(Graph);
                 await Data.SetGraphLayoutAsync(GraphLayout);
                 await InvokeAsync(() => GraphEditState.DoSetCheckpoint());
             }
@@ -213,7 +214,7 @@
             FullWidth = true
         };
         
-        var devices = Service.Instance.Home?.states ?? throw new Exception();
+        var devices = EngineService.Home.states;
         var choices = devices.Select(device =>
         {
             AddNodeChoice? choice = null;

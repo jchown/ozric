@@ -3,6 +3,7 @@ using OzricUI.Data;
 using MudBlazor.Services;
 using OzricEngine;
 using OzricService;
+using OzricUI.Mock;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -16,7 +17,17 @@ builder.Services.Configure<JsonOptions>(options => Json.Configure(options.Serial
 
 var app = builder.Build();
 
-await Service.Instance.Start(CancellationToken.None);
+if (true)
+{
+    builder.Services.AddSingleton<IEngineService>(_ => new MockEngineService());
+}
+else
+{
+    var service = new EngineService();
+    await service.Start(CancellationToken.None);
+    builder.Services.AddSingleton<IEngineService>(_ => service);
+}
+
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

@@ -40,7 +40,9 @@ else
 builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(homeAssistantIngressPort));
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
 
-await Service.Instance.Start(CancellationToken.None);
+var service = new EngineService();
+await service.Start(CancellationToken.None);
+builder.Services.AddSingleton<IEngineService>(_ => service);
 
 var app = builder.Build();
 

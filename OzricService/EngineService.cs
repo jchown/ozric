@@ -1,15 +1,12 @@
 using OzricEngine;
 using OzricEngine.engine;
 using OzricEngine.logic;
-using OzricService.Model;
 using Graph = OzricEngine.Graph;
 
 namespace OzricService;
 
-public class Service
+public class EngineService: IEngineService
 {
-    public static Service Instance { get; }
-
     const string GRAPH_FILENAME = "/data/graph.json";
 
     private Engine? engine;
@@ -19,26 +16,9 @@ public class Service
     public Graph Graph => engine?.graph ?? throw new InvalidOperationException();
     public Home Home => engine?.home ?? throw new InvalidOperationException();
 
-    static Service()
-    {
-        Instance = new Service();
-    }
-
     public async Task Start(CancellationToken cancellationToken)
     {
-        Graph graph = new Graph();
-
-        try
-        {
-            var json = File.ReadAllText(GRAPH_FILENAME);
-            graph = Json.Deserialize<Graph>(json);
-            
-            Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count}");
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Failed to load graph: {e.Message}");
-        }
+        var graph = LoadGraph();
 
         var connection = Connect();
 
@@ -53,6 +33,25 @@ public class Service
         engine = new Engine(home, graph, connection);
 
         mainLoop = Task.Run(() => engine.MainLoop());
+    }
+
+    public static Graph LoadGraph()
+    {
+        Graph graph = new Graph();
+
+        try
+        {
+            var json = File.ReadAllText(GRAPH_FILENAME);
+            graph = Json.Deserialize<Graph>(json);
+
+            Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count}");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Failed to load graph: {e.Message}");
+        }
+
+        return graph;
     }
 
     private static Comms Connect()
