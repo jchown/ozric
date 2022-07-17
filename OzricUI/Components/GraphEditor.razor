@@ -17,29 +17,28 @@
 
     [Parameter]
     public Graph Graph { get; set; }
-    
+
     [Parameter]
     public GraphLayout GraphLayout { get; set; }
-    
+
     [Parameter]
     public GraphEditState GraphEditState { get; set; }
 
-    public Diagram diagram { get; set; }
-    
+    public Diagram diagram { get; set; } = new();
+
     private bool IsChanged => !IsNotChanged;
-    private bool IsNotChanged => history?.IsAtCheckpoint() ?? true;
+    private bool IsNotChanged => GetHistory().IsAtCheckpoint();
     private bool CanUndo => GraphEditState.IsEditing && (history?.CanUndo() ?? false);
     private bool CanRedo => GraphEditState.IsEditing && (history?.CanRedo() ?? false);
 
     private EditHistory? history;
-    
+    private EditHistory GetHistory() => history ?? throw new InvalidOperationException();
+
     private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
     private readonly Mapping<OzricEngine.nodes.Edge, LinkModel> edgeMappings = new();
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnDoUndo += OnDoUndo;
         GraphEditState.OnDoRedo += OnDoRedo;
@@ -260,14 +259,14 @@
         var to = nodeModel.Position;
         
         GraphLayout.nodeLayout[nodeID] = LayoutPoint.FromPoint(to);
-        history.Node_Moved(nodeModel, from, to);
+        GetHistory().Node_Moved(nodeModel, from, to);
 
         OnHistoryChanged();
     }
 
     private void OnHistoryChanged()
     {
-        GraphEditState.SetHistoryState(history);
+        GraphEditState.SetHistoryState(GetHistory());
     }
 
     private void SetLocked(bool locked)

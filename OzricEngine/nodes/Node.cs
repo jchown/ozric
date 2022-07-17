@@ -18,7 +18,7 @@ namespace OzricEngine.logic
         public List<Pin> inputs { get; set; }
         public List<Pin> outputs { get; set; }
 
-        protected Node(string id, List<Pin> inputs, List<Pin> outputs)
+        protected Node(string id, List<Pin>? inputs, List<Pin>? outputs)
         {
             this.id = id;
             this.inputs = inputs ?? new List<Pin>();
@@ -115,14 +115,14 @@ namespace OzricEngine.logic
         }
 
         #region Comparison
-        public bool Equals(Node other)
+        public bool Equals(Node? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return nodeType == other.nodeType && id == other.id && Equals(inputs, other.inputs) && Equals(outputs, other.outputs);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

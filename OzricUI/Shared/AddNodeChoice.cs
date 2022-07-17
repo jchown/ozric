@@ -1,18 +1,22 @@
-using OzricEngine;
 using OzricEngine.logic;
+using OzricEngine.nodes;
 
 namespace OzricUI.Shared;
 
 public class AddNodeChoice
 {
-    public string Name { get; set; }
-    public string Icon { get; set; }
-    public Func<Node> Create { get; set; }
+    public readonly Category Category;
+    public readonly string Name;
+    public readonly string Icon;
+    public readonly Func<Node> Create;
+    public readonly bool Once;
 
-    public AddNodeChoice(string name, string icon, Func<Node> create)
+    public AddNodeChoice(Category category, string name, string icon, Func<Node> create, bool once)
     {
+        Category = category;
         Name = name;
         Icon = icon;
         Create = create;
+        Once = once;
     }
 }

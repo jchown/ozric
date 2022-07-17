@@ -58,7 +58,7 @@ namespace OzricEngine.logic
             Console.WriteLine($"{colours[(int)level]}{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {Name.Truncate(32, Name, TruncateFrom.Left).PadRight(32)} | {message}\u001b[0m");
         }
 
-        private void _Log(LogLevel level, string format, params object[] args)
+        private void _Log(LogLevel level, string format, params object?[] args)
         {
             for (var i = 0; i < args.Length; i++)
             {

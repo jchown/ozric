@@ -41,12 +41,12 @@ namespace OzricEngine.logic
         
         public static bool operator !=(Scalar lhs, Scalar rhs) => !(lhs == rhs);
 
-        public bool Equals(Scalar other)
+        public bool Equals(Scalar? other)
         {
             return value == other.value;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return ReferenceEquals(this, obj) || obj is Scalar other && Equals(other);
         }

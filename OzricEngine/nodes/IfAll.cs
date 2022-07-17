@@ -10,10 +10,6 @@ namespace OzricEngine.logic
         public static string OUTPUT_NAME = "output";
         
         public override NodeType nodeType => NodeType.IfAll;
-        
-        public IfAll(): this(null)
-        {
-        }
 
         public IfAll(string id): base(id, ValueType.OnOff, new List<Pin> { new(OUTPUT_NAME, ValueType.OnOff) })
         {

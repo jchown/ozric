@@ -10,7 +10,7 @@ namespace OzricEngine
     [JsonConverter(typeof(JsonConverterAttributes))]
     public class Attributes: Dictionary<string, object>, IEquatable<Attributes>
     {
-        public static bool operator ==(Attributes lhs, Attributes rhs)
+        public static bool operator ==(Attributes? lhs, Attributes? rhs)
         {
             if (lhs is null)
                 return rhs is null;
@@ -18,9 +18,9 @@ namespace OzricEngine
             return lhs.Equals(rhs);
         }
         
-        public static bool operator !=(Attributes lhs, Attributes rhs) => !(lhs == rhs);
+        public static bool operator !=(Attributes? lhs, Attributes? rhs) => !(lhs == rhs);
 
-        public bool Equals(Attributes other)
+        public bool Equals(Attributes? other)
         {
             if (other == null)
                 return false;
@@ -41,7 +41,7 @@ namespace OzricEngine
             return true;
         }
 
-        private static bool AreSameValue(object value, object otherValue)
+        private static bool AreSameValue(object? value, object? otherValue)
         {
             if (value == null)
                 return otherValue == null;
@@ -52,7 +52,7 @@ namespace OzricEngine
             return AreSameList(value, otherValue);
         }
         
-        public static bool AreSameList(object value1, object value2)
+        public static bool AreSameList(object? value1, object? value2)
         {
             if (!(value1 is IEnumerable list1))
                 return false;
@@ -96,7 +96,7 @@ namespace OzricEngine
             return JsonSerializer.Serialize(this);
         }
 
-        public bool EqualsExcept(Attributes other, params string[] exceptKeys)
+        public bool EqualsExcept(Attributes? other, params string[] exceptKeys)
         {
             if (other == null)
                 return false;
@@ -126,7 +126,7 @@ namespace OzricEngine
             return this.Count(kv => !exceptKeys.Contains(kv.Key));
         }
 
-        public bool EqualsKeys(Attributes other, string[] keys)
+        public bool EqualsKeys(Attributes? other, string[] keys)
         {
             if (other == null)
                 return false;

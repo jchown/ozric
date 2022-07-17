@@ -1,12 +1,15 @@
 ﻿@using OzricUI.Data
 @using OzricEngine
 @using OzricEngine.logic
+@using OzricEngine.nodes
+@using OzricService
 @using OzricUI.Components 
 @using OzricUI.Model
 @using Size = MudBlazor.Size
+@using Edge = MudBlazor.Edge
 @inject IDialogService DialogService
 @inherits LayoutComponentBase
-@inject OzricEngineService ozricEngine
+@inject DataService Data
 
 <MudThemeProvider/>
 <MudDialogProvider/>
@@ -85,10 +88,10 @@
     bool _drawerOpen = true;
     private bool _isDarkMode;
     private MudThemeProvider? _mudThemeProvider;
-    
-    private Graph? Graph { get; set; }
-    private GraphLayout? GraphLayout { get; set; }
-    private GraphEditState GraphEditState { get; set; } = new GraphEditState();
+
+    private Graph Graph { get; set; }
+    private GraphLayout GraphLayout { get; set; }
+    private GraphEditState GraphEditState { get; set; } = new();
 
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
     private bool HasSelection => GraphEditState.Selected.Count > 0; 
@@ -102,36 +105,36 @@
     {
         _drawerOpen = !_drawerOpen;
     }
-    
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            _isDarkMode = false;//await _mudThemeProvider.GetSystemPreference();
+            var task = _mudThemeProvider?.GetSystemPreference();
+            var dark = (task != null) && await task;
+            _isDarkMode = false && dark;
             StateHasChanged();
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
-
         await LoadGraph();
     }
 
     private async Task LoadGraph()
     {
-        Graph = await ozricEngine.GetGraphAsync();
-        GraphLayout = await ozricEngine.GetGraphLayoutAsync();
+        Graph = Service.Instance.Graph;
+        GraphLayout = await Data.GetGraphLayoutAsync();
         GraphEditState.OnChanged += OnGraphEditStateChanged;
     }
 
     private void UnloadGraph()
     {
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
-        Graph = null;
-        GraphLayout = null;
-        GraphEditState = new GraphEditState();
+        Graph = new();
+        GraphLayout = new();
+        GraphEditState = new();
     }
 
     private void OnGraphEditStateChanged()
@@ -159,7 +162,7 @@
         _ = Task.Run(async () =>
         {
             await LoadGraph();
-            InvokeAsync(StateHasChanged);
+            await InvokeAsync(StateHasChanged);
         });
     }
 
@@ -174,10 +177,9 @@
             try
             {
                 await Task.Delay(100);
-                await ozricEngine.SetGraphAsync(Graph);
-                await ozricEngine.SetGraphLayoutAsync(GraphLayout);
-
-                InvokeAsync(() => GraphEditState.DoSetCheckpoint());
+                await Service.Instance.Restart(Graph);
+                await Data.SetGraphLayoutAsync(GraphLayout);
+                await InvokeAsync(() => GraphEditState.DoSetCheckpoint());
             }
             catch (Exception e)
             {
@@ -185,10 +187,7 @@
             }
             finally
             {
-                InvokeAsync(() =>
-                {
-                    GraphEditState.OnEdit();
-                });
+                await InvokeAsync(() => GraphEditState.OnEdit());
             }
         });
     }
@@ -214,36 +213,52 @@
             FullWidth = true
         };
         
-        var devices = (await ozricEngine.GetHomeAsync()).states;
-        var deviceChoices = devices.Select(device =>
+        var devices = Service.Instance.Home?.states ?? throw new Exception();
+        var choices = devices.Select(device =>
         {
             AddNodeChoice? choice = null;
 
-            if (Graph?.GetDevicesNode(device.Key) == null)
+            if (Graph.GetDevicesNode(device.Key) == null)
             {
                 if (device.Value.IsLight())
                 {
-                    choice = new AddNodeChoice(device.Key, LightModel.ICON, () => new Light(Graph.CreateNodeID("light"), device.Key));
+                    choice = new AddNodeChoice(
+                        category: Category.Light,
+                        name: device.Key,
+                        icon: LightModel.ICON,
+                        create: () => new Light(Graph.CreateNodeID("light"), device.Key),
+                        once: true);
                 }
                 else if (device.Value.IsSensor())
                 {
-                    choice = new AddNodeChoice(device.Key, SensorModel.ICON, () => new Sensor(Graph.CreateNodeID("sensor"), device.Key));
+                    choice = new AddNodeChoice(
+                        category: Category.MotionSensor,
+                        name: device.Key,
+                        icon: SensorModel.ICON,
+                        create: () => new Sensor(Graph.CreateNodeID("sensor"), device.Key),
+                        once: true);
                 }
             }
 
             return choice;
         }).Where(choices => choices != null).ToList();
 
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic, 
+            name: "If Any - OR", 
+            icon: IfAnyModel.ICON, 
+            create: () => new IfAny(Graph.CreateNodeID("ifany-"), "input1", "input2"),
+            once: false));
+        
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "If All - AND",
+            icon: IfAllModel.ICON,
+            create: () => new IfAny(Graph.CreateNodeID("ifall-"), "input1", "input2"),
+            once: false));
+
         var parameters = new DialogParameters();
-        parameters.Add("Choices", new AddNodeChoices
-        {
-            Devices = deviceChoices,
-            Logic = new List<AddNodeChoice>
-            {
-                new("If Any - OR", IfAnyModel.ICON, () => new IfAny(Graph.CreateNodeID("ifany-"), "input1", "input2")),
-                new("If All - AND", IfAllModel.ICON, () => new IfAny(Graph.CreateNodeID("ifall-"), "input1", "input2"))
-            }
-        });
+        parameters.Add("Choices", choices);
         
         var result = await DialogService.Show<AddNodesDialog>("Add Nodes", parameters, options).Result;
         if (result.Cancelled)

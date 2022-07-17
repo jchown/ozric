@@ -12,6 +12,7 @@ namespace OzricEngine
         }
 
         public string type { get; set; } = "auth";
-        public string access_token { get; set; }
+
+        public string? access_token { get; set; }
     }
 }

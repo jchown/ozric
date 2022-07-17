@@ -18,11 +18,6 @@ public class Light: EntityNode
     [JsonIgnore]
     private int secondsToAllowOverrideByOthers { get; }
 
-    public Light(): this(null, null)
-    {
-        
-    }
-
     public Light(string id, string entityID) : base(id, entityID, new List<Pin> { new(INPUT_NAME, ValueType.Color) }, null)
     {
         secondsToAllowOverrideByOthers = 10 * 60;
@@ -30,6 +25,12 @@ public class Light: EntityNode
 
     public override Task OnInit(Context context)
     {
+        if (entityID == null)
+        {
+            Log(LogLevel.Error, $"Light state {id}: Entity ID is null");
+            return Task.CompletedTask;
+        }
+
         var state = context.engine.home.GetEntityState(entityID);
         if (state != null)
         {
@@ -503,7 +504,7 @@ internal class UpdateReason
     public bool update;
     public string reason;
 
-    public void CheckApprox(float v0, float v1, float epsilon, [CallerArgumentExpression("v0")] string v0s = null, [CallerArgumentExpression("v1")] string v1s = null)
+    public void CheckApprox(float v0, float v1, float epsilon, [CallerArgumentExpression("v0")] string? v0s = null, [CallerArgumentExpression("v1")] string? v1s = null)
     {
         if (!update && Math.Abs(v0 - v1) > epsilon)
         {
@@ -512,7 +513,7 @@ internal class UpdateReason
         }
     }
 
-    public bool Check(bool condition, [CallerArgumentExpression("condition")] string conditionString = null)
+    public bool Check(bool condition, [CallerArgumentExpression("condition")] string? conditionString = null)
     {
         if (!update && condition)
         {

@@ -7,8 +7,11 @@ public class GraphLayout: IEquatable<GraphLayout>
     public Dictionary<string, LayoutPoint> nodeLayout { get; set; } = new();
 
     #region Comparison
-    public bool Equals(GraphLayout other)
+    public bool Equals(GraphLayout? other)
     {
+        if (other == null)
+            return false;
+        
         return nodeLayout.SequenceEqual(other.nodeLayout);
     }
     

@@ -1,9 +1,7 @@
-using Blazor.Diagrams.Core;
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using Blazor.Diagrams.Core.Models.Base;
 using Microsoft.AspNetCore.Components.Web;
-using OzricEngine;
 using OzricEngine.logic;
 using OzricUI.Components;
 
@@ -34,7 +32,7 @@ public class EditHistory
                 }
             }
 
-            private List<string> nodeIDs;
+            private List<string> nodeIDs = new();
         }
 
         record AddNode(NodeModel node): GraphAction
@@ -70,7 +68,7 @@ public class EditHistory
 
         record RemoveNode(Node node): GraphAction
         {
-            private Point position;
+            private Point position = Point.Zero;
 
             public void Do(GraphEditor editor)
             {
@@ -227,7 +225,7 @@ public class EditHistory
     }
 
        
-    private void Link_Connected(BaseLinkModel arg1, PortModel _, PortModel outPort)
+    private void Link_Connected(BaseLinkModel arg1, PortModel? _, PortModel? outPort)
     {
         arg1.SourcePortChanged -= Link_Connected;
         RegisterUndoHistoryAction(new GraphAction.AddLink(arg1));

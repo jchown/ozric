@@ -34,6 +34,12 @@ namespace OzricEngine
 
         private readonly string llat;
 
+        public delegate void MessageHandler(string message);
+
+        private MessageHandler? sendHandler;
+        private MessageHandler? receiveHandler;
+
+
         public Comms(string llat): this(CORE_API, llat)
         {
         }
@@ -43,6 +49,10 @@ namespace OzricEngine
             this.uri = uri;
             this.llat = llat;
 
+            client = new WatsonWsClient(uri);
+            client.ConfigureOptions(options => options.SetRequestHeader("User-Agent", "OzricEngine/0.7"));
+            client.MessageReceived += OnMessageReceived;
+
             receivedMessages = new BufferBlock<string>();
             pendingEvents = new BlockingCollection<ServerEvent>(new ConcurrentQueue<ServerEvent>());
             asyncResults = new ConcurrentDictionary<int, TaskCompletionSource<ServerResult>>();
@@ -50,14 +60,10 @@ namespace OzricEngine
 
         private async Task Connect()
         {
-            client = new WatsonWsClient(uri);
-            client.ConfigureOptions(options => options.SetRequestHeader("User-Agent", "OzricEngine/0.7"));
-            client.MessageReceived += OnMessageReceived;
-
             await client.StartWithTimeoutAsync((int)ReceiveTimeout.TotalSeconds);
         }
 
-        private void OnMessageReceived(object sender, MessageReceivedEventArgs args)
+        private void OnMessageReceived(object? sender, MessageReceivedEventArgs args)
         {
             receivedMessages.Post(Encoding.UTF8.GetString(args.Data));
         }
@@ -78,7 +84,7 @@ namespace OzricEngine
             }
         }
 
-        public async Task<T> Receive<T>()
+        public async Task<T?> Receive<T>()
         {
             try
             {
@@ -105,6 +111,9 @@ namespace OzricEngine
 
         public async Task Send<T>(T t)
         {
+            if (t == null)
+                throw new ArgumentNullException(nameof(t) + " is null");
+
             if (t is ClientCommand cc && cc.id == 0)
             {
                 lock (sendCommandLock)
@@ -350,10 +359,6 @@ namespace OzricEngine
 
             return taken;
         }
-
-        public delegate void MessageHandler(string message);
-
-        private MessageHandler sendHandler, receiveHandler;
 
         public void OnSend(MessageHandler action)
         {

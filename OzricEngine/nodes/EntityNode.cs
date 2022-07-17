@@ -10,7 +10,7 @@ namespace OzricEngine.logic
     {
         public string entityID { get; }
 
-        protected EntityNode(string id, string entityID, List<Pin> inputs, List<Pin> outputs): base(id, inputs, outputs)
+        protected EntityNode(string id, string entityID, List<Pin>? inputs, List<Pin>? outputs): base(id, inputs, outputs)
         {
             this.entityID = entityID;
         }

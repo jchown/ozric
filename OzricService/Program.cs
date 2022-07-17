@@ -3,9 +3,7 @@ using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.Extensions.FileProviders;
 using OzricEngine;
-using OzricEngine.engine;
 using OzricService;
-using OzricService.Model;
 
 const int homeAssistantIngressPort = 8099;
 const string dockerWwwRoot = "/ozric/wwwroot";
@@ -52,11 +50,6 @@ app.UseStaticFiles(staticFileOptions);
 app.UseRouting();
 app.UseDeveloperExceptionPage();
 
-app.MapGet("/api/options", () => Options.Instance);
-app.MapGet("/api/status", () => Service.Instance.Status);
-app.MapPut("/api/status", (EngineStatus status) => Service.Instance.SetPaused(status.paused));
-app.MapGet("/api/graph", () => Service.Instance.Graph);
-app.MapPut("/api/graph", async (Graph graph) => await Service.Instance.Restart(graph));
-app.MapGet("/api/home", () => Service.Instance.Home);
-
+API.Map(app);
+    
 app.Run();

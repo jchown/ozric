@@ -9,7 +9,7 @@ namespace OzricEngine.logic
     {
         public MockCommandSender(params string[] events)
         {
-            Array.ForEach(events, (ev) => Add(LoadMockCommand(ev), null));
+            Array.ForEach(events, (ev) => Add(LoadMockCommand(ev), (e) => { }));
         }
 
         public List<ClientCommand> GetCommands()

@@ -59,9 +59,9 @@ namespace OzricEngine.logic
         
         public static bool operator !=(ColorRGB lhs, ColorRGB rhs) => !(lhs == rhs);
         
-        public override bool Equals(object o) => Equals(o as ColorRGB);
+        public override bool Equals(object? o) => Equals(o as ColorRGB);
 
-        public bool Equals(ColorRGB other)
+        public bool Equals(ColorRGB? other)
         {
             return (other != null) && (ToRGB24() == other.ToRGB24() && brightness == other.brightness);
         }

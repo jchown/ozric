@@ -88,9 +88,9 @@ namespace OzricEngine.logic
         
         public static bool operator !=(ColorHS lhs, ColorHS rhs) => !(lhs == rhs);
         
-        public override bool Equals(object o) => Equals(o as ColorHS);
+        public override bool Equals(object? o) => Equals(o as ColorHS);
 
-        public bool Equals(ColorHS other)
+        public bool Equals(ColorHS? other)
         {
             return (other != null) && h == other.h && s == other.s && brightness == other.brightness;
         }

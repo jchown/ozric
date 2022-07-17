@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using OzricEngine.logic;
 using Xunit;
+using System;
 
 namespace OzricEngineTests
 {
@@ -19,8 +20,7 @@ namespace OzricEngineTests
             sender.Add(turnOff2, (r) => {});
             
             Assert.Single(sender.GetCommands());
-            var entities = (sender.GetCommands()[0] as ClientCallService)?.target["entity_id"] as List<string>;
-            Assert.NotNull(entities);
+            var entities = (sender.GetCommands()[0] as ClientCallService)?.target["entity_id"] as List<string> ?? throw new Exception();
             Assert.Equal(2, entities.Count);
             Assert.Contains("1", entities);
             Assert.Contains("2", entities);
@@ -38,7 +38,7 @@ namespace OzricEngineTests
             sender.Add(turnOff2, (r) => {});
             
             Assert.Single(sender.GetCommands());
-            var entities = (sender.GetCommands()[0] as ClientCallService).target["entity_id"] as List<string>;
+            var entities = (sender.GetCommands()[0] as ClientCallService)?.target["entity_id"] as List<string> ?? throw new Exception();
             Assert.Equal(2, entities.Count);
             Assert.Contains("1", entities);
             Assert.Contains("2", entities);

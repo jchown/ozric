@@ -1,57 +1,87 @@
+@using OzricEngine.nodes
 <MudDialog>
     <DialogContent>
         
-        <MudExpansionPanel Text="Devices" MaxHeight="400" Style="overflow-y: scroll">
-            <div>
-            @foreach (var choice in Choices.Devices)
+        <MudChipSet @bind-SelectedChips="SelectedCategoryChips" MultiSelection="true">
+            <MudChip Text="Sensor" Value="Category.MotionSensor" Default="true"></MudChip>
+            <MudChip Text="Light" Value="Category.Light" Default="true"></MudChip>
+            <MudChip Text="Logic" Value="Category.Logic" Default="true"></MudChip>
+        </MudChipSet>
+
+        <MudAutocomplete T="string" Label="Search" @bind-Value="Search" SearchFunc="@DoSearch"
+                         ResetValueOnEmptyText="true"
+                         CoerceText="true" CoerceValue="true"/>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll">
+
+            @foreach (var choice in Choices.Where(choice => IsVisible(choice)))
             {
                 <div>
-                    <span class="iconify" data-icon="@choice.Icon"></span>
-                    <MudCheckBox Checked="@IsSelected(choice)" Label="@choice.Name" />
+                    <MudButton Icon="@choice.Icon" Label="@choice.Name" />
                 </div>
             }
-            </div>
-        </MudExpansionPanel>
-        
-        <MudExpansionPanel Text="Logic" MaxHeight="400" Style="overflow-y: scroll">
-            @foreach (var choice in Choices.Logic)
-            {
-                <div>
-                    <span class="iconify" data-icon="@choice.Icon"></span>
-                    <MudCheckBox Checked="@IsSelected(choice)" CheckedChanged="(bool _) => SelectedChoice(choice)" Label="@choice.Name" />
-                </div>
-            }
-        </MudExpansionPanel>
-        
+
+        </MudContainer>
+
     </DialogContent>
+    
     <DialogActions>
-        <MudButton OnClick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" OnClick="Submit" Disabled="@(!Selected)">Add</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
     </DialogActions>
+    
 </MudDialog>
 
 @code {
-    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
-    
-    [Parameter] public AddNodeChoices Choices { get; set; }
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
 
-    private bool Selected => selection.Count > 0;
-    private readonly List<AddNodeChoice> selection = new();
+    [Parameter]
+    public List<AddNodeChoice> Choices { get; set; } = new();
 
-    void Submit() => MudDialog.Close(DialogResult.Ok(selection));
+    private List<Category> SelectedCategories { get; set; } = new();
+
+    private string Search { get; set; } = "";
+
+    private bool ShowMotionSensors => SelectedCategories.Contains(Category.MotionSensor);
+    private bool ShowLights => SelectedCategories.Contains(Category.Light);
+    private bool ShowLogic => SelectedCategories.Contains(Category.Logic);
+
+    private MudChip[] SelectedCategoryChips = new MudChip[0];
+
     void Cancel() => MudDialog.Cancel();
 
-    private bool IsSelected(AddNodeChoice choice)
+    private async Task<IEnumerable<string>> DoSearch(string arg)
     {
-        return selection.Contains(choice);
+        return new List<string>();
     }
 
-    private void SelectedChoice(AddNodeChoice choice)
+    private bool IsVisible(AddNodeChoice choice)
     {
-        if (IsSelected(choice))
-            selection.Remove(choice);
-        else
-            selection.Add(choice);
+        if (!string.IsNullOrWhiteSpace(Search))
+        {
+            var terms = Search.Split(" ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            if (!terms.All(term => choice.Name.Contains(term)))
+                return false;
+        }
+                
+        switch (choice.Category)
+        {
+            case Category.Light:
+                return ShowLights;
+
+            case Category.MotionSensor:
+                return ShowMotionSensors;
+                
+            case Category.Logic:
+                return ShowLogic;
+        }
+        
+        throw new ArgumentOutOfRangeException();
     }
 
+    private void OnSelectionChanged()
+    {
+        SelectedCategories = SelectedCategoryChips.Select(chip => (Category)chip.Value).ToList();
+        StateHasChanged();
+    }
 }

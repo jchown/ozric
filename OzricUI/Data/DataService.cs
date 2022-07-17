@@ -1,38 +1,34 @@
 using System.Text;
 using Microsoft.Net.Http.Headers;
 using OzricEngine;
-using OzricEngine.logic;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace OzricUI.Data;
 
-public class OzricEngineService
+public class DataService
 {
     private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<DataService> _logger;
+    
     private const string CLIENT_USER_AGENT = "OzricUI";
 
-    public OzricEngineService(IHttpClientFactory httpClientFactory) => _httpClientFactory = httpClientFactory;
-
-    public Task<Home> GetHomeAsync()
+    public DataService(IHttpClientFactory httpClientFactory, ILogger<DataService> logger)
     {
-        return Get<Home>("api/home");
+        _httpClientFactory = httpClientFactory;
+        _logger = logger;
     }
 
-    public Task<Graph> GetGraphAsync()
-    {
-        return Get<Graph>("api/graph");
-    }
-
-    public Task SetGraphAsync(Graph g)
-    {
-        return Put<Graph>("api/graph", g);
-    }
-
+    public string? Debug { get; set; } = "kitchen-light-2";
+    
     public async Task<GraphLayout> GetGraphLayoutAsync()
     {
         try
         {
             var json = await File.ReadAllTextAsync("/data/graph_layout.json");
             var graphLayout = Json.Deserialize<GraphLayout>(json);
+
+            ShowDebug("Load", graphLayout);
+            
             return graphLayout;
         }
         catch (Exception e)
@@ -44,8 +40,25 @@ public class OzricEngineService
 
     public async Task SetGraphLayoutAsync(GraphLayout graphLayout)
     {
+        ShowDebug("Save", graphLayout);
+
         var json = Json.Serialize(graphLayout);
         await File.WriteAllTextAsync("/data/graph_layout.json", json);
+    }
+
+    private void ShowDebug(string save, GraphLayout graphLayout)
+    {
+        if (Debug == null)
+            return;
+
+        if (!graphLayout.nodeLayout.ContainsKey(Debug))
+        {
+            _logger.Log(LogLevel.Information, "No key for {0} during graph {1}", Debug, save);
+            return;
+        }
+
+        var pos = graphLayout.nodeLayout[Debug];
+        _logger.Log(LogLevel.Information, "{0}.position = {1} during graph {1}", Debug, pos, save);
     }
 
     private async Task<TObject> Get<TObject>(string apiPath)

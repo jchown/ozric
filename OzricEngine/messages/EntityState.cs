@@ -93,7 +93,6 @@ namespace OzricEngine
         }
     }
 
-
     enum SupportedFeatures
     {
         BRIGHTNESS = 1,

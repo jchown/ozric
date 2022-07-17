@@ -8,11 +8,11 @@ namespace OzricEngine
     {
         public ClientCallService() : base("call_service") { }
         
-        public string domain { get; set; }
-        public string service { get; set; }
-        public Attributes service_data { get; set; }
-        public Attributes target { get; set; }
-        
+        public string? domain { get; set; }
+        public string? service { get; set; }
+        public Attributes service_data { get; set; } = new();
+        public Attributes target { get; set; } = new();
+
         public bool Merge(object o)
         {
             var other = o as ClientCallService;

@@ -30,12 +30,12 @@ namespace OzricEngine.logic
             return new Mode(reader.GetString());
         }
         
-        public bool Equals(Mode other)
+        public bool Equals(Mode? other)
         {
             return value == other.value;
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             return ReferenceEquals(this, obj) || obj is Mode other && Equals(other);
         }

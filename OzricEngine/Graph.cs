@@ -186,14 +186,14 @@ namespace OzricEngine
         }
 
         #region Comparison
-        public bool Equals(Graph other)
+        public bool Equals(Graph? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return nodes.SequenceEqual(other.nodes) && edges.SequenceEqual(other.edges);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

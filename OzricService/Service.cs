@@ -15,9 +15,9 @@ public class Service
     private Engine? engine;
     private Task? mainLoop;
 
-    public EngineStatus? Status => engine?.Status;
-    public Graph? Graph => engine?.graph;
-    public Home? Home => engine?.home;
+    public EngineStatus Status => engine?.Status ?? new EngineStatus();
+    public Graph Graph => engine?.graph ?? throw new InvalidOperationException();
+    public Home Home => engine?.home ?? throw new InvalidOperationException();
 
     static Service()
     {
@@ -46,7 +46,7 @@ public class Service
 
         await connection.Send(new ClientGetStates());
 
-        var states = await connection.Receive<ServerGetStates>();
+        var states = await connection.Receive<ServerGetStates>() ?? throw new InvalidOperationException();
 
         var home = new Home(states.result);
 

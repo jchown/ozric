@@ -1,4 +1,5 @@
 ﻿using OzricEngine;
+using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using Xunit;
@@ -14,11 +15,11 @@ namespace OzricEngineTests
 
             var message = Json.Deserialize<ServerMessage>(json);
 
-            var ev = message as ServerEvent;
+            var ev = message as ServerEvent ?? throw new Exception();
 
             Assert.Equal("call_service", ev.payload.event_type);
 
-            var call = ev.payload as EventCallService;
+            var call = ev.payload as EventCallService ?? throw new Exception();
 
             Assert.Equal(89, call.data.service_data["brightness"]);
         }
