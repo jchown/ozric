@@ -15,8 +15,6 @@ builder.Services.AddSingleton<DataService>();
 builder.Services.AddMudServices();
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
 
-var app = builder.Build();
-
 if (true)
 {
     builder.Services.AddSingleton<IEngineService>(_ => new MockEngineService());
@@ -28,6 +26,7 @@ else
     builder.Services.AddSingleton<IEngineService>(_ => service);
 }
 
+var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

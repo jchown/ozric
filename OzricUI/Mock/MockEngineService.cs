@@ -15,13 +15,14 @@ public class MockEngineService: IEngineService
     
     public Graph Graph { get; private set; }
     
-    public Home Home { get; }
+    public Home Home { get; private set; }
 
     private bool _paused;
 
     public MockEngineService()
     {
         Graph = EngineService.LoadGraph();
+        Home = Json.Deserialize<Home>(File.ReadAllText("Mock/Home.json"));
     }
     
     public void SetPaused(bool statusPaused)

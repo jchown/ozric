@@ -1,0 +1,2182 @@
+{
+  "states": {
+    "person.jez": {
+      "entity_id": "person.jez",
+      "state": "unknown",
+      "attributes": {
+        "editable": false,
+        "id": "jez",
+        "user_id": "27568fb5326f49428f78e8d219212733",
+        "friendly_name": "Jez"
+      },
+      "last_changed": "2022-06-08T18:18:16.41727+01:00",
+      "last_updated": "2022-06-08T18:19:05.337464+01:00",
+      "context": {
+        "id": "01G5257D3SVZHXPF38FWA2R9HV"
+      }
+    },
+    "binary_sensor.remote_ui": {
+      "entity_id": "binary_sensor.remote_ui",
+      "state": "off",
+      "attributes": {
+        "device_class": "connectivity",
+        "friendly_name": "Remote UI"
+      },
+      "last_changed": "2022-07-08T00:41:36.88922+01:00",
+      "last_updated": "2022-07-08T00:41:36.88922+01:00",
+      "context": {
+        "id": "01G7DGMNQS583CG9ACMQ4RSW4B"
+      }
+    },
+    "update.home_assistant_supervisor_update": {
+      "entity_id": "update.home_assistant_supervisor_update",
+      "state": "off",
+      "attributes": {
+        "auto_update": true,
+        "installed_version": "2022.07.0",
+        "in_progress": false,
+        "latest_version": "2022.07.0",
+        "release_summary": null,
+        "release_url": "https://github.com/home-assistant/supervisor/releases/tag/2022.07.0",
+        "skipped_version": null,
+        "title": "Home Assistant Supervisor",
+        "entity_picture": "https://brands.home-assistant.io/hassio/icon.png",
+        "friendly_name": "Home Assistant Supervisor: Update",
+        "supported_features": 1
+      },
+      "last_changed": "2022-07-07T11:08:08.192479+01:00",
+      "last_updated": "2022-07-07T11:08:08.192479+01:00",
+      "context": {
+        "id": "01G7C23500HX7B08W8GQXEHVRJ"
+      }
+    },
+    "update.home_assistant_core_update": {
+      "entity_id": "update.home_assistant_core_update",
+      "state": "on",
+      "attributes": {
+        "auto_update": false,
+        "installed_version": "2022.6.4",
+        "in_progress": false,
+        "latest_version": "2022.7.5",
+        "release_summary": null,
+        "release_url": "https://www.home-assistant.io/latest-release-notes/",
+        "skipped_version": null,
+        "title": "Home Assistant Core",
+        "entity_picture": "https://brands.home-assistant.io/homeassistant/icon.png",
+        "friendly_name": "Home Assistant Core: Update",
+        "supported_features": 11
+      },
+      "last_changed": "2022-06-11T01:15:27.169406+01:00",
+      "last_updated": "2022-07-15T09:08:12.171862+01:00",
+      "context": {
+        "id": "01G80ED9MBWMHEC3H3BNZB73Q8"
+      }
+    },
+    "update.terminal_ssh_update": {
+      "entity_id": "update.terminal_ssh_update",
+      "state": "off",
+      "attributes": {
+        "auto_update": true,
+        "installed_version": "9.6.0",
+        "in_progress": false,
+        "latest_version": "9.6.0",
+        "release_summary": "# Changelog\n\n## 9.6.0\n\n**Breaking change**: RSA keys generated using the SHA-1 hash algorithm\nwere disabled by OpenSSH due to a security vulnerability. If you find\nyour RSA key does not work after update you will need to make a new key\nwith a stronger alg",
+        "release_url": null,
+        "skipped_version": null,
+        "title": "Terminal & SSH",
+        "entity_picture": "/api/hassio/addons/core_ssh/icon",
+        "friendly_name": "Terminal & SSH: Update",
+        "supported_features": 25
+      },
+      "last_changed": "2022-07-08T03:09:30.199421+01:00",
+      "last_updated": "2022-07-08T03:09:30.199421+01:00",
+      "context": {
+        "id": "01G7DS3F2QG7CERAZFDPXTAY49"
+      }
+    },
+    "update.home_assistant_google_drive_backup_update": {
+      "entity_id": "update.home_assistant_google_drive_backup_update",
+      "state": "on",
+      "attributes": {
+        "auto_update": false,
+        "installed_version": "0.107.2",
+        "in_progress": false,
+        "latest_version": "0.108.2",
+        "release_summary": "## v0.108.2 [2022-06-03]\n* Switched to ignoring 'upgrade' backups by default for new users.\n* Added a warning for existing users if you're not ignoring upgrade backups.\n* Added a warning about google's OOB deprecation for private credential users.\n\n## v0.",
+        "release_url": null,
+        "skipped_version": null,
+        "title": "Home Assistant Google Drive Backup",
+        "entity_picture": "/api/hassio/addons/cebe7a76_hassio_google_drive_backup/icon",
+        "friendly_name": "Home Assistant Google Drive Backup: Update",
+        "supported_features": 25
+      },
+      "last_changed": "2022-06-08T18:18:25.401542+01:00",
+      "last_updated": "2022-06-12T04:21:29.172158+01:00",
+      "context": {
+        "id": "01G5AYWJTMKQT4GD5Y8KSJHZTY"
+      }
+    },
+    "update.ozric_update": {
+      "entity_id": "update.ozric_update",
+      "state": "off",
+      "attributes": {
+        "auto_update": true,
+        "installed_version": "0.7.7",
+        "in_progress": false,
+        "latest_version": "0.7.7",
+        "release_summary": "No changelog found for add-on 7750f853_ozric!",
+        "release_url": null,
+        "skipped_version": null,
+        "title": "Ozric",
+        "entity_picture": "/api/hassio/addons/7750f853_ozric/icon",
+        "friendly_name": "Ozric: Update",
+        "supported_features": 25
+      },
+      "last_changed": "2022-06-08T18:18:25.402406+01:00",
+      "last_updated": "2022-07-17T23:12:28.190495+01:00",
+      "context": {
+        "id": "01G873GMCY97WCATT869P0TV79"
+      }
+    },
+    "update.home_assistant_operating_system_update": {
+      "entity_id": "update.home_assistant_operating_system_update",
+      "state": "on",
+      "attributes": {
+        "auto_update": false,
+        "installed_version": "8.1",
+        "in_progress": false,
+        "latest_version": "8.2",
+        "release_summary": null,
+        "release_url": "https://github.com/home-assistant/operating-system/releases/tag/8.2",
+        "skipped_version": null,
+        "title": "Home Assistant Operating System",
+        "entity_picture": "https://brands.home-assistant.io/homeassistant/icon.png",
+        "friendly_name": "Home Assistant Operating System: Update",
+        "supported_features": 3
+      },
+      "last_changed": "2022-06-14T17:15:54.169611+01:00",
+      "last_updated": "2022-06-14T17:15:54.169611+01:00",
+      "context": {
+        "id": "01G5HG00SSVES953XDTQR3P0H2"
+      }
+    },
+    "scene.evening": {
+      "entity_id": "scene.evening",
+      "state": "2022-07-18T19:58:48.609004+00:00",
+      "attributes": {
+        "entity_id": [
+          "light.drawers_strip",
+          "light.hue_color_spot_1",
+          "light.hue_color_spot_2",
+          "light.hue_color_spot_3",
+          "light.hue_color_spot_4",
+          "light.8651601040f520e4101a",
+          "light.86516010c4dd5725bdd5",
+          "light.8651601040f520e40c30",
+          "light.8651601040f520e40568",
+          "switch.bf84559bda89dfdbf1wfpa",
+          "light.panasonic_strip"
+        ],
+        "id": "1618168523796",
+        "friendly_name": "Evening"
+      },
+      "last_changed": "2022-07-18T20:58:48.609429+01:00",
+      "last_updated": "2022-07-18T20:58:48.609429+01:00",
+      "context": {
+        "id": "01G89E8KRKYTTP6G1S4YGKKKSF"
+      }
+    },
+    "scene.morning": {
+      "entity_id": "scene.morning",
+      "state": "unknown",
+      "attributes": {
+        "entity_id": [
+          "light.8651601040f520e4101a",
+          "light.86516010c4dd5725bdd5",
+          "light.8651601040f520e40c30",
+          "light.8651601040f520e40568",
+          "light.hue_color_spot_1",
+          "light.hue_color_spot_2",
+          "light.hue_color_spot_3",
+          "light.hue_color_spot_4"
+        ],
+        "id": "1619382490938",
+        "friendly_name": "Morning "
+      },
+      "last_changed": "2022-06-08T18:18:25.436244+01:00",
+      "last_updated": "2022-06-08T18:18:25.436244+01:00",
+      "context": {
+        "id": "01G525664WY0YJ8D10RAWH6JGM"
+      }
+    },
+    "sun.sun": {
+      "entity_id": "sun.sun",
+      "state": "below_horizon",
+      "attributes": {
+        "next_dawn": "2022-07-19T04:19:45.792653+01:00",
+        "next_dusk": "2022-07-18T22:17:11.715145+01:00",
+        "next_midnight": "2022-07-19T01:18:18+01:00",
+        "next_noon": "2022-07-19T13:18:16+01:00",
+        "next_rising": "2022-07-19T05:08:10.453186+01:00",
+        "next_setting": "2022-07-19T21:27:32.220905+01:00",
+        "elevation": -5.14,
+        "azimuth": 316.36,
+        "rising": false,
+        "friendly_name": "Sun"
+      },
+      "last_changed": "2022-07-18T21:32:48.608254+01:00",
+      "last_updated": "2022-07-18T22:08:48.621206+01:00",
+      "context": {
+        "id": "01G89J8SBD24QNMBVEBBBFVXWX"
+      }
+    },
+    "zone.home": {
+      "entity_id": "zone.home",
+      "state": "0",
+      "attributes": {
+        "latitude": 53.405277,
+        "longitude": -2.9928625,
+        "radius": 100,
+        "passive": false,
+        "persons": [],
+        "editable": true,
+        "icon": "mdi:home",
+        "friendly_name": "Beetham Plaza"
+      },
+      "last_changed": "2022-06-08T18:18:25.498881+01:00",
+      "last_updated": "2022-06-08T18:18:25.498881+01:00",
+      "context": {
+        "id": "01G525666T7R72P05T90TT0H01"
+      }
+    },
+    "binary_sensor.rpi_power_status": {
+      "entity_id": "binary_sensor.rpi_power_status",
+      "state": "off",
+      "attributes": {
+        "device_class": "problem",
+        "icon": "mdi:raspberry-pi",
+        "friendly_name": "RPi Power status"
+      },
+      "last_changed": "2022-06-08T18:18:25.554134+01:00",
+      "last_updated": "2022-06-08T18:18:25.554134+01:00",
+      "context": {
+        "id": "01G525668JWTP2QV3S6N5DKW4D"
+      }
+    },
+    "automation.evening_scene_at_dusk": {
+      "entity_id": "automation.evening_scene_at_dusk",
+      "state": "on",
+      "attributes": {
+        "last_triggered": "2022-07-18T20:58:48.596374+01:00",
+        "mode": "single",
+        "current": 0,
+        "id": "1618168857615",
+        "friendly_name": "Evening Scene at Dusk"
+      },
+      "last_changed": "2022-06-08T18:18:25.620863+01:00",
+      "last_updated": "2022-07-18T20:58:49.966226+01:00",
+      "context": {
+        "id": "01G89E8KRKYTTP6G1S4YGKKKSF"
+      }
+    },
+    "automation.cancel_smart_life": {
+      "entity_id": "automation.cancel_smart_life",
+      "state": "on",
+      "attributes": {
+        "last_triggered": "2022-07-18T16:01:00.002951+01:00",
+        "mode": "single",
+        "current": 0,
+        "id": "1622226418560",
+        "friendly_name": "Cancel Smart Life"
+      },
+      "last_changed": "2022-06-08T18:18:25.621628+01:00",
+      "last_updated": "2022-07-18T16:01:00.023058+01:00",
+      "context": {
+        "id": "01G88X79Z1Y8VJFZRZ2DPXV461"
+      }
+    },
+    "binary_sensor.music_area_entertainment_configuration": {
+      "entity_id": "binary_sensor.music_area_entertainment_configuration",
+      "state": "off",
+      "attributes": {
+        "device_class": "running",
+        "friendly_name": "Music area: Entertainment Configuration"
+      },
+      "last_changed": "2022-06-08T18:18:26.79521+01:00",
+      "last_updated": "2022-06-08T18:18:26.79521+01:00",
+      "context": {
+        "id": "01G52567FB46J1JHT35H5R967E"
+      }
+    },
+    "binary_sensor.entertainment_area_1_entertainment_configuration": {
+      "entity_id": "binary_sensor.entertainment_area_1_entertainment_configuration",
+      "state": "off",
+      "attributes": {
+        "device_class": "running",
+        "friendly_name": "Entertainment area 1: Entertainment Configuration"
+      },
+      "last_changed": "2022-06-08T18:18:26.796447+01:00",
+      "last_updated": "2022-06-08T18:18:26.796447+01:00",
+      "context": {
+        "id": "01G52567FC42R586R9S84VXR8Z"
+      }
+    },
+    "weather.home": {
+      "entity_id": "weather.home",
+      "state": "sunny",
+      "attributes": {
+        "temperature": 28,
+        "humidity": 49,
+        "pressure": 1014,
+        "wind_bearing": 350.1,
+        "wind_speed": 2.2,
+        "forecast": [
+          {
+            "condition": "partlycloudy",
+            "precipitation": 0.2,
+            "temperature": 34.3,
+            "templow": 18.7,
+            "datetime": "2022-07-19T12:00:00+01:00",
+            "wind_bearing": 157.1,
+            "wind_speed": 24.5
+          },
+          {
+            "condition": "cloudy",
+            "precipitation": 0,
+            "temperature": 18.7,
+            "templow": 15.8,
+            "datetime": "2022-07-20T12:00:00+01:00",
+            "wind_bearing": 307.6,
+            "wind_speed": 29.5
+          },
+          {
+            "condition": "rainy",
+            "precipitation": 0.7,
+            "temperature": 17.2,
+            "templow": 14.5,
+            "datetime": "2022-07-21T12:00:00+01:00",
+            "wind_bearing": 308.9,
+            "wind_speed": 21.2
+          },
+          {
+            "condition": "rainy",
+            "precipitation": 8.2,
+            "temperature": 19.4,
+            "templow": 15.3,
+            "datetime": "2022-07-22T12:00:00+01:00",
+            "wind_bearing": 133.8,
+            "wind_speed": 11.9
+          },
+          {
+            "condition": "cloudy",
+            "precipitation": 0,
+            "temperature": 20.5,
+            "templow": 15.4,
+            "datetime": "2022-07-23T12:00:00+01:00",
+            "wind_bearing": 355.9,
+            "wind_speed": 10.8
+          }
+        ],
+        "attribution": "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.",
+        "friendly_name": "Beetham Plaza"
+      },
+      "last_changed": "2022-07-18T19:41:03.52641+01:00",
+      "last_updated": "2022-07-18T21:33:03.726116+01:00",
+      "context": {
+        "id": "01G89G7AQEQMF6PS9JNBWR5ATB"
+      }
+    },
+    "scene.living_room_concentrate": {
+      "entity_id": "scene.living_room_concentrate",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Concentrate",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Living Room Concentrate"
+      },
+      "last_changed": "2022-06-08T18:18:26.852982+01:00",
+      "last_updated": "2022-06-08T18:18:26.852982+01:00",
+      "context": {
+        "id": "01G52567H4TG0J9AW3JS21MH1H"
+      }
+    },
+    "scene.kitchen_bright": {
+      "entity_id": "scene.kitchen_bright",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Bright",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Kitchen Bright"
+      },
+      "last_changed": "2022-06-08T18:18:26.853582+01:00",
+      "last_updated": "2022-06-08T18:18:26.853582+01:00",
+      "context": {
+        "id": "01G52567H5AF1RY6QTGWTFM0Q8"
+      }
+    },
+    "scene.kitchen_arctic_aurora": {
+      "entity_id": "scene.kitchen_arctic_aurora",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Arctic aurora",
+        "speed": 0.6388889,
+        "brightness": 30.71,
+        "is_dynamic": true,
+        "friendly_name": "Kitchen Arctic aurora"
+      },
+      "last_changed": "2022-06-08T18:18:26.854042+01:00",
+      "last_updated": "2022-06-08T18:18:26.854042+01:00",
+      "context": {
+        "id": "01G52567H6ZCRGNTDBB1Q7HTBV"
+      }
+    },
+    "scene.living_room_dimmed": {
+      "entity_id": "scene.living_room_dimmed",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Dimmed",
+        "speed": 0.5,
+        "brightness": 30.31,
+        "is_dynamic": false,
+        "friendly_name": "Living Room Dimmed"
+      },
+      "last_changed": "2022-06-08T18:18:26.854373+01:00",
+      "last_updated": "2022-06-08T18:18:26.854373+01:00",
+      "context": {
+        "id": "01G52567H6RG3SMW2W9WXNV5QQ"
+      }
+    },
+    "scene.kitchen_savanna_sunset": {
+      "entity_id": "scene.kitchen_savanna_sunset",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Savanna sunset",
+        "speed": 0.61904764,
+        "brightness": 81.1,
+        "is_dynamic": true,
+        "friendly_name": "Kitchen Savanna sunset"
+      },
+      "last_changed": "2022-06-08T18:18:26.854676+01:00",
+      "last_updated": "2022-06-08T18:18:26.854676+01:00",
+      "context": {
+        "id": "01G52567H69BY9RFW36FM7G6A9"
+      }
+    },
+    "scene.kitchen_read": {
+      "entity_id": "scene.kitchen_read",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Read",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Kitchen Read"
+      },
+      "last_changed": "2022-06-08T18:18:26.855126+01:00",
+      "last_updated": "2022-06-08T18:18:26.855126+01:00",
+      "context": {
+        "id": "01G52567H7F8CNQSAYHS22TKSV"
+      }
+    },
+    "scene.bedroom_read": {
+      "entity_id": "scene.bedroom_read",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Read",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Bedroom Read"
+      },
+      "last_changed": "2022-06-08T18:18:26.855556+01:00",
+      "last_updated": "2022-06-08T18:18:26.855556+01:00",
+      "context": {
+        "id": "01G52567H7Q3ACJMEZVWRBKDPN"
+      }
+    },
+    "scene.bedroom_relax": {
+      "entity_id": "scene.bedroom_relax",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Relax",
+        "speed": 0.5,
+        "brightness": 56.69,
+        "is_dynamic": false,
+        "friendly_name": "Bedroom Relax"
+      },
+      "last_changed": "2022-06-08T18:18:26.856099+01:00",
+      "last_updated": "2022-06-08T18:18:26.856099+01:00",
+      "context": {
+        "id": "01G52567H8MYWHYSC8J1J5Z1NQ"
+      }
+    },
+    "scene.bedroom_dimmed": {
+      "entity_id": "scene.bedroom_dimmed",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Dimmed",
+        "speed": 0.5,
+        "brightness": 30.31,
+        "is_dynamic": false,
+        "friendly_name": "Bedroom Dimmed"
+      },
+      "last_changed": "2022-06-08T18:18:26.856516+01:00",
+      "last_updated": "2022-06-08T18:18:26.856516+01:00",
+      "context": {
+        "id": "01G52567H8Q7NZP2XV17EEJB82"
+      }
+    },
+    "scene.living_room_nightlight": {
+      "entity_id": "scene.living_room_nightlight",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Nightlight",
+        "speed": 0.5,
+        "brightness": 0.39,
+        "is_dynamic": false,
+        "friendly_name": "Living Room Nightlight"
+      },
+      "last_changed": "2022-06-08T18:18:26.856824+01:00",
+      "last_updated": "2022-06-08T18:18:26.856824+01:00",
+      "context": {
+        "id": "01G52567H8H80N1A9FRZ0MF2V9"
+      }
+    },
+    "scene.bedroom_concentrate": {
+      "entity_id": "scene.bedroom_concentrate",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Concentrate",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Bedroom Concentrate"
+      },
+      "last_changed": "2022-06-08T18:18:26.857195+01:00",
+      "last_updated": "2022-06-08T18:18:26.857195+01:00",
+      "context": {
+        "id": "01G52567H9E728BJE48JTVZJV8"
+      }
+    },
+    "scene.kitchen_energize": {
+      "entity_id": "scene.kitchen_energize",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Energize",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Kitchen Energize"
+      },
+      "last_changed": "2022-06-08T18:18:26.857635+01:00",
+      "last_updated": "2022-06-08T18:18:26.857635+01:00",
+      "context": {
+        "id": "01G52567H9WJGHTCVC2SX94FWB"
+      }
+    },
+    "scene.living_room_savanna_sunset": {
+      "entity_id": "scene.living_room_savanna_sunset",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Savanna sunset",
+        "speed": 0.61904764,
+        "brightness": 80.71,
+        "is_dynamic": true,
+        "friendly_name": "Living Room Savanna sunset"
+      },
+      "last_changed": "2022-06-08T18:18:26.858041+01:00",
+      "last_updated": "2022-06-08T18:18:26.858041+01:00",
+      "context": {
+        "id": "01G52567HAXK3VCSNDAP0J7W65"
+      }
+    },
+    "scene.living_room_arctic_aurora": {
+      "entity_id": "scene.living_room_arctic_aurora",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Arctic aurora",
+        "speed": 0.6388889,
+        "brightness": 30.71,
+        "is_dynamic": true,
+        "friendly_name": "Living Room Arctic aurora"
+      },
+      "last_changed": "2022-06-08T18:18:26.858479+01:00",
+      "last_updated": "2022-06-08T18:18:26.858479+01:00",
+      "context": {
+        "id": "01G52567HAWA1QAZ7W4DCRSXKT"
+      }
+    },
+    "scene.living_room_relax": {
+      "entity_id": "scene.living_room_relax",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Relax",
+        "speed": 0.5,
+        "brightness": 56.69,
+        "is_dynamic": false,
+        "friendly_name": "Living Room Relax"
+      },
+      "last_changed": "2022-06-08T18:18:26.860048+01:00",
+      "last_updated": "2022-06-08T18:18:26.860048+01:00",
+      "context": {
+        "id": "01G52567HCRXGZCT5PM7XD860D"
+      }
+    },
+    "scene.kitchen_tropical_twilight": {
+      "entity_id": "scene.kitchen_tropical_twilight",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Tropical twilight",
+        "speed": 0.6388889,
+        "brightness": 45.28,
+        "is_dynamic": true,
+        "friendly_name": "Kitchen Tropical twilight"
+      },
+      "last_changed": "2022-06-08T18:18:26.860656+01:00",
+      "last_updated": "2022-06-08T18:18:26.860656+01:00",
+      "context": {
+        "id": "01G52567HC0VYH9V3ZGFFD7X3G"
+      }
+    },
+    "scene.bedroom_savanna_sunset": {
+      "entity_id": "scene.bedroom_savanna_sunset",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Savanna sunset",
+        "speed": 0.61904764,
+        "brightness": 80.71,
+        "is_dynamic": true,
+        "friendly_name": "Bedroom Savanna sunset"
+      },
+      "last_changed": "2022-06-08T18:18:26.8612+01:00",
+      "last_updated": "2022-06-08T18:18:26.8612+01:00",
+      "context": {
+        "id": "01G52567HDSSRS68Q6H9WM88S3"
+      }
+    },
+    "scene.kitchen_dimmed": {
+      "entity_id": "scene.kitchen_dimmed",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Dimmed",
+        "speed": 0.5,
+        "brightness": 30.31,
+        "is_dynamic": false,
+        "friendly_name": "Kitchen Dimmed"
+      },
+      "last_changed": "2022-06-08T18:18:26.861662+01:00",
+      "last_updated": "2022-06-08T18:18:26.861662+01:00",
+      "context": {
+        "id": "01G52567HDABAAFG6EXKTCXY7H"
+      }
+    },
+    "scene.living_room_read": {
+      "entity_id": "scene.living_room_read",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Read",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Living Room Read"
+      },
+      "last_changed": "2022-06-08T18:18:26.86212+01:00",
+      "last_updated": "2022-06-08T18:18:26.86212+01:00",
+      "context": {
+        "id": "01G52567HEKXM704Y11E21ECF9"
+      }
+    },
+    "scene.kitchen_nightlight": {
+      "entity_id": "scene.kitchen_nightlight",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Nightlight",
+        "speed": 0.5,
+        "brightness": 0.39,
+        "is_dynamic": false,
+        "friendly_name": "Kitchen Nightlight"
+      },
+      "last_changed": "2022-06-08T18:18:26.862564+01:00",
+      "last_updated": "2022-06-08T18:18:26.862564+01:00",
+      "context": {
+        "id": "01G52567HE5QX9RT6KMFEMXCG8"
+      }
+    },
+    "scene.bedroom_spring_blossom": {
+      "entity_id": "scene.bedroom_spring_blossom",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Spring blossom",
+        "speed": 0.5595238,
+        "brightness": 81.1,
+        "is_dynamic": true,
+        "friendly_name": "Bedroom Spring blossom"
+      },
+      "last_changed": "2022-06-08T18:18:26.862989+01:00",
+      "last_updated": "2022-06-08T18:18:26.862989+01:00",
+      "context": {
+        "id": "01G52567HE4EXZN5GEE7DW96H8"
+      }
+    },
+    "scene.bedroom_energize": {
+      "entity_id": "scene.bedroom_energize",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Energize",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Bedroom Energize"
+      },
+      "last_changed": "2022-06-08T18:18:26.863309+01:00",
+      "last_updated": "2022-06-08T18:18:26.863309+01:00",
+      "context": {
+        "id": "01G52567HFJS847ZRVKX1XF1PN"
+      }
+    },
+    "scene.living_room_energize": {
+      "entity_id": "scene.living_room_energize",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Energize",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Living Room Energize"
+      },
+      "last_changed": "2022-06-08T18:18:26.8636+01:00",
+      "last_updated": "2022-06-08T18:18:26.8636+01:00",
+      "context": {
+        "id": "01G52567HF7ACE3RKKX7DVEPEJ"
+      }
+    },
+    "scene.living_room_tropical_twilight": {
+      "entity_id": "scene.living_room_tropical_twilight",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Tropical twilight",
+        "speed": 0.6388889,
+        "brightness": 48.43,
+        "is_dynamic": true,
+        "friendly_name": "Living Room Tropical twilight"
+      },
+      "last_changed": "2022-06-08T18:18:26.863966+01:00",
+      "last_updated": "2022-06-08T18:18:26.863966+01:00",
+      "context": {
+        "id": "01G52567HFTN2M1HJRZRZMB1GX"
+      }
+    },
+    "scene.bedroom_bright": {
+      "entity_id": "scene.bedroom_bright",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Bright",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Bedroom Bright"
+      },
+      "last_changed": "2022-06-08T18:18:26.864432+01:00",
+      "last_updated": "2022-06-08T18:18:26.864432+01:00",
+      "context": {
+        "id": "01G52567HGQAC9ASAYG8TC1055"
+      }
+    },
+    "scene.kitchen_relax": {
+      "entity_id": "scene.kitchen_relax",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Relax",
+        "speed": 0.5,
+        "brightness": 56.69,
+        "is_dynamic": false,
+        "friendly_name": "Kitchen Relax"
+      },
+      "last_changed": "2022-06-08T18:18:26.86501+01:00",
+      "last_updated": "2022-06-08T18:18:26.86501+01:00",
+      "context": {
+        "id": "01G52567HHWW7YP5Z3BXNNCFV6"
+      }
+    },
+    "scene.bedroom_nightlight": {
+      "entity_id": "scene.bedroom_nightlight",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Nightlight",
+        "speed": 0.5,
+        "brightness": 0.39,
+        "is_dynamic": false,
+        "friendly_name": "Bedroom Nightlight"
+      },
+      "last_changed": "2022-06-08T18:18:26.865396+01:00",
+      "last_updated": "2022-06-08T18:18:26.865396+01:00",
+      "context": {
+        "id": "01G52567HH8D9M8N5BN8HH2978"
+      }
+    },
+    "scene.bedroom_arctic_aurora": {
+      "entity_id": "scene.bedroom_arctic_aurora",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Arctic aurora",
+        "speed": 0.6388889,
+        "brightness": 56.69,
+        "is_dynamic": true,
+        "friendly_name": "Bedroom Arctic aurora"
+      },
+      "last_changed": "2022-06-08T18:18:26.865741+01:00",
+      "last_updated": "2022-06-08T18:18:26.865741+01:00",
+      "context": {
+        "id": "01G52567HHGQ694Y9SK05HF170"
+      }
+    },
+    "scene.bedroom_tropical_twilight": {
+      "entity_id": "scene.bedroom_tropical_twilight",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Bedroom",
+        "group_type": "room",
+        "name": "Tropical twilight",
+        "speed": 0.6388889,
+        "brightness": 45.28,
+        "is_dynamic": true,
+        "friendly_name": "Bedroom Tropical twilight"
+      },
+      "last_changed": "2022-06-08T18:18:26.866126+01:00",
+      "last_updated": "2022-06-08T18:18:26.866126+01:00",
+      "context": {
+        "id": "01G52567HJW701D6WWZJ5NCEW6"
+      }
+    },
+    "scene.kitchen_concentrate": {
+      "entity_id": "scene.kitchen_concentrate",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Concentrate",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Kitchen Concentrate"
+      },
+      "last_changed": "2022-06-08T18:18:26.866607+01:00",
+      "last_updated": "2022-06-08T18:18:26.866607+01:00",
+      "context": {
+        "id": "01G52567HJZR6GXKA2YZAM6A9R"
+      }
+    },
+    "scene.kitchen_spring_blossom": {
+      "entity_id": "scene.kitchen_spring_blossom",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Spring blossom",
+        "speed": 0.5595238,
+        "brightness": 85.83,
+        "is_dynamic": true,
+        "friendly_name": "Kitchen Spring blossom"
+      },
+      "last_changed": "2022-06-08T18:18:26.867076+01:00",
+      "last_updated": "2022-06-08T18:18:26.867076+01:00",
+      "context": {
+        "id": "01G52567HKVG9KSC6S7GBKAKJF"
+      }
+    },
+    "scene.living_room_spring_blossom": {
+      "entity_id": "scene.living_room_spring_blossom",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Spring blossom",
+        "speed": 0.5595238,
+        "brightness": 81.1,
+        "is_dynamic": true,
+        "friendly_name": "Living Room Spring blossom"
+      },
+      "last_changed": "2022-06-08T18:18:26.867455+01:00",
+      "last_updated": "2022-06-08T18:18:26.867455+01:00",
+      "context": {
+        "id": "01G52567HKKS468G24ZCJFCSN8"
+      }
+    },
+    "scene.kitchen_evening": {
+      "entity_id": "scene.kitchen_evening",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Kitchen",
+        "group_type": "room",
+        "name": "Evening",
+        "speed": 0.5,
+        "brightness": 58.27,
+        "is_dynamic": false,
+        "friendly_name": "Kitchen Evening"
+      },
+      "last_changed": "2022-06-08T18:18:26.867786+01:00",
+      "last_updated": "2022-06-08T18:18:26.867786+01:00",
+      "context": {
+        "id": "01G52567HKGGZ27V8CYP9SGCCY"
+      }
+    },
+    "scene.living_room_bright": {
+      "entity_id": "scene.living_room_bright",
+      "state": "unknown",
+      "attributes": {
+        "group_name": "Living Room",
+        "group_type": "room",
+        "name": "Bright",
+        "speed": 0.5,
+        "brightness": 100,
+        "is_dynamic": false,
+        "friendly_name": "Living Room Bright"
+      },
+      "last_changed": "2022-06-08T18:18:26.868224+01:00",
+      "last_updated": "2022-06-08T18:18:26.868224+01:00",
+      "context": {
+        "id": "01G52567HM0495REVPBZD3R2A9"
+      }
+    },
+    "light.hue_color_spot_2": {
+      "entity_id": "light.hue_color_spot_2",
+      "state": "on",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "color_mode": "xy",
+        "brightness": 97,
+        "hs_color": [
+          31.765,
+          86.667
+        ],
+        "rgb_color": [
+          255,
+          151,
+          34
+        ],
+        "xy_color": [
+          0.5772,
+          0.3941
+        ],
+        "mode": "normal",
+        "dynamics": "none",
+        "friendly_name": "Hue color spot 2",
+        "supported_features": 40
+      },
+      "last_changed": "2022-07-18T20:58:50.057762+01:00",
+      "last_updated": "2022-07-18T21:58:57.357027+01:00",
+      "context": {
+        "id": "01G89HPQSSRC7T9S0XM3HND8R2",
+        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+      }
+    },
+    "light.drawers_strip": {
+      "entity_id": "light.drawers_strip",
+      "state": "on",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "effect_list": [
+          "None",
+          "candle",
+          "fire"
+        ],
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "color_mode": "xy",
+        "brightness": 207,
+        "hs_color": [
+          28.2,
+          78.431
+        ],
+        "rgb_color": [
+          255,
+          149,
+          55
+        ],
+        "xy_color": [
+          0.57,
+          0.385
+        ],
+        "effect": "None",
+        "mode": "normal",
+        "dynamics": "none",
+        "friendly_name": "Drawers Strip",
+        "supported_features": 44
+      },
+      "last_changed": "2022-07-18T20:58:49.023806+01:00",
+      "last_updated": "2022-07-18T20:58:49.023806+01:00",
+      "context": {
+        "id": "01G89E8KRKYTTP6G1S4YGKKKSF"
+      }
+    },
+    "light.hue_color_lamp_1": {
+      "entity_id": "light.hue_color_lamp_1",
+      "state": "unavailable",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "friendly_name": "Main Bedroom Light",
+        "supported_features": 40
+      },
+      "last_changed": "2022-07-18T20:45:41.569424+01:00",
+      "last_updated": "2022-07-18T20:45:41.569424+01:00",
+      "context": {
+        "id": "01G89DGK61TS7A290RSGZ6BHG9"
+      }
+    },
+    "light.hue_color_spot_4": {
+      "entity_id": "light.hue_color_spot_4",
+      "state": "on",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "color_mode": "xy",
+        "brightness": 97,
+        "hs_color": [
+          31.765,
+          86.667
+        ],
+        "rgb_color": [
+          255,
+          151,
+          34
+        ],
+        "xy_color": [
+          0.5772,
+          0.3941
+        ],
+        "mode": "normal",
+        "dynamics": "none",
+        "friendly_name": "Hue color spot 4",
+        "supported_features": 40
+      },
+      "last_changed": "2022-07-18T21:52:39.142129+01:00",
+      "last_updated": "2022-07-18T21:58:58.355376+01:00",
+      "context": {
+        "id": "01G89HPRS9ZN8544XRPYP0B44T",
+        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+      }
+    },
+    "light.hue_color_spot_1": {
+      "entity_id": "light.hue_color_spot_1",
+      "state": "on",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "color_mode": "xy",
+        "brightness": 97,
+        "hs_color": [
+          31.765,
+          86.667
+        ],
+        "rgb_color": [
+          255,
+          151,
+          34
+        ],
+        "xy_color": [
+          0.5772,
+          0.3941
+        ],
+        "mode": "normal",
+        "dynamics": "none",
+        "friendly_name": "Hue color spot 1",
+        "supported_features": 40
+      },
+      "last_changed": "2022-07-18T21:44:19.225274+01:00",
+      "last_updated": "2022-07-18T21:58:58.356633+01:00",
+      "context": {
+        "id": "01G89HPRS9ZN8544XRPYP0B44T",
+        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+      }
+    },
+    "light.hue_color_spot_3": {
+      "entity_id": "light.hue_color_spot_3",
+      "state": "on",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "color_temp",
+          "xy"
+        ],
+        "color_mode": "xy",
+        "brightness": 97,
+        "hs_color": [
+          31.765,
+          86.667
+        ],
+        "rgb_color": [
+          255,
+          151,
+          34
+        ],
+        "xy_color": [
+          0.5772,
+          0.3941
+        ],
+        "mode": "normal",
+        "dynamics": "none",
+        "friendly_name": "Hue color spot 3",
+        "supported_features": 40
+      },
+      "last_changed": "2022-07-18T20:58:50.059576+01:00",
+      "last_updated": "2022-07-18T21:58:58.357453+01:00",
+      "context": {
+        "id": "01G89HPRS9ZN8544XRPYP0B44T",
+        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+      }
+    },
+    "sensor.hacs": {
+      "entity_id": "sensor.hacs",
+      "state": "2",
+      "attributes": {
+        "repositories": [
+          {
+            "name": "hacs/integration",
+            "display_name": "HACS",
+            "installed_version": "1.25.2",
+            "available_version": "1.26.2"
+          },
+          {
+            "name": "LaggAt/hacs-govee",
+            "display_name": "govee",
+            "installed_version": "0.2.1",
+            "available_version": "0.2.2"
+          }
+        ],
+        "unit_of_measurement": "pending update(s)",
+        "icon": "hacs:hacs",
+        "friendly_name": "hacs"
+      },
+      "last_changed": "2022-06-08T18:19:14.512935+01:00",
+      "last_updated": "2022-07-14T12:19:13.38187+01:00",
+      "context": {
+        "id": "01G7Y6YB75KTP07074H0QYJTW9"
+      }
+    },
+    "govee.state": {
+      "entity_id": "govee.state",
+      "state": "async_setup called",
+      "attributes": {},
+      "last_changed": "2022-06-08T18:18:51.789472+01:00",
+      "last_updated": "2022-06-08T18:18:51.789472+01:00",
+      "context": {
+        "id": "01G5256ZWD5842F3PPVMQ43VPK"
+      }
+    },
+    "sensor.jez_s_ipad_battery_level": {
+      "entity_id": "sensor.jez_s_ipad_battery_level",
+      "state": "96",
+      "attributes": {
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "icon": "mdi:battery-90",
+        "friendly_name": "Jez's iPad Battery Level"
+      },
+      "last_changed": "2022-06-14T23:09:41.558334+01:00",
+      "last_updated": "2022-06-14T23:09:41.558334+01:00",
+      "context": {
+        "id": "01G5J47TNPHNFJTQY457CEKPM0"
+      }
+    },
+    "sensor.jez_s_ipad_battery_state": {
+      "entity_id": "sensor.jez_s_ipad_battery_state",
+      "state": "Not Charging",
+      "attributes": {
+        "Low Power Mode": false,
+        "icon": "mdi:battery-90",
+        "friendly_name": "Jez's iPad Battery State"
+      },
+      "last_changed": "2022-06-12T23:26:34.519093+01:00",
+      "last_updated": "2022-06-14T23:09:41.55885+01:00",
+      "context": {
+        "id": "01G5J47TNPFFWAHXV4W2KDE5YS"
+      }
+    },
+    "sensor.jez_s_ipad_storage": {
+      "entity_id": "sensor.jez_s_ipad_storage",
+      "state": "3.29",
+      "attributes": {
+        "Available": "3.39 GB",
+        "Available (Important)": "9.12 GB",
+        "Available (Opportunistic)": "2.11 GB",
+        "Total": "63.98 GB",
+        "unit_of_measurement": "% available",
+        "icon": "mdi:database",
+        "friendly_name": "Jez's iPad Storage"
+      },
+      "last_changed": "2022-06-14T23:09:41.559165+01:00",
+      "last_updated": "2022-06-14T23:09:41.559165+01:00",
+      "context": {
+        "id": "01G5J47TNQZA4X3WJYZPJRZKMA"
+      }
+    },
+    "sensor.jez_s_ipad_bssid": {
+      "entity_id": "sensor.jez_s_ipad_bssid",
+      "state": "Not Connected",
+      "attributes": {
+        "friendly_name": "Jez's iPad BSSID",
+        "icon": "mdi:wifi-off"
+      },
+      "last_changed": "2022-06-08T18:18:59.79434+01:00",
+      "last_updated": "2022-06-08T18:18:59.79434+01:00",
+      "context": {
+        "id": "01G52577PJ5Z59RMJNEF96XY0R"
+      }
+    },
+    "sensor.jez_s_ipad_ssid": {
+      "entity_id": "sensor.jez_s_ipad_ssid",
+      "state": "Not Connected",
+      "attributes": {
+        "friendly_name": "Jez's iPad SSID",
+        "icon": "mdi:wifi-off"
+      },
+      "last_changed": "2022-06-08T18:18:59.794664+01:00",
+      "last_updated": "2022-06-08T18:18:59.794664+01:00",
+      "context": {
+        "id": "01G52577PJJ9R3R83KQHWDGXC0"
+      }
+    },
+    "sensor.jez_s_ipad_connection_type": {
+      "entity_id": "sensor.jez_s_ipad_connection_type",
+      "state": "Wi-Fi",
+      "attributes": {
+        "friendly_name": "Jez's iPad Connection Type",
+        "icon": "mdi:wifi"
+      },
+      "last_changed": "2022-06-08T18:18:59.795+01:00",
+      "last_updated": "2022-06-08T18:18:59.795+01:00",
+      "context": {
+        "id": "01G52577PKPAQSB5EEBWWEHH0D"
+      }
+    },
+    "sensor.jez_s_ipad_geocoded_location": {
+      "entity_id": "sensor.jez_s_ipad_geocoded_location",
+      "state": "Unknown",
+      "attributes": {
+        "friendly_name": "Jez's iPad Geocoded Location",
+        "icon": "mdi:map"
+      },
+      "last_changed": "2022-06-08T18:18:59.795314+01:00",
+      "last_updated": "2022-06-08T18:18:59.795314+01:00",
+      "context": {
+        "id": "01G52577PK3B65DKDE74WXV5JD"
+      }
+    },
+    "sensor.jez_s_ipad_last_update_trigger": {
+      "entity_id": "sensor.jez_s_ipad_last_update_trigger",
+      "state": "Launch",
+      "attributes": {
+        "icon": "mdi:cellphone-wireless",
+        "friendly_name": "Jez's iPad Last Update Trigger"
+      },
+      "last_changed": "2022-06-14T23:09:41.927662+01:00",
+      "last_updated": "2022-06-14T23:09:41.927662+01:00",
+      "context": {
+        "id": "01G5J47V17AEZDN7Y6JJ44386K"
+      }
+    },
+    "sensor.milky_way_battery_level": {
+      "entity_id": "sensor.milky_way_battery_level",
+      "state": "92",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "icon": "mdi:battery-90",
+        "friendly_name": "Milky-way Battery Level"
+      },
+      "last_changed": "2022-07-10T11:32:02.108081+01:00",
+      "last_updated": "2022-07-10T11:32:02.108081+01:00",
+      "context": {
+        "id": "01G7KTN29WAZM6MZKXTSRN4XN2"
+      }
+    },
+    "sensor.milky_way_battery_state": {
+      "entity_id": "sensor.milky_way_battery_state",
+      "state": "discharging",
+      "attributes": {
+        "icon": "mdi:battery-minus",
+        "friendly_name": "Milky-way Battery State"
+      },
+      "last_changed": "2022-07-10T10:00:13.640024+01:00",
+      "last_updated": "2022-07-10T10:00:13.640024+01:00",
+      "context": {
+        "id": "01G7KNCYY8Q7W59BJSSW547NMZ"
+      }
+    },
+    "sensor.milky_way_charger_type": {
+      "entity_id": "sensor.milky_way_charger_type",
+      "state": "none",
+      "attributes": {
+        "icon": "mdi:battery",
+        "friendly_name": "Milky-way Charger Type"
+      },
+      "last_changed": "2022-07-10T10:00:13.642097+01:00",
+      "last_updated": "2022-07-10T10:00:13.642097+01:00",
+      "context": {
+        "id": "01G7KNCYYAHBWT2A6Q9Z8THEZ6"
+      }
+    },
+    "sensor.milky_way_battery_health": {
+      "entity_id": "sensor.milky_way_battery_health",
+      "state": "good",
+      "attributes": {
+        "icon": "mdi:battery-heart-variant",
+        "friendly_name": "Milky-way Battery Health"
+      },
+      "last_changed": "2022-06-08T18:18:59.83516+01:00",
+      "last_updated": "2022-06-08T18:18:59.83516+01:00",
+      "context": {
+        "id": "01G52577QVPAM2CW36MPZQSKAX"
+      }
+    },
+    "sensor.milky_way_battery_temperature": {
+      "entity_id": "sensor.milky_way_battery_temperature",
+      "state": "27.4",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "°C",
+        "device_class": "temperature",
+        "icon": "mdi:battery",
+        "friendly_name": "Milky-way Battery Temperature"
+      },
+      "last_changed": "2022-07-10T11:32:02.10908+01:00",
+      "last_updated": "2022-07-10T11:32:02.10908+01:00",
+      "context": {
+        "id": "01G7KTN29XJ1BEXKQJ0K6CP2YS"
+      }
+    },
+    "binary_sensor.milky_way_is_charging": {
+      "entity_id": "binary_sensor.milky_way_is_charging",
+      "state": "off",
+      "attributes": {
+        "device_class": "plug",
+        "icon": "mdi:power-plug-off",
+        "friendly_name": "Milky-way Is Charging"
+      },
+      "last_changed": "2022-07-10T10:00:13.641298+01:00",
+      "last_updated": "2022-07-10T10:00:13.641298+01:00",
+      "context": {
+        "id": "01G7KNCYY9F6JYM1QKQ241DK6V"
+      }
+    },
+    "light.dining_table": {
+      "entity_id": "light.dining_table",
+      "state": "off",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "brightness",
+          "color_temp",
+          "hs"
+        ],
+        "friendly_name": "Dining Table ",
+        "supported_features": 0
+      },
+      "last_changed": "2022-07-17T23:25:17.424561+01:00",
+      "last_updated": "2022-07-17T23:25:17.424561+01:00",
+      "context": {
+        "id": "01G87483KGSDK0XXS1599NMZ3Y"
+      }
+    },
+    "light.hall_1": {
+      "entity_id": "light.hall_1",
+      "state": "on",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "brightness",
+          "color_temp",
+          "hs"
+        ],
+        "color_mode": "hs",
+        "brightness": 97,
+        "hs_color": [
+          28,
+          87
+        ],
+        "rgb_color": [
+          255,
+          136,
+          33
+        ],
+        "xy_color": [
+          0.594,
+          0.378
+        ],
+        "friendly_name": "Hall 1",
+        "supported_features": 0
+      },
+      "last_changed": "2022-07-18T20:58:48.97083+01:00",
+      "last_updated": "2022-07-18T21:51:47.098102+01:00",
+      "context": {
+        "id": "01G89H9KKS2CQKGQM1CHY7FGZE",
+        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+      }
+    },
+    "light.hall_4": {
+      "entity_id": "light.hall_4",
+      "state": "on",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "brightness",
+          "color_temp",
+          "hs"
+        ],
+        "color_mode": "hs",
+        "brightness": 97,
+        "hs_color": [
+          28,
+          87
+        ],
+        "rgb_color": [
+          255,
+          136,
+          33
+        ],
+        "xy_color": [
+          0.594,
+          0.378
+        ],
+        "friendly_name": "Hall 4",
+        "supported_features": 0
+      },
+      "last_changed": "2022-07-18T20:58:48.981483+01:00",
+      "last_updated": "2022-07-18T21:51:47.12931+01:00",
+      "context": {
+        "id": "01G89H9KKS2CQKGQM1CHY7FGZE",
+        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+      }
+    },
+    "light.hall_3": {
+      "entity_id": "light.hall_3",
+      "state": "on",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "brightness",
+          "color_temp",
+          "hs"
+        ],
+        "color_mode": "hs",
+        "brightness": 97,
+        "hs_color": [
+          28,
+          87
+        ],
+        "rgb_color": [
+          255,
+          136,
+          33
+        ],
+        "xy_color": [
+          0.594,
+          0.378
+        ],
+        "friendly_name": "Hall 3",
+        "supported_features": 0
+      },
+      "last_changed": "2022-07-18T20:58:48.960944+01:00",
+      "last_updated": "2022-07-18T21:51:46.921882+01:00",
+      "context": {
+        "id": "01G89H9KE1G6131035BGBX0P27",
+        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+      }
+    },
+    "light.hall_2": {
+      "entity_id": "light.hall_2",
+      "state": "on",
+      "attributes": {
+        "min_mireds": 153,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "brightness",
+          "color_temp",
+          "hs"
+        ],
+        "color_mode": "hs",
+        "brightness": 97,
+        "hs_color": [
+          28,
+          87
+        ],
+        "rgb_color": [
+          255,
+          136,
+          33
+        ],
+        "xy_color": [
+          0.594,
+          0.378
+        ],
+        "friendly_name": "Hall 2",
+        "supported_features": 0
+      },
+      "last_changed": "2022-07-18T20:58:49.092524+01:00",
+      "last_updated": "2022-07-18T21:51:47.121525+01:00",
+      "context": {
+        "id": "01G89H9KKS2CQKGQM1CHY7FGZE",
+        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+      }
+    },
+    "switch.corner_light_socket_1": {
+      "entity_id": "switch.corner_light_socket_1",
+      "state": "off",
+      "attributes": {
+        "device_class": "outlet",
+        "friendly_name": "Corner Light Socket 1"
+      },
+      "last_changed": "2022-07-18T18:13:45.356827+01:00",
+      "last_updated": "2022-07-18T18:13:45.356827+01:00",
+      "context": {
+        "id": "01G894TCMCQM92YMTVS1YYC8ZQ"
+      }
+    },
+    "switch.heater_socket_1": {
+      "entity_id": "switch.heater_socket_1",
+      "state": "unavailable",
+      "attributes": {
+        "device_class": "outlet",
+        "friendly_name": "Heater  Socket 1"
+      },
+      "last_changed": "2022-06-08T18:18:59.916587+01:00",
+      "last_updated": "2022-06-08T18:18:59.916587+01:00",
+      "context": {
+        "id": "01G52577TC7MQ77N8F8SSYGE4J"
+      }
+    },
+    "switch.monkey_light_socket_1": {
+      "entity_id": "switch.monkey_light_socket_1",
+      "state": "off",
+      "attributes": {
+        "device_class": "outlet",
+        "friendly_name": "Monkey Light  Socket 1"
+      },
+      "last_changed": "2022-07-18T18:11:38.712958+01:00",
+      "last_updated": "2022-07-18T18:11:38.712958+01:00",
+      "context": {
+        "id": "01G894PGYRBKDJ39JERDM0BYFM"
+      }
+    },
+    "switch.diffuser_socket_1": {
+      "entity_id": "switch.diffuser_socket_1",
+      "state": "unavailable",
+      "attributes": {
+        "device_class": "outlet",
+        "friendly_name": "Diffuser Socket 1"
+      },
+      "last_changed": "2022-06-08T18:18:59.919027+01:00",
+      "last_updated": "2022-06-08T18:18:59.919027+01:00",
+      "context": {
+        "id": "01G52577TFF3NJWFTZVMSZJAW4"
+      }
+    },
+    "device_tracker.jez_s_ipad": {
+      "entity_id": "device_tracker.jez_s_ipad",
+      "state": "unknown",
+      "attributes": {
+        "source_type": "gps",
+        "friendly_name": "Jez's iPad"
+      },
+      "last_changed": "2022-06-08T18:18:59.985494+01:00",
+      "last_updated": "2022-06-08T18:18:59.985494+01:00",
+      "context": {
+        "id": "01G52577WHW2M6PZ45V62K71AF"
+      }
+    },
+    "device_tracker.sm_g991b": {
+      "entity_id": "device_tracker.sm_g991b",
+      "state": "unknown",
+      "attributes": {
+        "source_type": "gps",
+        "friendly_name": "Milky-way"
+      },
+      "last_changed": "2022-06-08T18:18:59.98599+01:00",
+      "last_updated": "2022-06-08T18:18:59.98599+01:00",
+      "context": {
+        "id": "01G52577WHEYZ5SHDR5SAHYQ0T"
+      }
+    },
+    "light.panasonic_strip": {
+      "entity_id": "light.panasonic_strip",
+      "state": "on",
+      "attributes": {
+        "min_mireds": 111,
+        "max_mireds": 500,
+        "supported_color_modes": [
+          "color_temp",
+          "hs"
+        ],
+        "color_mode": "hs",
+        "brightness": 44,
+        "hs_color": [
+          29.647,
+          100
+        ],
+        "rgb_color": [
+          255,
+          125,
+          0
+        ],
+        "xy_color": [
+          0.615,
+          0.372
+        ],
+        "friendly_name": "Panasonic Strip",
+        "supported_features": 19
+      },
+      "last_changed": "2022-07-18T20:58:49.957376+01:00",
+      "last_updated": "2022-07-18T20:58:55.225968+01:00",
+      "context": {
+        "id": "01G89E8T7SXTWJT9Q8EW3DA65Z"
+      }
+    },
+    "binary_sensor.tuyatec_zn9wyqtr_rh3040_090ecafe_ias_zone": {
+      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_090ecafe_ias_zone",
+      "state": "off",
+      "attributes": {
+        "device_class": "motion",
+        "friendly_name": "TUYATEC-zn9wyqtr RH3040 090ecafe ias_zone"
+      },
+      "last_changed": "2022-07-18T21:58:54.445133+01:00",
+      "last_updated": "2022-07-18T21:58:54.445133+01:00",
+      "context": {
+        "id": "01G89HPN3DZNW1ZM1VBDG5QCFK"
+      }
+    },
+    "binary_sensor.tuyatec_zn9wyqtr_rh3040_6cf5cbfe_ias_zone": {
+      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_6cf5cbfe_ias_zone",
+      "state": "off",
+      "attributes": {
+        "device_class": "motion",
+        "friendly_name": "TUYATEC-zn9wyqtr RH3040 6cf5cbfe ias_zone"
+      },
+      "last_changed": "2022-07-18T21:50:56.767832+01:00",
+      "last_updated": "2022-07-18T21:50:56.767832+01:00",
+      "context": {
+        "id": "01G89H82KZXZD569CWS0ZATERH"
+      }
+    },
+    "binary_sensor.tuyatec_zn9wyqtr_rh3040_bbf0cbfe_ias_zone": {
+      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_bbf0cbfe_ias_zone",
+      "state": "off",
+      "attributes": {
+        "device_class": "motion",
+        "friendly_name": "TUYATEC-zn9wyqtr RH3040 bbf0cbfe ias_zone"
+      },
+      "last_changed": "2022-07-18T21:58:56.185861+01:00",
+      "last_updated": "2022-07-18T21:58:56.185861+01:00",
+      "context": {
+        "id": "01G89HPPSSN8N7N9EZRXZK6R0K"
+      }
+    },
+    "binary_sensor.tuyatec_zn9wyqtr_rh3040_00480cfe_ias_zone": {
+      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_00480cfe_ias_zone",
+      "state": "off",
+      "attributes": {
+        "device_class": "motion",
+        "friendly_name": "TUYATEC-zn9wyqtr RH3040 00480cfe ias_zone"
+      },
+      "last_changed": "2022-07-18T21:51:46.205216+01:00",
+      "last_updated": "2022-07-18T21:51:46.205216+01:00",
+      "context": {
+        "id": "01G89H9JWXSY7FSXMN1DT2FTZF"
+      }
+    },
+    "sensor.sensor_01_power": {
+      "entity_id": "sensor.sensor_01_power",
+      "state": "100",
+      "attributes": {
+        "state_class": "measurement",
+        "battery_voltage": 2.1,
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Sensor-01 power"
+      },
+      "last_changed": "2022-06-08T18:19:00.477118+01:00",
+      "last_updated": "2022-06-08T18:19:00.477118+01:00",
+      "context": {
+        "id": "01G52578BX5D91VNC9QGD9NKVY"
+      }
+    },
+    "sensor.sensor_1_power": {
+      "entity_id": "sensor.sensor_1_power",
+      "state": "100",
+      "attributes": {
+        "state_class": "measurement",
+        "battery_voltage": 2.1,
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Sensor-1 power"
+      },
+      "last_changed": "2022-06-08T18:19:00.478679+01:00",
+      "last_updated": "2022-06-08T18:19:00.478679+01:00",
+      "context": {
+        "id": "01G52578BY9DPBX66NF7E1S8R1"
+      }
+    },
+    "sensor.kitchen_sensor_power": {
+      "entity_id": "sensor.kitchen_sensor_power",
+      "state": "100",
+      "attributes": {
+        "state_class": "measurement",
+        "battery_voltage": 2.1,
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Kitchen Sensor power"
+      },
+      "last_changed": "2022-06-08T18:19:00.480609+01:00",
+      "last_updated": "2022-06-08T18:19:00.480609+01:00",
+      "context": {
+        "id": "01G52578C018BS1RX1YCXN3PZN"
+      }
+    },
+    "sensor.sensor_2_power": {
+      "entity_id": "sensor.sensor_2_power",
+      "state": "100",
+      "attributes": {
+        "state_class": "measurement",
+        "battery_voltage": 2.1,
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Sensor-2 power"
+      },
+      "last_changed": "2022-06-08T18:19:00.4825+01:00",
+      "last_updated": "2022-06-08T18:19:00.4825+01:00",
+      "context": {
+        "id": "01G52578C211Y45MFT2R71Q459"
+      }
+    },
+    "media_player.living_room": {
+      "entity_id": "media_player.living_room",
+      "state": "paused",
+      "attributes": {
+        "source_list": [
+          "Line-in"
+        ],
+        "group_members": [
+          "media_player.living_room"
+        ],
+        "volume_level": 0.49,
+        "is_volume_muted": false,
+        "media_content_id": "x-sonos-vli:RINCON_000E582A59F401400:2,spotify:b110a1446faf82b719d1e0c7c4ae555a",
+        "media_content_type": "music",
+        "source": "Spotify Connect",
+        "shuffle": false,
+        "repeat": "off",
+        "queue_position": 1,
+        "queue_size": 1,
+        "friendly_name": "Living Room",
+        "supported_features": 981567
+      },
+      "last_changed": "2022-07-17T11:40:51.41792+01:00",
+      "last_updated": "2022-07-17T11:40:51.41792+01:00",
+      "context": {
+        "id": "01G85VY86SBMP1NE5R5AH02NF0"
+      }
+    },
+    "number.living_room_bass": {
+      "entity_id": "number.living_room_bass",
+      "state": "4",
+      "attributes": {
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "mode": "auto",
+        "friendly_name": "Living Room Bass"
+      },
+      "last_changed": "2022-07-17T11:40:51.418776+01:00",
+      "last_updated": "2022-07-17T11:40:51.418776+01:00",
+      "context": {
+        "id": "01G85VY86TMTBHM1BP6EVYJCMX"
+      }
+    },
+    "number.living_room_treble": {
+      "entity_id": "number.living_room_treble",
+      "state": "0",
+      "attributes": {
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "mode": "auto",
+        "friendly_name": "Living Room Treble"
+      },
+      "last_changed": "2022-07-17T11:40:51.419288+01:00",
+      "last_updated": "2022-07-17T11:40:51.419288+01:00",
+      "context": {
+        "id": "01G85VY86V40BHWQZ12HB75K89"
+      }
+    },
+    "switch.sonos_living_room_crossfade": {
+      "entity_id": "switch.sonos_living_room_crossfade",
+      "state": "off",
+      "attributes": {
+        "icon": "mdi:swap-horizontal",
+        "friendly_name": "Living Room Crossfade"
+      },
+      "last_changed": "2022-07-17T11:40:51.419792+01:00",
+      "last_updated": "2022-07-17T11:40:51.419792+01:00",
+      "context": {
+        "id": "01G85VY86V4HWDWDA258E0X6M3"
+      }
+    },
+    "binary_sensor.bedroom_microphone": {
+      "entity_id": "binary_sensor.bedroom_microphone",
+      "state": "on",
+      "attributes": {
+        "icon": "mdi:microphone",
+        "friendly_name": "Bedroom Microphone"
+      },
+      "last_changed": "2022-06-27T07:33:07.380731+01:00",
+      "last_updated": "2022-06-27T07:33:07.380731+01:00",
+      "context": {
+        "id": "01G6HXT8HMR9YHAM3KZZPQJMGD"
+      }
+    },
+    "media_player.bedroom": {
+      "entity_id": "media_player.bedroom",
+      "state": "paused",
+      "attributes": {
+        "group_members": [
+          "media_player.bedroom"
+        ],
+        "volume_level": 0.15,
+        "is_volume_muted": false,
+        "media_content_id": "hls-radio://https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high_secure/cfs/bbc_radio_fourfm.m3u8",
+        "media_content_type": "music",
+        "media_title": " ",
+        "media_channel": " ",
+        "shuffle": false,
+        "repeat": "off",
+        "queue_position": 1,
+        "queue_size": 1,
+        "friendly_name": "Bedroom",
+        "supported_features": 981567
+      },
+      "last_changed": "2022-07-09T18:12:38.78928+01:00",
+      "last_updated": "2022-07-09T18:12:38.78928+01:00",
+      "context": {
+        "id": "01G7HZ5WM58Y1RV6BSYZM7M4AT"
+      }
+    },
+    "number.bedroom_bass": {
+      "entity_id": "number.bedroom_bass",
+      "state": "0",
+      "attributes": {
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "mode": "auto",
+        "friendly_name": "Bedroom Bass"
+      },
+      "last_changed": "2022-06-08T18:19:00.968234+01:00",
+      "last_updated": "2022-06-08T18:19:00.968234+01:00",
+      "context": {
+        "id": "01G52578V8W7X6CSZSPK931Y9Y"
+      }
+    },
+    "number.bedroom_treble": {
+      "entity_id": "number.bedroom_treble",
+      "state": "0",
+      "attributes": {
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "mode": "auto",
+        "friendly_name": "Bedroom Treble"
+      },
+      "last_changed": "2022-06-08T18:19:00.96927+01:00",
+      "last_updated": "2022-06-08T18:19:00.96927+01:00",
+      "context": {
+        "id": "01G52578V9CEG8K393VZA7WMY1"
+      }
+    },
+    "switch.sonos_bedroom_crossfade": {
+      "entity_id": "switch.sonos_bedroom_crossfade",
+      "state": "off",
+      "attributes": {
+        "icon": "mdi:swap-horizontal",
+        "friendly_name": "Bedroom Crossfade"
+      },
+      "last_changed": "2022-06-08T18:19:01.082973+01:00",
+      "last_updated": "2022-06-08T18:19:01.082973+01:00",
+      "context": {
+        "id": "01G52578YTRPWF465R1XWYGY6V"
+      }
+    },
+    "media_player.kitchen": {
+      "entity_id": "media_player.kitchen",
+      "state": "paused",
+      "attributes": {
+        "group_members": [
+          "media_player.kitchen"
+        ],
+        "volume_level": 0.34,
+        "is_volume_muted": false,
+        "media_content_id": "x-sonos-vli:RINCON_B8E9375E047201400:2,spotify:751d20da9b60b19eb92f1a63560513d4",
+        "media_content_type": "music",
+        "source": "Spotify Connect",
+        "shuffle": false,
+        "repeat": "off",
+        "queue_position": 1,
+        "queue_size": 1,
+        "friendly_name": "Kitchen",
+        "supported_features": 981567
+      },
+      "last_changed": "2022-07-18T19:08:10.714475+01:00",
+      "last_updated": "2022-07-18T19:48:25.128256+01:00",
+      "context": {
+        "id": "01G89A7Q98HSW3KDYBVW0B08Q0"
+      }
+    },
+    "number.kitchen_bass": {
+      "entity_id": "number.kitchen_bass",
+      "state": "0",
+      "attributes": {
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "mode": "auto",
+        "friendly_name": "Kitchen Bass"
+      },
+      "last_changed": "2022-06-08T18:19:01.508946+01:00",
+      "last_updated": "2022-06-08T18:19:01.508946+01:00",
+      "context": {
+        "id": "01G52579C4CYN90YSRZC5Q3Z9F"
+      }
+    },
+    "number.kitchen_treble": {
+      "entity_id": "number.kitchen_treble",
+      "state": "0",
+      "attributes": {
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "mode": "auto",
+        "friendly_name": "Kitchen Treble"
+      },
+      "last_changed": "2022-06-08T18:19:01.510392+01:00",
+      "last_updated": "2022-06-08T18:19:01.510392+01:00",
+      "context": {
+        "id": "01G52579C66P2SX298QJEPXT1H"
+      }
+    },
+    "switch.sonos_kitchen_crossfade": {
+      "entity_id": "switch.sonos_kitchen_crossfade",
+      "state": "off",
+      "attributes": {
+        "icon": "mdi:swap-horizontal",
+        "friendly_name": "Kitchen Crossfade"
+      },
+      "last_changed": "2022-06-08T18:19:01.537889+01:00",
+      "last_updated": "2022-06-08T18:19:01.537889+01:00",
+      "context": {
+        "id": "01G52579D1VE608Z1H8BGV2VDT"
+      }
+    },
+    "media_player.str_dn1050_bf66bc": {
+      "entity_id": "media_player.str_dn1050_bf66bc",
+      "state": "idle",
+      "attributes": {
+        "sound_mode_list": [
+          "FactoryDefaults",
+          "InstallationDefaults"
+        ],
+        "volume_level": 0.32,
+        "is_volume_muted": false,
+        "media_content_id": "",
+        "media_duration": 0,
+        "media_track": 0,
+        "shuffle": false,
+        "repeat": "off",
+        "friendly_name": "STR-DN1050 BF66BC",
+        "supported_features": 492044
+      },
+      "last_changed": "2022-07-18T20:35:50.692053+01:00",
+      "last_updated": "2022-07-18T21:57:32.698122+01:00",
+      "context": {
+        "id": "01G89HM58TJH4Y6P4JVDBR2968"
+      }
+    },
+    "binary_sensor.updater": {
+      "entity_id": "binary_sensor.updater",
+      "state": "unavailable",
+      "attributes": {
+        "restored": true,
+        "device_class": "update",
+        "friendly_name": "Updater",
+        "supported_features": 0
+      },
+      "last_changed": "2022-06-08T18:19:05.334137+01:00",
+      "last_updated": "2022-06-08T18:19:05.334137+01:00",
+      "context": {
+        "id": "01G5257D3PEZ2X2B37X3DREHGB"
+      }
+    },
+    "binary_sensor.backups_stale": {
+      "entity_id": "binary_sensor.backups_stale",
+      "state": "off",
+      "attributes": {
+        "friendly_name": "Backups Stale",
+        "device_class": "problem"
+      },
+      "last_changed": "2022-06-08T18:21:09.945414+01:00",
+      "last_updated": "2022-06-08T18:21:09.945414+01:00",
+      "context": {
+        "id": "01G525B6SSQW346BN800BZK48E",
+        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+      }
+    },
+    "sensor.backup_state": {
+      "entity_id": "sensor.backup_state",
+      "state": "backed_up",
+      "attributes": {
+        "friendly_name": "Backup State",
+        "last_backup": "2022-07-17T03:07:04.416698+01:00",
+        "next_backup": "2022-07-20T03:07:04.416698+01:00",
+        "last_uploaded": "2022-07-17T03:07:04.416698+01:00",
+        "backups_in_google_drive": 4,
+        "backups_in_home_assistant": 4,
+        "size_in_google_drive": "73.6 MB",
+        "size_in_home_assistant": "73.6 MB",
+        "backups": [
+          {
+            "name": "addon_core_ssh_9.4.0",
+            "date": "2022-07-08T03:07:00.988863+01:00",
+            "state": "Backed Up",
+            "size": "20.5 kB",
+            "slug": "13c1156f"
+          },
+          {
+            "name": "Full Backup 2022-07-11 03:07:01",
+            "date": "2022-07-11T03:07:01.932996+01:00",
+            "state": "Backed Up",
+            "size": "25.9 MB",
+            "slug": "ef93ce0e"
+          },
+          {
+            "name": "Full Backup 2022-07-14 03:07:02",
+            "date": "2022-07-14T03:07:03.313226+01:00",
+            "state": "Backed Up",
+            "size": "33.8 MB",
+            "slug": "0ea4e4a2"
+          },
+          {
+            "name": "Full Backup 2022-07-17 03:07:03",
+            "date": "2022-07-17T03:07:04.416698+01:00",
+            "state": "Backed Up",
+            "size": "13.9 MB",
+            "slug": "b4711c73"
+          }
+        ]
+      },
+      "last_changed": "2022-06-08T18:21:09.98269+01:00",
+      "last_updated": "2022-07-17T03:07:40.413339+01:00",
+      "context": {
+        "id": "01G84YJJVXSAMFQDNB4H0964BA",
+        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+      }
+    },
+    "persistent_notification.sonos_subscriptions_failed": {
+      "entity_id": "persistent_notification.sonos_subscriptions_failed",
+      "state": "notifying",
+      "attributes": {
+        "message": "Living Room cannot reach None, falling back to polling, functionality may be limited.\n\nSee <a href=\"https://www.home-assistant.io/integrations/sonos/#network-requirements\">Sonos documentation</a> for more details.",
+        "title": "Sonos networking issue",
+        "friendly_name": "Sonos networking issue"
+      },
+      "last_changed": "2022-07-17T11:41:01.424087+01:00",
+      "last_updated": "2022-07-17T11:41:01.424087+01:00",
+      "context": {
+        "id": "01G85VYHZGGWRC0GDNK964GJE5"
+      }
+    }
+  }
+}
