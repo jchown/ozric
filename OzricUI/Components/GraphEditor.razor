@@ -142,6 +142,7 @@
         nodeMappings.Clear();
         edgeMappings.Clear();
 
+        double minX = 0, minY = 0;
         int x = 0, y = 0, w = 160, h = 120, cols = 6; 
         
         foreach (var node in Graph.nodes.Values)
@@ -157,8 +158,13 @@
                 return point;
             }).ToPoint();
 
+            minX = Math.Min(minX, position.X);
+            minY = Math.Min(minY, position.Y);
+
             AddNode(node, position);
         }
+
+        diagram.SetPan(-(minX - 10), -(minY - 10));
 
         foreach (var edge in Graph.edges.Values)
         {

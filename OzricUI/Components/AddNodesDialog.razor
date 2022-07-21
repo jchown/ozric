@@ -20,9 +20,15 @@
 
             @foreach (var choice in Choices)
             {
-                <div hidden="@IsHidden(choice)">
-                    <MudButton StartIcon="@choice.Icon" OnClick="@SelectedChoice(choice)">@choice.Name</MudButton>
-                </div>
+                if (IsVisible(choice))
+                {
+                    <div class="d-block py-1">
+                        <MudButton Variant="Variant.Filled" OnClick="@SelectedChoice(choice)">
+                            <span class="iconify" data-icon="@choice.Icon"/>
+                            <span class="px-2">@choice.Name</span>
+                        </MudButton>
+                    </div>
+                }
             }
 
         </MudContainer>
@@ -56,11 +62,6 @@
     private Task<IEnumerable<string>> DoSearch(string arg)
     {
         return Task.FromResult<IEnumerable<string>>(new List<string>());
-    }
-
-    private bool IsHidden(AddNodeChoice choice)
-    {
-        return !IsVisible(choice);
     }
 
     private bool IsVisible(AddNodeChoice choice)
