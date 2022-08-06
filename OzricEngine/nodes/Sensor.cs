@@ -13,7 +13,7 @@ namespace OzricEngine.logic
 
         public const string OUTPUT_NAME = "activity";
 
-        public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new(OUTPUT_NAME, ValueType.OnOff) })
+        public Sensor(string id, string entityID) : base(id, null, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) })
         {
             this.entityID = entityID;
         }
@@ -34,7 +34,7 @@ namespace OzricEngine.logic
         {
             var engine = context.engine;
             var device = engine.home.GetEntityState(entityID) ?? throw new Exception($"Unknown device {entityID}");
-            var value = new OnOff(device.state != "off");
+            var value = new Boolean(device.state != "off");
 
             Log(LogLevel.Debug, "activity = {0}", value);
             SetOutputValue("activity", value);

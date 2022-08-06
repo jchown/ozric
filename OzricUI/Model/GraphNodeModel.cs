@@ -22,7 +22,7 @@ public abstract class GraphNodeModel: NodeModel
                 AddPort(new InputColor(name, this));
                 break;
             }
-            case ValueType.OnOff:
+            case ValueType.Boolean:
             {
                 AddPort(new InputOnOff(name, this));
                 break;
@@ -43,7 +43,7 @@ public abstract class GraphNodeModel: NodeModel
                 AddPort(new OutputColor(name, this));
                 break;
             }
-            case ValueType.OnOff:
+            case ValueType.Boolean:
             {
                 AddPort(new OutputOnOff(name, this));
                 break;

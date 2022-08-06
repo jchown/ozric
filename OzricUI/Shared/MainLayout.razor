@@ -7,6 +7,7 @@
 @using OzricUI.Model
 @using Size = MudBlazor.Size
 @using Edge = MudBlazor.Edge
+@using Blazor.Diagrams.Core.Models.Base
 @inject IDialogService DialogService
 @inherits LayoutComponentBase
 @inject DataService Data
@@ -25,21 +26,25 @@
  
         <MudSpacer />
 
-        <MudTooltip Text="Add" Arrow="true" Placement="Placement.Top">
-            <MudIconButton Icon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickAdd" Disabled="@(!IsEditing)" hidden="@(!IsEditing)" />
-        </MudTooltip>
+        <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickAdd" Disabled="@(!IsEditing)" hidden="@(!IsEditing)">
+            Add
+        </MudButton>
 
-        <MudTooltip Text="Delete" Arrow="true" Placement="Placement.Top">
-            <MudIconButton Icon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDel" Disabled="@(!HasSelection)" hidden="@(!IsEditing)" />
-        </MudTooltip>
+        <MudButton StartIcon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDel" Disabled="@(!HasSelection)" hidden="@(!IsEditing)">
+            Delete
+        </MudButton>
 
-        <MudSpacer></MudSpacer>
+        <MudButton StartIcon="@Icons.Material.Filled.Info" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickInfo" Disabled="@(SelectedNodes.Count != 1)">
+            Info
+        </MudButton>
+
+        <MudSpacer />
         
         <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickEdit" Disabled="@IsEditing" Hidden="@IsEditing">
             Edit
         </MudButton>
         
-        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickCancel" Disabled="@(Saving || !IsEditing)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickCancel" Disabled="@(Saving || !IsEditing)" hidden="@(!IsEditing)"> 
             Cancel
         </MudButton>
                
@@ -65,37 +70,41 @@
         </MudTooltip>
         
     </MudAppBar>
-    <MudDrawer @bind-Open="@_drawerOpen">
+    
+    <MudDrawer @bind-Open="@_settingsDrawerOpen">
         <NavMenu/>
     </MudDrawer>
+    
     <MudMainContent>
         
         <div style="height: 100%">
-        @if (Graph == null || GraphLayout == null)
-        {
-            <MudPaper Class="pa-16 ma-2" Outlined="true">
-                <MudText>Loading...&#160;&#160;&#160;<MudProgressCircular Size="Size.Small" Indeterminate="true"/></MudText>
-            </MudPaper>
-        }
-        else
-        {
-            <GraphEditor Graph="@Graph" GraphLayout="@GraphLayout" GraphEditState="@GraphEditState" />
-        }
+            @if (Graph == null || GraphLayout == null)
+            {
+                <MudPaper Class="pa-16 ma-2" Outlined="true">
+                    <MudText>Loading...&#160;&#160;&#160;<MudProgressCircular Size="Size.Small" Indeterminate="true"/></MudText>
+                </MudPaper>
+            }
+            else
+            {
+                <GraphEditor Graph="@Graph" GraphLayout="@GraphLayout" GraphEditState="@GraphEditState" />
+            }
         </div>
     </MudMainContent>
+
 </MudLayout>
 
 @code {
-    bool _drawerOpen = true;
+    bool _settingsDrawerOpen = true;
     private bool _isDarkMode;
     private MudThemeProvider? _mudThemeProvider;
 
     private Graph Graph { get; set; }
     private GraphLayout GraphLayout { get; set; }
     private GraphEditState GraphEditState { get; set; } = new();
+    private List<KeyValuePair<SelectableModel, IGraphObject>> SelectedNodes { get; set; } = new();
 
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
-    private bool HasSelection => GraphEditState.Selected.Count > 0; 
+    private bool HasSelection => (SelectedNodes.Count > 0); 
 
     public bool IsEditing => GraphEditState.IsEditing;
     public bool IsChanged => GraphEditState.IsChanged;
@@ -104,7 +113,7 @@
 
     void DrawerToggle()
     {
-        _drawerOpen = !_drawerOpen;
+        _settingsDrawerOpen = !_settingsDrawerOpen;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -128,6 +137,7 @@
         Graph = EngineService.Graph;
         GraphLayout = await Data.GetGraphLayoutAsync();
         GraphEditState.OnChanged += OnGraphEditStateChanged;
+        GraphEditState.OnSelectionChanged += GraphSelectionChanged;
     }
 
     private void UnloadGraph()
@@ -155,11 +165,11 @@
             GraphEditState.OnCancel();
             return;
         }
-     
-        //  Tear down and rebuild. It would be nice to do something less brutal.
-        
+
+    //  Tear down and rebuild. It would be nice to do something less brutal.
+
         UnloadGraph();
-        
+
         _ = Task.Run(async () =>
         {
             await LoadGraph();
@@ -171,7 +181,7 @@
     {
         if (GraphLayout == null)
             throw new Exception();
-        
+
         GraphEditState.OnSaving();
         _ = Task.Run(async () =>
         {
@@ -202,37 +212,27 @@
     {
         GraphEditState.DoRedo();
     }
-    
+
     private async Task OnClickAdd()
     {
-        var options = new DialogOptions
-        {
-            CloseOnEscapeKey = true,
-            CloseButton = true,
-            Position = DialogPosition.TopCenter,
-            MaxWidth = MaxWidth.Medium,
-            FullWidth = true
-        };
-        
         var devices = EngineService.Home.states;
         var choices = devices.Select(device =>
         {
-            AddNodeChoice? choice = null;
-
             if (Graph.GetDevicesNode(device.Key) == null)
             {
                 if (device.Value.IsLight())
                 {
-                    choice = new AddNodeChoice(
+                    return new AddNodeChoice(
                         category: Category.Light,
                         name: device.Key,
                         icon: LightModel.ICON,
                         create: () => new Light(Graph.CreateNodeID("light"), device.Key),
                         once: true);
                 }
-                else if (device.Value.IsSensor())
+                
+                if (device.Value.IsSensor())
                 {
-                    choice = new AddNodeChoice(
+                    return new AddNodeChoice(
                         category: Category.MotionSensor,
                         name: device.Key,
                         icon: SensorModel.ICON,
@@ -241,16 +241,16 @@
                 }
             }
 
-            return choice;
+            return null;
         }).Where(choices => choices != null).ToList();
 
         choices.Add(new AddNodeChoice(
-            category: Category.Logic, 
-            name: "If Any - OR", 
-            icon: IfAnyModel.ICON, 
+            category: Category.Logic,
+            name: "If Any - OR",
+            icon: IfAnyModel.ICON,
             create: () => new IfAny(Graph.CreateNodeID("ifany-"), "input1", "input2"),
             once: false));
-        
+
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "If All - AND",
@@ -258,10 +258,12 @@
             create: () => new IfAny(Graph.CreateNodeID("ifall-"), "input1", "input2"),
             once: false));
 
-        var parameters = new DialogParameters();
-        parameters.Add("Choices", choices);
-        
-        var result = await DialogService.Show<AddNodesDialog>("Add Nodes", parameters, options).Result;
+        var parameters = new DialogParameters
+        {
+            { "Choices", choices }
+        };
+
+        var result = await DialogService.Show<AddNodesDialog>("Add Nodes", parameters, GetDialogOptions()).Result;
         if (result.Cancelled)
             return;
 
@@ -272,8 +274,67 @@
         GraphEditState.DoAdd(selected.Select(anc => anc.Create).ToList());
     }
 
-    private void OnClickDel()
+    private void GraphSelectionChanged(List<KeyValuePair<SelectableModel, IGraphObject>> nodes)
     {
+        SelectedNodes = nodes;
+        StateHasChanged();
+    }
+
+    private async Task OnClickInfo()
+    {
+        if (SelectedNodes.Count != 1)
+            return;
+
+        var (model, graph) = SelectedNodes[0];
+        var modelType = model.GetType();
         
+        if (IsClass<LightModel>(modelType))
+        {
+            var parameters = new DialogParameters
+            {
+                { "Model", model as LightModel },
+                { "Light", graph as Light }
+            };
+
+            await DialogService.Show<LightNodeDialog>("Light Node", parameters, GetDialogOptions()).Result;
+            return;
+        }
+        
+        if (IsClass<GraphNodeModel>(modelType))
+        {
+            var parameters = new DialogParameters
+            {
+                { "Model", model as GraphNodeModel },
+                { "Node", graph as Node }
+            };
+
+            await DialogService.Show<GraphNodeDialog>("Graph Node", parameters, GetDialogOptions()).Result;
+            return;
+        }
+
+        throw new InvalidOperationException();
+    }
+
+    private static DialogOptions GetDialogOptions()
+    {
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            Position = DialogPosition.TopCenter,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+        return options;
+    }
+
+    private static bool IsClass<T>(Type baseClass)
+    {
+        return baseClass == typeof(T) || baseClass.IsSubclassOf(typeof(T));
+    }
+
+    private Task OnClickDel()
+    {
+        return Task.CompletedTask;
     }
 }

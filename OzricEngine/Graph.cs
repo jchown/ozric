@@ -215,7 +215,7 @@ namespace OzricEngine
             return $"{prefix}{i}";
         }
 
-        public EntityNode GetDevicesNode(string entityID)
+        public EntityNode? GetDevicesNode(string entityID)
         {
             return nodes.Values.Select(node => node as EntityNode).FirstOrDefault(node => node?.entityID == entityID);
         }

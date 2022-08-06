@@ -30,8 +30,8 @@ namespace OzricEngine.logic
                     value = new ColorRGB(1, 1, 1, scalar.value);
                     return;
                 
-                case ValueType.OnOff:
-                    value = new OnOff(scalar.value > 0);
+                case ValueType.Boolean:
+                    value = new Boolean(scalar.value > 0);
                     return;
                 
                 default:
@@ -51,8 +51,8 @@ namespace OzricEngine.logic
                     value = color; 
                     return;
 
-                case ValueType.OnOff:
-                    value = new OnOff(color.brightness > 0);
+                case ValueType.Boolean:
+                    value = new Boolean(color.brightness > 0);
                     return;
                 
                 default:
@@ -60,20 +60,20 @@ namespace OzricEngine.logic
             }
         }
         
-        private void SetValue(OnOff onOff)
+        private void SetValue(Boolean boolean)
         {
             switch (type)
             {
                 case ValueType.Scalar:
-                    value = new Scalar(onOff.value ? 1 : 0);
+                    value = new Scalar(boolean.value ? 1 : 0);
                     return;
                 
                 case ValueType.Color: 
-                    value = new ColorRGB(1,1,1, onOff.value ? 1 : 0);
+                    value = new ColorRGB(1,1,1, boolean.value ? 1 : 0);
                     return;
                 
-                case ValueType.OnOff:
-                    value = onOff;
+                case ValueType.Boolean:
+                    value = boolean;
                     return;
                 
                 default:
@@ -107,7 +107,7 @@ namespace OzricEngine.logic
                     SetValue(Color);
                     return;
 
-                case OnOff onOff:
+                case Boolean onOff:
                     SetValue(onOff);
                     return;
 

@@ -5,7 +5,7 @@ namespace OzricEngine.logic
 {
     /// <summary>
     /// Base class for all "value" types that are used in the inputs & outputs of [OzricEngine.node.Node]s.
-    /// These classes must be immutable & JSON convertable.
+    /// These classes must be immutable & JSON convertible.
     /// </summary>
     public abstract class Value
     {

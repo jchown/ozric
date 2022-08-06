@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using OzricEngine.logic;
+using Boolean = OzricEngine.logic.Boolean;
 using ValueType = OzricEngine.logic.ValueType;
 
 namespace OzricEngine
@@ -14,7 +15,7 @@ namespace OzricEngine
     {
         static readonly Dictionary<ValueType, Json.CreateObject<Value>> creators = new Dictionary<ValueType, Json.CreateObject<Value>>
         {
-            { ValueType.OnOff, OnOff.ReadFromJSON },
+            { ValueType.Boolean, Boolean.ReadFromJSON },
             { ValueType.Mode, Mode.ReadFromJSON },
             { ValueType.Scalar, Scalar.ReadFromJSON },
             { ValueType.Color, ColorValue.ReadFromJSON }

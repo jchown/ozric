@@ -3,17 +3,17 @@ using System.Text.Json;
 
 namespace OzricEngine.logic
 {
-    public sealed class OnOff: Value, IEquatable<OnOff>
+    public sealed class Boolean: Value, IEquatable<Boolean>
     {
-        public override ValueType ValueType => ValueType.OnOff;
+        public override ValueType ValueType => ValueType.Boolean;
 
         public bool value { get; }
 
-        public OnOff()
+        public Boolean()
         {
         }
 
-        public OnOff(bool value)
+        public Boolean(bool value)
         {
             this.value = value;
         }
@@ -28,15 +28,15 @@ namespace OzricEngine.logic
             if (!reader.Read() || reader.GetString() != "value" || !reader.Read())
                 throw new Exception();
             
-            return new OnOff(reader.GetBoolean());
+            return new Boolean(reader.GetBoolean());
         }
 
         public override string ToString()
         {
-            return value ? "On" : "Off";
+            return value ? "True" : "False";
         }
 
-        public static bool operator ==(OnOff lhs, OnOff rhs)
+        public static bool operator ==(Boolean lhs, Boolean rhs)
         {
             if (lhs is null)
                 return rhs is null;
@@ -44,16 +44,16 @@ namespace OzricEngine.logic
             return lhs.Equals(rhs);
         }
         
-        public static bool operator !=(OnOff lhs, OnOff rhs) => !(lhs == rhs);
+        public static bool operator !=(Boolean lhs, Boolean rhs) => !(lhs == rhs);
         
-        public bool Equals(OnOff other)
+        public bool Equals(Boolean other)
         {
             return value == other.value;
         }
 
         public override bool Equals(object obj)
         {
-            return ReferenceEquals(this, obj) || obj is OnOff other && Equals(other);
+            return ReferenceEquals(this, obj) || obj is Boolean other && Equals(other);
         }
 
         public override int GetHashCode()

@@ -13,6 +13,7 @@ namespace OzricEngine.logic
         ModeSwitch, 
         Sensor, 
         SkyBrightness,
-        Switch,
+        BooleanChoice,
+        Switch
     }
 }

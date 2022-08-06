@@ -108,10 +108,10 @@ namespace OzricEngine.logic
             return output as ColorValue ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(ColorValue)}");
         }
 
-        public OnOff GetOutputOnOff(string name)
+        public Boolean GetOutputOnOff(string name)
         {
             var output = GetOutputValue(name);
-            return output as OnOff ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(OnOff)}");
+            return output as Boolean ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(Boolean)}");
         }
 
         #region Comparison
@@ -135,10 +135,5 @@ namespace OzricEngine.logic
             return HashCode.Combine((int)nodeType, id, inputs, outputs);
         }
         #endregion
-    }
-
-    public interface IGraphObject
-    {
-        public string id { get; }
     }
 }

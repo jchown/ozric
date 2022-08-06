@@ -13,7 +13,7 @@ namespace OzricEngineTests
         {
             assertSerializeRoundTripWorks(new Scalar(3.14159f));
             
-            assertSerializeRoundTripWorks(new OnOff(true));
+            assertSerializeRoundTripWorks(new Boolean(true));
             
             assertSerializeRoundTripWorks(new Mode("weekend"));
             

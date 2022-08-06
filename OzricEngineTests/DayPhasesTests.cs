@@ -11,7 +11,7 @@ namespace OzricEngine.logic
         public void canSplitDayInToMorningAndEvening()
         {
             var node = new DayPhases("am_pm");
-            node.outputs.Add(new Pin("morning", ValueType.OnOff));
+            node.outputs.Add(new Pin("morning", ValueType.Boolean));
             node.AddPhase(new DayPhases.PhaseStart(new Mode("am"), DayPhases.SunPhase.Midnight));
             node.AddPhase(new DayPhases.PhaseStart(new Mode("pm"), DayPhases.SunPhase.Noon));
 

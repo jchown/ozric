@@ -11,7 +11,7 @@ namespace OzricEngine.logic
         
         public override NodeType nodeType => NodeType.IfAll;
 
-        public IfAll(string id): base(id, ValueType.OnOff, new List<Pin> { new(OUTPUT_NAME, ValueType.OnOff) })
+        public IfAll(string id): base(id, ValueType.Boolean, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) })
         {
         }
             
@@ -30,10 +30,10 @@ namespace OzricEngine.logic
         private void UpdateValue(Engine engine)
         {
             var on = true;
-            foreach (var onOff in GetInputValues<OnOff>())
+            foreach (var onOff in GetInputValues<Boolean>())
                 on &= onOff.value;
 
-            var value = new OnOff(on);
+            var value = new Boolean(on);
             Log(LogLevel.Debug, "output = {0}", value);
             SetOutputValue("output", value);
         }

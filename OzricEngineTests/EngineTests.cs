@@ -5,6 +5,7 @@ using OzricEngine;
 using OzricEngine.ext;
 using OzricEngine.logic;
 using Xunit;
+using Boolean = OzricEngine.logic.Boolean;
 using ValueType = OzricEngine.logic.ValueType;
 
 namespace OzricEngineTests
@@ -122,11 +123,11 @@ namespace OzricEngineTests
             engine.graph.AddNode(sensor);
 
             await sensor.OnInit(context);
-            Assert.Equal(new OnOff(false), sensor.GetOutputOnOff("activity"));
+            Assert.Equal(new Boolean(false), sensor.GetOutputOnOff("activity"));
 
             engine.ProcessMockEvent("sensor_1_on");
             await sensor.OnUpdate(context);
-            Assert.Equal(new OnOff(true), sensor.GetOutputOnOff("activity"));
+            Assert.Equal(new Boolean(true), sensor.GetOutputOnOff("activity"));
         }
 
         class VerboseObject : OzricObject

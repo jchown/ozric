@@ -18,7 +18,7 @@ public class DataService
         _logger = logger;
     }
 
-    public string? Debug { get; set; } = "kitchen-light-2";
+    public string? Debug { get; set; } = null;//"kitchen-light-2";
     
     public async Task<GraphLayout> GetGraphLayoutAsync()
     {

@@ -17,6 +17,13 @@ public class Light: EntityNode
 
     [JsonIgnore]
     private int secondsToAllowOverrideByOthers { get; }
+    
+    public ColourSwitchMode? colourSwitchMode { get; set; }
+
+    public enum ColourSwitchMode
+    {
+        Automatic, Fast, TwoPhase
+    }
 
     public Light(string id, string entityID) : base(id, entityID, new List<Pin> { new(INPUT_NAME, ValueType.Color) }, null)
     {
@@ -206,43 +213,56 @@ public class Light: EntityNode
             {
                 if (colorKey == null || colorValue == null)
                     throw new Exception("Internal error: No color chosen");
-                    
-                // Cheap lights (in my case model tuyatec_zn9wyqtr_rh3040) don't like
-                // changing brightness AND color mode at the same time
-                    
-                if (on && brightness == attributes.brightness || attributes.color_mode != GetColorMode(colorKey))
-                {
-                    //  Just change color
-                        
-                    callServices.service_data = new Attributes
-                    {
-                        { colorKey, colorValue }
-                    };
 
-                    Log(LogLevel.Info, "call service {0}, {1}={2}", callServices.service, colorKey, colorValue);
-                }
-                else if (on && brightness != attributes.brightness && attributes.color_mode == GetColorMode(colorKey))
+                if (GetColourSwitchMode() == ColourSwitchMode.Fast)
                 {
-                    //  Just change brightness
-                        
+                    // Don't care about the current state, switch.
+                    
                     callServices.service_data = new Attributes
                     {
                         { "brightness", brightness },
+                        { colorKey, colorValue }
                     };
-
-                    Log(LogLevel.Info, "call service {0}, brightness {1}", callServices.service, brightness);
                 }
                 else
                 {
-                    //  Already in right color mode, so safe to change everything
-                        
-                    callServices.service_data = new Attributes
-                    {
-                        { "brightness", brightness },
-                        { colorKey, colorValue }
-                    };
+                    // Cheap lights (in my case, model tuyatec_zn9wyqtr_rh3040) don't like
+                    // changing brightness AND color mode at the same time
 
-                    Log(LogLevel.Info, "call service {0}, {1}={2}, brightness {3}", callServices.service, colorKey, colorValue, brightness);
+                    if (on && brightness == attributes.brightness || attributes.color_mode != GetColorMode(colorKey))
+                    {
+                        //  Just change color
+
+                        callServices.service_data = new Attributes
+                        {
+                            { colorKey, colorValue }
+                        };
+
+                        Log(LogLevel.Info, "call service {0}, {1}={2}", callServices.service, colorKey, colorValue);
+                    }
+                    else if (on && brightness != attributes.brightness && attributes.color_mode == GetColorMode(colorKey))
+                    {
+                        //  Just change brightness
+
+                        callServices.service_data = new Attributes
+                        {
+                            { "brightness", brightness },
+                        };
+
+                        Log(LogLevel.Info, "call service {0}, brightness {1}", callServices.service, brightness);
+                    }
+                    else
+                    {
+                        //  Already in right color mode, so safe to change everything
+
+                        callServices.service_data = new Attributes
+                        {
+                            { "brightness", brightness },
+                            { colorKey, colorValue }
+                        };
+
+                        Log(LogLevel.Info, "call service {0}, {1}={2}, brightness {3}", callServices.service, colorKey, colorValue, brightness);
+                    }
                 }
             }
             else
@@ -295,6 +315,16 @@ public class Light: EntityNode
                 }*/
             });
         }
+    }
+
+    public ColourSwitchMode GetColourSwitchMode()
+    {
+        var mode = colourSwitchMode ?? ColourSwitchMode.Automatic;
+        
+        if (mode == ColourSwitchMode.Automatic)
+            mode = (entityID.ToLowerInvariant().Contains("hue") ? ColourSwitchMode.Fast : ColourSwitchMode.TwoPhase);
+
+        return mode;
     }
 
     private static string GetColorMode(string colorKey)

@@ -5,6 +5,6 @@ namespace OzricEngine.logic
     [JsonConverter(typeof(JsonStringEnumConverter))] 
     public enum ValueType
     {
-        Scalar, OnOff, Color, Mode
+        Scalar, Boolean, Color, Mode
     }
 }

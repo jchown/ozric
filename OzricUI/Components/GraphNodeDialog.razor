@@ -1,0 +1,111 @@
+@using OzricEngine.nodes
+@using OzricUI.Model
+<MudDialog>
+    <DialogContent>
+
+    <MudChipSet Filter="true" SelectedChipsChanged="OnSelectionChanged">
+            
+        <MudChip Text="All" Default="true"></MudChip>
+        <MudChip Text="Sensor" Value="Category.MotionSensor" Icon="@SensorModel.ICON" ></MudChip>
+        <MudChip Text="Light" Value="Category.Light" Icon="@LightModel.ICON" ></MudChip>
+        <MudChip Text="Logic" Value="Category.Logic" Icon="mdi:gate-xnor"></MudChip>
+
+    </MudChipSet>
+
+    <MudAutocomplete T="string" Label="Search" @bind-Value="Search" SearchFunc="@DoSearch"
+                     ResetValueOnEmptyText="true"
+                     CoerceText="true" CoerceValue="true"/>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll">
+
+            @foreach (var choice in Choices)
+            {
+                if (IsVisible(choice))
+                {
+                    <div class="d-block py-1">
+                        <MudButton Variant="Variant.Filled" OnClick="@SelectedChoice(choice)">
+                            <span class="iconify" data-icon="@choice.Icon"/>
+                            <span class="px-2">@choice.Name</span>
+                        </MudButton>
+                    </div>
+                }
+            }
+
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    [Parameter]
+    public List<GraphNodeModel> Choices { get; set; } = new();
+
+    private List<Category> SelectedCategories { get; set; } = new();
+
+    private string Search { get; set; } = "";
+
+    private bool ShowMotionSensors => SelectedCategories.Contains(Category.MotionSensor);
+    private bool ShowLights => SelectedCategories.Contains(Category.Light);
+    private bool ShowLogic => SelectedCategories.Contains(Category.Logic);
+
+    void Cancel() => MudDialog.Cancel();
+
+    private Task<IEnumerable<string>> DoSearch(string arg)
+    {
+        return Task.FromResult<IEnumerable<string>>(new List<string>());
+    }
+
+    private bool IsVisible(AddNodeChoice choice)
+    {
+        if (!string.IsNullOrWhiteSpace(Search))
+        {
+            var terms = Search.Split(" ", StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+            if (!terms.All(term => choice.Name.Contains(term)))
+                return false;
+        }
+
+        switch (choice.Category)
+        {
+            case Category.Light:
+                return ShowLights;
+
+            case Category.MotionSensor:
+                return ShowMotionSensors;
+
+            case Category.Logic:
+                return ShowLogic;
+        }
+
+        throw new ArgumentOutOfRangeException();
+    }
+
+    private void OnSelectionChanged(MudChip[] selection)
+    {
+        if (selection[0].Value is MudChip)
+        {
+            //  All 
+
+            SelectedCategories = new() { Category.Light, Category.Logic, Category.MotionSensor };
+        }
+        else
+        {
+            SelectedCategories = new() { (Category)(selection[0].Value) };
+        }
+        
+        StateHasChanged();
+    }
+
+    private EventCallback SelectedChoice(AddNodeChoice choice)
+    {
+        return EventCallback.Empty;
+    }
+}

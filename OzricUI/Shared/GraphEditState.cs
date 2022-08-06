@@ -20,6 +20,7 @@ public class GraphEditState
     public event Action? OnDoRedo;
     public event Action? OnDoSetCheckpoint;
     public event Action<List<Func<Node>>>? OnDoAdd; 
+    public event Action<List<KeyValuePair<SelectableModel, IGraphObject>>>? OnSelectionChanged; 
 
     public EditMode Mode { get; private set; } = EditMode.View;
     
@@ -27,8 +28,6 @@ public class GraphEditState
     public bool IsChanged { get; private set; }
     public bool CanUndo { get; private set; }
     public bool CanRedo { get; private set; }
-
-    public List<SelectableModel> Selected { get; private set; } = new();
 
     public void OnEdit()
     {
@@ -76,9 +75,8 @@ public class GraphEditState
         OnChanged?.Invoke();
     }
     
-    public void SetSelected(List<SelectableModel> models)
+    public void SetSelected(List<KeyValuePair<SelectableModel, IGraphObject>> models)
     {
-        Selected = models;
-        OnChanged?.Invoke();
+        OnSelectionChanged?.Invoke(models);
     }
 }

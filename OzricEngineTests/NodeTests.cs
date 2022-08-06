@@ -29,15 +29,15 @@ namespace OzricEngineTests
             assertSerializeRoundTripWorks(new ModeSwitch("bot-mode"));
             assertSerializeRoundTripWorks(new Sensor("Main Sensor", "sensor-01"));
             assertSerializeRoundTripWorks(new SkyBrightness());
-            assertSerializeRoundTripWorks(new Switch("bot-colour", ValueType.Color));
+            assertSerializeRoundTripWorks(new BooleanChoice("bot-colour", ValueType.Color));
         }
                 
         [Fact]
         public void serializeRoundTripWorksWithInputs1()
         {
             var ifAll = new IfAll("all-right");
-            ifAll.inputs.Add(new Pin("input-1", ValueType.OnOff));
-            ifAll.inputs.Add(new Pin("input-2", ValueType.OnOff));
+            ifAll.inputs.Add(new Pin("input-1", ValueType.Boolean));
+            ifAll.inputs.Add(new Pin("input-2", ValueType.Boolean));
             assertSerializeRoundTripWorks(ifAll);
         }
                 
@@ -45,8 +45,8 @@ namespace OzricEngineTests
         public void serializeRoundTripWorksWithInputs2()
         {
             var ifAny = new IfAny("any-left");
-            ifAny.inputs.Add(new Pin("input-1", ValueType.OnOff));
-            ifAny.inputs.Add(new Pin("input-2", ValueType.OnOff));
+            ifAny.inputs.Add(new Pin("input-1", ValueType.Boolean));
+            ifAny.inputs.Add(new Pin("input-2", ValueType.Boolean));
             assertSerializeRoundTripWorks(ifAny);
         }
 
