@@ -24,7 +24,7 @@ public abstract class GraphNodeModel: NodeModel
             }
             case ValueType.Boolean:
             {
-                AddPort(new InputOnOff(name, this));
+                AddPort(new InputBoolean(name, this));
                 break;
             }
             default:
@@ -45,7 +45,7 @@ public abstract class GraphNodeModel: NodeModel
             }
             case ValueType.Boolean:
             {
-                AddPort(new OutputOnOff(name, this));
+                AddPort(new OutputBoolean(name, this));
                 break;
             }
             default:

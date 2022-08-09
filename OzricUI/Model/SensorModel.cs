@@ -9,7 +9,7 @@ public class SensorModel: GraphNodeModel
 
     public SensorModel(Sensor sensor, Point? point = null): base(sensor, point)
     {
-        AddPort(new OutputOnOff(Sensor.OUTPUT_NAME, this));
+        AddPort(new OutputBoolean(Sensor.OUTPUT_NAME, this));
     }
     
     public override string Icon => ICON;

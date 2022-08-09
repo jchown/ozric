@@ -5,13 +5,12 @@ namespace OzricUI.Model;
 
 public class SwitchModel: GraphNodeModel
 {
-    public SwitchModel(BooleanChoice s, Point? point = null): base(s, point)
+    public const string ICON = "mdi:electric-switch";
+
+    public SwitchModel(Switch @switch, Point? point = null): base(@switch, point)
     {
-        AddPort(new InputOnOff(BooleanChoice.INPUT_NAME_SWITCH, this));
-        AddInput(s.valueType, BooleanChoice.INPUT_NAME_ON);
-        AddInput(s.valueType, BooleanChoice.INPUT_NAME_OFF);
-        AddOutput(s.valueType, BooleanChoice.OUTPUT_NAME);
+        AddPort(new InputBoolean(Switch.INPUT_NAME, this));
     }
     
-    public override string Icon => "mdi:switch";
+    public override string Icon => ICON;
 }

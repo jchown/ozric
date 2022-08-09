@@ -215,34 +215,20 @@
 
     private async Task OnClickAdd()
     {
-        var devices = EngineService.Home.states;
-        var choices = devices.Select(device =>
-        {
-            if (Graph.GetDevicesNode(device.Key) == null)
+        var choices = EngineService.Home.states
+            .Where(device => Graph.GetDevicesNode(device.Key) == null && CategoryModelMappings.Exists(device.Value.GetCategory()))
+            .Select(device =>
             {
-                if (device.Value.IsLight())
-                {
-                    return new AddNodeChoice(
-                        category: Category.Light,
-                        name: device.Key,
-                        icon: LightModel.ICON,
-                        create: () => new Light(Graph.CreateNodeID("light"), device.Key),
-                        once: true);
-                }
-                
-                if (device.Value.IsSensor())
-                {
-                    return new AddNodeChoice(
-                        category: Category.MotionSensor,
-                        name: device.Key,
-                        icon: SensorModel.ICON,
-                        create: () => new Sensor(Graph.CreateNodeID("sensor"), device.Key),
-                        once: true);
-                }
-            }
-
-            return null;
-        }).Where(choices => choices != null).ToList();
+                var category = device.Value.GetCategory();
+                var type = CategoryModelMappings.Get(category);
+                return new AddNodeChoice(
+                    category: category,
+                    name: device.Key,
+                    icon: LightModel.ICON,
+                    create: () => (Node) Activator.CreateInstance(type, Graph.CreateNodeID(category.ToString().ToLowerInvariant()), device.Key)!,
+                    once: true);
+            })
+            .ToList();
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
@@ -260,18 +246,16 @@
 
         var parameters = new DialogParameters
         {
-            { "Choices", choices }
+            { "Choices", choices },
+            { "OnAdd", AddNode }
         };
 
-        var result = await DialogService.Show<AddNodesDialog>("Add Nodes", parameters, GetDialogOptions()).Result;
-        if (result.Cancelled)
-            return;
+        await DialogService.Show<AddNodesDialog>("Add Nodes", parameters, GetDialogOptions()).Result;
+    }
 
-        var selected = result.Data as List<AddNodeChoice>;
-        if (selected == null)
-            return;
-
-        GraphEditState.DoAdd(selected.Select(anc => anc.Create).ToList());
+    private void AddNode(Node node)
+    {
+        GraphEditState.DoAdd(node);
     }
 
     private void GraphSelectionChanged(List<KeyValuePair<SelectableModel, IGraphObject>> nodes)

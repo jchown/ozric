@@ -2,6 +2,7 @@ using System;
 using System.Text.Json.Serialization;
 using OzricEngine.ext;
 using OzricEngine.logic;
+using OzricEngine.nodes;
 
 namespace OzricEngine
 {
@@ -16,6 +17,21 @@ namespace OzricEngine
 
         public DateTime? lastUpdatedByOzric;
         public DateTime? lastUpdatedByOther;
+
+        public Category GetCategory()
+        {
+            switch (entity_id.Substring(0, entity_id.IndexOf('.')))
+            {
+                case "light":
+                    return Category.Light;
+                case "switch":
+                    return Category.Switch;
+                case "sensor":
+                    return Category.Sensor;
+                default:
+                    return Category.Unknown;
+            }
+        }
 
         [JsonIgnore]
         public override string Name => (attributes.Get("friendly_name") as string ?? entity_id).Trim();
@@ -80,16 +96,6 @@ namespace OzricEngine
             {
                 Log(level, "{0}: {1}", entity_id, state);
             }
-        }
-
-        public bool IsLight()
-        {
-            return entity_id.StartsWith("light.");
-        }
-
-        public bool IsSensor()
-        {
-            return entity_id.StartsWith("binary_sensor.");
         }
     }
 

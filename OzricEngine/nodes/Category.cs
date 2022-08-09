@@ -2,7 +2,9 @@ namespace OzricEngine.nodes;
 
 public enum Category
 {
+    Unknown,
     Light,
-    MotionSensor,
+    Switch,
+    Sensor,
     Logic
 }

@@ -1,14 +1,17 @@
 @using OzricEngine.nodes
 @using OzricUI.Model
+@using OzricEngine.logic
+
 <MudDialog>
     <DialogContent>
 
-    <MudChipSet Filter="true" SelectedChipsChanged="OnSelectionChanged">
+    <MudChipSet Filter="true" SelectedChipsChanged="OnSelectionChanged" Mandatory="true" >
             
         <MudChip Text="All" Default="true"></MudChip>
-        <MudChip Text="Sensor" Value="Category.MotionSensor" Icon="@SensorModel.ICON" ></MudChip>
-        <MudChip Text="Light" Value="Category.Light" Icon="@LightModel.ICON" ></MudChip>
-        <MudChip Text="Logic" Value="Category.Logic" Icon="mdi:gate-xnor"></MudChip>
+        <MudChip Text="Sensors" Value="Category.Sensor" />
+        <MudChip Text="Lights" Value="Category.Light"  />
+        <MudChip Text="Switches" Value="Category.Switch" />
+        <MudChip Text="Logic" Value="Category.Logic" />
 
     </MudChipSet>
 
@@ -23,7 +26,7 @@
                 if (IsVisible(choice))
                 {
                     <div class="d-block py-1">
-                        <MudButton Variant="Variant.Filled" OnClick="@SelectedChoice(choice)">
+                        <MudButton Variant="Variant.Filled" OnClick="@(_ => SelectedChoice(choice))">
                             <span class="iconify" data-icon="@choice.Icon"/>
                             <span class="px-2">@choice.Name</span>
                         </MudButton>
@@ -49,12 +52,16 @@
     [Parameter]
     public List<AddNodeChoice> Choices { get; set; } = new();
 
+    [Parameter]
+    public Action<Node> OnAdd { get; set; }
+    
     private List<Category> SelectedCategories { get; set; } = new();
 
     private string Search { get; set; } = "";
 
-    private bool ShowMotionSensors => SelectedCategories.Contains(Category.MotionSensor);
+    private bool ShowSensors => SelectedCategories.Contains(Category.Sensor);
     private bool ShowLights => SelectedCategories.Contains(Category.Light);
+    private bool ShowSwitches => SelectedCategories.Contains(Category.Switch);
     private bool ShowLogic => SelectedCategories.Contains(Category.Logic);
 
     void Cancel() => MudDialog.Cancel();
@@ -78,8 +85,11 @@
             case Category.Light:
                 return ShowLights;
 
-            case Category.MotionSensor:
-                return ShowMotionSensors;
+            case Category.Switch:
+                return ShowSwitches;
+
+            case Category.Sensor:
+                return ShowSensors;
 
             case Category.Logic:
                 return ShowLogic;
@@ -90,22 +100,22 @@
 
     private void OnSelectionChanged(MudChip[] selection)
     {
-        if (selection[0].Value is MudChip)
+        if (selection[0].Value is MudChip)            //  "All" doesn't have a Category enum value 
         {
-            //  All 
-
-            SelectedCategories = new() { Category.Light, Category.Logic, Category.MotionSensor };
+            SelectedCategories = new() { Category.Light, Category.Logic, Category.Sensor, Category.Switch };
         }
         else
         {
-            SelectedCategories = new() { (Category)(selection[0].Value) };
+            SelectedCategories = new() { (Category) (selection[0].Value) };
         }
         
         StateHasChanged();
     }
 
-    private EventCallback SelectedChoice(AddNodeChoice choice)
+    private void SelectedChoice(AddNodeChoice choice)
     {
-        return EventCallback.Empty;
+        OnAdd.Invoke(choice.Create());
+        if (choice.Once)
+            Choices.Remove(choice);
     }
 }

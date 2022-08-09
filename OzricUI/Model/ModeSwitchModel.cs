@@ -7,7 +7,7 @@ public class ModeSwitchModel: GraphNodeModel
 {
     public ModeSwitchModel(ModeSwitch s, Point? point = null): base(s, point)
     {
-        AddPort(new InputOnOff(ModeSwitch.INPUT_NAME, this));
+        AddPort(new InputBoolean(ModeSwitch.INPUT_NAME, this));
         
         foreach (var output in s.outputs)
         {

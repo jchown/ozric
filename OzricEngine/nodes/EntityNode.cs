@@ -23,15 +23,5 @@ namespace OzricEngine.logic
 
             return (float)(engine.home.GetTime() - state.last_updated).TotalSeconds;
         }
-
-        public static Type? ForDevice(EntityState entityState)
-        {
-            if (entityState.entity_id.StartsWith("light-"))
-            {
-                return typeof(Light);
-            }
-
-            return null;
-        }
     }
 }

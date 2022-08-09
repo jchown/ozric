@@ -61,11 +61,12 @@
         };
         
         diagram = new Diagram(options);
-        diagram.RegisterModelComponent<IfAnyModel, GraphNodeComponent>();
-        diagram.RegisterModelComponent<SwitchModel, GraphNodeComponent>();
-        diagram.RegisterModelComponent<DayPhasesModel, GraphNodeComponent>();
         diagram.RegisterModelComponent<SensorModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<SwitchModel, GraphNodeComponent>();
         diagram.RegisterModelComponent<LightModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<IfAnyModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<DayPhasesModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<BooleanChoiceModel, GraphNodeComponent>();
         diagram.RegisterModelComponent<ModeSwitchModel, GraphNodeComponent>();
         diagram.SelectionChanged += OnSelectionChanged;
         diagram.Nodes.Removed += OnNodeRemoved;
@@ -82,6 +83,7 @@
         var node = nodeMappings.GetGraph((GraphNodeModel) nodeModel);
         history?.Do(new EditHistory.GraphAction.RemoveNode(node));
         OnHistoryChanged();
+        OnSelectionChanged(null);
     }
 
     public void Dispose()
@@ -131,9 +133,9 @@
         OnHistoryChanged();
     }
     
-    private void OnDoAdd(List<Func<Node>> creators)
+    private void OnDoAdd(Node node)
     {
-        history?.Do(new EditHistory.GraphAction.AddNodes(creators));
+        history?.Do(new EditHistory.GraphAction.AddNode(node));
         OnHistoryChanged();
     }
 
@@ -194,13 +196,19 @@
         nodeMappings.Add(node, diagramNode);
         diagram.Nodes.Add(diagramNode);
 
+        var expectedPortCount = node.inputs.Count + node.outputs.Count;
+        if (diagramNode.Ports.Count != expectedPortCount)
+        {
+            throw new Exception($"Graph Node {diagramNode} has {diagramNode.Ports.Count} ports but expected {expectedPortCount}");
+        }
+
         for (int i = 0; i < node.inputs.Count; i++)
         {
             diagramNode.Ports[i].Position = position.Add(0f, i * 20f);
         }
     }
-    
-    /// Remove the model object that represents the give node in the Graph from the Diagram
+
+    /// Remove the model object that represents the given node in the Graph from the Diagram
 
     public void RemoveNode(Node node)
     {
@@ -225,9 +233,9 @@
                 model = new SensorModel(s, point);
                 break;
             }
-            case Switch s:
+            case BooleanChoice s:
             {
-                model = new SwitchModel(s, point);
+                model = new BooleanChoiceModel(s, point);
                 break;
             }
             case ModeSwitch ms:
@@ -243,6 +251,11 @@
             case DayPhases dp:
             {
                 model = new DayPhasesModel(dp, point);
+                break;
+            }
+            case Switch sw:
+            {
+                model = new SwitchModel(sw, point);
                 break;
             }
             default:
@@ -309,12 +322,28 @@
 
     private void OnSelectionChanged(SelectableModel obj)
     {
-        GraphEditState.SetSelected(diagram.GetSelectedModels().ToList());
+        var selected = diagram
+            .GetSelectedModels()
+            .Select(m => new KeyValuePair<SelectableModel,IGraphObject>(m, GetGraphObject(m)))
+            .ToList();
+        
+        GraphEditState.SetSelected(selected);
     }
 
     public Point GetPosition(Node node)
     {
         return GraphLayout.nodeLayout[node.id].ToPoint();
+    }
+
+    private IGraphObject GetGraphObject(SelectableModel selectableModel)
+    {
+        if (selectableModel is GraphNodeModel gnm)
+            return nodeMappings.GetGraph(gnm);
+                
+        if (selectableModel is LinkModel lm)
+            return edgeMappings.GetGraph(lm);
+                
+        throw new InvalidOperationException();
     }
 
 }
