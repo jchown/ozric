@@ -17,7 +17,9 @@ builder.Services.Configure<JsonOptions>(options => Json.Configure(options.Serial
 
 if (true)
 {
-    builder.Services.AddSingleton<IEngineService>(_ => new MockEngineService());
+    var service = new MockEngineService();
+    await service.Start(CancellationToken.None);
+    builder.Services.AddSingleton<IEngineService>(_ => service);
 }
 else
 {

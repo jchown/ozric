@@ -21,8 +21,12 @@ public class MockEngineService: IEngineService
 
     public MockEngineService()
     {
-        Graph = EngineService.LoadGraph();
         Home = Json.Deserialize<Home>(File.ReadAllText("Mock/Home.json"));
+    }
+
+    public async Task Start(CancellationToken token)
+    {
+        Graph = await EngineService.LoadGraph();
     }
     
     public void SetPaused(bool statusPaused)
@@ -30,9 +34,9 @@ public class MockEngineService: IEngineService
         _paused = statusPaused;
     }
 
-    public Task Restart(Graph graph)
+    public async Task Restart(Graph graph)
     {
+        await EngineService.SaveGraph(graph);
         Graph = graph;
-        return Task.CompletedTask;
     }
 }

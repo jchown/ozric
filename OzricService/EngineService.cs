@@ -18,7 +18,7 @@ public class EngineService: IEngineService
 
     public async Task Start(CancellationToken cancellationToken)
     {
-        var graph = LoadGraph();
+        var graph = await LoadGraph();
 
         var connection = Connect();
 
@@ -35,16 +35,16 @@ public class EngineService: IEngineService
         mainLoop = Task.Run(() => engine.MainLoop());
     }
 
-    public static Graph LoadGraph()
+    public static async Task<Graph> LoadGraph()
     {
         Graph graph = new Graph();
 
         try
         {
-            var json = File.ReadAllText(GRAPH_FILENAME);
+            var json = await File.ReadAllTextAsync(GRAPH_FILENAME);
             graph = Json.Deserialize<Graph>(json);
 
-            Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count}");
+            Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count} edges");
         }
         catch (Exception e)
         {
@@ -52,6 +52,14 @@ public class EngineService: IEngineService
         }
 
         return graph;
+    }
+
+
+    public static async Task SaveGraph(Graph graph)
+    {
+        var json = Json.Serialize(graph);
+        Console.WriteLine(json);
+        await File.WriteAllTextAsync(GRAPH_FILENAME, json);
     }
 
     private static Comms Connect()
@@ -103,8 +111,7 @@ public class EngineService: IEngineService
 
         await Stop(cancellationToken);
 
-        var json = Json.Serialize(graph);
-        File.WriteAllText(GRAPH_FILENAME, json);
+        await SaveGraph(graph);
 
         await Start(cancellationToken);
     }

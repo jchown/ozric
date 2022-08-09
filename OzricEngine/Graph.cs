@@ -210,9 +210,9 @@ namespace OzricEngine
         public string CreateNodeID(string prefix)
         {
             int i = nodes.Count;
-            while (nodes.ContainsKey($"{prefix}{i}"))
+            while (nodes.ContainsKey($"{prefix}-{i}"))
                 i++;
-            return $"{prefix}{i}";
+            return $"{prefix}-{i}";
         }
 
         public EntityNode? GetDevicesNode(string entityID)
