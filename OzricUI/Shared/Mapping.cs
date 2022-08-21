@@ -47,4 +47,12 @@ public class Mapping<GType, DType> where GType: IGraphObject where DType: Blazor
         idToGType.Clear();
         idToDType.Clear();
     }
+
+    public void Remap(GType g, string newID)
+    {
+        var oldID = g.id;
+        var d = idToDType[oldID];
+        idToDType.Remove(oldID);
+        idToDType[newID] = d;
+    }
 }

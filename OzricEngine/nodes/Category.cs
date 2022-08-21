@@ -6,5 +6,6 @@ public enum Category
     Light,
     Switch,
     Sensor,
-    Logic
+    Logic,
+    Constant
 }

@@ -8,9 +8,17 @@ namespace OzricUI.Model;
 
 public abstract class GraphNodeModel: NodeModel
 {
+    private Node node;
+    
     public GraphNodeModel(Node node, Point? point = null) : base(node.id, point)
     {
-        Title = node.Name;
+        this.node = node;
+        Load();
+    }
+
+    public virtual void Load()
+    {
+        Title = node.id;
     }
     
     public void AddInput(ValueType valueType, string name)

@@ -143,9 +143,9 @@
     private void UnloadGraph()
     {
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
-        Graph = new();
-        GraphLayout = new();
-        GraphEditState = new();
+        Graph = new Graph();
+        GraphLayout = new GraphLayout();
+        GraphEditState = new GraphEditState();
     }
 
     private void OnGraphEditStateChanged()
@@ -244,6 +244,13 @@
             create: () => new IfAny(Graph.CreateNodeID("ifall-"), "input1", "input2"),
             once: false));
 
+        choices.Add(new AddNodeChoice(
+            category: Category.Constant,
+            name: "Colour",
+            icon: ColorConstantModel.ICON,
+            create: () => new Constant(Graph.CreateNodeID("colour-"), ColorRGB.WHITE),
+            once: false));
+
         var parameters = new DialogParameters
         {
             { "Choices", choices },
@@ -255,7 +262,7 @@
 
     private void AddNode(Node node)
     {
-        GraphEditState.DoAdd(node);
+        GraphEditState.DoAction(new GraphAction.AddNode(node));
     }
 
     private void GraphSelectionChanged(List<KeyValuePair<SelectableModel, IGraphObject>> nodes)
@@ -264,39 +271,50 @@
         StateHasChanged();
     }
 
+    record ModelDialog(Type modelType, Type dialogType, string dialogTitle);
+
+    private ModelDialog[] _dialogTypes = 
+    {
+        new(typeof(LightModel), typeof(LightDialog), "Light"),
+        new(typeof(ColorConstantModel), typeof(ColorConstantDialog), "Color"),
+        new(typeof(GraphNodeModel), typeof(NodeDialog), "Node"),
+    };
+
     private async Task OnClickInfo()
     {
         if (SelectedNodes.Count != 1)
             return;
 
-        var (model, graph) = SelectedNodes[0];
+        var (model, node) = SelectedNodes[0];
         var modelType = model.GetType();
-        
-        if (IsClass<LightModel>(modelType))
+
+        var dialog = _dialogTypes.First(d => modelType.IsAssignableTo(d.modelType));
+        await ShowNodeDialog(model, node, dialog);
+    }
+
+    private async Task ShowNodeDialog(SelectableModel model, IGraphObject node, ModelDialog dialog)
+    {
+        var parameters = new DialogParameters
         {
-            var parameters = new DialogParameters
-            {
-                { "Model", model as LightModel },
-                { "Light", graph as Light }
-            };
+            { "Model", model },
+            { "Node", node }
+        };
 
-            await DialogService.Show<LightNodeDialog>("Light Node", parameters, GetDialogOptions()).Result;
+        var options = GetDialogOptions();
+
+        var result = await DialogService.Show(dialog.dialogType, dialog.dialogTitle, parameters, options).Result;
+        if (result.Cancelled)
             return;
-        }
-        
-        if (IsClass<GraphNodeModel>(modelType))
-        {
-            var parameters = new DialogParameters
-            {
-                { "Model", model as GraphNodeModel },
-                { "Node", graph as Node }
-            };
 
-            await DialogService.Show<GraphNodeDialog>("Graph Node", parameters, GetDialogOptions()).Result;
+        var changes = (List<GraphAction>)result.Data;
+        if (changes.Count == 0)
             return;
-        }
 
-        throw new InvalidOperationException();
+        if (GraphEditState.Mode == GraphEditState.EditMode.View)
+            GraphEditState.OnEdit();
+
+        GraphEditState.DoAction(new GraphAction.Actions(changes));
+        StateHasChanged();
     }
 
     private static DialogOptions GetDialogOptions()

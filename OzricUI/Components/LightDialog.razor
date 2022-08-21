@@ -1,0 +1,130 @@
+@using OzricUI.Model
+@using OzricEngine.logic
+@using OzricService
+@using OzricEngine.ext
+@inject IEngineService EngineService
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
+            
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            <MudTextField Label="Entity ID" HelperText="The ID used by Home Assistant" @bind-Value="EntityID" Disabled="true"/>
+
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+            
+            <MudTextField Label="Color Modes" HelperText="The color modes supported" @bind-Value="_colorModes" Disabled="true"/>
+
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            <MudSelect @bind-Value="ColourSwitchMode" Style="z-index:9999;" @bind-Text="ColourSwitchModeText" @onchange="OnColourSwitchModeChanged" HelperText="@ColourSwitchHelperText" T="Light.ColourSwitchMode" Label="Colour Switch Mode" Variant="Variant.Text">
+                <MudSelectItem Value="@(Light.ColourSwitchMode.Automatic)"/>
+                <MudSelectItem Value="@(Light.ColourSwitchMode.Fast)"/>
+                <MudSelectItem Value="@(Light.ColourSwitchMode.TwoPhase)"/>
+            </MudSelect>
+
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    [Parameter]
+    public LightModel Model { get; set; }
+
+    [Parameter]
+    public Light Node { get; set; }
+
+    private string ID;
+    private string EntityID;
+    private Light.ColourSwitchMode ColourSwitchMode;
+    private string _colorModes;
+    
+    public string ColourSwitchModeText { get; set; }
+    public string ColourSwitchHelperText { get; set; }
+
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+
+    protected override void OnInitialized()
+    {
+        ID = Node.id;
+        EntityID = Node.entityID;
+        ColourSwitchMode = Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic;
+        ColourSwitchHelperText = GetColourSwitchHelperText();
+        _colorModes = Node.GetSupportedColorModes(EngineService.Home).Select(ColorValue.DescribeColorType).Join(", ");
+    }
+
+    private List<GraphAction> GetChanges()
+    {
+        var changes = new List<GraphAction>();
+        if (ID != Node.id)
+            changes.Add(new GraphAction.RenameNode(Node, ID));
+        if (ColourSwitchMode != (Node.colourSwitchMode ?? ColourSwitchMode))
+        {
+            var csm = ColourSwitchMode != Light.ColourSwitchMode.Automatic ? ColourSwitchMode : ((Light.ColourSwitchMode?) null);
+            changes.Add(new GraphAction.EditNode(Node, Node.GetProperty(nameof(Node.colourSwitchMode)), csm));
+        }
+        return changes;
+    }
+    
+    public string GetColourSwitchHelperText()
+    {
+        switch (ColourSwitchMode)
+        {
+            case Light.ColourSwitchMode.Fast:
+            {
+                return "Switch colour-space & brightness simultaneously";
+            }
+            case Light.ColourSwitchMode.TwoPhase:
+            {
+                return "Don't switch colour-space & brightness simultaneously";
+            }
+            case Light.ColourSwitchMode.Automatic:
+            {
+                return $"Automatically choose: Currently {Node.GetColourSwitchMode()}";
+            }
+        }
+
+        throw new InvalidOperationException();
+    }
+    
+    private string GetColourSwitchModeText()
+    {
+        switch (ColourSwitchMode)
+        {
+            case Light.ColourSwitchMode.Automatic:
+                return "Automatic";
+
+            case Light.ColourSwitchMode.Fast:
+                return "Fast";
+
+            case Light.ColourSwitchMode.TwoPhase:
+                return "Two Phase";
+        }
+
+        throw new InvalidOperationException();
+    }
+
+    private void OnColourSwitchModeChanged()
+    {
+        ColourSwitchHelperText = GetColourSwitchHelperText();
+    }
+
+}

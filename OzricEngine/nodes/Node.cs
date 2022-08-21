@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using OzricEngine.ext;
@@ -112,6 +113,11 @@ namespace OzricEngine.logic
         {
             var output = GetOutputValue(name);
             return output as Boolean ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(Boolean)}");
+        }
+        
+        public PropertyInfo GetProperty(string name)
+        {
+            return GetType().GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new Exception($"Property {name} not found");
         }
 
         #region Comparison

@@ -12,6 +12,7 @@
         <MudChip Text="Lights" Value="Category.Light"  />
         <MudChip Text="Switches" Value="Category.Switch" />
         <MudChip Text="Logic" Value="Category.Logic" />
+        <MudChip Text="Constant" Value="Category.Constant" />
 
     </MudChipSet>
 
@@ -63,6 +64,7 @@
     private bool ShowLights => SelectedCategories.Contains(Category.Light);
     private bool ShowSwitches => SelectedCategories.Contains(Category.Switch);
     private bool ShowLogic => SelectedCategories.Contains(Category.Logic);
+    private bool ShowConstants => SelectedCategories.Contains(Category.Constant);
 
     void Cancel() => MudDialog.Cancel();
 
@@ -93,6 +95,9 @@
 
             case Category.Logic:
                 return ShowLogic;
+
+            case Category.Constant:
+                return ShowConstants;
         }
 
         throw new ArgumentOutOfRangeException();
@@ -102,7 +107,7 @@
     {
         if (selection[0].Value is MudChip)            //  "All" doesn't have a Category enum value 
         {
-            SelectedCategories = new() { Category.Light, Category.Logic, Category.Sensor, Category.Switch };
+            SelectedCategories = new() { Category.Light, Category.Logic, Category.Sensor, Category.Switch, Category.Constant };
         }
         else
         {

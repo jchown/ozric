@@ -7,16 +7,16 @@ namespace OzricEngine.logic
 {
     /// <summary>
     /// Base class for all colors. All colors have a single <see cref="ValueType" />, 
-    /// and use <see cref="ColorType"/> to distinguish them.
+    /// and use <see cref="ColorMode"/> to distinguish them.
     /// </summary>
 
     public abstract class ColorValue: Value
     {
         public override ValueType ValueType => ValueType.Color;
 
-        public abstract ColorType ColorType { get; }
+        public abstract ColorMode ColorMode { get; }
 
-        public float brightness { get; protected set; }
+        public float brightness { get; set; }
 
         [JsonIgnore]
         public abstract float luminance { get; }
@@ -30,12 +30,12 @@ namespace OzricEngine.logic
             this.brightness = brightness;
         }
 
-        private static readonly Dictionary<ColorType, Json.CreateObject<ColorValue>> creators = new()
+        private static readonly Dictionary<ColorMode, Json.CreateObject<ColorValue>> creators = new()
         {
-            { ColorType.HS, ColorHS.ReadFromJSON },
-            { ColorType.RGB, ColorRGB.ReadFromJSON },
-            { ColorType.Temp, ColorTemp.ReadFromJSON },
-            { ColorType.XY, ColorXY.ReadFromJSON },
+            { ColorMode.HS, ColorHS.ReadFromJSON },
+            { ColorMode.RGB, ColorRGB.ReadFromJSON },
+            { ColorMode.Temp, ColorTemp.ReadFromJSON },
+            { ColorMode.XY, ColorXY.ReadFromJSON },
         };
             
         public static ColorValue ReadFromJSON(ref Utf8JsonReader reader)
@@ -61,8 +61,34 @@ namespace OzricEngine.logic
 
         public override void WriteAsJSON(Utf8JsonWriter writer)
         {
-            writer.WriteString("color-type", ColorType.ToString());
+            writer.WriteString("color-type", ColorMode.ToString());
             writer.WriteNumber("brightness", brightness);
+        }
+
+        public string ToHexString()
+        {
+            GetRGB(out var r, out var g, out var b);
+            int ri = (int)(r * 255f);
+            int gi = (int)(g * 255f);
+            int bi = (int)(b * 255f);
+            return $"{ri:X2}{gi:X2}{bi:X2}";
+        }
+        
+        public static string DescribeColorType(ColorMode colorMode)
+        {
+            switch (colorMode)
+            {
+                case ColorMode.HS:
+                    return "Hue & Saturation";
+                case ColorMode.Temp:
+                    return "White Temperature";
+                case ColorMode.RGB:
+                    return "Red Green Blue";
+                case ColorMode.XY:
+                    return "X/Y";
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
     }
 }

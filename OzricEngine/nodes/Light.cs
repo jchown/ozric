@@ -91,12 +91,7 @@ public class Light: EntityNode
         var engine = context.engine;
             
         var input = GetInput("color");
-        if (input == null || input.value == null)
-        {
-            Log(LogLevel.Error, "{0} has no input called 'color'", entityID);
-            return;
-        }
-
+        
         var entityState = engine.home.GetEntityState(entityID);
         if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
             return;
@@ -527,6 +522,29 @@ public class Light: EntityNode
 
     private const double MIN_UPDATE_INTERVAL_SECS = 0.5f;
     public static readonly string[] ATTRIBUTE_KEYS = { "brightness", "color_mode", "xy_color", "hs_color", "rgb_color" };
+    
+    public List<ColorMode> GetSupportedColorModes(Home home)
+    {
+        var entityState = home.GetEntityState(entityID);
+        var attributes = entityState.LightAttributes;
+        return attributes.supported_color_modes.Select(s =>
+        {
+            switch (s)
+            {
+                case "xy":
+                    return ColorMode.XY;
+                case "hs":
+                    return ColorMode.HS;
+                case "rgb":
+                    return ColorMode.RGB;
+                case "color_temp":
+                    return ColorMode.Temp;
+                default:
+                    throw new Exception();
+            }
+        }).ToList();
+    }
+
 }
 
 internal class UpdateReason

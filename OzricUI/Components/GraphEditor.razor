@@ -4,7 +4,9 @@
 @using Blazor.Diagrams.Components
 @using Blazor.Diagrams.Core.Models.Base
 @using OzricEngine
+@using OzricEngine.nodes
 @using _Imports = OzricUI._Imports
+@using ValueType = OzricEngine.logic.ValueType
 @implements IDisposable
 
 <div class="diagram-container">
@@ -43,8 +45,8 @@
         GraphEditState.OnDoUndo += OnDoUndo;
         GraphEditState.OnDoRedo += OnDoRedo;
         GraphEditState.OnDoSetCheckpoint += OnDoSetCheckpoint;
-        GraphEditState.OnDoAdd += OnDoAdd;
-
+        GraphEditState.OnDoAction += OnDoAction;
+        
         var options = new DiagramOptions
         {
             DeleteKey = "Delete", // What key deletes the selected nodes/links
@@ -68,6 +70,7 @@
         diagram.RegisterModelComponent<DayPhasesModel, GraphNodeComponent>();
         diagram.RegisterModelComponent<BooleanChoiceModel, GraphNodeComponent>();
         diagram.RegisterModelComponent<ModeSwitchModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<ColorConstantModel, GraphNodeComponent>();
         diagram.SelectionChanged += OnSelectionChanged;
         diagram.Nodes.Removed += OnNodeRemoved;
        
@@ -81,7 +84,7 @@
     private void OnNodeRemoved(NodeModel nodeModel)
     {
         var node = nodeMappings.GetGraph((GraphNodeModel) nodeModel);
-        history?.Do(new EditHistory.GraphAction.RemoveNode(node));
+        history?.Do(new GraphAction.RemoveNode(node));
         OnHistoryChanged();
         OnSelectionChanged(null);
     }
@@ -133,9 +136,9 @@
         OnHistoryChanged();
     }
     
-    private void OnDoAdd(Node node)
+    private void OnDoAction(GraphAction action)
     {
-        history?.Do(new EditHistory.GraphAction.AddNode(node));
+        history?.Do(action);
         OnHistoryChanged();
     }
 
@@ -258,6 +261,23 @@
                 model = new SwitchModel(sw, point);
                 break;
             }
+            case Constant c:
+            {
+                switch (c.value.ValueType)
+                {
+                    case ValueType.Color:
+                    {
+                        model = new ColorConstantModel(c, point);
+                        break;
+                    }
+                    case ValueType.Boolean:
+                    case ValueType.Scalar:
+                    case ValueType.Mode:
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+                break;
+            }
             default:
             {
                 throw new Exception($"Unhandled type {node.GetType()}");
@@ -344,6 +364,43 @@
             return edgeMappings.GetGraph(lm);
                 
         throw new InvalidOperationException();
+    }
+
+    public void RenameNode(string originalID, string newID)
+    {
+        var changedEdges = Graph.edges.Values.Where(e => e.from.nodeID == originalID || e.to.nodeID == originalID).ToList();
+        foreach (var changedEdge in changedEdges)
+        {
+            var edge = changedEdge.Reroute(originalID, newID);
+            Graph.edges.Remove(changedEdge.id);
+            Graph.edges.Add(edge.id, edge);
+        }
+        
+        //  We keep graph nodes keyed by ID in three places:
+        
+        //  1. The graph
+        //  2. The map between graph nodes and diagram nodes
+        //  3. The stored data of diagram nodes (currently just positions)
+
+        var node = Graph.nodes[originalID];
+        nodeMappings.Remap(node, newID);
+        node.id = newID;
+        Graph.nodes.Remove(originalID);
+        Graph.nodes[newID] = node;
+
+        GraphLayout.nodeLayout[newID] = GraphLayout.nodeLayout[originalID];
+        GraphLayout.nodeLayout.Remove(originalID);
+
+        Reload(node);
+    }
+
+    /// Tell a Diagram model object to update itself and load its state from the Graph model.
+    
+    public void Reload(Node node)
+    {
+        var nodeModel = nodeMappings.GetDiagram(node.id);
+        nodeModel.Load();
+        nodeModel.Refresh();
     }
 
 }

@@ -3,7 +3,7 @@ using OzricEngine.logic;
 
 namespace OzricUI.Model;
 
-public class LightModel: GraphNodeModel
+public class LightModel: EntityModel
 {
     public const string ICON = "mdi:lightbulb";
 

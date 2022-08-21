@@ -15,7 +15,7 @@ namespace OzricEngine.logic
         public static readonly ColorRGB BLUE = new ColorRGB(0f,0f,1f,1f);
         public static readonly ColorRGB YELLOW = new ColorRGB(1f,1f,1f,1f);
 
-        public override ColorType ColorType => ColorType.RGB;
+        public override ColorMode ColorMode => ColorMode.RGB;
 
         public ColorRGB()
         {

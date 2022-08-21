@@ -19,7 +19,7 @@ public class GraphEditState
     public event Action? OnDoUndo;
     public event Action? OnDoRedo;
     public event Action? OnDoSetCheckpoint;
-    public event Action<Node>? OnDoAdd; 
+    public event Action<GraphAction>? OnDoAction; 
     public event Action<List<KeyValuePair<SelectableModel, IGraphObject>>>? OnSelectionChanged; 
 
     public EditMode Mode { get; private set; } = EditMode.View;
@@ -62,9 +62,9 @@ public class GraphEditState
         OnDoSetCheckpoint?.Invoke();
     }
 
-    public void DoAdd(Node node)
+    public void DoAction(GraphAction action)
     {
-        OnDoAdd?.Invoke(node);
+        OnDoAction?.Invoke(action);
     }
 
     public void SetHistoryState(EditHistory history)

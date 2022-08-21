@@ -9,7 +9,7 @@ namespace OzricEngine.logic
     /// </summary>
     public sealed class ColorTemp: ColorValue, IEquatable<ColorTemp>
     {
-        public override ColorType ColorType => ColorType.Temp;
+        public override ColorMode ColorMode => ColorMode.Temp;
 
         public ColorTemp()
         {

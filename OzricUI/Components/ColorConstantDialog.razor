@@ -1,0 +1,107 @@
+@using OzricUI.Model
+@using OzricEngine.logic
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
+            
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="_id" For="@(() => _id)" Immediate="true" />
+
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            <MudSelect @bind-Value="colorMode" Style="z-index:9999;" @onchange="OnColorTypeChanged" HelperText="Matching colorspace modes with your lights can ensure accurate color reproduction" T="ColorMode" Label="Color Mode" Variant="Variant.Text">
+                <MudSelectItem Value="@(ColorMode.RGB)"/>
+                <MudSelectItem Value="@(ColorMode.HS)"/>
+                <MudSelectItem Value="@(ColorMode.XY)"/>
+                <MudSelectItem Value="@(ColorMode.Temp)"/>
+            </MudSelect>
+
+            <MudColorPicker Label="Color" @bind-Text="_color" Style="@($"color: {_color};")" Placeholder="Select Color" />
+            
+            <MudSlider Value="@_brightness" Max="100">Brightness</MudSlider>
+            
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    [Parameter]
+    public ColorConstantModel Model { get; set; }
+
+    [Parameter]
+    public Constant Node { get; set; }
+
+    private string _id;
+    private string _color;
+    private ColorMode colorMode;
+    private string ColorTypeText => ColorValue.DescribeColorType(colorMode);
+    private float _h, _s;
+    private int _temp;
+    private float _r, _g, _b;
+    private float _x, _y;
+    private float _brightness;
+
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+
+    protected override void OnInitialized()
+    {
+        var colorValue = Node.value as ColorValue;
+        
+        _id = Node.id;
+        _color = colorValue.ToHexString();
+        _brightness = colorValue.brightness;
+    }
+
+    private List<GraphAction> GetChanges()
+    {
+        var changes = new List<GraphAction>();
+        if (_id != Node.id)
+            changes.Add(new GraphAction.RenameNode(Node, _id));
+
+        ColorValue value = null;
+        switch (colorMode)
+        {
+            case ColorMode.HS:
+                value = new ColorHS(_h, _s, _brightness);
+                break;
+            case ColorMode.Temp:
+                value = new ColorTemp(_temp, _brightness);
+                break;
+            case ColorMode.RGB:
+                value = new ColorRGB(_r, _g, _b, _brightness);
+                break;
+            case ColorMode.XY:
+                value = new ColorXY(_x, _y, _brightness);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+        
+        value.brightness = _brightness;
+        
+        if (value != Node.value)
+            changes.Add(new GraphAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), value));
+        
+        return changes;
+    }
+
+    private void OnColorTypeChanged()
+    {
+    }
+
+}

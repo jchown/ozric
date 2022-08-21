@@ -3,7 +3,7 @@
 
 <div class="ozric-node @(Node.Selected ? " selected" : "")">
     <div class="ozric-node-icon"><span class="iconify" data-icon="@(Node.Icon)"></span></div>
-    <div class="ozric-node-title">@(Node.Id)</div>
+    <div class="ozric-node-title">@(Node.Title)</div>
     @foreach (var port in Node.Ports)
     {
         <div class="@(port is InputPortModel ? "input-port" : "output-port")">
