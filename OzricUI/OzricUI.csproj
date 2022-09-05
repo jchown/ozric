@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="MudBlazor" Version="6.0.14" />
+    <PackageReference Include="MudBlazor" Version="6.0.15" />
     <PackageReference Include="Z.Blazor.Diagrams" Version="2.1.6" />
   </ItemGroup>
 
