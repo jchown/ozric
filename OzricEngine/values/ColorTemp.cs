@@ -25,7 +25,7 @@ namespace OzricEngine.logic
         [JsonIgnore]
         public override float luminance => brightness;
 
-        public static bool operator ==(ColorTemp lhs, ColorTemp rhs)
+        public static bool operator ==(ColorTemp? lhs, ColorTemp? rhs)
         {
             if (lhs is null)
                 return rhs is null;
@@ -33,13 +33,13 @@ namespace OzricEngine.logic
             return lhs.Equals(rhs);
         }
         
-        public static bool operator !=(ColorTemp lhs, ColorTemp rhs) => !(lhs == rhs);
+        public static bool operator !=(ColorTemp? lhs, ColorTemp? rhs) => !(lhs == rhs);
         
         public override bool Equals(object o) => Equals(o as ColorTemp);
 
-        public bool Equals(ColorTemp other)
+        public bool Equals(ColorTemp? other)
         {
-            return other != null && temp == other.temp;
+            return (other != null) && temp == other.temp;
         }
         
         public override int GetHashCode()

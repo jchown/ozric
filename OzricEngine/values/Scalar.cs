@@ -31,7 +31,7 @@ namespace OzricEngine.logic
             return new Scalar(reader.GetSingle());
         }
 
-        public static bool operator ==(Scalar lhs, Scalar rhs)
+        public static bool operator ==(Scalar? lhs, Scalar? rhs)
         {
             if (lhs is null)
                 return rhs is null;
@@ -39,11 +39,11 @@ namespace OzricEngine.logic
             return lhs.Equals(rhs);
         }
         
-        public static bool operator !=(Scalar lhs, Scalar rhs) => !(lhs == rhs);
+        public static bool operator !=(Scalar? lhs, Scalar? rhs) => !(lhs == rhs);
 
         public bool Equals(Scalar? other)
         {
-            return value == other.value;
+            return (other != null) && (value == other.value);
         }
 
         public override bool Equals(object? obj)

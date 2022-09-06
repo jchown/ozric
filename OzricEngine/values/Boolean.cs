@@ -36,7 +36,7 @@ namespace OzricEngine.logic
             return value ? "True" : "False";
         }
 
-        public static bool operator ==(Boolean lhs, Boolean rhs)
+        public static bool operator ==(Boolean? lhs, Boolean? rhs)
         {
             if (lhs is null)
                 return rhs is null;
@@ -44,11 +44,11 @@ namespace OzricEngine.logic
             return lhs.Equals(rhs);
         }
         
-        public static bool operator !=(Boolean lhs, Boolean rhs) => !(lhs == rhs);
+        public static bool operator !=(Boolean? lhs, Boolean? rhs) => !(lhs == rhs);
         
-        public bool Equals(Boolean other)
+        public bool Equals(Boolean? other)
         {
-            return value == other.value;
+            return (other != null) && (value == other.value);
         }
 
         public override bool Equals(object obj)

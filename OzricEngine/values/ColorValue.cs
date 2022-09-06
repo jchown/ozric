@@ -16,6 +16,9 @@ namespace OzricEngine.logic
 
         public abstract ColorMode ColorMode { get; }
 
+        /// <summary>
+        /// 0-1 
+        /// </summary>
         public float brightness { get; set; }
 
         [JsonIgnore]
@@ -54,6 +57,13 @@ namespace OzricEngine.logic
             return reader.GetSingle();
         }
 
+        /// <summary>
+        /// Return this color in the nearest equivalent RGB value, in the range 0-1
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="g"></param>
+        /// <param name="b"></param>
+        /// <exception cref="NotImplementedException"></exception>
         public virtual void GetRGB(out float r, out float g, out float b)
         {
             throw new NotImplementedException();

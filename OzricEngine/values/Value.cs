@@ -13,7 +13,7 @@ namespace OzricEngine.logic
 
         public abstract void WriteAsJSON(Utf8JsonWriter writer);
         
-        public static bool operator ==(Value lhs, Value rhs)
+        public static bool operator ==(Value? lhs, Value? rhs)
         {
             if (lhs is null)
                 return rhs is null;
@@ -21,7 +21,7 @@ namespace OzricEngine.logic
             return lhs.Equals(rhs);
         }
         
-        public static bool operator !=(Value lhs, Value rhs) => !(lhs == rhs);
+        public static bool operator !=(Value? lhs, Value? rhs) => !(lhs == rhs);
 
         public abstract override bool Equals(object obj);
 

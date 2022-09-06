@@ -49,7 +49,7 @@ namespace OzricEngine.logic
             b = _b <= 0.0031308f ? 12.92f * _b : (1.0f + 0.055f) * MathF.Pow(_b, (1.0f / 2.4f)) - 0.055f;
         }
 
-        public static bool operator ==(ColorXY lhs, ColorXY rhs)
+        public static bool operator ==(ColorXY? lhs, ColorXY? rhs)
         {
             if (lhs is null)
                 return rhs is null;
@@ -57,13 +57,13 @@ namespace OzricEngine.logic
             return lhs.Equals(rhs);
         }
         
-        public static bool operator !=(ColorXY lhs, ColorXY rhs) => !(lhs == rhs);
+        public static bool operator !=(ColorXY? lhs, ColorXY? rhs) => !(lhs == rhs);
         
         public override bool Equals(object o) => Equals(o as ColorXY);
 
-        public bool Equals(ColorXY other)
+        public bool Equals(ColorXY? other)
         {
-            return (other != null) && x == other.x && y == other.y && brightness == other.brightness;
+            return (other != null) && (x == other.x && y == other.y && brightness == other.brightness);
         }
 
         public override int GetHashCode()

@@ -32,7 +32,7 @@ namespace OzricEngine.logic
         
         public bool Equals(Mode? other)
         {
-            return value == other.value;
+            return (other != null) && (value == other.value);
         }
 
         public override bool Equals(object? obj)
@@ -40,17 +40,15 @@ namespace OzricEngine.logic
             return ReferenceEquals(this, obj) || obj is Mode other && Equals(other);
         }
 
-        public static bool operator ==(Mode lhs, Mode rhs)
+        public static bool operator ==(Mode? lhs, Mode? rhs)
         {
             if (lhs is null)
-            {
                 return rhs is null;
-            }
 
             return lhs.Equals(rhs);
         }
         
-        public static bool operator !=(Mode lhs, Mode rhs) => !(lhs == rhs);
+        public static bool operator !=(Mode? lhs, Mode? rhs) => !(lhs == rhs);
         
         public override int GetHashCode()
         {

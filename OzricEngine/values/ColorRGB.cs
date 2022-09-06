@@ -34,9 +34,20 @@ namespace OzricEngine.logic
             this.g = g;
             this.b = b;
         }
-
+        
+        /// <summary>
+        /// 0-1
+        /// </summary>
         public float r { get; }
+        
+        /// <summary>
+        /// 0-1
+        /// </summary>
         public float g { get; }
+        
+        /// <summary>
+        /// 0-1
+        /// </summary>
         public float b { get; }
         
         [JsonIgnore]
@@ -49,7 +60,7 @@ namespace OzricEngine.logic
             b = this.b;
         }
 
-        public static bool operator ==(ColorRGB lhs, ColorRGB rhs)
+        public static bool operator ==(ColorRGB? lhs, ColorRGB? rhs)
         {
             if (lhs is null)
                 return rhs is null;
@@ -57,7 +68,7 @@ namespace OzricEngine.logic
             return lhs.Equals(rhs);
         }
         
-        public static bool operator !=(ColorRGB lhs, ColorRGB rhs) => !(lhs == rhs);
+        public static bool operator !=(ColorRGB? lhs, ColorRGB? rhs) => !(lhs == rhs);
         
         public override bool Equals(object? o) => Equals(o as ColorRGB);
 
