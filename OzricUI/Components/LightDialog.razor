@@ -68,7 +68,7 @@
         EntityID = Node.entityID;
         ColourSwitchMode = Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic;
         ColourSwitchHelperText = GetColourSwitchHelperText();
-        _colorModes = Node.GetSupportedColorModes(EngineService.Home).Select(ColorValue.DescribeColorType).Join(", ");
+        _colorModes = Node.GetSupportedColorModes(EngineService.Home).Select(ColorValue.DescribeColorMode).Join(", ");
     }
 
     private List<GraphAction> GetChanges()

@@ -12,8 +12,15 @@ namespace OzricEngine.logic
         public static readonly ColorHS WHITE = new ColorHS(1f,1f,1f);
 
         public override ColorMode ColorMode => ColorMode.HS;
-
+        
+        /// <summary>
+        /// 0-1
+        /// </summary>
         public float h { get; }
+
+        /// <summary>
+        /// 0-1
+        /// </summary>
         public float s { get; }
 
         public ColorHS()

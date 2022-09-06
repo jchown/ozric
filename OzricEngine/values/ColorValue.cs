@@ -84,7 +84,7 @@ namespace OzricEngine.logic
             return $"{ri:X2}{gi:X2}{bi:X2}";
         }
         
-        public static string DescribeColorType(ColorMode colorMode)
+        public static string DescribeColorMode(ColorMode colorMode)
         {
             switch (colorMode)
             {

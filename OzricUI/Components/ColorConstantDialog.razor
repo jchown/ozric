@@ -11,48 +11,50 @@
 
             <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
 
-            <MudSelect @bind-Value="_colorMode" Style="z-index:9999;" @onchange="OnColorTypeChanged" HelperText="Matching colorspace modes with your lights can ensure accurate color reproduction" T="ColorMode" Label="Color Mode" Variant="Variant.Text">
-                @foreach(var e in Enum.GetValues(typeof(ColorMode)))
+            <MudSelect Value="_colorMode" Style="z-index:9999;" ValueChanged="OnColorModeChanged" HelperText="Matching colorspace modes with your lights can ensure accurate color reproduction" T="ColorMode" Label="Color Mode" Variant="Variant.Text">
+                @foreach (var e in Enum.GetValues(typeof(ColorMode)))
                 {
-                    var colorMode = (ColorMode)e; 
-                    <MudSelectItem Value="@(colorMode)">@ColorValue.DescribeColorType(colorMode)</MudSelectItem>
+                    var colorMode = (ColorMode)e;
+                    <MudSelectItem Value="@(colorMode)">@ColorValue.DescribeColorMode(colorMode)</MudSelectItem>
                 }
             </MudSelect>
 
-            <MudStack Row="true">
-                <MudPaper Class="pa-3">
+            <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
+
+            <MudGrid>
+                <MudItem xs="6">
                     @switch (_colorMode)
                     {
                         case ColorMode.HS:
-                            <MudSlider @bind-Value="_h" Max="100" @onchange="_ => OnColorChanged()">Hue: @_h.ToString()</MudSlider>
-                            <MudSlider @bind-Value="_s" Max="100" @onchange="_ => OnColorChanged()">Saturation: @_s.ToString()</MudSlider>
+                            <MudSlider @bind-Value="_h" Max="H_SCALE" Immediate="true" @onchange="OnColorSlidersChanged">Hue: @_h.ToString()</MudSlider>
+                            <MudSlider @bind-Value="_s" Max="S_SCALE" Immediate="true" @onchange="OnColorSlidersChanged">Saturation: @_s.ToString()</MudSlider>
                             break;
                         case ColorMode.Temp:
-                            <MudSlider Value="@_temp" Max="100">Temperature: @_temp.ToString()</MudSlider>
+                            <MudSlider @bind-Value="@_temp" Max="100" Immediate="true" @onchange="OnColorSlidersChanged">Temperature: @_temp.ToString()</MudSlider>
                             break;
                         case ColorMode.RGB:
-                            <MudSlider Value="@_r" Max="100">Red: @_r.ToString()</MudSlider>
-                            <MudSlider Value="@_g" Max="100">Green: @_g.ToString()</MudSlider>
-                            <MudSlider Value="@_b" Max="100">Blue: @_b.ToString()</MudSlider>
+                            <MudSlider @bind-Value="_r" Max="RGB_SCALE" Immediate="true" @onchange="OnColorSlidersChanged">Red: @_r.ToString()</MudSlider>
+                            <MudSlider @bind-Value="_g" Max="RGB_SCALE" Immediate="true" @onchange="OnColorSlidersChanged">Green: @_g.ToString()</MudSlider>
+                            <MudSlider @bind-Value="_b" Max="RGB_SCALE" Immediate="true" @onchange="OnColorSlidersChanged">Blue: @_b.ToString()</MudSlider>
                             break;
                         case ColorMode.XY:
-                            <MudSlider Value="@_x" Max="100">X: @_x.ToString()</MudSlider>
-                            <MudSlider Value="@_y" Max="100">Y: @_y.ToString()</MudSlider>
+                            <MudSlider @bind-Value="@_x" Max="100" Immediate="true" @onchange="OnColorSlidersChanged">X: @_x.ToString()</MudSlider>
+                            <MudSlider @bind-Value="@_y" Max="100" Immediate="true" @onchange="OnColorSlidersChanged">Y: @_y.ToString()</MudSlider>
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
-                </MudPaper>
-                
-                <MudPaper Class="pa-3"> 
-                    <MudColorPicker Label="Color" @bind-Text="_color" Style="@($"color: {_color};")" Placeholder="Select Color" PickerVariant="PickerVariant.Static" 
-                                    DisableToolbar="true" DisableAlpha="true" DisableModeSwitch="true" DisableInputs="true" 
-                                    ValueChanged="OnColorPickerChanged"/>
-                </MudPaper>
-                
-            </MudStack>
 
-            <MudSlider @bind-Value="_brightness" Min="0" Max="HS_SCALE">Brightness: @_brightness.ToString()</MudSlider>
+                    <MudSlider @bind-Value="_brightness" Min="0" Max="BRIGHTNESS_SCALE">Brightness: @_brightness.ToString()</MudSlider>
+                </MudItem>
+
+                <MudItem xs="6">
+                    <MudColorPicker Label="Color" @bind-Value="_pickerColor" Style="@($"color: {_pickerColor};")" Placeholder="Select Color" PickerVariant="PickerVariant.Static"
+                                    DisableToolbar="true" DisableAlpha="true" DisableModeSwitch="true" DisableInputs="true"
+                                    TextChanged="OnColorPickerChanged"/>
+                </MudItem>
+
+            </MudGrid>
 
         </MudContainer>
 
@@ -77,49 +79,73 @@
     public Constant Node { get; set; }
 
     private string _id;
-    private string _color;
-    private ColorMode _colorMode;
-    private string ColorTypeText => ColorValue.DescribeColorType(_colorMode);
-    
-    private const int HS_SCALE = 100;
+    private MudColor _pickerColor { get; set; }
+    private ColorMode _colorMode { get; set; }
+
+    private const int H_SCALE = 360;
+    private const int S_SCALE = 100;
+
     private int _h { get; set; }
-    private int _s { get; set; }
-    
-    private int _temp;
-    private float _r, _g, _b;
-    private float _x, _y;
-    private float _brightness { get; set; }
+    private int _s
+    {
+        get => __s;
+        set
+        {
+            __s = value;
+            Console.WriteLine($"S = {__s}");
+        }
+    }
+
+    private int __s;
+
+    private int _temp { get; set; }
+
+    private const int RGB_SCALE = 255;
+
+    private int _r { get; set; }
+    private int _g { get; set; }
+    private int _b { get; set; }
+
+    private float _x { get; set; }
+    private float _y { get; set; }
+
+    private const int BRIGHTNESS_SCALE = 100;
+
+    private int _brightness { get; set; }
 
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
 
     private bool HasChanges => GetChanges().Count > 0;
+    private bool _settingSliders;
+    private bool _settingPicker;
 
     protected override void OnInitialized()
     {
-        var colorValue = (ColorValue) Node.value;
+        var colorValue = (ColorValue)Node.value;
 
         _id = Node.id;
         SetColorSliders(colorValue);
-        _brightness = colorValue.brightness;
+        _brightness = (int)(colorValue.brightness * BRIGHTNESS_SCALE);
     }
 
     private void SetColorSliders(ColorValue colorValue)
     {
-        _color = colorValue.ToHexString();
+        _colorMode = colorValue.ColorMode;
+        _pickerColor = colorValue.ToHexString();
         switch (colorValue)
         {
             case ColorRGB rgb:
             {
-                _r = rgb.r;
-                _g = rgb.g;
-                _b = rgb.b;
+                _r = (int)(rgb.r * RGB_SCALE);
+                _g = (int)(rgb.g * RGB_SCALE);
+                _b = (int)(rgb.b * RGB_SCALE);
                 break;
             }
             case ColorHS hs:
             {
-                _h = (int)(hs.h * HS_SCALE);
-                _s = (int)(hs.s * HS_SCALE);
+                _h = (int)(hs.h * H_SCALE);
+                _s = (int)(hs.s * S_SCALE);
                 break;
             }
             case ColorXY xy:
@@ -142,40 +168,32 @@
 
     private ColorValue GetColorSliders()
     {
-        ColorValue value;
-        
+        var brightness = _brightness / (float)BRIGHTNESS_SCALE;
+
         switch (_colorMode)
         {
             case ColorMode.HS:
             {
-                value = new ColorHS(_h / HS_SCALE, _s / HS_SCALE, _brightness);
-                break;
+                return new ColorHS(_h / (float)H_SCALE, _s / (float)S_SCALE, brightness);
             }
             case ColorMode.Temp:
             {
-                value = new ColorTemp(_temp, _brightness);
-                break;
+                return new ColorTemp(_temp, brightness);
             }
             case ColorMode.RGB:
             {
-                value = new ColorRGB(_r, _g, _b, _brightness);
-                break;
+                return new ColorRGB(_r / (float)RGB_SCALE, _g / (float)RGB_SCALE, _b / (float)RGB_SCALE, brightness);
             }
             case ColorMode.XY:
             {
-                value = new ColorXY(_x, _y, _brightness);
-                break;
+                return new ColorXY(_x, _y, brightness);
             }
             default:
             {
                 throw new ArgumentOutOfRangeException();
             }
         }
-
-        value.brightness = _brightness;
-        return value;
     }
-
 
     private List<GraphAction> GetChanges()
     {
@@ -190,28 +208,60 @@
         return changes;
     }
 
-    private void OnColorChanged()
+    private void OnColorModeChanged(ColorMode mode)
     {
-        var value = GetColorSliders();
-        _color = value.ToHexString();
+        _colorMode = mode;
+        SetColorSliders(_pickerColor);
     }
 
-    private void OnColorTypeChanged()
+    private void OnColorSlidersChanged(ChangeEventArgs args)
     {
+        Console.WriteLine("OCSC");
+
+        if (!_settingSliders)
+        {
+            var value = GetColorSliders();
+            _settingPicker = true;
+            try
+            {
+                _pickerColor = value.ToHexString();
+            }
+            finally
+            {
+                _settingPicker = false;
+            }
+        }
     }
 
-    private void OnColorPickerChanged(MudColor obj)
+    private void OnColorPickerChanged(string rgb)
+    {
+        if (!_settingPicker)
+        {
+            _settingSliders = true;
+            try
+            {
+                SetColorSliders(new MudColor(rgb));
+            }
+            finally
+            {
+                _settingSliders = false;
+            }
+        }
+    }
+
+    private void SetColorSliders(MudColor obj)
     {
         ColorValue value;
-        
+        var brightness = _brightness / (float)BRIGHTNESS_SCALE;
+
         switch (_colorMode)
         {
             case ColorMode.HS:
             {
-                value = new ColorHS((float)obj.H / 360f, (float)obj.S, _brightness);
+                value = new ColorHS((float)obj.H / 360f, (float)obj.S, brightness);
                 break;
             }
-            /*
+    /*
             case ColorMode.Temp:
             {
                 break;
@@ -219,10 +269,10 @@
             */
             case ColorMode.RGB:
             {
-                value = new ColorRGB(obj.R / 255f, obj.G / 255f, obj.B / 255f, _brightness); 
+                value = new ColorRGB(obj.R / 255f, obj.G / 255f, obj.B / 255f, brightness);
                 break;
             }
-            /*
+    /*
             case ColorMode.XY:
             {
                 break;
@@ -233,7 +283,7 @@
                 throw new ArgumentOutOfRangeException();
             }
         }
-        
+
         SetColorSliders(value);
     }
-}
+} 
