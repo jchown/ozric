@@ -45,7 +45,13 @@
                             throw new ArgumentOutOfRangeException();
                     }
 
-                    <MudSlider @bind-Value="_brightness" Min="0" Max="BRIGHTNESS_SCALE">Brightness: @_brightness.ToString()</MudSlider>
+                    <MudDivider DividerType="DividerType.Middle" Class="my-2"/>
+
+                    <MudSlider @bind-Value="_brightness" Min="0" Max="BRIGHTNESS_SCALE">
+                        Brightness: @_brightness.ToString()
+                    </MudSlider>
+                    <p class="mud-input-helper-text">Brightness is not affected by the color luminance.</p>
+                    
                 </MudItem>
 
                 <MudItem xs="6">
