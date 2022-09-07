@@ -100,5 +100,47 @@ namespace OzricEngine.logic
                     throw new ArgumentOutOfRangeException();
             }
         }
+        
+        /// <summary>
+        /// Convert the primary color component (ignoring brightness) to the nearest equivalent HS
+        /// </summary>
+        /// <returns></returns>
+
+        public ColorHS ToHS()
+        {
+            GetRGB(out var r, out var g, out var b);
+
+            //  See https://www.cs.rit.edu/~ncs/color/t_convert.html
+
+            float min = MathF.Min(r, MathF.Min(g, b));
+            float max = MathF.Max(r, MathF.Max(g, b));
+
+            var delta = max - min;
+
+            float h, s;
+
+            if (max == 0)
+            {
+                // r = g = b = 0		// s = 0, v is undefined
+                s = 0;
+                h = 0;
+            }
+            else
+            {
+                s = delta / max; // s
+
+                if (r == max)
+                    h = (g - b) / delta; // between yellow & magenta
+                else if (g == max)
+                    h = 2 + (b - r) / delta; // between cyan & yellow
+                else
+                    h = 4 + (r - g) / delta; // between magenta & cyan
+
+                if (h < 0)
+                    h += 6;
+            }
+
+            return new ColorHS(h / 6, s, brightness);
+        }
     }
 }

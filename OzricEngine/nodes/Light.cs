@@ -360,45 +360,17 @@ public class Light: EntityNode
         
     private static object ConvertToHS(ColorValue desired, UpdateReason update, LightAttributes attributes, int brightness)
     {
-        desired.GetRGB(out var r, out var g, out var b);
+        var hs = desired.ToHS();
 
-        //  See https://www.cs.rit.edu/~ncs/color/t_convert.html
-
-        float min = MathF.Min(r, MathF.Min(g, b));
-        float max = MathF.Max(r, MathF.Max(g, b));
-
-        var delta = max - min;
-
-        float h, s;
-
-        if (max == 0)
-        {
-            // r = g = b = 0		// s = 0, v is undefined
-            s = 0;
-            h = 0;
-        }
-        else
-        {
-            s = delta / max; // s
-
-            if (r == max)
-                h = (g - b) / delta; // between yellow & magenta
-            else if (g == max)
-                h = 2 + (b - r) / delta; // between cyan & yellow
-            else
-                h = 4 + (r - g) / delta; // between magenta & cyan
-
-            h *= 60; // degrees
-            if (h < 0)
-                h += 360;
-        }
-
+        var h = hs.h * 360;
+        var s = hs.s;
+        
         object colorValue = new List<float> { h, s };
         //brightness = (int)(Y * brightness);
 
         if (!update.Check(attributes.hs_color == null))
         {
-            update.CheckApprox(attributes.hs_color[0], h, 0.5f);
+            update.CheckApprox(attributes.hs_color[0], h, 5f);
             update.CheckApprox(attributes.hs_color[1], s, 0.5f);
             update.Check(attributes.brightness != brightness);
         }

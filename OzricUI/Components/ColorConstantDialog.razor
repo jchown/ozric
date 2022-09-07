@@ -26,20 +26,20 @@
                     @switch (_colorMode)
                     {
                         case ColorMode.HS:
-                            <MudSlider @bind-Value="_h" Max="H_SCALE" Immediate="true" @onchange="OnColorSlidersChanged">Hue: @_h.ToString()</MudSlider>
-                            <MudSlider @bind-Value="_s" Max="S_SCALE" Immediate="true" @onchange="OnColorSlidersChanged">Saturation: @_s.ToString()</MudSlider>
+                            <MudSlider T="int" Value="@_h" Max="H_SCALE" Immediate="true" ValueChanged="OnSliderHChanged">Hue: @_h.ToString()</MudSlider>
+                            <MudSlider T="int" Value="@_s" Max="S_SCALE" Immediate="true" ValueChanged="OnSliderSChanged">Saturation: @_s.ToString()</MudSlider>
                             break;
                         case ColorMode.Temp:
-                            <MudSlider @bind-Value="@_temp" Max="100" Immediate="true" @onchange="OnColorSlidersChanged">Temperature: @_temp.ToString()</MudSlider>
+                            <MudSlider T="int" Value="@_temp" Max="100" Immediate="true" ValueChanged="OnSliderTChanged">Temperature: @_temp.ToString()</MudSlider>
                             break;
                         case ColorMode.RGB:
-                            <MudSlider @bind-Value="_r" Max="RGB_SCALE" Immediate="true" @onchange="OnColorSlidersChanged">Red: @_r.ToString()</MudSlider>
-                            <MudSlider @bind-Value="_g" Max="RGB_SCALE" Immediate="true" @onchange="OnColorSlidersChanged">Green: @_g.ToString()</MudSlider>
-                            <MudSlider @bind-Value="_b" Max="RGB_SCALE" Immediate="true" @onchange="OnColorSlidersChanged">Blue: @_b.ToString()</MudSlider>
+                            <MudSlider T="int" Value="_r" Max="RGB_SCALE" Immediate="true" ValueChanged="OnSliderRChanged">Red: @_r.ToString()</MudSlider>
+                            <MudSlider T="int" Value="_g" Max="RGB_SCALE" Immediate="true" ValueChanged="OnSliderGChanged">Green: @_g.ToString()</MudSlider>
+                            <MudSlider T="int" Value="_b" Max="RGB_SCALE" Immediate="true" ValueChanged="OnSliderBChanged">Blue: @_b.ToString()</MudSlider>
                             break;
                         case ColorMode.XY:
-                            <MudSlider @bind-Value="@_x" Max="100" Immediate="true" @onchange="OnColorSlidersChanged">X: @_x.ToString()</MudSlider>
-                            <MudSlider @bind-Value="@_y" Max="100" Immediate="true" @onchange="OnColorSlidersChanged">Y: @_y.ToString()</MudSlider>
+                            <MudSlider T="float" Value="@_x" Max="100" Immediate="true" ValueChanged="OnSliderXChanged">X: @_x.ToString()</MudSlider>
+                            <MudSlider T="float" Value="@_y" Max="100" Immediate="true" ValueChanged="OnSliderYChanged">Y: @_y.ToString()</MudSlider>
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -49,9 +49,9 @@
                 </MudItem>
 
                 <MudItem xs="6">
-                    <MudColorPicker Label="Color" @bind-Value="_pickerColor" Style="@($"color: {_pickerColor};")" Placeholder="Select Color" PickerVariant="PickerVariant.Static"
+                    <MudColorPicker Label="Color" Value="_pickerColor" Style="@($"color: {_pickerColor};")" Placeholder="Select Color" PickerVariant="PickerVariant.Static"
                                     DisableToolbar="true" DisableAlpha="true" DisableModeSwitch="true" DisableInputs="true"
-                                    TextChanged="OnColorPickerChanged"/>
+                                    ValueChanged="OnColorPickerChanged"/>
                 </MudItem>
 
             </MudGrid>
@@ -86,17 +86,7 @@
     private const int S_SCALE = 100;
 
     private int _h { get; set; }
-    private int _s
-    {
-        get => __s;
-        set
-        {
-            __s = value;
-            Console.WriteLine($"S = {__s}");
-        }
-    }
-
-    private int __s;
+    private int _s { get; set; }
 
     private int _temp { get; set; }
 
@@ -214,13 +204,60 @@
         SetColorSliders(_pickerColor);
     }
 
-    private void OnColorSlidersChanged(ChangeEventArgs args)
+    private void OnSliderHChanged(int h)
     {
-        Console.WriteLine("OCSC");
+        _h = h;
+        OnColorSlidersChanged();
+    }
 
+    private void OnSliderSChanged(int s)
+    {
+        _s = s;
+        OnColorSlidersChanged();
+    }
+
+    private void OnSliderRChanged(int r)
+    {
+        _r = r;
+        OnColorSlidersChanged();
+    }
+
+    private void OnSliderGChanged(int g)
+    {
+        _g = g;
+        OnColorSlidersChanged();
+    }
+
+    private void OnSliderBChanged(int b)
+    {
+        _b = b;
+        OnColorSlidersChanged();
+    }
+
+    private void OnSliderXChanged(float x)
+    {
+        _x = x;
+        OnColorSlidersChanged();
+    }
+
+    private void OnSliderYChanged(float y)
+    {
+        _y = y;
+        OnColorSlidersChanged();
+    }
+
+    private void OnSliderTChanged(int t)
+    {
+        _temp = t;
+        OnColorSlidersChanged();
+    }
+
+    private void OnColorSlidersChanged()
+    {
         if (!_settingSliders)
         {
             var value = GetColorSliders();
+
             _settingPicker = true;
             try
             {
@@ -233,14 +270,14 @@
         }
     }
 
-    private void OnColorPickerChanged(string rgb)
+    private void OnColorPickerChanged(MudColor color)
     {
         if (!_settingPicker)
         {
             _settingSliders = true;
             try
             {
-                SetColorSliders(new MudColor(rgb));
+                SetColorSliders(color);
             }
             finally
             {
@@ -258,7 +295,8 @@
         {
             case ColorMode.HS:
             {
-                value = new ColorHS((float)obj.H / 360f, (float)obj.S, brightness);
+                var rgb = new ColorRGB(obj.R / 255f, obj.G / 255f, obj.B / 255f, brightness);
+                value = rgb.ToHS();
                 break;
             }
     /*
@@ -286,4 +324,5 @@
 
         SetColorSliders(value);
     }
-} 
+}
+
