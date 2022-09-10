@@ -75,8 +75,9 @@
         diagram.Nodes.Removed += OnNodeRemoved;
        
         PopulateDiagram();
-        
+
         history = new EditHistory(this);
+        UpdateLockedState();
     }
     
     /// Callback for when the diagram removes a node (user hits delete key)
@@ -100,19 +101,23 @@
     private void OnGraphEditStateChanged()
     {
         StateHasChanged();
+        UpdateLockedState();
+    }
 
+    private void UpdateLockedState()
+    {
         switch (GraphEditState.Mode)
         {
             case GraphEditState.EditMode.View:
             case GraphEditState.EditMode.Saving:
                 SetLocked(true);
                 break;
-                
+
             case GraphEditState.EditMode.EditOffline:
             case GraphEditState.EditMode.EditOnline:
                 SetLocked(false);
                 break;
-                
+
             default:
                 throw new ArgumentOutOfRangeException();
         }
