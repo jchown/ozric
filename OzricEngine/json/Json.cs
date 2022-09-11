@@ -27,7 +27,7 @@ namespace OzricEngine
         {
             try
             {
-                return JsonSerializer.Deserialize<T>(json, Options);
+                return JsonSerializer.Deserialize<T>(json, Options)!;
             }
             catch (Exception e)
             {

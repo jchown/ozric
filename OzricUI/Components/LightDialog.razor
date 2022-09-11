@@ -71,15 +71,15 @@
         _colorModes = Node.GetSupportedColorModes(EngineService.Home).Select(ColorValue.DescribeColorMode).Join(", ");
     }
 
-    private List<GraphAction> GetChanges()
+    private List<GraphEditAction> GetChanges()
     {
-        var changes = new List<GraphAction>();
+        var changes = new List<GraphEditAction>();
         if (ID != Node.id)
-            changes.Add(new GraphAction.RenameNode(Node, ID));
+            changes.Add(new GraphEditAction.RenameNode(Node, ID));
         if (ColourSwitchMode != (Node.colourSwitchMode ?? ColourSwitchMode))
         {
             var csm = ColourSwitchMode != Light.ColourSwitchMode.Automatic ? ColourSwitchMode : ((Light.ColourSwitchMode?) null);
-            changes.Add(new GraphAction.EditNode(Node, Node.GetProperty(nameof(Node.colourSwitchMode)), csm));
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.colourSwitchMode)), csm));
         }
         return changes;
     }

@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace OzricEngine;
 
 public record InputSelector(string nodeID, string inputName)
@@ -6,4 +8,7 @@ public record InputSelector(string nodeID, string inputName)
     {
         return nodeID == originalID ? this with { nodeID = newID } : this;
     }
+    
+    [JsonIgnore]
+    public string id => $"{nodeID}.{inputName}";
 }

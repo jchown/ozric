@@ -1,17 +1,21 @@
 using System.Reflection;
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
-using Blazor.Diagrams.Core.Models.Base;
 using OzricEngine.logic;
+using OzricEngine.nodes;
 using OzricUI;
 using OzricUI.Components;
 
-public interface GraphAction
+/// <summary>
+/// Any action that is modelled in the edit history and hence can be undone/redone. 
+/// </summary>
+
+public interface GraphEditAction
 {
     void Undo(GraphEditor editor);
     void Do(GraphEditor editor);
 
-    record AddNode(Node node): GraphAction
+    record AddNode(Node node): GraphEditAction
     {
         public void Do(GraphEditor editor)
         {
@@ -29,7 +33,7 @@ public interface GraphAction
         }
     }
 
-    record RenameNode(Node node, string newID): GraphAction
+    record RenameNode(Node node, string newID): GraphEditAction
     {
         private string oldID = node.id;
         
@@ -44,7 +48,7 @@ public interface GraphAction
         }
     }
 
-    record EditNode(Node node, PropertyInfo property, object? newValue): GraphAction
+    record EditNode(Node node, PropertyInfo property, object? newValue): GraphEditAction
     {
         private object? oldValue = property.GetValue(node);
         
@@ -61,7 +65,7 @@ public interface GraphAction
         }
     }
 
-    record MoveNode(NodeModel node, Point @from, Point to): GraphAction
+    record MoveNode(NodeModel node, Point @from, Point to): GraphEditAction
     {
         public void Do(GraphEditor editor)
         {
@@ -73,13 +77,13 @@ public interface GraphAction
             node.SetPosition(from.X, from.Y);
         }
         
-        public GraphAction WithTo(Point to)
+        public GraphEditAction WithTo(Point to)
         {
             return new MoveNode(node, from, to);
         }
     }
 
-    record RemoveNode(Node node): GraphAction
+    record RemoveNode(Node node): GraphEditAction
     {
         private Point position = Point.Zero;
 
@@ -96,33 +100,37 @@ public interface GraphAction
         }
     }
     
-    record AddLink(BaseLinkModel link): GraphAction
+    record AddEdge(Edge edge): GraphEditAction
     {
         public void Do(GraphEditor editor)
         {
-            editor.diagram.Links.Add(link);
+            editor.Graph.edges.Add(edge.id, edge);
+            editor.AddEdge(edge);
         }
 
         public void Undo(GraphEditor editor)
         {
-            editor.diagram.Links.Remove(link);
+            editor.RemoveEdge(edge);
+            editor.Graph.edges.Remove(edge.id);
         }
     }
     
-    record RemoveLink(BaseLinkModel link): GraphAction
+    record RemoveEdge(Edge edge): GraphEditAction
     {
         public void Do(GraphEditor editor)
         {
-            editor.diagram.Links.Remove(link);
+            editor.RemoveEdge(edge);
+            editor.Graph.edges.Remove(edge.id);
         }
 
         public void Undo(GraphEditor editor)
         {
-            editor.diagram.Links.Add(link);
+            editor.Graph.edges.Add(edge.id, edge);
+            editor.AddEdge(edge);
         }
     }
             
-    record Actions(List<GraphAction> actions): GraphAction
+    record EditActions(List<GraphEditAction> actions): GraphEditAction
     {
         public void Do(GraphEditor editor)
         {

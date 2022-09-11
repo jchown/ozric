@@ -57,6 +57,9 @@ namespace OzricEngine
 
         public float GetNumSecondsSinceOverride(DateTime now)
         {
+            if (lastUpdatedByOther == null)
+                return 999999999;
+            
             return (float)(now - lastUpdatedByOther.Value).TotalSeconds;
         }
         

@@ -7,12 +7,6 @@ public class ModeSwitchModel: GraphNodeModel
 {
     public ModeSwitchModel(ModeSwitch s, Point? point = null): base(s, point)
     {
-        AddPort(new InputBoolean(ModeSwitch.INPUT_NAME, this));
-        
-        foreach (var output in s.outputs)
-        {
-            AddOutput(output.type, output.name);
-        }
     }
     
     public override string Icon => "fluent:table-switch-28-regular";

@@ -1,4 +1,5 @@
 using Blazor.Diagrams.Core.Models;
+using Blazor.Diagrams.Core.Models.Base;
 using OzricEngine.logic;
 
 namespace OzricUI.Shared;
@@ -54,5 +55,10 @@ public class Mapping<GType, DType> where GType: IGraphObject where DType: Blazor
         var d = idToDType[oldID];
         idToDType.Remove(oldID);
         idToDType[newID] = d;
+    }
+
+    public bool HasDiagramModel(DType d)
+    {
+        return idToGType.ContainsKey(d.Id);
     }
 }

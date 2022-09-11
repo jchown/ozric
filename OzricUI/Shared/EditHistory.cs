@@ -10,8 +10,8 @@ namespace OzricUI.Shared;
 public class EditHistory
 {
     private readonly GraphEditor editor;
-    private readonly List<GraphAction> undoActionList;
-    private readonly List<GraphAction> redoActionList;
+    private readonly List<GraphEditAction> undoActionList;
+    private readonly List<GraphEditAction> redoActionList;
     private int actionHistoryMaxSize = 200;
     private bool isTrackingHistory, isDoing;
     private int checkpoint = 0;
@@ -23,24 +23,6 @@ public class EditHistory
         undoActionList = new();
         redoActionList = new();
         isTrackingHistory = true;
-
-        editor.diagram.KeyDown += KeyboardHandle;
-        editor.diagram.Links.Added += Links_Added;
-        editor.diagram.Links.Removed += Links_Removed;
-//        editor.diagram.Nodes.Added += Nodes_Added;
-//        editor.diagram.Nodes.Removed += Nodes_Removed;
-    }
-
-    private void KeyboardHandle(KeyboardEventArgs e)
-    {
-        if (e.CtrlKey && e.Key.Equals("z"))
-        {
-            UndoLastAction();
-        }
-        else if (e.CtrlKey && e.Key.Equals("y"))
-        {
-            RedoLastAction();
-        }
     }
     
     public bool CanUndo()
@@ -99,7 +81,7 @@ public class EditHistory
 
     private void ClearRedoList() => redoActionList.Clear();
 
-    private void RegisterUndoHistoryAction(GraphAction action)
+    private void RegisterUndoHistoryAction(GraphEditAction editAction)
     {
         if (!isTrackingHistory)
             return;
@@ -112,29 +94,7 @@ public class EditHistory
             checkpoint--;
         }
 
-        undoActionList.Add(action);
-    }
-
-    private void Links_Added(BaseLinkModel link)
-    {
-        if (link.TargetNode is null)
-            link.TargetPortChanged += Link_Connected; //In case its a empty link being dragged (listen for its connection)
-        else
-            //In case it was connected instantaneously (via code)
-            RegisterUndoHistoryAction(new GraphAction.AddLink(link)); 
-    }
-
-       
-    private void Link_Connected(BaseLinkModel arg1, PortModel? _, PortModel? outPort)
-    {
-        arg1.SourcePortChanged -= Link_Connected;
-        RegisterUndoHistoryAction(new GraphAction.AddLink(arg1));
-    }
-
-    private void Links_Removed(BaseLinkModel link)
-    {
-        if (link.IsAttached)
-            RegisterUndoHistoryAction(new GraphAction.RemoveLink(link));
+        undoActionList.Add(editAction);
     }
 
     /*
@@ -158,7 +118,7 @@ public class EditHistory
         {
             //  Compress moves of the same object
 
-            if (undoActionList.Last() is GraphAction.MoveNode lastMove)
+            if (undoActionList.Last() is GraphEditAction.MoveNode lastMove)
             {
                 if (lastMove.node == node)
                 {
@@ -168,7 +128,7 @@ public class EditHistory
             }
         }
         
-        RegisterUndoHistoryAction(new GraphAction.MoveNode(node, from, to));
+        RegisterUndoHistoryAction(new GraphEditAction.MoveNode(node, from, to));
     }
 
     public void SetCheckpoint()
@@ -181,7 +141,7 @@ public class EditHistory
         return checkpoint == undoActionList.Count;
     }
 
-    public void Record(Func<GraphAction> action)
+    public void Record(Func<GraphEditAction> action)
     {
         if (isDoing)
             throw new Exception("Cannot nest history recording");
@@ -198,7 +158,7 @@ public class EditHistory
         }
     }
     
-    public void Do(GraphAction action)
+    public void Do(GraphEditAction editAction)
     {
         if (isDoing)
             throw new Exception("Cannot nest history recording");
@@ -206,8 +166,8 @@ public class EditHistory
         isDoing = true;
         try
         {
-            action.Do(editor);
-            RegisterUndoHistoryAction(action);
+            editAction.Do(editor);
+            RegisterUndoHistoryAction(editAction);
         }
         finally
         {

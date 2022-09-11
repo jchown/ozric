@@ -50,9 +50,9 @@ namespace OzricEngine.logic
             return GetOutput(name) != null;
         }
 
-        public Pin GetOutput(string name)
+        protected Pin GetOutput(string name)
         {
-            return outputs.Find(o => o.name == name);
+            return outputs.Find(o => o.name == name)!;
         }
         
         public int GetOutputIndex(string name)
@@ -62,7 +62,7 @@ namespace OzricEngine.logic
 
         protected Pin GetInput(string name)
         {
-            return inputs.Find(o => o.name == name);
+            return inputs.Find(o => o.name == name)!;
         }
         
         public int GetInputIndex(string name)

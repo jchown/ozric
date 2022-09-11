@@ -9,7 +9,6 @@ public class LightModel: EntityModel
 
     public LightModel(Light light, Point? point = null): base(light, point)
     {
-        AddPort(new InputColor(Light.INPUT_NAME, this));
     }
     
     public override string Icon => ICON;

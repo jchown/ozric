@@ -7,7 +7,6 @@ public class DayPhasesModel: GraphNodeModel
 {
     public DayPhasesModel(DayPhases dayPhases, Point? point = null): base(dayPhases, point)
     {
-        AddPort(new OutputMode(DayPhases.OUTPUT_NAME, this));
     }
 
     public override string Icon => "mdi:weather-sunset";

@@ -1,4 +1,5 @@
 using Blazor.Diagrams.Core.Models.Base;
+using Microsoft.AspNetCore.Components.Web;
 using OzricEngine.logic;
 
 namespace OzricUI.Shared;
@@ -15,12 +16,25 @@ public class GraphEditState
         Realtime, Simulated
     }
 
+    public enum Command
+    {
+        Undo, Redo, SetCheckpoint, Delete
+    }
+    
+    /// <summary>
+    /// Events sent to GraphEditor
+    /// </summary>
+
+    public event Action<Command>? OnDoCommand;
+    public event Action<GraphEditAction>? OnDoAction;
+    
+    /// <summary>
+    /// Events sent by GraphEditor
+    /// </summary>
+
     public event Action? OnChanged;
-    public event Action? OnDoUndo;
-    public event Action? OnDoRedo;
-    public event Action? OnDoSetCheckpoint;
-    public event Action<GraphAction>? OnDoAction; 
     public event Action<List<KeyValuePair<SelectableModel, IGraphObject>>>? OnSelectionChanged; 
+    public event Action<KeyboardEventArgs>? OnKeyDown;
 
     public EditMode Mode { get; private set; } = EditMode.View;
     
@@ -47,24 +61,14 @@ public class GraphEditState
         OnChanged?.Invoke();
     }
 
-    public void DoUndo()
+    public void DoCommand(Command command)
     {
-        OnDoUndo?.Invoke();
+        OnDoCommand?.Invoke(command);
     }
 
-    public void DoRedo()
+    public void DoAction(GraphEditAction editAction)
     {
-        OnDoRedo?.Invoke();
-    }
-
-    public void DoSetCheckpoint()
-    {
-        OnDoSetCheckpoint?.Invoke();
-    }
-
-    public void DoAction(GraphAction action)
-    {
-        OnDoAction?.Invoke(action);
+        OnDoAction?.Invoke(editAction);
     }
 
     public void SetHistoryState(EditHistory history)
@@ -78,5 +82,27 @@ public class GraphEditState
     public void SetSelected(List<KeyValuePair<SelectableModel, IGraphObject>> models)
     {
         OnSelectionChanged?.Invoke(models);
+    }
+
+    public void KeyDown(KeyboardEventArgs kea)
+    {
+        OnKeyDown?.Invoke(kea);
+    }
+    
+    public bool IsLocked()
+    {
+        switch (Mode)
+        {
+            case EditMode.View:
+            case EditMode.Saving:
+                return true;
+
+            case EditMode.EditOffline:
+            case EditMode.EditOnline:
+                return false;
+            
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }

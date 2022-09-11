@@ -7,6 +7,7 @@
 @using OzricEngine.nodes
 @using _Imports = OzricUI._Imports
 @using ValueType = OzricEngine.logic.ValueType
+@using Edge = OzricEngine.nodes.Edge
 @implements IDisposable
 
 <div class="diagram-container">
@@ -37,15 +38,13 @@
     private EditHistory GetHistory() => history ?? throw new InvalidOperationException();
 
     private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
-    private readonly Mapping<OzricEngine.nodes.Edge, LinkModel> edgeMappings = new();
+    private readonly Mapping<Edge, LinkModel> edgeMappings = new();
 
     protected override void OnInitialized()
     {
         GraphEditState.OnChanged += OnGraphEditStateChanged;
-        GraphEditState.OnDoUndo += OnDoUndo;
-        GraphEditState.OnDoRedo += OnDoRedo;
-        GraphEditState.OnDoSetCheckpoint += OnDoSetCheckpoint;
-        GraphEditState.OnDoAction += OnDoAction;
+        GraphEditState.OnDoCommand += DoCommand;
+        GraphEditState.OnDoAction += DoAction;
         
         var options = new DiagramOptions
         {
@@ -73,19 +72,49 @@
         diagram.RegisterModelComponent<ColorConstantModel, GraphNodeComponent>();
         diagram.SelectionChanged += OnSelectionChanged;
         diagram.Nodes.Removed += OnNodeRemoved;
-       
+        diagram.Links.Added += OnDiagramLinkAdded;
+        diagram.KeyDown += GraphEditState.KeyDown;
+
         PopulateDiagram();
 
         history = new EditHistory(this);
         UpdateLockedState();
     }
-    
+
+    private void DoCommand(GraphEditState.Command command)
+    {
+        switch (command)
+        {
+            case GraphEditState.Command.Undo:
+                history?.UndoLastAction();
+                OnHistoryChanged();
+                break;
+                
+            case GraphEditState.Command.Redo:
+                history?.RedoLastAction();
+                OnHistoryChanged();
+                break;
+                
+            case GraphEditState.Command.SetCheckpoint:
+                history?.SetCheckpoint();
+                OnHistoryChanged();
+                break;
+                
+            case GraphEditState.Command.Delete:
+                DoDelete();
+                break;
+                
+            default:
+                throw new ArgumentOutOfRangeException(nameof(command), command, null);
+        }
+    }
+
     /// Callback for when the diagram removes a node (user hits delete key)
     
     private void OnNodeRemoved(NodeModel nodeModel)
     {
         var node = nodeMappings.GetGraph((GraphNodeModel) nodeModel);
-        history?.Do(new GraphAction.RemoveNode(node));
+        history?.Do(new GraphEditAction.RemoveNode(node));
         OnHistoryChanged();
         OnSelectionChanged(null);
     }
@@ -93,9 +122,6 @@
     public void Dispose()
     {
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
-        GraphEditState.OnDoUndo -= OnDoUndo;
-        GraphEditState.OnDoRedo -= OnDoRedo;
-        GraphEditState.OnDoSetCheckpoint -= OnDoSetCheckpoint;
     }
 
     private void OnGraphEditStateChanged()
@@ -106,21 +132,21 @@
 
     private void UpdateLockedState()
     {
-        switch (GraphEditState.Mode)
+        SetLocked(GraphEditState.IsLocked());
+    }
+    
+    private void SetLocked(bool locked)
+    {
+        foreach (var node in diagram.Nodes)
         {
-            case GraphEditState.EditMode.View:
-            case GraphEditState.EditMode.Saving:
-                SetLocked(true);
-                break;
+            node.Locked = locked;
 
-            case GraphEditState.EditMode.EditOffline:
-            case GraphEditState.EditMode.EditOnline:
-                SetLocked(false);
-                break;
-
-            default:
-                throw new ArgumentOutOfRangeException();
+            foreach (var port in node.Ports)
+                port.Locked = locked;
         }
+
+        foreach (var link in diagram.Nodes)
+            link.Locked = locked;
     }
 
     private void OnDoUndo()
@@ -141,9 +167,9 @@
         OnHistoryChanged();
     }
     
-    private void OnDoAction(GraphAction action)
+    private void DoAction(GraphEditAction editAction)
     {
-        history?.Do(action);
+        history?.Do(editAction);
         OnHistoryChanged();
     }
 
@@ -224,6 +250,33 @@
         if (diagram.Nodes.Contains(diagramNode))
             diagram.Nodes.Remove(diagramNode);
         Graph.RemoveNode(node);
+    }
+
+    /// Take an existing edge in the Graph and add it as the equivalent model object in the Diagram.
+
+    public void AddEdge(Edge edge)
+    {
+        var fromNodeModel = nodeMappings.GetDiagram(edge.from.nodeID);
+        var toNodeModel = nodeMappings.GetDiagram(edge.to.nodeID);
+        var fromPort = fromNodeModel.GetPort(edge.from.id);
+        var toPort = toNodeModel.GetPort(edge.to.id);
+        
+        var link = new LinkModel(fromPort, toPort);
+
+        edgeMappings.Add(edge, link);
+        diagram.Links.Add(link);
+    }
+    
+    /// Remove the model object that represents the given edge from the Diagram 
+    
+    public void RemoveEdge(Edge edge)
+    {
+        var link = edgeMappings.Remove(edge);
+        
+        if (diagram.Links.Contains(link))
+            diagram.Links.Remove(link);
+
+        Graph.RemoveEdge(edge);
     }
 
     private GraphNodeModel NewNode(Node node, Point? point = null)
@@ -313,20 +366,6 @@
         GraphEditState.SetHistoryState(GetHistory());
     }
 
-    private void SetLocked(bool locked)
-    {
-        foreach (var node in diagram.Nodes)
-        {
-            node.Locked = locked;
-
-            foreach (var port in node.Ports)
-                port.Locked = locked;
-        }
-
-        foreach (var link in diagram.Nodes)
-            link.Locked = locked;
-    }
-
     public List<string> CreateNodes(List<Func<Node>> nodeCreators)
     {
         var pos = new Point(20, 20);
@@ -345,7 +384,7 @@
         return nodeIDs;
     }
 
-    private void OnSelectionChanged(SelectableModel obj)
+    private void OnSelectionChanged(SelectableModel? obj)
     {
         var selected = diagram
             .GetSelectedModels()
@@ -408,4 +447,75 @@
         nodeModel.Refresh();
     }
 
+    ///  Callback from the Diagram
+    
+    private void OnDiagramLinkAdded(BaseLinkModel link)
+    {
+        if (link.TargetNode is null)
+        {
+            //  An empty link being dragged (listen for its connection)
+            
+            link.TargetPortChanged += OnDiagramLinkConnected;
+        }
+        
+    //else
+    //In case it was connected instantaneously (via code)
+       //     RegisterUndoHistoryAction(new GraphAction.AddLink(link)); 
+    }
+
+       
+    private void OnDiagramLinkConnected(BaseLinkModel link, PortModel? inPort, PortModel? outPort)
+    {
+        link.SourcePortChanged -= OnDiagramLinkConnected;
+        
+        var fromNodeModel = (GraphNodeModel) link.SourceNode;
+        var toNodeModel = (GraphNodeModel) link.TargetNode!;
+        
+        var fromNode = nodeMappings.GetGraph(fromNodeModel);
+        var toNode = nodeMappings.GetGraph(toNodeModel);
+        
+        var fromPin = fromNodeModel.GetPin(link.SourcePort!);
+        var toPin = toNodeModel.GetPin(link.TargetPort!);
+
+    // Check the user hasn't just repeated an existing link
+        
+        var from = new OutputSelector(fromNode.id, fromPin.name);
+        var to = new InputSelector(toNode.id, toPin.name);
+        var edge = new Edge(from, to);
+
+        if (Graph.edges.ContainsKey(edge.id))
+            return;
+        
+    //  The diagram link has been added by the library, but we need to remove it and then add it 
+    //  back to both the diagram and the model in order for the undo/redo logic to be simple.
+        
+        diagram.Links.Remove(link);
+        
+        DoAction(new GraphEditAction.AddEdge(edge));       
+    }
+
+    private void DoDelete()
+    {
+        var SelectedItems = diagram.GetSelectedModels().ToList();
+        if (SelectedItems.Count > 0)
+        {
+            var actions = SelectedItems.Select<SelectableModel, GraphEditAction>(selected =>
+            {
+                switch (selected)
+                {
+                    case GraphNodeModel gnm:
+                        return new GraphEditAction.RemoveNode(nodeMappings.GetGraph(gnm));
+
+                    case LinkModel lm:
+                        return new GraphEditAction.RemoveEdge(edgeMappings.GetGraph(lm));
+
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+            }).ToList();
+
+            GraphEditState.DoAction(new GraphEditAction.EditActions(actions));
+        }
+        OnHistoryChanged();
+    }
 }

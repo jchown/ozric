@@ -42,11 +42,11 @@
         ID = Node.id;
     }
 
-    private List<GraphAction> GetChanges()
+    private List<GraphEditAction> GetChanges()
     {
-        var changes = new List<GraphAction>();
+        var changes = new List<GraphEditAction>();
         if (ID != Node.id)
-            changes.Add(new GraphAction.RenameNode(Node, ID));
+            changes.Add(new GraphEditAction.RenameNode(Node, ID));
         return changes;
     }
 }

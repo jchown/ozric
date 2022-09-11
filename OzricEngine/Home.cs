@@ -25,7 +25,7 @@ namespace OzricEngine.logic
             }
         }
 
-        public EntityState GetEntityState(string entityID)
+        public EntityState? GetEntityState(string entityID)
         {
             return states.GetValueOrDefault(entityID);
         }

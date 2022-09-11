@@ -191,15 +191,15 @@
         }
     }
 
-    private List<GraphAction> GetChanges()
+    private List<GraphEditAction> GetChanges()
     {
-        var changes = new List<GraphAction>();
+        var changes = new List<GraphEditAction>();
         if (_id != Node.id)
-            changes.Add(new GraphAction.RenameNode(Node, _id));
+            changes.Add(new GraphEditAction.RenameNode(Node, _id));
 
         var value = GetColorSliders();
         if (value != Node.value)
-            changes.Add(new GraphAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), value));
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), value));
 
         return changes;
     }

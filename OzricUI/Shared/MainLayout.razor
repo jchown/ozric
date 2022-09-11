@@ -29,11 +29,11 @@
             Add
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDel" Disabled="@(!HasSelection)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.Delete" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDelete" Disabled="@(!HasSelection)" hidden="@(!IsEditing)">
             Delete
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.Info" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickInfo" Disabled="@(SelectedNodes.Count != 1)">
+        <MudButton StartIcon="@Icons.Material.Filled.Info" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickInfo" Disabled="@(!CanGetInfo)">
             Info
         </MudButton>
 
@@ -100,10 +100,11 @@
     private Graph Graph { get; set; }
     private GraphLayout GraphLayout { get; set; }
     private GraphEditState GraphEditState { get; set; } = new();
-    private List<KeyValuePair<SelectableModel, IGraphObject>> SelectedNodes { get; set; } = new();
+    private List<KeyValuePair<SelectableModel, IGraphObject>> SelectedItems { get; set; } = new();
 
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
-    private bool HasSelection => (SelectedNodes.Count > 0); 
+    private bool HasSelection => (SelectedItems.Count > 0);
+    private bool CanGetInfo => SelectedItems.Count == 1 && SelectedItems[0].Key is GraphNodeModel;
 
     public bool IsEditing => GraphEditState.IsEditing;
     public bool IsChanged => GraphEditState.IsChanged;
@@ -137,6 +138,7 @@
         GraphLayout = await Data.GetGraphLayoutAsync();
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnSelectionChanged += GraphSelectionChanged;
+        GraphEditState.OnKeyDown += OnDiagramKeyDown;
     }
 
     private void UnloadGraph()
@@ -189,7 +191,7 @@
                 await Task.Delay(100);
                 await EngineService.Restart(Graph);
                 await Data.SetGraphLayoutAsync(GraphLayout);
-                await InvokeAsync(() => GraphEditState.DoSetCheckpoint());
+                await InvokeAsync(() => GraphEditState.DoCommand(GraphEditState.Command.SetCheckpoint));
             }
             catch (Exception e)
             {
@@ -204,12 +206,12 @@
 
     private void OnClickUndo()
     {
-        GraphEditState.DoUndo();
+        GraphEditState.DoCommand(GraphEditState.Command.Undo);
     }
 
     private void OnClickRedo()
     {
-        GraphEditState.DoRedo();
+        GraphEditState.DoCommand(GraphEditState.Command.Redo);
     }
 
     private async Task OnClickAdd()
@@ -261,12 +263,12 @@
 
     private void AddNode(Node node)
     {
-        GraphEditState.DoAction(new GraphAction.AddNode(node));
+        GraphEditState.DoAction(new GraphEditAction.AddNode(node));
     }
 
-    private void GraphSelectionChanged(List<KeyValuePair<SelectableModel, IGraphObject>> nodes)
+    private void GraphSelectionChanged(List<KeyValuePair<SelectableModel, IGraphObject>> items)
     {
-        SelectedNodes = nodes;
+        SelectedItems = items;
         StateHasChanged();
     }
 
@@ -281,12 +283,14 @@
 
     private async Task OnClickInfo()
     {
-        if (SelectedNodes.Count != 1)
+        if (SelectedItems.Count != 1)
             return;
 
-        var (model, node) = SelectedNodes[0];
+        var (model, node) = SelectedItems[0];
+        if (model is not GraphNodeModel)
+            return;
+        
         var modelType = model.GetType();
-
         var dialog = _dialogTypes.First(d => modelType.IsAssignableTo(d.modelType));
         await ShowNodeDialog(model, node, dialog);
     }
@@ -305,14 +309,14 @@
         if (result.Cancelled)
             return;
 
-        var changes = (List<GraphAction>)result.Data;
+        var changes = (List<GraphEditAction>)result.Data;
         if (changes.Count == 0)
             return;
 
         if (GraphEditState.Mode == GraphEditState.EditMode.View)
             GraphEditState.OnEdit();
 
-        GraphEditState.DoAction(new GraphAction.Actions(changes));
+        GraphEditState.DoAction(new GraphEditAction.EditActions(changes));
         StateHasChanged();
     }
 
@@ -334,8 +338,25 @@
         return baseClass == typeof(T) || baseClass.IsSubclassOf(typeof(T));
     }
 
-    private Task OnClickDel()
+    private Task OnClickDelete()
     {
+        GraphEditState.DoCommand(GraphEditState.Command.Delete);        
         return Task.CompletedTask;
+    }
+
+    private void OnDiagramKeyDown(KeyboardEventArgs e)
+    {
+        if (e.CtrlKey && e.Key.Equals("z"))
+        {
+            GraphEditState.DoCommand(GraphEditState.Command.Undo);
+        }
+        else if (e.CtrlKey && e.Key.Equals("y"))
+        {
+            GraphEditState.DoCommand(GraphEditState.Command.Redo);
+        }
+        else if (e.Key == "Delete")
+        {
+            GraphEditState.DoCommand(GraphEditState.Command.Delete);
+        }
     }
 }

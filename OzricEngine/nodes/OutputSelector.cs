@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace OzricEngine;
 
 public record OutputSelector(string nodeID, string outputName)
@@ -6,4 +8,7 @@ public record OutputSelector(string nodeID, string outputName)
     {
         return nodeID == originalID ? this with { nodeID = newID } : this;
     }
+
+    [JsonIgnore]
+    public string id => $"{nodeID}.{outputName}";
 }

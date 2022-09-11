@@ -26,7 +26,7 @@ namespace OzricEngine
             return nodes.Keys;
         }
 
-        public Node GetNode(string nodeId)
+        public Node? GetNode(string nodeId)
         {
             return nodes.GetValueOrDefault(nodeId);
         }
@@ -42,9 +42,17 @@ namespace OzricEngine
         public void RemoveNode(Node node)
         {
             if (!nodes.ContainsKey(node.id))
-                throw new Exception($"The node with ID {node.id} does not exist");
+                throw new Exception($"No node found with ID {node.id}");
 
             nodes.Remove(node.id);
+        }
+        
+        public void RemoveEdge(Edge edge)
+        {
+            if (!edges.ContainsKey(edge.id))
+                throw new Exception($"No edge found with ID {edge.id}");
+
+            edges.Remove(edge.id);
         }
 
         public void Connect(string outputNodeID, string outputPinName, string inputNodeID, string inputPinName)
@@ -56,6 +64,9 @@ namespace OzricEngine
                 throw new Exception($"No node found with ID {inputNodeID}");
 
             var edge = new Edge(new(outputNodeID, outputPinName), new (inputNodeID, inputPinName));
+            if (edges.ContainsKey(edge.id))
+                throw new Exception($"An edge with ID {edge.id} already exists");
+            
             edges[edge.id] = edge;
 
             Log(LogLevel.Debug, "{0}.{1} -> {2}.{3}", outputNodeID, outputPinName, inputNodeID, inputPinName);
