@@ -28,7 +28,7 @@ namespace OzricEngine
                                 return list;
                            
                             case JsonTokenType.String:
-                                list.Add(reader.GetString());
+                                list.Add(reader.GetString()!);
                                 break;
                             
                             default:
@@ -40,7 +40,7 @@ namespace OzricEngine
                 }
 
                 case JsonTokenType.String:
-                    return new List<string> { reader.GetString() };
+                    return new List<string> { reader.GetString()! };
                 
                 default:
                     throw new Exception($"Unexpected type for entity ID: {reader.TokenType}");

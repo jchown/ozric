@@ -49,7 +49,7 @@ namespace OzricEngine
                 if (!jsonDocument.RootElement.TryGetProperty(key, out var typeProperty))
                     throw new JsonException($"Missing {key} in {jsonDocument}");
 
-                var value = typeProperty.GetString();
+                var value = typeProperty.GetString()!;
                 if (!ResultTypes.ContainsKey(value))
                     throw new JsonException($"Unknown class for \"{value}\" of {typeof(T)}");
                     
@@ -58,13 +58,13 @@ namespace OzricEngine
                     throw new JsonException($"Unknown class for \"{value}\" of {typeof(T)}");
 
                 var jsonObject = jsonDocument.RootElement.GetRawText();
-                return (T) JsonSerializer.Deserialize(jsonObject, type, options);
+                return (T) JsonSerializer.Deserialize(jsonObject, type, options)!;
             }
         }
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
-            JsonSerializer.Serialize(writer, (object) value, options);
+            JsonSerializer.Serialize(writer, (object?) value, options);
         }
     }
 }

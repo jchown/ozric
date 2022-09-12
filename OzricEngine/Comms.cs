@@ -150,7 +150,7 @@ namespace OzricEngine
         {
             await Connect();
 
-            var authReq = await Receive<ServerAuthRequired>();
+            var authReq = await Receive<ServerAuthRequired>() ?? throw new Exception("No authentication challenge");
             Log(LogLevel.Info, "Auth requested by HA {0}", authReq.ha_version);
 
             var auth = new ClientAuth(accessToken: llat);

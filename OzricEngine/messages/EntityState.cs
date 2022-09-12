@@ -81,7 +81,7 @@ namespace OzricEngine
             {
                 if (attributes.ContainsKey("color_mode"))
                 {
-                    string colorMode = attributes["color_mode"].ToString();
+                    string colorMode = attributes["color_mode"].ToString()!;
                     string colorKey = colorMode switch
                     {
                         "color_temp" => "color_temp",

@@ -6,15 +6,16 @@
 
         <MudContainer Style="max-height: 60vh; overflow-y: scroll">
 
-            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
+            <MudTextField Label="Title" HelperText="The unique name for this node" Value="ID" />
+
+            <MudTextField Label="Type" HelperText="The type of this node" Value="Type" />
 
         </MudContainer>
 
     </DialogContent>
 
     <DialogActions>
-        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
-        <MudButton OnClick="Cancel">Close</MudButton>
+        <MudButton OnClick="Close">Close</MudButton>
     </DialogActions>
 
 </MudDialog>
@@ -31,22 +32,13 @@
     public Node Node { get; set; }
 
     private string ID;
+    private NodeType Type;
 
-    void Cancel() => MudDialog.Cancel();
-    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
-    
-    private bool HasChanges => GetChanges().Count > 0;
+    void Close() => MudDialog.Cancel();
 
     protected override void OnInitialized()
     {
         ID = Node.id;
-    }
-
-    private List<GraphEditAction> GetChanges()
-    {
-        var changes = new List<GraphEditAction>();
-        if (ID != Node.id)
-            changes.Add(new GraphEditAction.RenameNode(Node, ID));
-        return changes;
+        Type = Node.nodeType;
     }
 }

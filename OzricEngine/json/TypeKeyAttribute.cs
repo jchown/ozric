@@ -16,7 +16,7 @@ namespace OzricEngine
 
         public TypeKeyAttribute(object value)
         {
-            this.value = value.ToString();
+            this.value = value.ToString()!;
         }
     }
 }

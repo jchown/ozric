@@ -13,9 +13,9 @@ namespace OzricEngine.logic
         
         public string name { get; set; }
         public ValueType type { get; set; }
-        public Value value { get; set; }
+        public Value? value { get; set; }
 
-        public Pin(string name, ValueType type, Value value = null)
+        public Pin(string name, ValueType type, Value? value = null)
         {
             this.name = name;
             this.type = type;
@@ -84,7 +84,6 @@ namespace OzricEngine.logic
                     throw new Exception($"Don't know how to assign Color to {type}");
             }
         }
-
 
         private void SetValue(Mode mode)
         {

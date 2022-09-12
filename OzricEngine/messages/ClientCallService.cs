@@ -37,14 +37,14 @@ namespace OzricEngine
             return true;
         }
 
-        public bool Equals(ClientCallService other)
+        public bool Equals(ClientCallService? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return domain == other.domain && service == other.service && Equals(service_data, other.service_data) && Equals(target, other.target);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;

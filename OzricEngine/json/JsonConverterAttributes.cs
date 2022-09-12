@@ -106,7 +106,7 @@ namespace OzricEngine
                     if (type != null)
                     {
                         var listType = typeof(List<>).MakeGenericType(type);
-                        IList typed = (IList)Activator.CreateInstance(listType);
+                        IList typed = (IList) Activator.CreateInstance(listType)!;
                         
                         foreach (var item in list)
                             typed.Add(item);

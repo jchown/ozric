@@ -31,11 +31,11 @@
 
     private bool IsChanged => !IsNotChanged;
     private bool IsNotChanged => GetHistory().IsAtCheckpoint();
-    private bool CanUndo => GraphEditState.IsEditing && (history?.CanUndo() ?? false);
-    private bool CanRedo => GraphEditState.IsEditing && (history?.CanRedo() ?? false);
+    private bool CanUndo => GraphEditState.IsEditing && (GetHistory().CanUndo());
+    private bool CanRedo => GraphEditState.IsEditing && (GetHistory().CanRedo());
 
     private EditHistory? history;
-    private EditHistory GetHistory() => history ?? throw new InvalidOperationException();
+    private EditHistory GetHistory() => history!;
 
     private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
     private readonly Mapping<Edge, LinkModel> edgeMappings = new();
@@ -86,17 +86,17 @@
         switch (command)
         {
             case GraphEditState.Command.Undo:
-                history?.UndoLastAction();
+                GetHistory().UndoLastAction();
                 OnHistoryChanged();
                 break;
                 
             case GraphEditState.Command.Redo:
-                history?.RedoLastAction();
+                GetHistory().RedoLastAction();
                 OnHistoryChanged();
                 break;
                 
             case GraphEditState.Command.SetCheckpoint:
-                history?.SetCheckpoint();
+                GetHistory().SetCheckpoint();
                 OnHistoryChanged();
                 break;
                 
@@ -114,7 +114,7 @@
     private void OnNodeRemoved(NodeModel nodeModel)
     {
         var node = nodeMappings.GetGraph((GraphNodeModel) nodeModel);
-        history?.Do(new GraphEditAction.RemoveNode(node));
+        GetHistory().Do(new GraphEditAction.RemoveNode(node));
         OnHistoryChanged();
         OnSelectionChanged(null);
     }
@@ -151,25 +151,25 @@
 
     private void OnDoUndo()
     {
-        history?.UndoLastAction();
+        GetHistory().UndoLastAction();
         OnHistoryChanged();
     }
 
     private void OnDoRedo()
     {
-        history?.RedoLastAction();
+        GetHistory().RedoLastAction();
         OnHistoryChanged();
     }
 
     private void OnDoSetCheckpoint()
     {
-        history?.SetCheckpoint();
+        GetHistory().SetCheckpoint();
         OnHistoryChanged();
     }
     
     private void DoAction(GraphEditAction editAction)
     {
-        history?.Do(editAction);
+        GetHistory().Do(editAction);
         OnHistoryChanged();
     }
 

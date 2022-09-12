@@ -40,7 +40,7 @@ namespace OzricEngine.logic
                 if (!HasOutput(key))
                     throw new Exception($"No output named {key}");
 
-                var expectedType = GetOutput(key).type;
+                var expectedType = GetOutput(key)?.type;
                 if (expectedType != value.ValueType)
                     throw new Exception($"Expected value of type {expectedType} for {key}, but was {value.ValueType}");
             }
@@ -62,7 +62,7 @@ namespace OzricEngine.logic
 
         private void UpdateValue()
         {
-            var currentMode = GetInput(INPUT_NAME).value as Mode ?? throw new Exception("No 'mode' found");
+            var currentMode = GetInput(INPUT_NAME)?.value as Mode ?? throw new Exception("No 'mode' found");
 
             foreach (var modeValue in modeValues)
             {
