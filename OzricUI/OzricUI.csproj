@@ -18,6 +18,7 @@
 
   <ItemGroup>
     <Folder Include="ext" />
+    <Folder Include="wwwroot\icons" />
   </ItemGroup>
 
 </Project>

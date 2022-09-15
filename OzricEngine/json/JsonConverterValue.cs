@@ -2,9 +2,9 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using OzricEngine.logic;
-using Boolean = OzricEngine.logic.Boolean;
-using ValueType = OzricEngine.logic.ValueType;
+using OzricEngine.Values;
+using Boolean = OzricEngine.Values.Boolean;
+using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine
 {

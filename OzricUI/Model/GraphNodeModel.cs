@@ -3,7 +3,6 @@ using Blazor.Diagrams.Core.Models;
 using OzricEngine.ext;
 using OzricEngine.logic;
 using OzricUI.Shared;
-using ValueType = OzricEngine.logic.ValueType;
 
 namespace OzricUI.Model;
 
@@ -43,51 +42,16 @@ public abstract class GraphNodeModel: NodeModel
 
     private void AddInput(Pin pin)
     {
-        var port = CreateInputPort(pin.type, pin.name);
+        var port = AddPort(new InputPortModel(this, pin, PortAlignment.Left));
         portMappings.Add(pin, port);
     }
 
     private void AddOutput(Pin pin)
     {
-        var port = CreateOutputPort(pin.type, pin.name);
+        var port = AddPort(new OutputPortModel(this, pin, PortAlignment.Right));
         portMappings.Add(pin, port);
     }
 
-    private PortModel CreateInputPort(ValueType valueType, string name)
-    {
-        switch (valueType)
-        {
-            case ValueType.Color:
-                return AddPort(new InputColor(name, this));
-
-            case ValueType.Boolean:
-                return AddPort(new InputBoolean(name, this));
-
-            case ValueType.Mode:
-                return AddPort(new InputMode(name, this));
-
-            default:
-                throw new Exception($"Unknown type: {valueType}");
-        }
-    }
-
-    private PortModel CreateOutputPort(ValueType valueType, string name)
-    {
-        switch (valueType)
-        {
-            case ValueType.Color:
-                return AddPort(new OutputColor(name, this));
-
-            case ValueType.Boolean:
-                return AddPort(new OutputBoolean(name, this));
-
-            case ValueType.Mode:
-                return AddPort(new OutputMode(name, this));
-
-            default:
-                throw new Exception($"Unknown type: {valueType}");
-        }
-    }
     
     public abstract string Icon { get; }
 }

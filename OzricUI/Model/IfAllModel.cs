@@ -1,5 +1,4 @@
 using Blazor.Diagrams.Core.Geometry;
-using JetBrains.Annotations;
 using OzricEngine.logic;
 
 namespace OzricUI.Model;

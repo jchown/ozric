@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text.Json;
 using OzricEngine.logic;
 using Xunit;
+using OzricEngine.Values;
+using Boolean = OzricEngine.Values.Boolean;
 
 namespace OzricEngineTests
 {

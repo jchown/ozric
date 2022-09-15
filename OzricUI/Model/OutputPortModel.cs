@@ -1,10 +1,16 @@
 using Blazor.Diagrams.Core.Models;
+using OzricEngine.logic;
 
 namespace OzricUI.Model;
 
-internal class OutputPortModel: PortModel
+internal class OutputPortModel: GraphPortModel
 {
-    protected OutputPortModel(string id, NodeModel parent, PortAlignment alignment) : base(id, parent, alignment)
+    public OutputPortModel(NodeModel parent, Pin pin, PortAlignment alignment) : base(parent, pin, alignment)
     {
+    }
+    
+    public override bool CanAttachTo(PortModel port)
+    {
+        return port is InputPortModel input && valueType == input.valueType;
     }
 }

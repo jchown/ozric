@@ -8,7 +8,7 @@
     {
         <div class="@(port is InputPortModel ? "input-port" : "output-port")">
             <PortRenderer Port="@port" Class="@(port is InputPortModel ? "input-port" : "output-port")">
-                <span class="iconify" data-icon="akar-icons:circle"></span>
+                <img src="icons/@(((GraphPortModel)port).valueType).png" width="16" height="16" alt="@(((GraphPortModel)port).name)" />
             </PortRenderer>
         </div>
     }

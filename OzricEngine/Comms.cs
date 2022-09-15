@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Net.WebSockets;
 using System.Text;
 using System.Threading;
@@ -22,7 +23,7 @@ namespace OzricEngine
         public CommsStatus Status => new() { messagePump = messagePumpRunning };
 
         private readonly Uri uri;
-        private WatsonWsClient client;
+        private WatsonWsClient? client;
 
         private bool messagePumpRunning;
         private readonly BufferBlock<string> receivedMessages;
@@ -49,18 +50,24 @@ namespace OzricEngine
             this.uri = uri;
             this.llat = llat;
 
-            client = new WatsonWsClient(uri);
-            client.ConfigureOptions(options => options.SetRequestHeader("User-Agent", "OzricEngine/0.7"));
-            client.MessageReceived += OnMessageReceived;
-
             receivedMessages = new BufferBlock<string>();
             pendingEvents = new BlockingCollection<ServerEvent>(new ConcurrentQueue<ServerEvent>());
             asyncResults = new ConcurrentDictionary<int, TaskCompletionSource<ServerResult>>();
         }
 
+        private void CreateClient()
+        {
+            client = new WatsonWsClient(uri);
+            client.ConfigureOptions(options => options.SetRequestHeader("User-Agent", "OzricEngine/0.8"));
+            client.MessageReceived += OnMessageReceived;
+        }
+
         private async Task Connect()
         {
-            await client.StartWithTimeoutAsync((int)ReceiveTimeout.TotalSeconds);
+            if (client == null)
+                CreateClient();
+
+            await client!.StartWithTimeoutAsync((int)ReceiveTimeout.TotalSeconds);
         }
 
         private void OnMessageReceived(object? sender, MessageReceivedEventArgs args)
@@ -70,13 +77,18 @@ namespace OzricEngine
 
         private void Disconnect()
         {
+            if (client == null)
+                return;
+            
             try
             {
+                client.MessageReceived -= OnMessageReceived;
                 client.Stop();
                 client.Dispose();
             }
-            catch (Exception)
+            catch
             {
+                // Ignore errors when disconnecting
             }
             finally
             {
@@ -114,6 +126,9 @@ namespace OzricEngine
             if (t == null)
                 throw new ArgumentNullException(nameof(t) + " is null");
 
+            if (client == null)
+                throw new IOException("Not connected");
+
             if (t is ClientCommand cc && cc.id == 0)
             {
                 lock (sendCommandLock)
@@ -143,7 +158,10 @@ namespace OzricEngine
 
         public void Dispose()
         {
-            client?.Dispose();
+            if (client != null)
+            {
+                Disconnect();
+            }
         }
 
         public async Task Authenticate()
@@ -159,7 +177,7 @@ namespace OzricEngine
             var authResult = await Receive<ServerMessage>();
             switch (authResult)
             {
-                case ServerAuthOK _:
+                case ServerAuthOK:
                     Log(LogLevel.Info, "Auth OK");
                     break;
 
@@ -258,8 +276,9 @@ namespace OzricEngine
                                 Log(LogLevel.Info, "Reconnected");
                                 break;
                             }
-                            catch (Exception)
+                            catch (Exception re)
                             {
+                                Log(LogLevel.Info, "Reconnect failed: {0}", re);
                             }
                         }
                     }

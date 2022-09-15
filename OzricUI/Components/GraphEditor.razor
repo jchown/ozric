@@ -6,7 +6,7 @@
 @using OzricEngine
 @using OzricEngine.nodes
 @using _Imports = OzricUI._Imports
-@using ValueType = OzricEngine.logic.ValueType
+@using ValueType = OzricEngine.Values.ValueType
 @using Edge = OzricEngine.nodes.Edge
 @implements IDisposable
 
@@ -70,8 +70,9 @@
         diagram.RegisterModelComponent<BooleanChoiceModel, GraphNodeComponent>();
         diagram.RegisterModelComponent<ModeSwitchModel, GraphNodeComponent>();
         diagram.RegisterModelComponent<ColorConstantModel, GraphNodeComponent>();
+        diagram.RegisterModelComponent<MediaPlayerModel, GraphNodeComponent>();
         diagram.SelectionChanged += OnSelectionChanged;
-        diagram.Nodes.Removed += OnNodeRemoved;
+        // diagram.Nodes.Removed += OnNodeRemoved;
         diagram.Links.Added += OnDiagramLinkAdded;
         diagram.KeyDown += GraphEditState.KeyDown;
 
@@ -109,6 +110,7 @@
         }
     }
 
+    /*
     /// Callback for when the diagram removes a node (user hits delete key)
     
     private void OnNodeRemoved(NodeModel nodeModel)
@@ -118,6 +120,7 @@
         OnHistoryChanged();
         OnSelectionChanged(null);
     }
+    */
 
     public void Dispose()
     {
@@ -294,6 +297,16 @@
                 model = new SensorModel(s, point);
                 break;
             }
+            case Switch sw:
+            {
+                model = new SwitchModel(sw, point);
+                break;
+            }
+            case MediaPlayer mp:
+            {
+                model = new MediaPlayerModel(mp, point);
+                break;
+            }
             case BooleanChoice s:
             {
                 model = new BooleanChoiceModel(s, point);
@@ -312,11 +325,6 @@
             case DayPhases dp:
             {
                 model = new DayPhasesModel(dp, point);
-                break;
-            }
-            case Switch sw:
-            {
-                model = new SwitchModel(sw, point);
                 break;
             }
             case Constant c:

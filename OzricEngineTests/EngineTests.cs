@@ -5,8 +5,9 @@ using OzricEngine;
 using OzricEngine.ext;
 using OzricEngine.logic;
 using Xunit;
-using Boolean = OzricEngine.logic.Boolean;
-using ValueType = OzricEngine.logic.ValueType;
+using OzricEngine.Values;
+using ValueType = OzricEngine.Values.ValueType;
+using Boolean = OzricEngine.Values.Boolean;
 
 namespace OzricEngineTests
 {

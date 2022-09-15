@@ -1,5 +1,4 @@
 @using OzricEngine.nodes
-@using OzricUI.Model
 @using OzricEngine.logic
 
 <MudDialog>
@@ -11,6 +10,7 @@
         <MudChip Text="Sensors" Value="Category.Sensor" />
         <MudChip Text="Lights" Value="Category.Light"  />
         <MudChip Text="Switches" Value="Category.Switch" />
+        <MudChip Text="Media Players" Value="Category.MediaPlayer"  />
         <MudChip Text="Logic" Value="Category.Logic" />
         <MudChip Text="Constant" Value="Category.Constant" />
 
@@ -63,6 +63,7 @@
     private bool ShowSensors => SelectedCategories.Contains(Category.Sensor);
     private bool ShowLights => SelectedCategories.Contains(Category.Light);
     private bool ShowSwitches => SelectedCategories.Contains(Category.Switch);
+    private bool ShowMediaPlayers => SelectedCategories.Contains(Category.MediaPlayer);
     private bool ShowLogic => SelectedCategories.Contains(Category.Logic);
     private bool ShowConstants => SelectedCategories.Contains(Category.Constant);
 
@@ -98,6 +99,9 @@
 
             case Category.Constant:
                 return ShowConstants;
+                
+            case Category.MediaPlayer:
+                return ShowMediaPlayers;
         }
 
         throw new ArgumentOutOfRangeException();
@@ -107,7 +111,7 @@
     {
         if (selection[0].Value is MudChip)            //  "All" doesn't have a Category enum value 
         {
-            SelectedCategories = new() { Category.Light, Category.Logic, Category.Sensor, Category.Switch, Category.Constant };
+            SelectedCategories = new() { Category.Light, Category.Logic, Category.Sensor, Category.Switch, Category.Constant, Category.MediaPlayer };
         }
         else
         {

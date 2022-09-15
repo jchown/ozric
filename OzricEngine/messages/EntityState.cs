@@ -28,6 +28,8 @@ namespace OzricEngine
                     return Category.Switch;
                 case "sensor":
                     return Category.Sensor;
+                case "media_player":
+                    return Category.MediaPlayer;
                 default:
                     return Category.Unknown;
             }

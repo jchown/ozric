@@ -1,5 +1,3 @@
-using Blazor.Diagrams.Core.Models;
-using Blazor.Diagrams.Core.Models.Base;
 using OzricEngine.logic;
 
 namespace OzricUI.Shared;

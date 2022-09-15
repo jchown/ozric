@@ -9,10 +9,10 @@
         "user_id": "27568fb5326f49428f78e8d219212733",
         "friendly_name": "Jez"
       },
-      "last_changed": "2022-06-08T18:18:16.41727+01:00",
-      "last_updated": "2022-06-08T18:19:05.337464+01:00",
+      "last_changed": "2022-09-07T00:08:01.364642\u002B01:00",
+      "last_updated": "2022-09-07T00:09:05.483638\u002B01:00",
       "context": {
-        "id": "01G5257D3SVZHXPF38FWA2R9HV"
+        "id": "01GCAH0Z2BKEBZWZ1BNSJHFHHX"
       }
     },
     "binary_sensor.remote_ui": {
@@ -22,10 +22,10 @@
         "device_class": "connectivity",
         "friendly_name": "Remote UI"
       },
-      "last_changed": "2022-07-08T00:41:36.88922+01:00",
-      "last_updated": "2022-07-08T00:41:36.88922+01:00",
+      "last_changed": "2022-09-11T00:02:33.161862\u002B01:00",
+      "last_updated": "2022-09-11T00:02:33.161862\u002B01:00",
       "context": {
-        "id": "01G7DGMNQS583CG9ACMQ4RSW4B"
+        "id": "01GCMT7VY9D5F8NH93A44HDTX7"
       }
     },
     "update.home_assistant_supervisor_update": {
@@ -33,21 +33,21 @@
       "state": "off",
       "attributes": {
         "auto_update": true,
-        "installed_version": "2022.07.0",
+        "installed_version": "2022.08.6",
         "in_progress": false,
-        "latest_version": "2022.07.0",
+        "latest_version": "2022.08.6",
         "release_summary": null,
-        "release_url": "https://github.com/home-assistant/supervisor/releases/tag/2022.07.0",
+        "release_url": "https://github.com/home-assistant/supervisor/releases/tag/2022.08.6",
         "skipped_version": null,
         "title": "Home Assistant Supervisor",
         "entity_picture": "https://brands.home-assistant.io/hassio/icon.png",
-        "friendly_name": "Home Assistant Supervisor: Update",
+        "friendly_name": "Home Assistant Supervisor Update",
         "supported_features": 1
       },
-      "last_changed": "2022-07-07T11:08:08.192479+01:00",
-      "last_updated": "2022-07-07T11:08:08.192479+01:00",
+      "last_changed": "2022-09-08T16:23:58.128507\u002B01:00",
+      "last_updated": "2022-09-08T16:23:58.128507\u002B01:00",
       "context": {
-        "id": "01G7C23500HX7B08W8GQXEHVRJ"
+        "id": "01GCEV6QSGDT665M8GZXNR4HNS"
       }
     },
     "update.home_assistant_core_update": {
@@ -55,21 +55,21 @@
       "state": "on",
       "attributes": {
         "auto_update": false,
-        "installed_version": "2022.6.4",
+        "installed_version": "2022.8.7",
         "in_progress": false,
-        "latest_version": "2022.7.5",
+        "latest_version": "2022.9.2",
         "release_summary": null,
         "release_url": "https://www.home-assistant.io/latest-release-notes/",
         "skipped_version": null,
         "title": "Home Assistant Core",
         "entity_picture": "https://brands.home-assistant.io/homeassistant/icon.png",
-        "friendly_name": "Home Assistant Core: Update",
+        "friendly_name": "Home Assistant Core Update",
         "supported_features": 11
       },
-      "last_changed": "2022-06-11T01:15:27.169406+01:00",
-      "last_updated": "2022-07-15T09:08:12.171862+01:00",
+      "last_changed": "2022-09-07T19:26:07.871216\u002B01:00",
+      "last_updated": "2022-09-11T20:27:47.131054\u002B01:00",
       "context": {
-        "id": "01G80ED9MBWMHEC3H3BNZB73Q8"
+        "id": "01GCQ0BAXV2V38VASCYSSX82YV"
       }
     },
     "update.terminal_ssh_update": {
@@ -77,92 +77,70 @@
       "state": "off",
       "attributes": {
         "auto_update": true,
-        "installed_version": "9.6.0",
+        "installed_version": "9.6.1",
         "in_progress": false,
-        "latest_version": "9.6.0",
-        "release_summary": "# Changelog\n\n## 9.6.0\n\n**Breaking change**: RSA keys generated using the SHA-1 hash algorithm\nwere disabled by OpenSSH due to a security vulnerability. If you find\nyour RSA key does not work after update you will need to make a new key\nwith a stronger alg",
+        "latest_version": "9.6.1",
+        "release_summary": "# Changelog\n\n## 9.6.1\n\n- Upgrade Home Assistant CLI to 4.21.0\n\n## 9.6.0\n\n**Breaking change**: RSA keys generated using the SHA-1 hash algorithm\nwere disabled by OpenSSH due to a security vulnerability. If you find\nyour RSA key does not work after update y",
         "release_url": null,
         "skipped_version": null,
-        "title": "Terminal & SSH",
+        "title": "Terminal \u0026 SSH",
         "entity_picture": "/api/hassio/addons/core_ssh/icon",
-        "friendly_name": "Terminal & SSH: Update",
+        "friendly_name": "Terminal \u0026 SSH Update",
         "supported_features": 25
       },
-      "last_changed": "2022-07-08T03:09:30.199421+01:00",
-      "last_updated": "2022-07-08T03:09:30.199421+01:00",
+      "last_changed": "2022-09-07T19:26:07.871644\u002B01:00",
+      "last_updated": "2022-09-07T19:26:07.871644\u002B01:00",
       "context": {
-        "id": "01G7DS3F2QG7CERAZFDPXTAY49"
+        "id": "01GCCK7JBZRTDG2SZJJVTX80GC"
       }
     },
     "update.home_assistant_google_drive_backup_update": {
       "entity_id": "update.home_assistant_google_drive_backup_update",
-      "state": "on",
+      "state": "off",
       "attributes": {
         "auto_update": false,
-        "installed_version": "0.107.2",
+        "installed_version": "0.108.4",
         "in_progress": false,
-        "latest_version": "0.108.2",
-        "release_summary": "## v0.108.2 [2022-06-03]\n* Switched to ignoring 'upgrade' backups by default for new users.\n* Added a warning for existing users if you're not ignoring upgrade backups.\n* Added a warning about google's OOB deprecation for private credential users.\n\n## v0.",
+        "latest_version": "0.108.4",
+        "release_summary": "## v0.108.4 [2022-08-22]\n* Fixed an error causing \u0022Undefined\u0022 to show up for addon descriptions.\n* Fixed an error preventing addon thumbnails from showing up.\n* Fixed an error causing username/password authentication to fail.\n\n## v0.108.3 [2022-08-16]\n* F",
         "release_url": null,
         "skipped_version": null,
         "title": "Home Assistant Google Drive Backup",
         "entity_picture": "/api/hassio/addons/cebe7a76_hassio_google_drive_backup/icon",
-        "friendly_name": "Home Assistant Google Drive Backup: Update",
+        "friendly_name": "Home Assistant Google Drive Backup Update",
         "supported_features": 25
       },
-      "last_changed": "2022-06-08T18:18:25.401542+01:00",
-      "last_updated": "2022-06-12T04:21:29.172158+01:00",
+      "last_changed": "2022-09-07T19:26:07.872128\u002B01:00",
+      "last_updated": "2022-09-07T19:26:07.872128\u002B01:00",
       "context": {
-        "id": "01G5AYWJTMKQT4GD5Y8KSJHZTY"
-      }
-    },
-    "update.ozric_update": {
-      "entity_id": "update.ozric_update",
-      "state": "off",
-      "attributes": {
-        "auto_update": true,
-        "installed_version": "0.7.7",
-        "in_progress": false,
-        "latest_version": "0.7.7",
-        "release_summary": "No changelog found for add-on 7750f853_ozric!",
-        "release_url": null,
-        "skipped_version": null,
-        "title": "Ozric",
-        "entity_picture": "/api/hassio/addons/7750f853_ozric/icon",
-        "friendly_name": "Ozric: Update",
-        "supported_features": 25
-      },
-      "last_changed": "2022-06-08T18:18:25.402406+01:00",
-      "last_updated": "2022-07-17T23:12:28.190495+01:00",
-      "context": {
-        "id": "01G873GMCY97WCATT869P0TV79"
+        "id": "01GCCK7JC06JPRB7D8RR9B5ENV"
       }
     },
     "update.home_assistant_operating_system_update": {
       "entity_id": "update.home_assistant_operating_system_update",
-      "state": "on",
+      "state": "off",
       "attributes": {
         "auto_update": false,
-        "installed_version": "8.1",
+        "installed_version": "8.5",
         "in_progress": false,
-        "latest_version": "8.2",
+        "latest_version": "8.5",
         "release_summary": null,
-        "release_url": "https://github.com/home-assistant/operating-system/releases/tag/8.2",
+        "release_url": "https://github.com/home-assistant/operating-system/releases/tag/8.5",
         "skipped_version": null,
         "title": "Home Assistant Operating System",
         "entity_picture": "https://brands.home-assistant.io/homeassistant/icon.png",
-        "friendly_name": "Home Assistant Operating System: Update",
+        "friendly_name": "Home Assistant Operating System Update",
         "supported_features": 3
       },
-      "last_changed": "2022-06-14T17:15:54.169611+01:00",
-      "last_updated": "2022-06-14T17:15:54.169611+01:00",
+      "last_changed": "2022-09-07T19:26:07.873067\u002B01:00",
+      "last_updated": "2022-09-07T19:26:07.873067\u002B01:00",
       "context": {
-        "id": "01G5HG00SSVES953XDTQR3P0H2"
+        "id": "01GCCK7JC1YH892YFP473NW0GC"
       }
     },
     "scene.evening": {
       "entity_id": "scene.evening",
-      "state": "2022-07-18T19:58:48.609004+00:00",
+      "state": "2022-09-12T18:04:58.316133\u002B00:00",
       "attributes": {
         "entity_id": [
           "light.drawers_strip",
@@ -180,10 +158,10 @@
         "id": "1618168523796",
         "friendly_name": "Evening"
       },
-      "last_changed": "2022-07-18T20:58:48.609429+01:00",
-      "last_updated": "2022-07-18T20:58:48.609429+01:00",
+      "last_changed": "2022-09-12T19:04:58.316403\u002B01:00",
+      "last_updated": "2022-09-12T19:04:58.316403\u002B01:00",
       "context": {
-        "id": "01G89E8KRKYTTP6G1S4YGKKKSF"
+        "id": "01GCSE0DJ8BNBDFG83RDYDD9EH"
       }
     },
     "scene.morning": {
@@ -203,31 +181,10 @@
         "id": "1619382490938",
         "friendly_name": "Morning "
       },
-      "last_changed": "2022-06-08T18:18:25.436244+01:00",
-      "last_updated": "2022-06-08T18:18:25.436244+01:00",
+      "last_changed": "2022-09-07T00:08:08.649776\u002B01:00",
+      "last_updated": "2022-09-07T00:08:08.649776\u002B01:00",
       "context": {
-        "id": "01G525664WY0YJ8D10RAWH6JGM"
-      }
-    },
-    "sun.sun": {
-      "entity_id": "sun.sun",
-      "state": "below_horizon",
-      "attributes": {
-        "next_dawn": "2022-07-19T04:19:45.792653+01:00",
-        "next_dusk": "2022-07-18T22:17:11.715145+01:00",
-        "next_midnight": "2022-07-19T01:18:18+01:00",
-        "next_noon": "2022-07-19T13:18:16+01:00",
-        "next_rising": "2022-07-19T05:08:10.453186+01:00",
-        "next_setting": "2022-07-19T21:27:32.220905+01:00",
-        "elevation": -5.14,
-        "azimuth": 316.36,
-        "rising": false,
-        "friendly_name": "Sun"
-      },
-      "last_changed": "2022-07-18T21:32:48.608254+01:00",
-      "last_updated": "2022-07-18T22:08:48.621206+01:00",
-      "context": {
-        "id": "01G89J8SBD24QNMBVEBBBFVXWX"
+        "id": "01GCAGZ7J9TB8B3ANJSF2AJFSC"
       }
     },
     "zone.home": {
@@ -243,10 +200,114 @@
         "icon": "mdi:home",
         "friendly_name": "Beetham Plaza"
       },
-      "last_changed": "2022-06-08T18:18:25.498881+01:00",
-      "last_updated": "2022-06-08T18:18:25.498881+01:00",
+      "last_changed": "2022-09-07T00:08:08.674693\u002B01:00",
+      "last_updated": "2022-09-07T00:08:08.674693\u002B01:00",
       "context": {
-        "id": "01G525666T7R72P05T90TT0H01"
+        "id": "01GCAGZ7K2JY8968KTMMPYWCXX"
+      }
+    },
+    "sun.sun": {
+      "entity_id": "sun.sun",
+      "state": "below_horizon",
+      "attributes": {
+        "next_dawn": "2022-09-13T06:06:07.58263\u002B01:00",
+        "next_dusk": "2022-09-13T20:08:26.811548\u002B01:00",
+        "next_midnight": "2022-09-13T01:07:55\u002B01:00",
+        "next_noon": "2022-09-13T13:08:05\u002B01:00",
+        "next_rising": "2022-09-13T06:42:12.387896\u002B01:00",
+        "next_setting": "2022-09-13T19:32:32.161621\u002B01:00",
+        "elevation": -26.63,
+        "azimuth": 323.49,
+        "rising": false,
+        "friendly_name": "Sun"
+      },
+      "last_changed": "2022-09-12T19:38:58.321863\u002B01:00",
+      "last_updated": "2022-09-12T22:59:17.710277\u002B01:00",
+      "context": {
+        "id": "01GCSVDFEEPF3R06024QQZJNRX"
+      }
+    },
+    "automation.evening_scene_at_dusk": {
+      "entity_id": "automation.evening_scene_at_dusk",
+      "state": "on",
+      "attributes": {
+        "last_triggered": "2022-09-12T19:04:58.313034\u002B01:00",
+        "mode": "single",
+        "current": 0,
+        "id": "1618168857615",
+        "friendly_name": "Evening Scene at Dusk"
+      },
+      "last_changed": "2022-09-07T00:08:08.886794\u002B01:00",
+      "last_updated": "2022-09-12T19:04:59.622636\u002B01:00",
+      "context": {
+        "id": "01GCSE0DJ8BNBDFG83RDYDD9EH"
+      }
+    },
+    "automation.cancel_smart_life": {
+      "entity_id": "automation.cancel_smart_life",
+      "state": "on",
+      "attributes": {
+        "last_triggered": "2022-09-12T16:01:00.003094\u002B01:00",
+        "mode": "single",
+        "current": 0,
+        "id": "1622226418560",
+        "friendly_name": "Cancel Smart Life"
+      },
+      "last_changed": "2022-09-07T00:08:08.887324\u002B01:00",
+      "last_updated": "2022-09-12T16:01:00.019368\u002B01:00",
+      "context": {
+        "id": "01GCS3FHZ2T980HFM4EQ948ZQW"
+      }
+    },
+    "sensor.hacs": {
+      "entity_id": "sensor.hacs",
+      "state": "2",
+      "attributes": {
+        "repositories": [
+          {
+            "name": "hacs/integration",
+            "display_name": "HACS",
+            "installed_version": "1.25.2",
+            "available_version": "1.27.2"
+          },
+          {
+            "name": "LaggAt/hacs-govee",
+            "display_name": "govee",
+            "installed_version": "0.2.1",
+            "available_version": "0.2.2"
+          }
+        ],
+        "unit_of_measurement": "pending update(s)",
+        "icon": "hacs:hacs",
+        "friendly_name": "hacs"
+      },
+      "last_changed": "2022-09-07T00:09:12.730673\u002B01:00",
+      "last_updated": "2022-09-11T14:09:08.056236\u002B01:00",
+      "context": {
+        "id": "01GCPAP0AR9QWT4SF78ZTRVCKG"
+      }
+    },
+    "media_player.str_dn1050_bf66bc": {
+      "entity_id": "media_player.str_dn1050_bf66bc",
+      "state": "unavailable",
+      "attributes": {
+        "friendly_name": "STR-DN1050 BF66BC",
+        "supported_features": 0
+      },
+      "last_changed": "2022-09-12T22:23:55.08988\u002B01:00",
+      "last_updated": "2022-09-12T22:23:55.08988\u002B01:00",
+      "context": {
+        "id": "01GCSSCPJHNESPWXYFJF21734Y"
+      }
+    },
+    "govee.state": {
+      "entity_id": "govee.state",
+      "state": "async_setup called",
+      "attributes": {},
+      "last_changed": "2022-09-07T00:08:55.83719\u002B01:00",
+      "last_updated": "2022-09-07T00:08:55.83719\u002B01:00",
+      "context": {
+        "id": "01GCAH0NMXWABCA95VWNGHJQ7K"
       }
     },
     "binary_sensor.rpi_power_status": {
@@ -257,42 +318,251 @@
         "icon": "mdi:raspberry-pi",
         "friendly_name": "RPi Power status"
       },
-      "last_changed": "2022-06-08T18:18:25.554134+01:00",
-      "last_updated": "2022-06-08T18:18:25.554134+01:00",
+      "last_changed": "2022-09-07T00:09:01.138966\u002B01:00",
+      "last_updated": "2022-09-07T00:09:01.138966\u002B01:00",
       "context": {
-        "id": "01G525668JWTP2QV3S6N5DKW4D"
+        "id": "01GCAH0TTJ8EQB624X5N0PRPCN"
       }
     },
-    "automation.evening_scene_at_dusk": {
-      "entity_id": "automation.evening_scene_at_dusk",
-      "state": "on",
+    "sensor.jez_s_ipad_battery_level": {
+      "entity_id": "sensor.jez_s_ipad_battery_level",
+      "state": "unknown",
       "attributes": {
-        "last_triggered": "2022-07-18T20:58:48.596374+01:00",
-        "mode": "single",
-        "current": 0,
-        "id": "1618168857615",
-        "friendly_name": "Evening Scene at Dusk"
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "icon": "mdi:battery-90",
+        "friendly_name": "Jez\u0027s iPad Battery Level"
       },
-      "last_changed": "2022-06-08T18:18:25.620863+01:00",
-      "last_updated": "2022-07-18T20:58:49.966226+01:00",
+      "last_changed": "2022-09-07T00:09:03.100079\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.100079\u002B01:00",
       "context": {
-        "id": "01G89E8KRKYTTP6G1S4YGKKKSF"
+        "id": "01GCAH0WQWMB28EQAJTW7347F5"
       }
     },
-    "automation.cancel_smart_life": {
-      "entity_id": "automation.cancel_smart_life",
-      "state": "on",
+    "sensor.jez_s_ipad_battery_state": {
+      "entity_id": "sensor.jez_s_ipad_battery_state",
+      "state": "unknown",
       "attributes": {
-        "last_triggered": "2022-07-18T16:01:00.002951+01:00",
-        "mode": "single",
-        "current": 0,
-        "id": "1622226418560",
-        "friendly_name": "Cancel Smart Life"
+        "Low Power Mode": false,
+        "icon": "mdi:battery-90",
+        "friendly_name": "Jez\u0027s iPad Battery State"
       },
-      "last_changed": "2022-06-08T18:18:25.621628+01:00",
-      "last_updated": "2022-07-18T16:01:00.023058+01:00",
+      "last_changed": "2022-09-07T00:09:03.100475\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.100475\u002B01:00",
       "context": {
-        "id": "01G88X79Z1Y8VJFZRZ2DPXV461"
+        "id": "01GCAH0WQW171J5P6HE81QBZWS"
+      }
+    },
+    "sensor.jez_s_ipad_storage": {
+      "entity_id": "sensor.jez_s_ipad_storage",
+      "state": "unknown",
+      "attributes": {
+        "Available": "3.39 GB",
+        "Available (Important)": "9.12 GB",
+        "Available (Opportunistic)": "2.11 GB",
+        "Total": "63.98 GB",
+        "unit_of_measurement": "% available",
+        "icon": "mdi:database",
+        "friendly_name": "Jez\u0027s iPad Storage"
+      },
+      "last_changed": "2022-09-07T00:09:03.100735\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.100735\u002B01:00",
+      "context": {
+        "id": "01GCAH0WQWCZCMA469ARFJ77B3"
+      }
+    },
+    "sensor.jez_s_ipad_bssid": {
+      "entity_id": "sensor.jez_s_ipad_bssid",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "Jez\u0027s iPad BSSID",
+        "icon": "mdi:wifi-off"
+      },
+      "last_changed": "2022-09-07T00:09:03.100963\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.100963\u002B01:00",
+      "context": {
+        "id": "01GCAH0WQW1GH0AG70HEH7Q0C1"
+      }
+    },
+    "sensor.jez_s_ipad_ssid": {
+      "entity_id": "sensor.jez_s_ipad_ssid",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "Jez\u0027s iPad SSID",
+        "icon": "mdi:wifi-off"
+      },
+      "last_changed": "2022-09-07T00:09:03.101212\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.101212\u002B01:00",
+      "context": {
+        "id": "01GCAH0WQX8P77P9951DN430YW"
+      }
+    },
+    "sensor.jez_s_ipad_connection_type": {
+      "entity_id": "sensor.jez_s_ipad_connection_type",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "Jez\u0027s iPad Connection Type",
+        "icon": "mdi:wifi"
+      },
+      "last_changed": "2022-09-07T00:09:03.10143\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.10143\u002B01:00",
+      "context": {
+        "id": "01GCAH0WQXPES25WSSM2H4Z2RS"
+      }
+    },
+    "sensor.jez_s_ipad_geocoded_location": {
+      "entity_id": "sensor.jez_s_ipad_geocoded_location",
+      "state": "unknown",
+      "attributes": {
+        "friendly_name": "Jez\u0027s iPad Geocoded Location",
+        "icon": "mdi:map"
+      },
+      "last_changed": "2022-09-07T00:09:03.101643\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.101643\u002B01:00",
+      "context": {
+        "id": "01GCAH0WQX5TKHPQSJMC07VCFM"
+      }
+    },
+    "sensor.jez_s_ipad_last_update_trigger": {
+      "entity_id": "sensor.jez_s_ipad_last_update_trigger",
+      "state": "unknown",
+      "attributes": {
+        "icon": "mdi:cellphone-wireless",
+        "friendly_name": "Jez\u0027s iPad Last Update Trigger"
+      },
+      "last_changed": "2022-09-07T00:09:03.101852\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.101852\u002B01:00",
+      "context": {
+        "id": "01GCAH0WQX3YHASDKGZY8PN3VD"
+      }
+    },
+    "sensor.milky_way_battery_level": {
+      "entity_id": "sensor.milky_way_battery_level",
+      "state": "46",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "icon": "mdi:battery-40",
+        "friendly_name": "Milky-way Battery Level"
+      },
+      "last_changed": "2022-09-12T22:12:06.194342\u002B01:00",
+      "last_updated": "2022-09-12T22:12:06.194342\u002B01:00",
+      "context": {
+        "id": "01GCSRQ29J7HG5J0C9BAK0Y7A6"
+      }
+    },
+    "sensor.milky_way_battery_state": {
+      "entity_id": "sensor.milky_way_battery_state",
+      "state": "discharging",
+      "attributes": {
+        "icon": "mdi:battery-minus",
+        "friendly_name": "Milky-way Battery State"
+      },
+      "last_changed": "2022-09-12T08:35:00.344294\u002B01:00",
+      "last_updated": "2022-09-12T08:35:00.344294\u002B01:00",
+      "context": {
+        "id": "01GCR9YXFR1HMZ8GXSJ1Z8B01W"
+      }
+    },
+    "sensor.milky_way_charger_type": {
+      "entity_id": "sensor.milky_way_charger_type",
+      "state": "none",
+      "attributes": {
+        "icon": "mdi:battery",
+        "friendly_name": "Milky-way Charger Type"
+      },
+      "last_changed": "2022-09-12T08:35:00.345952\u002B01:00",
+      "last_updated": "2022-09-12T08:35:00.345952\u002B01:00",
+      "context": {
+        "id": "01GCR9YXFSPEP7KPHV4KSTJH1R"
+      }
+    },
+    "sensor.milky_way_battery_health": {
+      "entity_id": "sensor.milky_way_battery_health",
+      "state": "good",
+      "attributes": {
+        "icon": "mdi:battery-heart-variant",
+        "friendly_name": "Milky-way Battery Health"
+      },
+      "last_changed": "2022-09-07T00:37:56.278189\u002B01:00",
+      "last_updated": "2022-09-07T00:37:56.278189\u002B01:00",
+      "context": {
+        "id": "01GCAJNS9PHMDW9TBDB6XGMKEZ"
+      }
+    },
+    "sensor.milky_way_battery_temperature": {
+      "entity_id": "sensor.milky_way_battery_temperature",
+      "state": "31.2",
+      "attributes": {
+        "state_class": "measurement",
+        "unit_of_measurement": "\u00B0C",
+        "device_class": "temperature",
+        "icon": "mdi:battery",
+        "friendly_name": "Milky-way Battery Temperature"
+      },
+      "last_changed": "2022-09-12T22:12:06.195653\u002B01:00",
+      "last_updated": "2022-09-12T22:12:06.195653\u002B01:00",
+      "context": {
+        "id": "01GCSRQ29KRX1NPRXGADCR511M"
+      }
+    },
+    "sensor.milky_way_battery_power": {
+      "entity_id": "sensor.milky_way_battery_power",
+      "state": "0.0",
+      "attributes": {
+        "state_class": "measurement",
+        "current": -0.000992,
+        "voltage": 3.836,
+        "unit_of_measurement": "W",
+        "device_class": "power",
+        "icon": "mdi:battery-minus",
+        "friendly_name": "Milky-way Battery Power"
+      },
+      "last_changed": "2022-09-12T19:45:54.592917\u002B01:00",
+      "last_updated": "2022-09-12T22:12:06.19669\u002B01:00",
+      "context": {
+        "id": "01GCSRQ29MRP4HPT68XE2GDNMF"
+      }
+    },
+    "binary_sensor.milky_way_is_charging": {
+      "entity_id": "binary_sensor.milky_way_is_charging",
+      "state": "off",
+      "attributes": {
+        "device_class": "plug",
+        "icon": "mdi:power-plug-off",
+        "friendly_name": "Milky-way Is Charging"
+      },
+      "last_changed": "2022-09-12T08:35:00.345159\u002B01:00",
+      "last_updated": "2022-09-12T08:35:00.345159\u002B01:00",
+      "context": {
+        "id": "01GCR9YXFSJGGTSMGWHAV5TZ4R"
+      }
+    },
+    "device_tracker.jez_s_ipad": {
+      "entity_id": "device_tracker.jez_s_ipad",
+      "state": "unknown",
+      "attributes": {
+        "source_type": "gps",
+        "friendly_name": "Jez\u0027s iPad"
+      },
+      "last_changed": "2022-09-07T00:09:03.492777\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.492777\u002B01:00",
+      "context": {
+        "id": "01GCAH0X44GJSHZP9FYQV94JHH"
+      }
+    },
+    "device_tracker.sm_g991b": {
+      "entity_id": "device_tracker.sm_g991b",
+      "state": "unknown",
+      "attributes": {
+        "source_type": "gps",
+        "friendly_name": "Milky-way"
+      },
+      "last_changed": "2022-09-07T00:09:03.493241\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.493241\u002B01:00",
+      "context": {
+        "id": "01GCAH0X45QC96HHD9FZW32ZR1"
       }
     },
     "binary_sensor.music_area_entertainment_configuration": {
@@ -302,10 +572,10 @@
         "device_class": "running",
         "friendly_name": "Music area: Entertainment Configuration"
       },
-      "last_changed": "2022-06-08T18:18:26.79521+01:00",
-      "last_updated": "2022-06-08T18:18:26.79521+01:00",
+      "last_changed": "2022-09-07T00:09:03.516821\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.516821\u002B01:00",
       "context": {
-        "id": "01G52567FB46J1JHT35H5R967E"
+        "id": "01GCAH0X4WJTAGQBJDK4NRHE4X"
       }
     },
     "binary_sensor.entertainment_area_1_entertainment_configuration": {
@@ -315,75 +585,10 @@
         "device_class": "running",
         "friendly_name": "Entertainment area 1: Entertainment Configuration"
       },
-      "last_changed": "2022-06-08T18:18:26.796447+01:00",
-      "last_updated": "2022-06-08T18:18:26.796447+01:00",
+      "last_changed": "2022-09-07T00:09:03.517438\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.517438\u002B01:00",
       "context": {
-        "id": "01G52567FC42R586R9S84VXR8Z"
-      }
-    },
-    "weather.home": {
-      "entity_id": "weather.home",
-      "state": "sunny",
-      "attributes": {
-        "temperature": 28,
-        "humidity": 49,
-        "pressure": 1014,
-        "wind_bearing": 350.1,
-        "wind_speed": 2.2,
-        "forecast": [
-          {
-            "condition": "partlycloudy",
-            "precipitation": 0.2,
-            "temperature": 34.3,
-            "templow": 18.7,
-            "datetime": "2022-07-19T12:00:00+01:00",
-            "wind_bearing": 157.1,
-            "wind_speed": 24.5
-          },
-          {
-            "condition": "cloudy",
-            "precipitation": 0,
-            "temperature": 18.7,
-            "templow": 15.8,
-            "datetime": "2022-07-20T12:00:00+01:00",
-            "wind_bearing": 307.6,
-            "wind_speed": 29.5
-          },
-          {
-            "condition": "rainy",
-            "precipitation": 0.7,
-            "temperature": 17.2,
-            "templow": 14.5,
-            "datetime": "2022-07-21T12:00:00+01:00",
-            "wind_bearing": 308.9,
-            "wind_speed": 21.2
-          },
-          {
-            "condition": "rainy",
-            "precipitation": 8.2,
-            "temperature": 19.4,
-            "templow": 15.3,
-            "datetime": "2022-07-22T12:00:00+01:00",
-            "wind_bearing": 133.8,
-            "wind_speed": 11.9
-          },
-          {
-            "condition": "cloudy",
-            "precipitation": 0,
-            "temperature": 20.5,
-            "templow": 15.4,
-            "datetime": "2022-07-23T12:00:00+01:00",
-            "wind_bearing": 355.9,
-            "wind_speed": 10.8
-          }
-        ],
-        "attribution": "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.",
-        "friendly_name": "Beetham Plaza"
-      },
-      "last_changed": "2022-07-18T19:41:03.52641+01:00",
-      "last_updated": "2022-07-18T21:33:03.726116+01:00",
-      "context": {
-        "id": "01G89G7AQEQMF6PS9JNBWR5ATB"
+        "id": "01GCAH0X4XV6B6AX5VTAA78F5K"
       }
     },
     "scene.living_room_concentrate": {
@@ -398,10 +603,10 @@
         "is_dynamic": false,
         "friendly_name": "Living Room Concentrate"
       },
-      "last_changed": "2022-06-08T18:18:26.852982+01:00",
-      "last_updated": "2022-06-08T18:18:26.852982+01:00",
+      "last_changed": "2022-09-07T00:09:03.575885\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.575885\u002B01:00",
       "context": {
-        "id": "01G52567H4TG0J9AW3JS21MH1H"
+        "id": "01GCAH0X6Q16K033GFTX2PBHR9"
       }
     },
     "scene.kitchen_bright": {
@@ -416,15 +621,15 @@
         "is_dynamic": false,
         "friendly_name": "Kitchen Bright"
       },
-      "last_changed": "2022-06-08T18:18:26.853582+01:00",
-      "last_updated": "2022-06-08T18:18:26.853582+01:00",
+      "last_changed": "2022-09-07T00:09:03.576281\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.576281\u002B01:00",
       "context": {
-        "id": "01G52567H5AF1RY6QTGWTFM0Q8"
+        "id": "01GCAH0X6RRGKV4YDMR2XHFDGP"
       }
     },
     "scene.kitchen_arctic_aurora": {
       "entity_id": "scene.kitchen_arctic_aurora",
-      "state": "unknown",
+      "state": "2022-08-08T21:34:30.371080\u002B00:00",
       "attributes": {
         "group_name": "Kitchen",
         "group_type": "room",
@@ -434,10 +639,10 @@
         "is_dynamic": true,
         "friendly_name": "Kitchen Arctic aurora"
       },
-      "last_changed": "2022-06-08T18:18:26.854042+01:00",
-      "last_updated": "2022-06-08T18:18:26.854042+01:00",
+      "last_changed": "2022-09-07T00:09:03.576557\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.576557\u002B01:00",
       "context": {
-        "id": "01G52567H6ZCRGNTDBB1Q7HTBV"
+        "id": "01GCAH0X6REZZG7YRG0N83JDRK"
       }
     },
     "scene.living_room_dimmed": {
@@ -452,10 +657,10 @@
         "is_dynamic": false,
         "friendly_name": "Living Room Dimmed"
       },
-      "last_changed": "2022-06-08T18:18:26.854373+01:00",
-      "last_updated": "2022-06-08T18:18:26.854373+01:00",
+      "last_changed": "2022-09-07T00:09:03.576806\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.576806\u002B01:00",
       "context": {
-        "id": "01G52567H6RG3SMW2W9WXNV5QQ"
+        "id": "01GCAH0X6RZTX8DH0QWEAMSCEJ"
       }
     },
     "scene.kitchen_savanna_sunset": {
@@ -470,10 +675,10 @@
         "is_dynamic": true,
         "friendly_name": "Kitchen Savanna sunset"
       },
-      "last_changed": "2022-06-08T18:18:26.854676+01:00",
-      "last_updated": "2022-06-08T18:18:26.854676+01:00",
+      "last_changed": "2022-09-07T00:09:03.577047\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.577047\u002B01:00",
       "context": {
-        "id": "01G52567H69BY9RFW36FM7G6A9"
+        "id": "01GCAH0X6SWDHMVF3VTJCAVZEQ"
       }
     },
     "scene.kitchen_read": {
@@ -488,10 +693,10 @@
         "is_dynamic": false,
         "friendly_name": "Kitchen Read"
       },
-      "last_changed": "2022-06-08T18:18:26.855126+01:00",
-      "last_updated": "2022-06-08T18:18:26.855126+01:00",
+      "last_changed": "2022-09-07T00:09:03.577287\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.577287\u002B01:00",
       "context": {
-        "id": "01G52567H7F8CNQSAYHS22TKSV"
+        "id": "01GCAH0X6SWTJK2EZFTK6P9N87"
       }
     },
     "scene.bedroom_read": {
@@ -506,10 +711,10 @@
         "is_dynamic": false,
         "friendly_name": "Bedroom Read"
       },
-      "last_changed": "2022-06-08T18:18:26.855556+01:00",
-      "last_updated": "2022-06-08T18:18:26.855556+01:00",
+      "last_changed": "2022-09-07T00:09:03.577524\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.577524\u002B01:00",
       "context": {
-        "id": "01G52567H7Q3ACJMEZVWRBKDPN"
+        "id": "01GCAH0X6S9090DB5YKX1Z5TTR"
       }
     },
     "scene.bedroom_relax": {
@@ -524,10 +729,10 @@
         "is_dynamic": false,
         "friendly_name": "Bedroom Relax"
       },
-      "last_changed": "2022-06-08T18:18:26.856099+01:00",
-      "last_updated": "2022-06-08T18:18:26.856099+01:00",
+      "last_changed": "2022-09-07T00:09:03.577754\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.577754\u002B01:00",
       "context": {
-        "id": "01G52567H8MYWHYSC8J1J5Z1NQ"
+        "id": "01GCAH0X6SX6ERZ211PJ6SFN03"
       }
     },
     "scene.bedroom_dimmed": {
@@ -542,10 +747,10 @@
         "is_dynamic": false,
         "friendly_name": "Bedroom Dimmed"
       },
-      "last_changed": "2022-06-08T18:18:26.856516+01:00",
-      "last_updated": "2022-06-08T18:18:26.856516+01:00",
+      "last_changed": "2022-09-07T00:09:03.578019\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.578019\u002B01:00",
       "context": {
-        "id": "01G52567H8Q7NZP2XV17EEJB82"
+        "id": "01GCAH0X6TA3S7ZZNJ9ZG6GYT4"
       }
     },
     "scene.living_room_nightlight": {
@@ -560,10 +765,10 @@
         "is_dynamic": false,
         "friendly_name": "Living Room Nightlight"
       },
-      "last_changed": "2022-06-08T18:18:26.856824+01:00",
-      "last_updated": "2022-06-08T18:18:26.856824+01:00",
+      "last_changed": "2022-09-07T00:09:03.578257\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.578257\u002B01:00",
       "context": {
-        "id": "01G52567H8H80N1A9FRZ0MF2V9"
+        "id": "01GCAH0X6TJT3499FNWSG8YH2M"
       }
     },
     "scene.bedroom_concentrate": {
@@ -578,10 +783,10 @@
         "is_dynamic": false,
         "friendly_name": "Bedroom Concentrate"
       },
-      "last_changed": "2022-06-08T18:18:26.857195+01:00",
-      "last_updated": "2022-06-08T18:18:26.857195+01:00",
+      "last_changed": "2022-09-07T00:09:03.578487\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.578487\u002B01:00",
       "context": {
-        "id": "01G52567H9E728BJE48JTVZJV8"
+        "id": "01GCAH0X6T83W8T5RYA4ZN78SP"
       }
     },
     "scene.kitchen_energize": {
@@ -596,10 +801,10 @@
         "is_dynamic": false,
         "friendly_name": "Kitchen Energize"
       },
-      "last_changed": "2022-06-08T18:18:26.857635+01:00",
-      "last_updated": "2022-06-08T18:18:26.857635+01:00",
+      "last_changed": "2022-09-07T00:09:03.578717\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.578717\u002B01:00",
       "context": {
-        "id": "01G52567H9WJGHTCVC2SX94FWB"
+        "id": "01GCAH0X6TNY2WAVG5A8CZQXPB"
       }
     },
     "scene.living_room_savanna_sunset": {
@@ -614,10 +819,10 @@
         "is_dynamic": true,
         "friendly_name": "Living Room Savanna sunset"
       },
-      "last_changed": "2022-06-08T18:18:26.858041+01:00",
-      "last_updated": "2022-06-08T18:18:26.858041+01:00",
+      "last_changed": "2022-09-07T00:09:03.57904\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.57904\u002B01:00",
       "context": {
-        "id": "01G52567HAXK3VCSNDAP0J7W65"
+        "id": "01GCAH0X6VWB15HY9S2TAVNMJ2"
       }
     },
     "scene.living_room_arctic_aurora": {
@@ -632,10 +837,10 @@
         "is_dynamic": true,
         "friendly_name": "Living Room Arctic aurora"
       },
-      "last_changed": "2022-06-08T18:18:26.858479+01:00",
-      "last_updated": "2022-06-08T18:18:26.858479+01:00",
+      "last_changed": "2022-09-07T00:09:03.57927\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.57927\u002B01:00",
       "context": {
-        "id": "01G52567HAWA1QAZ7W4DCRSXKT"
+        "id": "01GCAH0X6VK154CD19F3E1FAHK"
       }
     },
     "scene.living_room_relax": {
@@ -650,10 +855,10 @@
         "is_dynamic": false,
         "friendly_name": "Living Room Relax"
       },
-      "last_changed": "2022-06-08T18:18:26.860048+01:00",
-      "last_updated": "2022-06-08T18:18:26.860048+01:00",
+      "last_changed": "2022-09-07T00:09:03.579514\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.579514\u002B01:00",
       "context": {
-        "id": "01G52567HCRXGZCT5PM7XD860D"
+        "id": "01GCAH0X6V32E0VDAQA1YSY9PQ"
       }
     },
     "scene.kitchen_tropical_twilight": {
@@ -668,10 +873,10 @@
         "is_dynamic": true,
         "friendly_name": "Kitchen Tropical twilight"
       },
-      "last_changed": "2022-06-08T18:18:26.860656+01:00",
-      "last_updated": "2022-06-08T18:18:26.860656+01:00",
+      "last_changed": "2022-09-07T00:09:03.579771\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.579771\u002B01:00",
       "context": {
-        "id": "01G52567HC0VYH9V3ZGFFD7X3G"
+        "id": "01GCAH0X6V8GHKXCGF90DCCJ42"
       }
     },
     "scene.bedroom_savanna_sunset": {
@@ -686,10 +891,10 @@
         "is_dynamic": true,
         "friendly_name": "Bedroom Savanna sunset"
       },
-      "last_changed": "2022-06-08T18:18:26.8612+01:00",
-      "last_updated": "2022-06-08T18:18:26.8612+01:00",
+      "last_changed": "2022-09-07T00:09:03.58005\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.58005\u002B01:00",
       "context": {
-        "id": "01G52567HDSSRS68Q6H9WM88S3"
+        "id": "01GCAH0X6W64E02CEFWT9142Q0"
       }
     },
     "scene.kitchen_dimmed": {
@@ -704,10 +909,10 @@
         "is_dynamic": false,
         "friendly_name": "Kitchen Dimmed"
       },
-      "last_changed": "2022-06-08T18:18:26.861662+01:00",
-      "last_updated": "2022-06-08T18:18:26.861662+01:00",
+      "last_changed": "2022-09-07T00:09:03.585058\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.585058\u002B01:00",
       "context": {
-        "id": "01G52567HDABAAFG6EXKTCXY7H"
+        "id": "01GCAH0X71FY2SP82KWX8M200H"
       }
     },
     "scene.living_room_read": {
@@ -722,10 +927,10 @@
         "is_dynamic": false,
         "friendly_name": "Living Room Read"
       },
-      "last_changed": "2022-06-08T18:18:26.86212+01:00",
-      "last_updated": "2022-06-08T18:18:26.86212+01:00",
+      "last_changed": "2022-09-07T00:09:03.585541\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.585541\u002B01:00",
       "context": {
-        "id": "01G52567HEKXM704Y11E21ECF9"
+        "id": "01GCAH0X71Z108VNS305HGCET5"
       }
     },
     "scene.kitchen_nightlight": {
@@ -740,10 +945,10 @@
         "is_dynamic": false,
         "friendly_name": "Kitchen Nightlight"
       },
-      "last_changed": "2022-06-08T18:18:26.862564+01:00",
-      "last_updated": "2022-06-08T18:18:26.862564+01:00",
+      "last_changed": "2022-09-07T00:09:03.585808\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.585808\u002B01:00",
       "context": {
-        "id": "01G52567HE5QX9RT6KMFEMXCG8"
+        "id": "01GCAH0X71TKSF8B4N5EM6AJ77"
       }
     },
     "scene.bedroom_spring_blossom": {
@@ -758,10 +963,10 @@
         "is_dynamic": true,
         "friendly_name": "Bedroom Spring blossom"
       },
-      "last_changed": "2022-06-08T18:18:26.862989+01:00",
-      "last_updated": "2022-06-08T18:18:26.862989+01:00",
+      "last_changed": "2022-09-07T00:09:03.586059\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.586059\u002B01:00",
       "context": {
-        "id": "01G52567HE4EXZN5GEE7DW96H8"
+        "id": "01GCAH0X726VD2RDF8KKR5RV4H"
       }
     },
     "scene.bedroom_energize": {
@@ -776,10 +981,10 @@
         "is_dynamic": false,
         "friendly_name": "Bedroom Energize"
       },
-      "last_changed": "2022-06-08T18:18:26.863309+01:00",
-      "last_updated": "2022-06-08T18:18:26.863309+01:00",
+      "last_changed": "2022-09-07T00:09:03.586301\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.586301\u002B01:00",
       "context": {
-        "id": "01G52567HFJS847ZRVKX1XF1PN"
+        "id": "01GCAH0X72BMREPGSPG51ZT0DR"
       }
     },
     "scene.living_room_energize": {
@@ -794,10 +999,10 @@
         "is_dynamic": false,
         "friendly_name": "Living Room Energize"
       },
-      "last_changed": "2022-06-08T18:18:26.8636+01:00",
-      "last_updated": "2022-06-08T18:18:26.8636+01:00",
+      "last_changed": "2022-09-07T00:09:03.586537\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.586537\u002B01:00",
       "context": {
-        "id": "01G52567HF7ACE3RKKX7DVEPEJ"
+        "id": "01GCAH0X72TSE5M7BHF5JMVDSE"
       }
     },
     "scene.living_room_tropical_twilight": {
@@ -812,10 +1017,10 @@
         "is_dynamic": true,
         "friendly_name": "Living Room Tropical twilight"
       },
-      "last_changed": "2022-06-08T18:18:26.863966+01:00",
-      "last_updated": "2022-06-08T18:18:26.863966+01:00",
+      "last_changed": "2022-09-07T00:09:03.586775\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.586775\u002B01:00",
       "context": {
-        "id": "01G52567HFTN2M1HJRZRZMB1GX"
+        "id": "01GCAH0X721WKMVXHVQACWWB4R"
       }
     },
     "scene.bedroom_bright": {
@@ -830,10 +1035,10 @@
         "is_dynamic": false,
         "friendly_name": "Bedroom Bright"
       },
-      "last_changed": "2022-06-08T18:18:26.864432+01:00",
-      "last_updated": "2022-06-08T18:18:26.864432+01:00",
+      "last_changed": "2022-09-07T00:09:03.587009\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.587009\u002B01:00",
       "context": {
-        "id": "01G52567HGQAC9ASAYG8TC1055"
+        "id": "01GCAH0X737TQ27S342ERTKR5Z"
       }
     },
     "scene.kitchen_relax": {
@@ -848,10 +1053,10 @@
         "is_dynamic": false,
         "friendly_name": "Kitchen Relax"
       },
-      "last_changed": "2022-06-08T18:18:26.86501+01:00",
-      "last_updated": "2022-06-08T18:18:26.86501+01:00",
+      "last_changed": "2022-09-07T00:09:03.587241\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.587241\u002B01:00",
       "context": {
-        "id": "01G52567HHWW7YP5Z3BXNNCFV6"
+        "id": "01GCAH0X73P75270QDFDC2CP66"
       }
     },
     "scene.bedroom_nightlight": {
@@ -866,10 +1071,10 @@
         "is_dynamic": false,
         "friendly_name": "Bedroom Nightlight"
       },
-      "last_changed": "2022-06-08T18:18:26.865396+01:00",
-      "last_updated": "2022-06-08T18:18:26.865396+01:00",
+      "last_changed": "2022-09-07T00:09:03.587483\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.587483\u002B01:00",
       "context": {
-        "id": "01G52567HH8D9M8N5BN8HH2978"
+        "id": "01GCAH0X739HWDDWXERAQE047E"
       }
     },
     "scene.bedroom_arctic_aurora": {
@@ -884,10 +1089,10 @@
         "is_dynamic": true,
         "friendly_name": "Bedroom Arctic aurora"
       },
-      "last_changed": "2022-06-08T18:18:26.865741+01:00",
-      "last_updated": "2022-06-08T18:18:26.865741+01:00",
+      "last_changed": "2022-09-07T00:09:03.587718\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.587718\u002B01:00",
       "context": {
-        "id": "01G52567HHGQ694Y9SK05HF170"
+        "id": "01GCAH0X730BVJZEQ4E1DX6Z4N"
       }
     },
     "scene.bedroom_tropical_twilight": {
@@ -902,10 +1107,10 @@
         "is_dynamic": true,
         "friendly_name": "Bedroom Tropical twilight"
       },
-      "last_changed": "2022-06-08T18:18:26.866126+01:00",
-      "last_updated": "2022-06-08T18:18:26.866126+01:00",
+      "last_changed": "2022-09-07T00:09:03.588028\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.588028\u002B01:00",
       "context": {
-        "id": "01G52567HJW701D6WWZJ5NCEW6"
+        "id": "01GCAH0X74Q233NTTWP61XRKHZ"
       }
     },
     "scene.kitchen_concentrate": {
@@ -920,10 +1125,10 @@
         "is_dynamic": false,
         "friendly_name": "Kitchen Concentrate"
       },
-      "last_changed": "2022-06-08T18:18:26.866607+01:00",
-      "last_updated": "2022-06-08T18:18:26.866607+01:00",
+      "last_changed": "2022-09-07T00:09:03.58827\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.58827\u002B01:00",
       "context": {
-        "id": "01G52567HJZR6GXKA2YZAM6A9R"
+        "id": "01GCAH0X74FD6AKCTXEPAVBZEQ"
       }
     },
     "scene.kitchen_spring_blossom": {
@@ -938,10 +1143,10 @@
         "is_dynamic": true,
         "friendly_name": "Kitchen Spring blossom"
       },
-      "last_changed": "2022-06-08T18:18:26.867076+01:00",
-      "last_updated": "2022-06-08T18:18:26.867076+01:00",
+      "last_changed": "2022-09-07T00:09:03.588496\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.588496\u002B01:00",
       "context": {
-        "id": "01G52567HKVG9KSC6S7GBKAKJF"
+        "id": "01GCAH0X7481CNN9Z905DSJ6B9"
       }
     },
     "scene.living_room_spring_blossom": {
@@ -956,10 +1161,10 @@
         "is_dynamic": true,
         "friendly_name": "Living Room Spring blossom"
       },
-      "last_changed": "2022-06-08T18:18:26.867455+01:00",
-      "last_updated": "2022-06-08T18:18:26.867455+01:00",
+      "last_changed": "2022-09-07T00:09:03.58881\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.58881\u002B01:00",
       "context": {
-        "id": "01G52567HKKS468G24ZCJFCSN8"
+        "id": "01GCAH0X74EDJRYDNYGTKXKJY1"
       }
     },
     "scene.kitchen_evening": {
@@ -974,10 +1179,10 @@
         "is_dynamic": false,
         "friendly_name": "Kitchen Evening"
       },
-      "last_changed": "2022-06-08T18:18:26.867786+01:00",
-      "last_updated": "2022-06-08T18:18:26.867786+01:00",
+      "last_changed": "2022-09-07T00:09:03.589038\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.589038\u002B01:00",
       "context": {
-        "id": "01G52567HKGGZ27V8CYP9SGCCY"
+        "id": "01GCAH0X75HATRWPD68QZ971M4"
       }
     },
     "scene.living_room_bright": {
@@ -992,10 +1197,80 @@
         "is_dynamic": false,
         "friendly_name": "Living Room Bright"
       },
-      "last_changed": "2022-06-08T18:18:26.868224+01:00",
-      "last_updated": "2022-06-08T18:18:26.868224+01:00",
+      "last_changed": "2022-09-07T00:09:03.589259\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.589259\u002B01:00",
       "context": {
-        "id": "01G52567HM0495REVPBZD3R2A9"
+        "id": "01GCAH0X75GTZNEQQE1FX7734W"
+      }
+    },
+    "weather.home": {
+      "entity_id": "weather.home",
+      "state": "partlycloudy",
+      "attributes": {
+        "temperature": 15.2,
+        "temperature_unit": "\u00B0C",
+        "humidity": 80,
+        "pressure": 1012.8,
+        "pressure_unit": "hPa",
+        "wind_bearing": 334.5,
+        "wind_speed": 18,
+        "wind_speed_unit": "km/h",
+        "visibility_unit": "km",
+        "precipitation_unit": "mm",
+        "forecast": [
+          {
+            "condition": "partlycloudy",
+            "datetime": "2022-09-13T12:00:00\u002B01:00",
+            "wind_bearing": 331.3,
+            "temperature": 16.6,
+            "templow": 11.7,
+            "wind_speed": 14.4,
+            "precipitation": 0
+          },
+          {
+            "condition": "cloudy",
+            "datetime": "2022-09-14T12:00:00\u002B01:00",
+            "wind_bearing": 323.6,
+            "temperature": 15.9,
+            "templow": 11.6,
+            "wind_speed": 26.3,
+            "precipitation": 0
+          },
+          {
+            "condition": "partlycloudy",
+            "datetime": "2022-09-15T12:00:00\u002B01:00",
+            "wind_bearing": 317.2,
+            "temperature": 15.1,
+            "templow": 13.3,
+            "wind_speed": 25.6,
+            "precipitation": 0.5
+          },
+          {
+            "condition": "sunny",
+            "datetime": "2022-09-16T12:00:00\u002B01:00",
+            "wind_bearing": 336.4,
+            "temperature": 13.8,
+            "templow": 9.8,
+            "wind_speed": 19.4,
+            "precipitation": 0.4
+          },
+          {
+            "condition": "partlycloudy",
+            "datetime": "2022-09-17T12:00:00\u002B01:00",
+            "wind_bearing": 323.4,
+            "temperature": 14.1,
+            "templow": 9.2,
+            "wind_speed": 22.7,
+            "precipitation": 0.2
+          }
+        ],
+        "attribution": "Weather forecast from met.no, delivered by the Norwegian Meteorological Institute.",
+        "friendly_name": "Forecast Beetham Plaza"
+      },
+      "last_changed": "2022-09-12T22:45:31.957268\u002B01:00",
+      "last_updated": "2022-09-12T22:45:31.957268\u002B01:00",
+      "context": {
+        "id": "01GCSTM91N42QWT6TG1D0MQP2J"
       }
     },
     "light.hue_color_spot_2": {
@@ -1028,11 +1303,11 @@
         "friendly_name": "Hue color spot 2",
         "supported_features": 40
       },
-      "last_changed": "2022-07-18T20:58:50.057762+01:00",
-      "last_updated": "2022-07-18T21:58:57.357027+01:00",
+      "last_changed": "2022-09-12T21:10:56.397112\u002B01:00",
+      "last_updated": "2022-09-12T22:37:03.614423\u002B01:00",
       "context": {
-        "id": "01G89HPQSSRC7T9S0XM3HND8R2",
-        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+        "id": "01GCST4R9VDRNDE3RX8AJCHDAY",
+        "user_id": "27568fb5326f49428f78e8d219212733"
       }
     },
     "light.drawers_strip": {
@@ -1071,10 +1346,10 @@
         "friendly_name": "Drawers Strip",
         "supported_features": 44
       },
-      "last_changed": "2022-07-18T20:58:49.023806+01:00",
-      "last_updated": "2022-07-18T20:58:49.023806+01:00",
+      "last_changed": "2022-09-12T19:04:58.461885\u002B01:00",
+      "last_updated": "2022-09-12T19:04:58.461885\u002B01:00",
       "context": {
-        "id": "01G89E8KRKYTTP6G1S4YGKKKSF"
+        "id": "01GCSE0DJ8BNBDFG83RDYDD9EH"
       }
     },
     "light.hue_color_lamp_1": {
@@ -1090,10 +1365,10 @@
         "friendly_name": "Main Bedroom Light",
         "supported_features": 40
       },
-      "last_changed": "2022-07-18T20:45:41.569424+01:00",
-      "last_updated": "2022-07-18T20:45:41.569424+01:00",
+      "last_changed": "2022-09-12T19:29:14.683526\u002B01:00",
+      "last_updated": "2022-09-12T19:29:14.683526\u002B01:00",
       "context": {
-        "id": "01G89DGK61TS7A290RSGZ6BHG9"
+        "id": "01GCSFCVSVY0TXJR611VQKP1TZ"
       }
     },
     "light.hue_color_spot_4": {
@@ -1126,11 +1401,11 @@
         "friendly_name": "Hue color spot 4",
         "supported_features": 40
       },
-      "last_changed": "2022-07-18T21:52:39.142129+01:00",
-      "last_updated": "2022-07-18T21:58:58.355376+01:00",
+      "last_changed": "2022-09-12T21:10:56.398406\u002B01:00",
+      "last_updated": "2022-09-12T22:37:04.639386\u002B01:00",
       "context": {
-        "id": "01G89HPRS9ZN8544XRPYP0B44T",
-        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+        "id": "01GCST4SEENVRE63YQ93PHMARH",
+        "user_id": "27568fb5326f49428f78e8d219212733"
       }
     },
     "light.hue_color_spot_1": {
@@ -1163,11 +1438,11 @@
         "friendly_name": "Hue color spot 1",
         "supported_features": 40
       },
-      "last_changed": "2022-07-18T21:44:19.225274+01:00",
-      "last_updated": "2022-07-18T21:58:58.356633+01:00",
+      "last_changed": "2022-09-12T21:10:56.395477\u002B01:00",
+      "last_updated": "2022-09-12T22:37:04.642013\u002B01:00",
       "context": {
-        "id": "01G89HPRS9ZN8544XRPYP0B44T",
-        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+        "id": "01GCST4SEENVRE63YQ93PHMARH",
+        "user_id": "27568fb5326f49428f78e8d219212733"
       }
     },
     "light.hue_color_spot_3": {
@@ -1200,251 +1475,16 @@
         "friendly_name": "Hue color spot 3",
         "supported_features": 40
       },
-      "last_changed": "2022-07-18T20:58:50.059576+01:00",
-      "last_updated": "2022-07-18T21:58:58.357453+01:00",
+      "last_changed": "2022-09-12T21:10:54.373428\u002B01:00",
+      "last_updated": "2022-09-12T22:37:04.647478\u002B01:00",
       "context": {
-        "id": "01G89HPRS9ZN8544XRPYP0B44T",
-        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
-      }
-    },
-    "sensor.hacs": {
-      "entity_id": "sensor.hacs",
-      "state": "2",
-      "attributes": {
-        "repositories": [
-          {
-            "name": "hacs/integration",
-            "display_name": "HACS",
-            "installed_version": "1.25.2",
-            "available_version": "1.26.2"
-          },
-          {
-            "name": "LaggAt/hacs-govee",
-            "display_name": "govee",
-            "installed_version": "0.2.1",
-            "available_version": "0.2.2"
-          }
-        ],
-        "unit_of_measurement": "pending update(s)",
-        "icon": "hacs:hacs",
-        "friendly_name": "hacs"
-      },
-      "last_changed": "2022-06-08T18:19:14.512935+01:00",
-      "last_updated": "2022-07-14T12:19:13.38187+01:00",
-      "context": {
-        "id": "01G7Y6YB75KTP07074H0QYJTW9"
-      }
-    },
-    "govee.state": {
-      "entity_id": "govee.state",
-      "state": "async_setup called",
-      "attributes": {},
-      "last_changed": "2022-06-08T18:18:51.789472+01:00",
-      "last_updated": "2022-06-08T18:18:51.789472+01:00",
-      "context": {
-        "id": "01G5256ZWD5842F3PPVMQ43VPK"
-      }
-    },
-    "sensor.jez_s_ipad_battery_level": {
-      "entity_id": "sensor.jez_s_ipad_battery_level",
-      "state": "96",
-      "attributes": {
-        "unit_of_measurement": "%",
-        "device_class": "battery",
-        "icon": "mdi:battery-90",
-        "friendly_name": "Jez's iPad Battery Level"
-      },
-      "last_changed": "2022-06-14T23:09:41.558334+01:00",
-      "last_updated": "2022-06-14T23:09:41.558334+01:00",
-      "context": {
-        "id": "01G5J47TNPHNFJTQY457CEKPM0"
-      }
-    },
-    "sensor.jez_s_ipad_battery_state": {
-      "entity_id": "sensor.jez_s_ipad_battery_state",
-      "state": "Not Charging",
-      "attributes": {
-        "Low Power Mode": false,
-        "icon": "mdi:battery-90",
-        "friendly_name": "Jez's iPad Battery State"
-      },
-      "last_changed": "2022-06-12T23:26:34.519093+01:00",
-      "last_updated": "2022-06-14T23:09:41.55885+01:00",
-      "context": {
-        "id": "01G5J47TNPFFWAHXV4W2KDE5YS"
-      }
-    },
-    "sensor.jez_s_ipad_storage": {
-      "entity_id": "sensor.jez_s_ipad_storage",
-      "state": "3.29",
-      "attributes": {
-        "Available": "3.39 GB",
-        "Available (Important)": "9.12 GB",
-        "Available (Opportunistic)": "2.11 GB",
-        "Total": "63.98 GB",
-        "unit_of_measurement": "% available",
-        "icon": "mdi:database",
-        "friendly_name": "Jez's iPad Storage"
-      },
-      "last_changed": "2022-06-14T23:09:41.559165+01:00",
-      "last_updated": "2022-06-14T23:09:41.559165+01:00",
-      "context": {
-        "id": "01G5J47TNQZA4X3WJYZPJRZKMA"
-      }
-    },
-    "sensor.jez_s_ipad_bssid": {
-      "entity_id": "sensor.jez_s_ipad_bssid",
-      "state": "Not Connected",
-      "attributes": {
-        "friendly_name": "Jez's iPad BSSID",
-        "icon": "mdi:wifi-off"
-      },
-      "last_changed": "2022-06-08T18:18:59.79434+01:00",
-      "last_updated": "2022-06-08T18:18:59.79434+01:00",
-      "context": {
-        "id": "01G52577PJ5Z59RMJNEF96XY0R"
-      }
-    },
-    "sensor.jez_s_ipad_ssid": {
-      "entity_id": "sensor.jez_s_ipad_ssid",
-      "state": "Not Connected",
-      "attributes": {
-        "friendly_name": "Jez's iPad SSID",
-        "icon": "mdi:wifi-off"
-      },
-      "last_changed": "2022-06-08T18:18:59.794664+01:00",
-      "last_updated": "2022-06-08T18:18:59.794664+01:00",
-      "context": {
-        "id": "01G52577PJJ9R3R83KQHWDGXC0"
-      }
-    },
-    "sensor.jez_s_ipad_connection_type": {
-      "entity_id": "sensor.jez_s_ipad_connection_type",
-      "state": "Wi-Fi",
-      "attributes": {
-        "friendly_name": "Jez's iPad Connection Type",
-        "icon": "mdi:wifi"
-      },
-      "last_changed": "2022-06-08T18:18:59.795+01:00",
-      "last_updated": "2022-06-08T18:18:59.795+01:00",
-      "context": {
-        "id": "01G52577PKPAQSB5EEBWWEHH0D"
-      }
-    },
-    "sensor.jez_s_ipad_geocoded_location": {
-      "entity_id": "sensor.jez_s_ipad_geocoded_location",
-      "state": "Unknown",
-      "attributes": {
-        "friendly_name": "Jez's iPad Geocoded Location",
-        "icon": "mdi:map"
-      },
-      "last_changed": "2022-06-08T18:18:59.795314+01:00",
-      "last_updated": "2022-06-08T18:18:59.795314+01:00",
-      "context": {
-        "id": "01G52577PK3B65DKDE74WXV5JD"
-      }
-    },
-    "sensor.jez_s_ipad_last_update_trigger": {
-      "entity_id": "sensor.jez_s_ipad_last_update_trigger",
-      "state": "Launch",
-      "attributes": {
-        "icon": "mdi:cellphone-wireless",
-        "friendly_name": "Jez's iPad Last Update Trigger"
-      },
-      "last_changed": "2022-06-14T23:09:41.927662+01:00",
-      "last_updated": "2022-06-14T23:09:41.927662+01:00",
-      "context": {
-        "id": "01G5J47V17AEZDN7Y6JJ44386K"
-      }
-    },
-    "sensor.milky_way_battery_level": {
-      "entity_id": "sensor.milky_way_battery_level",
-      "state": "92",
-      "attributes": {
-        "state_class": "measurement",
-        "unit_of_measurement": "%",
-        "device_class": "battery",
-        "icon": "mdi:battery-90",
-        "friendly_name": "Milky-way Battery Level"
-      },
-      "last_changed": "2022-07-10T11:32:02.108081+01:00",
-      "last_updated": "2022-07-10T11:32:02.108081+01:00",
-      "context": {
-        "id": "01G7KTN29WAZM6MZKXTSRN4XN2"
-      }
-    },
-    "sensor.milky_way_battery_state": {
-      "entity_id": "sensor.milky_way_battery_state",
-      "state": "discharging",
-      "attributes": {
-        "icon": "mdi:battery-minus",
-        "friendly_name": "Milky-way Battery State"
-      },
-      "last_changed": "2022-07-10T10:00:13.640024+01:00",
-      "last_updated": "2022-07-10T10:00:13.640024+01:00",
-      "context": {
-        "id": "01G7KNCYY8Q7W59BJSSW547NMZ"
-      }
-    },
-    "sensor.milky_way_charger_type": {
-      "entity_id": "sensor.milky_way_charger_type",
-      "state": "none",
-      "attributes": {
-        "icon": "mdi:battery",
-        "friendly_name": "Milky-way Charger Type"
-      },
-      "last_changed": "2022-07-10T10:00:13.642097+01:00",
-      "last_updated": "2022-07-10T10:00:13.642097+01:00",
-      "context": {
-        "id": "01G7KNCYYAHBWT2A6Q9Z8THEZ6"
-      }
-    },
-    "sensor.milky_way_battery_health": {
-      "entity_id": "sensor.milky_way_battery_health",
-      "state": "good",
-      "attributes": {
-        "icon": "mdi:battery-heart-variant",
-        "friendly_name": "Milky-way Battery Health"
-      },
-      "last_changed": "2022-06-08T18:18:59.83516+01:00",
-      "last_updated": "2022-06-08T18:18:59.83516+01:00",
-      "context": {
-        "id": "01G52577QVPAM2CW36MPZQSKAX"
-      }
-    },
-    "sensor.milky_way_battery_temperature": {
-      "entity_id": "sensor.milky_way_battery_temperature",
-      "state": "27.4",
-      "attributes": {
-        "state_class": "measurement",
-        "unit_of_measurement": "°C",
-        "device_class": "temperature",
-        "icon": "mdi:battery",
-        "friendly_name": "Milky-way Battery Temperature"
-      },
-      "last_changed": "2022-07-10T11:32:02.10908+01:00",
-      "last_updated": "2022-07-10T11:32:02.10908+01:00",
-      "context": {
-        "id": "01G7KTN29XJ1BEXKQJ0K6CP2YS"
-      }
-    },
-    "binary_sensor.milky_way_is_charging": {
-      "entity_id": "binary_sensor.milky_way_is_charging",
-      "state": "off",
-      "attributes": {
-        "device_class": "plug",
-        "icon": "mdi:power-plug-off",
-        "friendly_name": "Milky-way Is Charging"
-      },
-      "last_changed": "2022-07-10T10:00:13.641298+01:00",
-      "last_updated": "2022-07-10T10:00:13.641298+01:00",
-      "context": {
-        "id": "01G7KNCYY9F6JYM1QKQ241DK6V"
+        "id": "01GCST4SEENVRE63YQ93PHMARH",
+        "user_id": "27568fb5326f49428f78e8d219212733"
       }
     },
     "light.dining_table": {
       "entity_id": "light.dining_table",
-      "state": "off",
+      "state": "unavailable",
       "attributes": {
         "min_mireds": 153,
         "max_mireds": 500,
@@ -1456,10 +1496,10 @@
         "friendly_name": "Dining Table ",
         "supported_features": 0
       },
-      "last_changed": "2022-07-17T23:25:17.424561+01:00",
-      "last_updated": "2022-07-17T23:25:17.424561+01:00",
+      "last_changed": "2022-09-12T18:59:41.561818\u002B01:00",
+      "last_updated": "2022-09-12T18:59:41.561818\u002B01:00",
       "context": {
-        "id": "01G87483KGSDK0XXS1599NMZ3Y"
+        "id": "01GCSDPR7S001APVAETQTC790T"
       }
     },
     "light.hall_1": {
@@ -1491,11 +1531,11 @@
         "friendly_name": "Hall 1",
         "supported_features": 0
       },
-      "last_changed": "2022-07-18T20:58:48.97083+01:00",
-      "last_updated": "2022-07-18T21:51:47.098102+01:00",
+      "last_changed": "2022-09-12T07:37:18.311638\u002B01:00",
+      "last_updated": "2022-09-12T22:35:46.59823\u002B01:00",
       "context": {
-        "id": "01G89H9KKS2CQKGQM1CHY7FGZE",
-        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+        "id": "01GCST2D1J3FJNBFYSMA4HNKPB",
+        "user_id": "27568fb5326f49428f78e8d219212733"
       }
     },
     "light.hall_4": {
@@ -1527,11 +1567,11 @@
         "friendly_name": "Hall 4",
         "supported_features": 0
       },
-      "last_changed": "2022-07-18T20:58:48.981483+01:00",
-      "last_updated": "2022-07-18T21:51:47.12931+01:00",
+      "last_changed": "2022-09-12T07:37:18.340379\u002B01:00",
+      "last_updated": "2022-09-12T22:35:46.422016\u002B01:00",
       "context": {
-        "id": "01G89H9KKS2CQKGQM1CHY7FGZE",
-        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+        "id": "01GCST2D1J3FJNBFYSMA4HNKPB",
+        "user_id": "27568fb5326f49428f78e8d219212733"
       }
     },
     "light.hall_3": {
@@ -1563,11 +1603,11 @@
         "friendly_name": "Hall 3",
         "supported_features": 0
       },
-      "last_changed": "2022-07-18T20:58:48.960944+01:00",
-      "last_updated": "2022-07-18T21:51:46.921882+01:00",
+      "last_changed": "2022-09-12T07:37:18.384546\u002B01:00",
+      "last_updated": "2022-09-12T22:35:46.407742\u002B01:00",
       "context": {
-        "id": "01G89H9KE1G6131035BGBX0P27",
-        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+        "id": "01GCST2D1J3FJNBFYSMA4HNKPB",
+        "user_id": "27568fb5326f49428f78e8d219212733"
       }
     },
     "light.hall_2": {
@@ -1599,11 +1639,11 @@
         "friendly_name": "Hall 2",
         "supported_features": 0
       },
-      "last_changed": "2022-07-18T20:58:49.092524+01:00",
-      "last_updated": "2022-07-18T21:51:47.121525+01:00",
+      "last_changed": "2022-09-12T07:37:15.336029\u002B01:00",
+      "last_updated": "2022-09-12T22:35:46.413379\u002B01:00",
       "context": {
-        "id": "01G89H9KKS2CQKGQM1CHY7FGZE",
-        "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
+        "id": "01GCST2D1J3FJNBFYSMA4HNKPB",
+        "user_id": "27568fb5326f49428f78e8d219212733"
       }
     },
     "switch.corner_light_socket_1": {
@@ -1613,10 +1653,10 @@
         "device_class": "outlet",
         "friendly_name": "Corner Light Socket 1"
       },
-      "last_changed": "2022-07-18T18:13:45.356827+01:00",
-      "last_updated": "2022-07-18T18:13:45.356827+01:00",
+      "last_changed": "2022-09-12T18:01:03.6961\u002B01:00",
+      "last_updated": "2022-09-12T18:01:03.6961\u002B01:00",
       "context": {
-        "id": "01G894TCMCQM92YMTVS1YYC8ZQ"
+        "id": "01GCSABCTGR76VN709E9PAJX8Z"
       }
     },
     "switch.heater_socket_1": {
@@ -1626,23 +1666,23 @@
         "device_class": "outlet",
         "friendly_name": "Heater  Socket 1"
       },
-      "last_changed": "2022-06-08T18:18:59.916587+01:00",
-      "last_updated": "2022-06-08T18:18:59.916587+01:00",
+      "last_changed": "2022-09-07T00:09:03.752472\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.752472\u002B01:00",
       "context": {
-        "id": "01G52577TC7MQ77N8F8SSYGE4J"
+        "id": "01GCAH0XC8M3A37BN57ARP3VBC"
       }
     },
     "switch.monkey_light_socket_1": {
       "entity_id": "switch.monkey_light_socket_1",
-      "state": "off",
+      "state": "on",
       "attributes": {
         "device_class": "outlet",
         "friendly_name": "Monkey Light  Socket 1"
       },
-      "last_changed": "2022-07-18T18:11:38.712958+01:00",
-      "last_updated": "2022-07-18T18:11:38.712958+01:00",
+      "last_changed": "2022-09-12T16:00:02.373545\u002B01:00",
+      "last_updated": "2022-09-12T16:00:02.373545\u002B01:00",
       "context": {
-        "id": "01G894PGYRBKDJ39JERDM0BYFM"
+        "id": "01GCS3DSP583ETA4ND71YWC3QN"
       }
     },
     "switch.diffuser_socket_1": {
@@ -1652,36 +1692,10 @@
         "device_class": "outlet",
         "friendly_name": "Diffuser Socket 1"
       },
-      "last_changed": "2022-06-08T18:18:59.919027+01:00",
-      "last_updated": "2022-06-08T18:18:59.919027+01:00",
+      "last_changed": "2022-09-07T00:09:03.755573\u002B01:00",
+      "last_updated": "2022-09-07T00:09:03.755573\u002B01:00",
       "context": {
-        "id": "01G52577TFF3NJWFTZVMSZJAW4"
-      }
-    },
-    "device_tracker.jez_s_ipad": {
-      "entity_id": "device_tracker.jez_s_ipad",
-      "state": "unknown",
-      "attributes": {
-        "source_type": "gps",
-        "friendly_name": "Jez's iPad"
-      },
-      "last_changed": "2022-06-08T18:18:59.985494+01:00",
-      "last_updated": "2022-06-08T18:18:59.985494+01:00",
-      "context": {
-        "id": "01G52577WHW2M6PZ45V62K71AF"
-      }
-    },
-    "device_tracker.sm_g991b": {
-      "entity_id": "device_tracker.sm_g991b",
-      "state": "unknown",
-      "attributes": {
-        "source_type": "gps",
-        "friendly_name": "Milky-way"
-      },
-      "last_changed": "2022-06-08T18:18:59.98599+01:00",
-      "last_updated": "2022-06-08T18:18:59.98599+01:00",
-      "context": {
-        "id": "01G52577WHEYZ5SHDR5SAHYQ0T"
+        "id": "01GCAH0XCBZEYCGT2S6YF40DZH"
       }
     },
     "light.panasonic_strip": {
@@ -1712,283 +1726,10 @@
         "friendly_name": "Panasonic Strip",
         "supported_features": 19
       },
-      "last_changed": "2022-07-18T20:58:49.957376+01:00",
-      "last_updated": "2022-07-18T20:58:55.225968+01:00",
+      "last_changed": "2022-09-12T19:04:59.619391\u002B01:00",
+      "last_updated": "2022-09-12T19:05:04.299163\u002B01:00",
       "context": {
-        "id": "01G89E8T7SXTWJT9Q8EW3DA65Z"
-      }
-    },
-    "binary_sensor.tuyatec_zn9wyqtr_rh3040_090ecafe_ias_zone": {
-      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_090ecafe_ias_zone",
-      "state": "off",
-      "attributes": {
-        "device_class": "motion",
-        "friendly_name": "TUYATEC-zn9wyqtr RH3040 090ecafe ias_zone"
-      },
-      "last_changed": "2022-07-18T21:58:54.445133+01:00",
-      "last_updated": "2022-07-18T21:58:54.445133+01:00",
-      "context": {
-        "id": "01G89HPN3DZNW1ZM1VBDG5QCFK"
-      }
-    },
-    "binary_sensor.tuyatec_zn9wyqtr_rh3040_6cf5cbfe_ias_zone": {
-      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_6cf5cbfe_ias_zone",
-      "state": "off",
-      "attributes": {
-        "device_class": "motion",
-        "friendly_name": "TUYATEC-zn9wyqtr RH3040 6cf5cbfe ias_zone"
-      },
-      "last_changed": "2022-07-18T21:50:56.767832+01:00",
-      "last_updated": "2022-07-18T21:50:56.767832+01:00",
-      "context": {
-        "id": "01G89H82KZXZD569CWS0ZATERH"
-      }
-    },
-    "binary_sensor.tuyatec_zn9wyqtr_rh3040_bbf0cbfe_ias_zone": {
-      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_bbf0cbfe_ias_zone",
-      "state": "off",
-      "attributes": {
-        "device_class": "motion",
-        "friendly_name": "TUYATEC-zn9wyqtr RH3040 bbf0cbfe ias_zone"
-      },
-      "last_changed": "2022-07-18T21:58:56.185861+01:00",
-      "last_updated": "2022-07-18T21:58:56.185861+01:00",
-      "context": {
-        "id": "01G89HPPSSN8N7N9EZRXZK6R0K"
-      }
-    },
-    "binary_sensor.tuyatec_zn9wyqtr_rh3040_00480cfe_ias_zone": {
-      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_00480cfe_ias_zone",
-      "state": "off",
-      "attributes": {
-        "device_class": "motion",
-        "friendly_name": "TUYATEC-zn9wyqtr RH3040 00480cfe ias_zone"
-      },
-      "last_changed": "2022-07-18T21:51:46.205216+01:00",
-      "last_updated": "2022-07-18T21:51:46.205216+01:00",
-      "context": {
-        "id": "01G89H9JWXSY7FSXMN1DT2FTZF"
-      }
-    },
-    "sensor.sensor_01_power": {
-      "entity_id": "sensor.sensor_01_power",
-      "state": "100",
-      "attributes": {
-        "state_class": "measurement",
-        "battery_voltage": 2.1,
-        "unit_of_measurement": "%",
-        "device_class": "battery",
-        "friendly_name": "Sensor-01 power"
-      },
-      "last_changed": "2022-06-08T18:19:00.477118+01:00",
-      "last_updated": "2022-06-08T18:19:00.477118+01:00",
-      "context": {
-        "id": "01G52578BX5D91VNC9QGD9NKVY"
-      }
-    },
-    "sensor.sensor_1_power": {
-      "entity_id": "sensor.sensor_1_power",
-      "state": "100",
-      "attributes": {
-        "state_class": "measurement",
-        "battery_voltage": 2.1,
-        "unit_of_measurement": "%",
-        "device_class": "battery",
-        "friendly_name": "Sensor-1 power"
-      },
-      "last_changed": "2022-06-08T18:19:00.478679+01:00",
-      "last_updated": "2022-06-08T18:19:00.478679+01:00",
-      "context": {
-        "id": "01G52578BY9DPBX66NF7E1S8R1"
-      }
-    },
-    "sensor.kitchen_sensor_power": {
-      "entity_id": "sensor.kitchen_sensor_power",
-      "state": "100",
-      "attributes": {
-        "state_class": "measurement",
-        "battery_voltage": 2.1,
-        "unit_of_measurement": "%",
-        "device_class": "battery",
-        "friendly_name": "Kitchen Sensor power"
-      },
-      "last_changed": "2022-06-08T18:19:00.480609+01:00",
-      "last_updated": "2022-06-08T18:19:00.480609+01:00",
-      "context": {
-        "id": "01G52578C018BS1RX1YCXN3PZN"
-      }
-    },
-    "sensor.sensor_2_power": {
-      "entity_id": "sensor.sensor_2_power",
-      "state": "100",
-      "attributes": {
-        "state_class": "measurement",
-        "battery_voltage": 2.1,
-        "unit_of_measurement": "%",
-        "device_class": "battery",
-        "friendly_name": "Sensor-2 power"
-      },
-      "last_changed": "2022-06-08T18:19:00.4825+01:00",
-      "last_updated": "2022-06-08T18:19:00.4825+01:00",
-      "context": {
-        "id": "01G52578C211Y45MFT2R71Q459"
-      }
-    },
-    "media_player.living_room": {
-      "entity_id": "media_player.living_room",
-      "state": "paused",
-      "attributes": {
-        "source_list": [
-          "Line-in"
-        ],
-        "group_members": [
-          "media_player.living_room"
-        ],
-        "volume_level": 0.49,
-        "is_volume_muted": false,
-        "media_content_id": "x-sonos-vli:RINCON_000E582A59F401400:2,spotify:b110a1446faf82b719d1e0c7c4ae555a",
-        "media_content_type": "music",
-        "source": "Spotify Connect",
-        "shuffle": false,
-        "repeat": "off",
-        "queue_position": 1,
-        "queue_size": 1,
-        "friendly_name": "Living Room",
-        "supported_features": 981567
-      },
-      "last_changed": "2022-07-17T11:40:51.41792+01:00",
-      "last_updated": "2022-07-17T11:40:51.41792+01:00",
-      "context": {
-        "id": "01G85VY86SBMP1NE5R5AH02NF0"
-      }
-    },
-    "number.living_room_bass": {
-      "entity_id": "number.living_room_bass",
-      "state": "4",
-      "attributes": {
-        "min": -10,
-        "max": 10,
-        "step": 1,
-        "mode": "auto",
-        "friendly_name": "Living Room Bass"
-      },
-      "last_changed": "2022-07-17T11:40:51.418776+01:00",
-      "last_updated": "2022-07-17T11:40:51.418776+01:00",
-      "context": {
-        "id": "01G85VY86TMTBHM1BP6EVYJCMX"
-      }
-    },
-    "number.living_room_treble": {
-      "entity_id": "number.living_room_treble",
-      "state": "0",
-      "attributes": {
-        "min": -10,
-        "max": 10,
-        "step": 1,
-        "mode": "auto",
-        "friendly_name": "Living Room Treble"
-      },
-      "last_changed": "2022-07-17T11:40:51.419288+01:00",
-      "last_updated": "2022-07-17T11:40:51.419288+01:00",
-      "context": {
-        "id": "01G85VY86V40BHWQZ12HB75K89"
-      }
-    },
-    "switch.sonos_living_room_crossfade": {
-      "entity_id": "switch.sonos_living_room_crossfade",
-      "state": "off",
-      "attributes": {
-        "icon": "mdi:swap-horizontal",
-        "friendly_name": "Living Room Crossfade"
-      },
-      "last_changed": "2022-07-17T11:40:51.419792+01:00",
-      "last_updated": "2022-07-17T11:40:51.419792+01:00",
-      "context": {
-        "id": "01G85VY86V4HWDWDA258E0X6M3"
-      }
-    },
-    "binary_sensor.bedroom_microphone": {
-      "entity_id": "binary_sensor.bedroom_microphone",
-      "state": "on",
-      "attributes": {
-        "icon": "mdi:microphone",
-        "friendly_name": "Bedroom Microphone"
-      },
-      "last_changed": "2022-06-27T07:33:07.380731+01:00",
-      "last_updated": "2022-06-27T07:33:07.380731+01:00",
-      "context": {
-        "id": "01G6HXT8HMR9YHAM3KZZPQJMGD"
-      }
-    },
-    "media_player.bedroom": {
-      "entity_id": "media_player.bedroom",
-      "state": "paused",
-      "attributes": {
-        "group_members": [
-          "media_player.bedroom"
-        ],
-        "volume_level": 0.15,
-        "is_volume_muted": false,
-        "media_content_id": "hls-radio://https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high_secure/cfs/bbc_radio_fourfm.m3u8",
-        "media_content_type": "music",
-        "media_title": " ",
-        "media_channel": " ",
-        "shuffle": false,
-        "repeat": "off",
-        "queue_position": 1,
-        "queue_size": 1,
-        "friendly_name": "Bedroom",
-        "supported_features": 981567
-      },
-      "last_changed": "2022-07-09T18:12:38.78928+01:00",
-      "last_updated": "2022-07-09T18:12:38.78928+01:00",
-      "context": {
-        "id": "01G7HZ5WM58Y1RV6BSYZM7M4AT"
-      }
-    },
-    "number.bedroom_bass": {
-      "entity_id": "number.bedroom_bass",
-      "state": "0",
-      "attributes": {
-        "min": -10,
-        "max": 10,
-        "step": 1,
-        "mode": "auto",
-        "friendly_name": "Bedroom Bass"
-      },
-      "last_changed": "2022-06-08T18:19:00.968234+01:00",
-      "last_updated": "2022-06-08T18:19:00.968234+01:00",
-      "context": {
-        "id": "01G52578V8W7X6CSZSPK931Y9Y"
-      }
-    },
-    "number.bedroom_treble": {
-      "entity_id": "number.bedroom_treble",
-      "state": "0",
-      "attributes": {
-        "min": -10,
-        "max": 10,
-        "step": 1,
-        "mode": "auto",
-        "friendly_name": "Bedroom Treble"
-      },
-      "last_changed": "2022-06-08T18:19:00.96927+01:00",
-      "last_updated": "2022-06-08T18:19:00.96927+01:00",
-      "context": {
-        "id": "01G52578V9CEG8K393VZA7WMY1"
-      }
-    },
-    "switch.sonos_bedroom_crossfade": {
-      "entity_id": "switch.sonos_bedroom_crossfade",
-      "state": "off",
-      "attributes": {
-        "icon": "mdi:swap-horizontal",
-        "friendly_name": "Bedroom Crossfade"
-      },
-      "last_changed": "2022-06-08T18:19:01.082973+01:00",
-      "last_updated": "2022-06-08T18:19:01.082973+01:00",
-      "context": {
-        "id": "01G52578YTRPWF465R1XWYGY6V"
+        "id": "01GCSE0DJ8BNBDFG83RDYDD9EH"
       }
     },
     "media_player.kitchen": {
@@ -1998,11 +1739,12 @@
         "group_members": [
           "media_player.kitchen"
         ],
-        "volume_level": 0.34,
+        "volume_level": 0.3,
         "is_volume_muted": false,
-        "media_content_id": "x-sonos-vli:RINCON_B8E9375E047201400:2,spotify:751d20da9b60b19eb92f1a63560513d4",
+        "media_content_id": "hls-radio://https://a.files.bbci.co.uk/media/live/manifesto/audio/simulcast/hls/uk/sbr_high_secure/cfs/bbc_radio_fourfm.m3u8",
         "media_content_type": "music",
-        "source": "Spotify Connect",
+        "media_title": " ",
+        "media_channel": " ",
         "shuffle": false,
         "repeat": "off",
         "queue_position": 1,
@@ -2010,10 +1752,10 @@
         "friendly_name": "Kitchen",
         "supported_features": 981567
       },
-      "last_changed": "2022-07-18T19:08:10.714475+01:00",
-      "last_updated": "2022-07-18T19:48:25.128256+01:00",
+      "last_changed": "2022-09-12T18:27:25.075597\u002B01:00",
+      "last_updated": "2022-09-12T18:27:25.075597\u002B01:00",
       "context": {
-        "id": "01G89A7Q98HSW3KDYBVW0B08Q0"
+        "id": "01GCSBVN4KGN5SWR1TTZVNCT23"
       }
     },
     "number.kitchen_bass": {
@@ -2026,10 +1768,10 @@
         "mode": "auto",
         "friendly_name": "Kitchen Bass"
       },
-      "last_changed": "2022-06-08T18:19:01.508946+01:00",
-      "last_updated": "2022-06-08T18:19:01.508946+01:00",
+      "last_changed": "2022-09-07T00:09:04.366378\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.366378\u002B01:00",
       "context": {
-        "id": "01G52579C4CYN90YSRZC5Q3Z9F"
+        "id": "01GCAH0XZEQH80M19MFSYE3YYR"
       }
     },
     "number.kitchen_treble": {
@@ -2042,10 +1784,10 @@
         "mode": "auto",
         "friendly_name": "Kitchen Treble"
       },
-      "last_changed": "2022-06-08T18:19:01.510392+01:00",
-      "last_updated": "2022-06-08T18:19:01.510392+01:00",
+      "last_changed": "2022-09-07T00:09:04.367566\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.367566\u002B01:00",
       "context": {
-        "id": "01G52579C66P2SX298QJEPXT1H"
+        "id": "01GCAH0XZFWYG3RCF35Q7FEJ6M"
       }
     },
     "switch.sonos_kitchen_crossfade": {
@@ -2055,34 +1797,317 @@
         "icon": "mdi:swap-horizontal",
         "friendly_name": "Kitchen Crossfade"
       },
-      "last_changed": "2022-06-08T18:19:01.537889+01:00",
-      "last_updated": "2022-06-08T18:19:01.537889+01:00",
+      "last_changed": "2022-09-07T00:09:04.512849\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.512849\u002B01:00",
       "context": {
-        "id": "01G52579D1VE608Z1H8BGV2VDT"
+        "id": "01GCAH0Y407J0Q19P5MJ9GA7JX"
       }
     },
-    "media_player.str_dn1050_bf66bc": {
-      "entity_id": "media_player.str_dn1050_bf66bc",
-      "state": "idle",
+    "switch.kitchen_loudness": {
+      "entity_id": "switch.kitchen_loudness",
+      "state": "on",
       "attributes": {
-        "sound_mode_list": [
-          "FactoryDefaults",
-          "InstallationDefaults"
+        "icon": "mdi:bullhorn-variant",
+        "friendly_name": "Kitchen Loudness"
+      },
+      "last_changed": "2022-09-07T00:09:04.513871\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.513871\u002B01:00",
+      "context": {
+        "id": "01GCAH0Y4192Z7VXYBVYRCYEWG"
+      }
+    },
+    "binary_sensor.bedroom_microphone": {
+      "entity_id": "binary_sensor.bedroom_microphone",
+      "state": "on",
+      "attributes": {
+        "icon": "mdi:microphone",
+        "friendly_name": "Bedroom Microphone"
+      },
+      "last_changed": "2022-09-07T00:09:04.567577\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.567577\u002B01:00",
+      "context": {
+        "id": "01GCAH0Y5QY2DMNSED5CBPP7DQ"
+      }
+    },
+    "media_player.bedroom": {
+      "entity_id": "media_player.bedroom",
+      "state": "paused",
+      "attributes": {
+        "group_members": [
+          "media_player.bedroom"
         ],
-        "volume_level": 0.32,
+        "volume_level": 0.4,
         "is_volume_muted": false,
-        "media_content_id": "",
-        "media_duration": 0,
-        "media_track": 0,
+        "media_content_id": "x-sonos-vli:RINCON_7828CA053FA601400:2,spotify:6b4dced2397df3f6fef3f268b2b75332",
+        "media_content_type": "music",
+        "source": "Spotify Connect",
         "shuffle": false,
         "repeat": "off",
-        "friendly_name": "STR-DN1050 BF66BC",
-        "supported_features": 492044
+        "queue_position": 1,
+        "queue_size": 1,
+        "friendly_name": "Bedroom",
+        "supported_features": 981567
       },
-      "last_changed": "2022-07-18T20:35:50.692053+01:00",
-      "last_updated": "2022-07-18T21:57:32.698122+01:00",
+      "last_changed": "2022-09-07T00:09:04.574776\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.910687\u002B01:00",
       "context": {
-        "id": "01G89HM58TJH4Y6P4JVDBR2968"
+        "id": "01GCAH0YGE9CBYDDJ88X2E1QFS"
+      }
+    },
+    "number.bedroom_bass": {
+      "entity_id": "number.bedroom_bass",
+      "state": "0",
+      "attributes": {
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "mode": "auto",
+        "friendly_name": "Bedroom Bass"
+      },
+      "last_changed": "2022-09-07T00:09:04.626856\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.626856\u002B01:00",
+      "context": {
+        "id": "01GCAH0Y7JKP37SQANCJ5FFMQ1"
+      }
+    },
+    "number.bedroom_treble": {
+      "entity_id": "number.bedroom_treble",
+      "state": "0",
+      "attributes": {
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "mode": "auto",
+        "friendly_name": "Bedroom Treble"
+      },
+      "last_changed": "2022-09-07T00:09:04.628135\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.628135\u002B01:00",
+      "context": {
+        "id": "01GCAH0Y7MTYYHWBB1P5P7GQQG"
+      }
+    },
+    "switch.sonos_bedroom_crossfade": {
+      "entity_id": "switch.sonos_bedroom_crossfade",
+      "state": "off",
+      "attributes": {
+        "icon": "mdi:swap-horizontal",
+        "friendly_name": "Bedroom Crossfade"
+      },
+      "last_changed": "2022-09-07T00:09:04.69175\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.69175\u002B01:00",
+      "context": {
+        "id": "01GCAH0Y9KQ3D3N3ZB1HVDWGXA"
+      }
+    },
+    "switch.bedroom_loudness": {
+      "entity_id": "switch.bedroom_loudness",
+      "state": "off",
+      "attributes": {
+        "icon": "mdi:bullhorn-variant",
+        "friendly_name": "Bedroom Loudness"
+      },
+      "last_changed": "2022-09-07T00:09:04.692668\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.692668\u002B01:00",
+      "context": {
+        "id": "01GCAH0Y9MSNQ4Y8TSRDH92BFP"
+      }
+    },
+    "media_player.living_room": {
+      "entity_id": "media_player.living_room",
+      "state": "idle",
+      "attributes": {
+        "source_list": [
+          "Line-in"
+        ],
+        "group_members": [
+          "media_player.living_room"
+        ],
+        "volume_level": 0.49,
+        "is_volume_muted": false,
+        "media_content_type": "music",
+        "shuffle": false,
+        "repeat": "off",
+        "friendly_name": "Living Room",
+        "supported_features": 981567
+      },
+      "last_changed": "2022-09-07T00:09:04.769104\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.769104\u002B01:00",
+      "context": {
+        "id": "01GCAH0YC1232H49RANB6QC9M9"
+      }
+    },
+    "number.living_room_bass": {
+      "entity_id": "number.living_room_bass",
+      "state": "4",
+      "attributes": {
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "mode": "auto",
+        "friendly_name": "Living Room Bass"
+      },
+      "last_changed": "2022-09-07T00:09:04.833199\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.833199\u002B01:00",
+      "context": {
+        "id": "01GCAH0YE1BQESCT3Y1AQXRFZW"
+      }
+    },
+    "number.living_room_treble": {
+      "entity_id": "number.living_room_treble",
+      "state": "0",
+      "attributes": {
+        "min": -10,
+        "max": 10,
+        "step": 1,
+        "mode": "auto",
+        "friendly_name": "Living Room Treble"
+      },
+      "last_changed": "2022-09-07T00:09:04.834081\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.834081\u002B01:00",
+      "context": {
+        "id": "01GCAH0YE2DPGX11YPVXFTX35C"
+      }
+    },
+    "switch.sonos_living_room_crossfade": {
+      "entity_id": "switch.sonos_living_room_crossfade",
+      "state": "off",
+      "attributes": {
+        "icon": "mdi:swap-horizontal",
+        "friendly_name": "Living Room Crossfade"
+      },
+      "last_changed": "2022-09-07T00:09:04.913374\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.913374\u002B01:00",
+      "context": {
+        "id": "01GCAH0YGHW1C0N6RYC770ZSHA"
+      }
+    },
+    "switch.living_room_loudness": {
+      "entity_id": "switch.living_room_loudness",
+      "state": "on",
+      "attributes": {
+        "icon": "mdi:bullhorn-variant",
+        "friendly_name": "Living Room Loudness"
+      },
+      "last_changed": "2022-09-07T00:09:04.91425\u002B01:00",
+      "last_updated": "2022-09-07T00:09:04.91425\u002B01:00",
+      "context": {
+        "id": "01GCAH0YGJBBNWJJG6DB12D1PC"
+      }
+    },
+    "binary_sensor.tuyatec_zn9wyqtr_rh3040_090ecafe_ias_zone": {
+      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_090ecafe_ias_zone",
+      "state": "off",
+      "attributes": {
+        "device_class": "motion",
+        "friendly_name": "Sensor-01 Iaszone"
+      },
+      "last_changed": "2022-09-12T22:37:03.283246\u002B01:00",
+      "last_updated": "2022-09-12T22:37:03.283246\u002B01:00",
+      "context": {
+        "id": "01GCST4R9KG0YRVR49XQGQ3X24"
+      }
+    },
+    "binary_sensor.tuyatec_zn9wyqtr_rh3040_6cf5cbfe_ias_zone": {
+      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_6cf5cbfe_ias_zone",
+      "state": "off",
+      "attributes": {
+        "device_class": "motion",
+        "friendly_name": "Sensor-1 Iaszone"
+      },
+      "last_changed": "2022-09-12T22:52:10.04363\u002B01:00",
+      "last_updated": "2022-09-12T22:52:10.04363\u002B01:00",
+      "context": {
+        "id": "01GCSV0DSVQVGTW9FD6BNZMBZK"
+      }
+    },
+    "binary_sensor.tuyatec_zn9wyqtr_rh3040_bbf0cbfe_ias_zone": {
+      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_bbf0cbfe_ias_zone",
+      "state": "off",
+      "attributes": {
+        "device_class": "motion",
+        "friendly_name": "Kitchen Sensor Iaszone"
+      },
+      "last_changed": "2022-09-12T22:25:12.989973\u002B01:00",
+      "last_updated": "2022-09-12T22:25:12.989973\u002B01:00",
+      "context": {
+        "id": "01GCSSF2MXPBTA5QCWBFTPKB49"
+      }
+    },
+    "binary_sensor.tuyatec_zn9wyqtr_rh3040_00480cfe_ias_zone": {
+      "entity_id": "binary_sensor.tuyatec_zn9wyqtr_rh3040_00480cfe_ias_zone",
+      "state": "off",
+      "attributes": {
+        "device_class": "motion",
+        "friendly_name": "Sensor-2 Iaszone"
+      },
+      "last_changed": "2022-09-12T22:52:13.430587\u002B01:00",
+      "last_updated": "2022-09-12T22:52:13.430587\u002B01:00",
+      "context": {
+        "id": "01GCSV0H3P4F9TNFCQAJFTXA9Z"
+      }
+    },
+    "sensor.sensor_01_power": {
+      "entity_id": "sensor.sensor_01_power",
+      "state": "100",
+      "attributes": {
+        "state_class": "measurement",
+        "battery_voltage": 2.1,
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Sensor-01 power"
+      },
+      "last_changed": "2022-09-07T00:09:05.470005\u002B01:00",
+      "last_updated": "2022-09-07T00:09:05.470005\u002B01:00",
+      "context": {
+        "id": "01GCAH0Z1YXH1ZR9DVE7KR6B7P"
+      }
+    },
+    "sensor.sensor_1_power": {
+      "entity_id": "sensor.sensor_1_power",
+      "state": "100",
+      "attributes": {
+        "state_class": "measurement",
+        "battery_voltage": 2.1,
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Sensor-1 power"
+      },
+      "last_changed": "2022-09-07T00:09:05.47094\u002B01:00",
+      "last_updated": "2022-09-07T00:09:05.47094\u002B01:00",
+      "context": {
+        "id": "01GCAH0Z1YP6XHP6VDBKNAFEYB"
+      }
+    },
+    "sensor.kitchen_sensor_power": {
+      "entity_id": "sensor.kitchen_sensor_power",
+      "state": "100",
+      "attributes": {
+        "state_class": "measurement",
+        "battery_voltage": 2.1,
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Kitchen Sensor power"
+      },
+      "last_changed": "2022-09-07T00:09:05.471931\u002B01:00",
+      "last_updated": "2022-09-07T00:09:05.471931\u002B01:00",
+      "context": {
+        "id": "01GCAH0Z1ZEH9MDT5QCJTWC60P"
+      }
+    },
+    "sensor.sensor_2_power": {
+      "entity_id": "sensor.sensor_2_power",
+      "state": "100",
+      "attributes": {
+        "state_class": "measurement",
+        "battery_voltage": 2.1,
+        "unit_of_measurement": "%",
+        "device_class": "battery",
+        "friendly_name": "Sensor-2 power"
+      },
+      "last_changed": "2022-09-07T00:09:05.473128\u002B01:00",
+      "last_updated": "2022-09-07T00:09:05.473128\u002B01:00",
+      "context": {
+        "id": "01GCAH0Z21RYP2SDMM5GKRSSP8"
       }
     },
     "binary_sensor.updater": {
@@ -2094,10 +2119,10 @@
         "friendly_name": "Updater",
         "supported_features": 0
       },
-      "last_changed": "2022-06-08T18:19:05.334137+01:00",
-      "last_updated": "2022-06-08T18:19:05.334137+01:00",
+      "last_changed": "2022-09-07T00:09:05.481805\u002B01:00",
+      "last_updated": "2022-09-07T00:09:05.481805\u002B01:00",
       "context": {
-        "id": "01G5257D3PEZ2X2B37X3DREHGB"
+        "id": "01GCAH0Z29EC23GATZ38N9M6GK"
       }
     },
     "binary_sensor.backups_stale": {
@@ -2107,10 +2132,10 @@
         "friendly_name": "Backups Stale",
         "device_class": "problem"
       },
-      "last_changed": "2022-06-08T18:21:09.945414+01:00",
-      "last_updated": "2022-06-08T18:21:09.945414+01:00",
+      "last_changed": "2022-09-07T00:10:51.160969\u002B01:00",
+      "last_updated": "2022-09-07T00:10:51.160969\u002B01:00",
       "context": {
-        "id": "01G525B6SSQW346BN800BZK48E",
+        "id": "01GCAH468RAV31HEHEKAP5KHQN",
         "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
       }
     },
@@ -2119,63 +2144,113 @@
       "state": "backed_up",
       "attributes": {
         "friendly_name": "Backup State",
-        "last_backup": "2022-07-17T03:07:04.416698+01:00",
-        "next_backup": "2022-07-20T03:07:04.416698+01:00",
-        "last_uploaded": "2022-07-17T03:07:04.416698+01:00",
+        "last_backup": "2022-09-10T19:23:11.347951\u002B01:00",
+        "next_backup": "2022-09-13T19:23:11.347951\u002B01:00",
+        "last_uploaded": "2022-09-10T19:23:11.347951\u002B01:00",
         "backups_in_google_drive": 4,
         "backups_in_home_assistant": 4,
-        "size_in_google_drive": "73.6 MB",
-        "size_in_home_assistant": "73.6 MB",
+        "size_in_google_drive": "11.7 MB",
+        "size_in_home_assistant": "11.7 MB",
         "backups": [
           {
-            "name": "addon_core_ssh_9.4.0",
-            "date": "2022-07-08T03:07:00.988863+01:00",
+            "name": "addon_7750f853_ozric_0.7.7",
+            "date": "2022-09-06T23:47:26.546346\u002B01:00",
+            "state": "Backed Up",
+            "size": "10.2 kB",
+            "slug": "9317f694"
+          },
+          {
+            "name": "core_2022.8.4",
+            "date": "2022-09-06T23:56:40.606694\u002B01:00",
+            "state": "Backed Up",
+            "size": "5.5 MB",
+            "slug": "57b0037e"
+          },
+          {
+            "name": "addon_cebe7a76_hassio_google_drive_backup_0.108.2",
+            "date": "2022-09-07T19:23:09.933263\u002B01:00",
             "state": "Backed Up",
             "size": "20.5 kB",
-            "slug": "13c1156f"
+            "slug": "a8e78585"
           },
           {
-            "name": "Full Backup 2022-07-11 03:07:01",
-            "date": "2022-07-11T03:07:01.932996+01:00",
+            "name": "Full Backup 2022-09-10 19:23:10",
+            "date": "2022-09-10T19:23:11.347951\u002B01:00",
             "state": "Backed Up",
-            "size": "25.9 MB",
-            "slug": "ef93ce0e"
-          },
-          {
-            "name": "Full Backup 2022-07-14 03:07:02",
-            "date": "2022-07-14T03:07:03.313226+01:00",
-            "state": "Backed Up",
-            "size": "33.8 MB",
-            "slug": "0ea4e4a2"
-          },
-          {
-            "name": "Full Backup 2022-07-17 03:07:03",
-            "date": "2022-07-17T03:07:04.416698+01:00",
-            "state": "Backed Up",
-            "size": "13.9 MB",
-            "slug": "b4711c73"
+            "size": "6.1 MB",
+            "slug": "18c5a2c6"
           }
         ]
       },
-      "last_changed": "2022-06-08T18:21:09.98269+01:00",
-      "last_updated": "2022-07-17T03:07:40.413339+01:00",
+      "last_changed": "2022-09-07T19:26:07.955608\u002B01:00",
+      "last_updated": "2022-09-10T19:23:31.310482\u002B01:00",
       "context": {
-        "id": "01G84YJJVXSAMFQDNB4H0964BA",
+        "id": "01GCMA8YFEXGF9D8CC4ZHV93R4",
         "user_id": "2d5cb6e659604b4dbb7284b088b12d23"
       }
     },
-    "persistent_notification.sonos_subscriptions_failed": {
-      "entity_id": "persistent_notification.sonos_subscriptions_failed",
+    "update.ozric_update": {
+      "entity_id": "update.ozric_update",
+      "state": "off",
+      "attributes": {
+        "auto_update": false,
+        "installed_version": "0.8.0",
+        "in_progress": false,
+        "latest_version": "0.8.0",
+        "release_summary": null,
+        "release_url": null,
+        "skipped_version": null,
+        "title": "Ozric",
+        "entity_picture": "/api/hassio/addons/7750f853_ozric/icon",
+        "friendly_name": "Ozric Update",
+        "supported_features": 25
+      },
+      "last_changed": "2022-09-07T19:26:07.872502\u002B01:00",
+      "last_updated": "2022-09-07T19:26:07.872502\u002B01:00",
+      "context": {
+        "id": "01GCCK7JC0ZVQDGPR520JYVF9A"
+      }
+    },
+    "persistent_notification.http_login": {
+      "entity_id": "persistent_notification.http_login",
       "state": "notifying",
       "attributes": {
-        "message": "Living Room cannot reach None, falling back to polling, functionality may be limited.\n\nSee <a href=\"https://www.home-assistant.io/integrations/sonos/#network-requirements\">Sonos documentation</a> for more details.",
-        "title": "Sonos networking issue",
-        "friendly_name": "Sonos networking issue"
+        "message": "Login attempt or request with invalid authentication from fe80::7ca9:27c2:c59f:f318 (fe80::7ca9:27c2:c59f:f318). See the log for details.",
+        "title": "Login attempt failed",
+        "friendly_name": "Login attempt failed"
       },
-      "last_changed": "2022-07-17T11:41:01.424087+01:00",
-      "last_updated": "2022-07-17T11:41:01.424087+01:00",
+      "last_changed": "2022-09-12T22:14:15.070925\u002B01:00",
+      "last_updated": "2022-09-12T22:14:15.070925\u002B01:00",
       "context": {
-        "id": "01G85VYHZGGWRC0GDNK964GJE5"
+        "id": "01GCSRV04Y2NJ0SK364HA2SD49"
+      }
+    },
+    "media_player.panasonic": {
+      "entity_id": "media_player.panasonic",
+      "state": "unavailable",
+      "attributes": {
+        "device_class": "tv",
+        "friendly_name": "Panasonic",
+        "supported_features": 153533
+      },
+      "last_changed": "2022-09-12T22:23:47.568148\u002B01:00",
+      "last_updated": "2022-09-12T22:23:47.568148\u002B01:00",
+      "context": {
+        "id": "01GCSSCF16ARFEHY137BZ8ZE0M",
+        "user_id": "27568fb5326f49428f78e8d219212733"
+      }
+    },
+    "remote.panasonic": {
+      "entity_id": "remote.panasonic",
+      "state": "unavailable",
+      "attributes": {
+        "friendly_name": "Panasonic",
+        "supported_features": 0
+      },
+      "last_changed": "2022-09-12T22:23:59.822311\u002B01:00",
+      "last_updated": "2022-09-12T22:23:59.822311\u002B01:00",
+      "context": {
+        "id": "01GCSSCV6EE792NQ9G38K6Q4FZ"
       }
     }
   }

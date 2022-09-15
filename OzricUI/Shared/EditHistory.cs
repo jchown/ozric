@@ -1,8 +1,5 @@
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
-using Blazor.Diagrams.Core.Models.Base;
-using Microsoft.AspNetCore.Components.Web;
-using OzricEngine.logic;
 using OzricUI.Components;
 
 namespace OzricUI.Shared;

@@ -1,0 +1,66 @@
+@using OzricUI.Model
+@using OzricEngine.logic
+@using OzricService
+@inject IEngineService EngineService
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
+            
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            <MudTextField Label="Type" HelperText="The type of this node" Value="Type" Disabled="true" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            <MudTextField Label="Entity ID" HelperText="The ID used by Home Assistant" @bind-Value="EntityID" Disabled="true"/>
+
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    [Parameter]
+    public EntityModel Model { get; set; }
+
+    [Parameter]
+    public EntityNode Node { get; set; }
+
+    private string ID { get; set; }
+    private NodeType Type;
+    private string EntityID;
+
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+
+    protected override void OnInitialized()
+    {
+        ID = Node.id;
+        Type = Node.nodeType;
+        EntityID = Node.entityID;
+    }
+    
+    private IList<GraphEditAction> GetChanges()
+    {
+        if (ID != Node.id)
+            return new List<GraphEditAction> { new GraphEditAction.RenameNode(Node, ID) };
+
+        return GraphEditAction.NoChanges;
+    }
+}

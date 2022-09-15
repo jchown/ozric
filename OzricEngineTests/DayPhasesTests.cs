@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using OzricEngine.Values;
 using OzricEngineTests;
 using Xunit;
+using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine.logic
 {

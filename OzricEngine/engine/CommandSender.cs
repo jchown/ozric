@@ -20,7 +20,7 @@ namespace OzricEngine
                 {
                     foreach (var otherCommand in commands)
                     {
-                        if ((otherCommand is IMergable otherMergable))
+                        if (otherCommand is IMergable otherMergable)
                         {
                             if (otherMergable.Merge(command))
                             {
@@ -51,7 +51,7 @@ namespace OzricEngine
                 
                 foreach (var handler in handlers[task.Key])
                 {
-                    handler?.Invoke(result);
+                    handler.Invoke(result);
                 }
             }
         }

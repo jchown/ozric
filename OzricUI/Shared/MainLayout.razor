@@ -8,6 +8,7 @@
 @using Size = MudBlazor.Size
 @using Edge = MudBlazor.Edge
 @using Blazor.Diagrams.Core.Models.Base
+@using OzricEngine.Values
 @inject IDialogService DialogService
 @inherits LayoutComponentBase
 @inject DataService Data
@@ -278,6 +279,7 @@
     {
         new(typeof(LightModel), typeof(LightDialog), "Light"),
         new(typeof(ColorConstantModel), typeof(ColorConstantDialog), "Color"),
+        new(typeof(EntityModel), typeof(EntityDialog), "Entity"),
         new(typeof(GraphNodeModel), typeof(NodeDialog), "Node"),
     };
 

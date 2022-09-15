@@ -7,15 +7,18 @@
         <MudContainer Style="max-height: 60vh; overflow-y: scroll">
 
             <MudTextField Label="Title" HelperText="The unique name for this node" Value="ID" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
 
-            <MudTextField Label="Type" HelperText="The type of this node" Value="Type" />
+            <MudTextField Label="Type" HelperText="The type of this node" Value="Type" Disabled="true" />
 
         </MudContainer>
 
     </DialogContent>
 
     <DialogActions>
-        <MudButton OnClick="Close">Close</MudButton>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
     </DialogActions>
 
 </MudDialog>
@@ -31,14 +34,25 @@
     [Parameter]
     public Node Node { get; set; }
 
-    private string ID;
+    private string ID { get; set; }
     private NodeType Type;
 
-    void Close() => MudDialog.Cancel();
-
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+    
+    private bool HasChanges => GetChanges().Count > 0;
+    
     protected override void OnInitialized()
     {
         ID = Node.id;
         Type = Node.nodeType;
+    }
+    
+    private IList<GraphEditAction> GetChanges()
+    {
+        if (ID != Node.id)
+            return new List<GraphEditAction> { new GraphEditAction.RenameNode(Node, ID) };
+
+        return GraphEditAction.NoChanges;
     }
 }
