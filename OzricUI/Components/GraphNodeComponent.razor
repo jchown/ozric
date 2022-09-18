@@ -4,20 +4,11 @@
 <div class="ozric-node @(Node.Selected ? " selected" : "")">
     <div class="ozric-node-icon"><span class="iconify" data-icon="@(Node.Icon)"></span></div>
     <div class="ozric-node-title">@(Node.Title)</div>
-    @foreach (var port in Node.Ports)
+    @foreach (var port in Node.Ports.Select(p => p as IPort).Where(p => p != null))
     {
-        <div class="@(port is InputPortModel ? "input-port" : "output-port")">
-            <PortRenderer Port="@port" Class="@(port is InputPortModel ? "input-port" : "output-port")">
-                <img src="icons/@(((GraphPortModel)port).valueType).png" width="16" height="16" alt="@(((GraphPortModel)port).name)" />
-            </PortRenderer>
-        </div>
-    }
-    /*
-    @if (Node is VariableInputsModel vim)
-    {
-        <div class="input-port">
-            <PortRenderer Port="@vim.plus" Class="input-port">
-                <img src="icons/@(vim.plus.valueType).png" width="16" height="16" />
+        <div class="@(port.cssClass)" hidden="@(port.hiddenIfLocked && Node.Locked)">
+            <PortRenderer Port="@((PortModel) port)">
+                <img src="icons/@(port.valueType).png" width="16" height="16" />
             </PortRenderer>
         </div>
     }

@@ -8,7 +8,7 @@ namespace OzricUI.Model;
 
 public abstract class GraphNodeModel: NodeModel
 {
-    private Node node;
+    public readonly Node node;
     private Mapping<Pin, PortModel> portMappings;
 
     public GraphNodeModel(Node node, Point? point = null) : base(node.id, point)
@@ -42,16 +42,22 @@ public abstract class GraphNodeModel: NodeModel
 
     public void AddInput(Pin pin)
     {
-        var port = AddPort(new InputPortModel(this, pin, PortAlignment.Left));
+        var port = AddPort(new PinPortInput(this, pin, PortAlignment.Left));
         portMappings.Add(pin, port);
     }
 
     private void AddOutput(Pin pin)
     {
-        var port = AddPort(new OutputPortModel(this, pin, PortAlignment.Right));
+        var port = AddPort(new PinPortOutput(this, pin, PortAlignment.Right));
         portMappings.Add(pin, port);
     }
 
+    public void RemoveInput(Pin pin)
+    {
+        var port = portMappings.GetDiagram(pin);
+        RemovePort(port);
+        portMappings.Remove(pin);
+    }
     
     public abstract string Icon { get; }
 }

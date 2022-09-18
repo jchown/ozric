@@ -6,11 +6,20 @@ namespace OzricUI.Model;
 
 public abstract class VariableInputsModel: GraphNodeModel
 {
-    public VariableInputPortModel plus;
+    public PortInputAdd plus;
 
     public VariableInputsModel(VariableInputs node, Point? point = null) : base(node, point)
     {
-        plus = new VariableInputPortModel(this, node.valueType, PortAlignment.BottomLeft);
+        plus = new PortInputAdd(this, node.valueType, PortAlignment.BottomLeft);
+        AddPort(plus);
+    }
+    
+    public void AddInput(Pin pin)
+    {
+        // Make sure the "add" port is always last
+        
+        RemovePort(plus);
+        base.AddInput(pin);
         AddPort(plus);
     }
 }

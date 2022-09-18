@@ -145,6 +145,8 @@
 
             foreach (var port in node.Ports)
                 port.Locked = locked;
+            
+            node.ReinitializePorts();
         }
 
         foreach (var link in diagram.Nodes)
@@ -471,35 +473,58 @@
        //     RegisterUndoHistoryAction(new GraphAction.AddLink(link)); 
     }
 
-       
     private void OnDiagramLinkConnected(BaseLinkModel link, PortModel? inPort, PortModel? outPort)
     {
         link.SourcePortChanged -= OnDiagramLinkConnected;
-        
-        var fromNodeModel = (GraphNodeModel) link.SourceNode;
-        var toNodeModel = (GraphNodeModel) link.TargetNode!;
-        
+
+        var fromNodeModel = (GraphNodeModel)link.SourceNode;
+        var toNodeModel = (GraphNodeModel)link.TargetNode!;
+
+        var createPin = link.TargetPort is PortInputAdd;
+
         var fromNode = nodeMappings.GetGraph(fromNodeModel);
         var toNode = nodeMappings.GetGraph(toNodeModel);
-        
+
         var fromPin = fromNodeModel.GetPin(link.SourcePort!);
-        var toPin = toNodeModel.GetPin(link.TargetPort!);
 
-    // Check the user hasn't just repeated an existing link
-        
-        var from = new OutputSelector(fromNode.id, fromPin.name);
-        var to = new InputSelector(toNode.id, toPin.name);
-        var edge = new Edge(from, to);
+        if (!createPin)
+        {
+            var toPin = toNodeModel.GetPin(link.TargetPort!);
+            
+    // Check the user hasn't just duplicated an existing link
 
-        if (Graph.edges.ContainsKey(edge.id))
-            return;
-        
+            var from = new OutputSelector(fromNode.id, fromPin.name);
+            var to = new InputSelector(toNode.id, toPin.name);
+            var edge = new Edge(from, to);
+
+            if (Graph.edges.ContainsKey(edge.id))
+                return;
+
     //  The diagram link has been added by the library, but we need to remove it and then add it 
     //  back to both the diagram and the model in order for the undo/redo logic to be simple.
-        
-        diagram.Links.Remove(link);
-        
-        DoAction(new GraphEditAction.AddEdge(edge));       
+
+            diagram.Links.Remove(link);
+
+            DoAction(new GraphEditAction.AddEdge(edge));
+        }
+        else
+        {
+            //  We'll need to create a pin/port as well as the edge/link 
+            
+            diagram.Links.Remove(link);
+
+            var toVarInput = toNode as VariableInputs ?? throw new Exception("Expect variable inputs");
+            var newPinName = toVarInput.NextPinName();
+            
+            var from = new OutputSelector(fromNode.id, fromPin.name);
+            var to = new InputSelector(toNode.id, newPinName);
+            var edge = new Edge(from, to);
+
+            var addPort = new GraphEditAction.AddInput(toVarInput, newPinName);
+            var addEdge = new GraphEditAction.AddEdge(edge);
+
+            DoAction(new GraphEditAction.EditActions(new List<GraphEditAction>{ addPort, addEdge }));
+        }
     }
 
     private void DoDelete()
@@ -515,7 +540,19 @@
                         return new GraphEditAction.RemoveNode(nodeMappings.GetGraph(gnm));
 
                     case LinkModel lm:
-                        return new GraphEditAction.RemoveEdge(edgeMappings.GetGraph(lm));
+
+                        var edge = edgeMappings.GetGraph(lm);
+                        
+                        if (lm.TargetNode is VariableInputsModel vim)
+                        {
+                            var inputNode = (VariableInputs) vim.node;
+                            var removePort = new GraphEditAction.RemoveInput(inputNode, edge.to.inputName);
+                            var removeEdge = new GraphEditAction.RemoveEdge(edge);
+
+                            return new GraphEditAction.EditActions(new List<GraphEditAction>{ removeEdge, removePort });
+                        }
+                        
+                        return new GraphEditAction.RemoveEdge(edge);
 
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -525,5 +562,19 @@
             GraphEditState.DoAction(new GraphEditAction.EditActions(actions));
         }
         OnHistoryChanged();
+    }
+
+    public void AddNodeInput(VariableInputs variableInputs, string inputName)
+    {
+        var input = variableInputs.AddInput(inputName);
+        var model = nodeMappings.GetDiagram(variableInputs) as VariableInputsModel;
+        model.AddInput(input);
+    }
+
+    public void RemoveNodeInput(VariableInputs variableInputs, string inputName)
+    {
+        var input = variableInputs.RemoveInput(inputName);
+        var model = nodeMappings.GetDiagram(variableInputs) as VariableInputsModel;
+        model.RemoveInput(input);
     }
 }

@@ -235,14 +235,14 @@
             category: Category.Logic,
             name: "If Any - OR",
             icon: IfAnyModel.ICON,
-            create: () => new IfAny(Graph.CreateNodeID("ifany-"), "input1", "input2"),
+            create: () => new IfAny(Graph.CreateNodeID("ifany-")),
             once: false));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "If All - AND",
             icon: IfAllModel.ICON,
-            create: () => new IfAny(Graph.CreateNodeID("ifall-"), "input1", "input2"),
+            create: () => new IfAny(Graph.CreateNodeID("ifall-")),
             once: false));
 
         choices.Add(new AddNodeChoice(

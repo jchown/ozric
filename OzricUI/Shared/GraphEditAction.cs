@@ -64,6 +64,36 @@ public interface GraphEditAction
             editor.Reload(node);
         }
     }
+    
+    record AddInput(VariableInputs node, string inputName): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            editor.AddNodeInput(node, inputName);
+            editor.Reload(node);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            editor.RemoveNodeInput(node, inputName);
+            editor.Reload(node);
+        }
+    }
+
+    record RemoveInput(VariableInputs node, string inputName): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            editor.RemoveNodeInput(node, inputName);
+            editor.Reload(node);
+        }
+        
+        public void Undo(GraphEditor editor)
+        {
+            editor.AddNodeInput(node, inputName);
+            editor.Reload(node);
+        }
+    }
 
     record MoveNode(NodeModel node, Point @from, Point to): GraphEditAction
     {
@@ -79,7 +109,7 @@ public interface GraphEditAction
         
         public GraphEditAction WithTo(Point to)
         {
-            return new MoveNode(node, from, to);
+            return this with { to = to };
         }
     }
 

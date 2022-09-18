@@ -13,7 +13,7 @@ public class Sensor : EntityNode
 
     public const string OUTPUT_NAME = "activity";
 
-    public Sensor(string id, string entityID) : base(id, entityID, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) }, null)
+    public Sensor(string id, string entityID) : base(id, entityID, null, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) })
     {
     }
 

@@ -15,9 +15,38 @@ public abstract class VariableInputs: Node
         this.valueType = valueType;
     }
 
-    public void AddInput(string name)
+    public Pin AddInput(string name)
     {
-        inputs.Add(new Pin(name, valueType));            
+        var input = new Pin(name, valueType);
+        inputs.Add(input);
+        return input;
+    }
+
+    public Pin RemoveInput(string name)
+    {
+        var input = inputs.First(i => i.name == name);
+        inputs.Remove(input);
+        return input;
+    }
+
+    public string NextPinName()
+    {
+        string expected = $"input-{inputs.Count + 1}";
+        if (!HasInput(expected))
+            return expected;
+
+        for (int i = 1; i <= inputs.Count; i++)
+        {
+            string mid = $"input-{i}";
+            if (!HasInput(mid))
+                return mid;
+        }
+        
+        string unexpected = $"input-{inputs.Count + 2}";
+        if (!HasInput(unexpected))
+            return expected;
+        
+        throw new Exception(@"¯\_(ツ)_/¯");
     }
 
     protected IEnumerable<TValue> GetInputValues<TValue>() where TValue: Value
