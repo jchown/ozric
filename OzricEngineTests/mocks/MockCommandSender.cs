@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using OzricEngine.ext;
 
-namespace OzricEngine.logic
+namespace OzricEngine.Nodes
 {
     public class MockCommandSender : CommandSender
     {

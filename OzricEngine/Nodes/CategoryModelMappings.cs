@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 
-namespace OzricEngine.nodes;
+namespace OzricEngine.Nodes;
 
 public static class CategoryModelMappings
 {

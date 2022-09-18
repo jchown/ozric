@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 
 namespace OzricEngine
 {

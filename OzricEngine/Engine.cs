@@ -4,7 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using OzricEngine.engine;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 
 namespace OzricEngine
 {

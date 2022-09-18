@@ -1,6 +1,6 @@
 using OzricEngine;
 using OzricEngine.engine;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 using Graph = OzricEngine.Graph;
 
 namespace OzricService;

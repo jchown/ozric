@@ -1,5 +1,5 @@
 using Blazor.Diagrams.Core.Geometry;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 
 namespace OzricUI.Model;
 

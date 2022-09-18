@@ -4,8 +4,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using JetBrains.Annotations;
 using OzricEngine.ext;
-using OzricEngine.logic;
-using OzricEngine.nodes;
+using OzricEngine.Nodes;
 
 namespace OzricEngine
 {

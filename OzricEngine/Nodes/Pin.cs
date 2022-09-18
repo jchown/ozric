@@ -4,126 +4,125 @@ using OzricEngine.Values;
 using ValueType = OzricEngine.Values.ValueType;
 using Boolean = OzricEngine.Values.Boolean;
 
-namespace OzricEngine.logic
+namespace OzricEngine.Nodes;
+
+/// <summary>
+/// A named input or output, with a current value.
+/// </summary>
+public class Pin : IGraphObject
 {
-    /// <summary>
-    /// A named input or output, with a current value.
-    /// </summary>
-    public class Pin : IGraphObject
-    {
-        [JsonIgnore]
-        public string id => name;
+    [JsonIgnore]
+    public string id => name;
         
-        public string name { get; set; }
-        public ValueType type { get; set; }
-        public Value? value { get; set; }
+    public string name { get; set; }
+    public ValueType type { get; set; }
+    public Value? value { get; set; }
 
-        public Pin(string name, ValueType type, Value? value = null)
+    public Pin(string name, ValueType type, Value? value = null)
+    {
+        this.name = name;
+        this.type = type;
+        this.value = value;
+    }
+
+    private void SetValue(Scalar scalar)
+    {
+        switch (type)
         {
-            this.name = name;
-            this.type = type;
-            this.value = value;
+            case ValueType.Scalar:
+                value = scalar;
+                return;
+
+            case ValueType.Color:
+                value = new ColorRGB(1, 1, 1, scalar.value);
+                return;
+
+            case ValueType.Boolean:
+                value = new Boolean(scalar.value > 0);
+                return;
+
+            default:
+                throw new Exception($"Don't know how to assign Scalar to {type}");
         }
+    }
 
-        private void SetValue(Scalar scalar)
+    private void SetValue(ColorValue color)
+    {
+        switch (type)
         {
-            switch (type)
-            {
-                case ValueType.Scalar:
-                    value = scalar;
-                    return;
+            case ValueType.Scalar:
+                value = new Scalar(color.brightness);
+                return;
 
-                case ValueType.Color:
-                    value = new ColorRGB(1, 1, 1, scalar.value);
-                    return;
+            case ValueType.Color:
+                value = color;
+                return;
 
-                case ValueType.Boolean:
-                    value = new Boolean(scalar.value > 0);
-                    return;
+            case ValueType.Boolean:
+                value = new Boolean(color.brightness > 0);
+                return;
 
-                default:
-                    throw new Exception($"Don't know how to assign Scalar to {type}");
-            }
+            default:
+                throw new Exception($"Don't know how to assign Color to {type}");
         }
+    }
 
-        private void SetValue(ColorValue color)
+    private void SetValue(Boolean boolean)
+    {
+        switch (type)
         {
-            switch (type)
-            {
-                case ValueType.Scalar:
-                    value = new Scalar(color.brightness);
-                    return;
+            case ValueType.Scalar:
+                value = new Scalar(boolean.value ? 1 : 0);
+                return;
 
-                case ValueType.Color:
-                    value = color;
-                    return;
+            case ValueType.Color:
+                value = new ColorRGB(1, 1, 1, boolean.value ? 1 : 0);
+                return;
 
-                case ValueType.Boolean:
-                    value = new Boolean(color.brightness > 0);
-                    return;
+            case ValueType.Boolean:
+                value = boolean;
+                return;
 
-                default:
-                    throw new Exception($"Don't know how to assign Color to {type}");
-            }
+            default:
+                throw new Exception($"Don't know how to assign Color to {type}");
         }
+    }
 
-        private void SetValue(Boolean boolean)
+    private void SetValue(Mode mode)
+    {
+        switch (type)
         {
-            switch (type)
-            {
-                case ValueType.Scalar:
-                    value = new Scalar(boolean.value ? 1 : 0);
-                    return;
+            case ValueType.Mode:
+                value = mode;
+                return;
 
-                case ValueType.Color:
-                    value = new ColorRGB(1, 1, 1, boolean.value ? 1 : 0);
-                    return;
-
-                case ValueType.Boolean:
-                    value = boolean;
-                    return;
-
-                default:
-                    throw new Exception($"Don't know how to assign Color to {type}");
-            }
+            default:
+                throw new Exception($"Don't know how to assign Mode to {type}");
         }
+    }
 
-        private void SetValue(Mode mode)
+    public void SetValue(Value value)
+    {
+        switch (value)
         {
-            switch (type)
-            {
-                case ValueType.Mode:
-                    value = mode;
-                    return;
+            case Scalar scalar:
+                SetValue(scalar);
+                return;
 
-                default:
-                    throw new Exception($"Don't know how to assign Mode to {type}");
-            }
-        }
+            case ColorValue Color:
+                SetValue(Color);
+                return;
 
-        public void SetValue(Value value)
-        {
-            switch (value)
-            {
-                case Scalar scalar:
-                    SetValue(scalar);
-                    return;
+            case Boolean onOff:
+                SetValue(onOff);
+                return;
 
-                case ColorValue Color:
-                    SetValue(Color);
-                    return;
+            case Mode mode:
+                SetValue(mode);
+                return;
 
-                case Boolean onOff:
-                    SetValue(onOff);
-                    return;
-
-                case Mode mode:
-                    SetValue(mode);
-                    return;
-
-                default:
-                    throw new Exception($"Don't know how to assign {value.GetType().Name}");
-            }
+            default:
+                throw new Exception($"Don't know how to assign {value.GetType().Name}");
         }
     }
 }

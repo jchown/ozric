@@ -1,13 +1,12 @@
-@using OzricEngine.logic
+@using OzricEngine.Nodes
 @using OzricUI.Model
 @using OzricEngine.ext
 @using Blazor.Diagrams.Components
 @using Blazor.Diagrams.Core.Models.Base
 @using OzricEngine
-@using OzricEngine.nodes
 @using _Imports = OzricUI._Imports
 @using ValueType = OzricEngine.Values.ValueType
-@using Edge = OzricEngine.nodes.Edge
+@using Edge = OzricEngine.Nodes.Edge
 @implements IDisposable
 
 <div class="diagram-container">
@@ -233,11 +232,12 @@
         nodeMappings.Add(node, diagramNode);
         diagram.Nodes.Add(diagramNode);
 
+        /*
         var expectedPortCount = node.inputs.Count + node.outputs.Count;
         if (diagramNode.Ports.Count != expectedPortCount)
         {
             throw new Exception($"Graph Node {diagramNode} has {diagramNode.Ports.Count} ports but expected {expectedPortCount}");
-        }
+        }*/
 
         for (int i = 0; i < node.inputs.Count; i++)
         {

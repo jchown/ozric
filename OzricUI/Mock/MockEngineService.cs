@@ -1,6 +1,6 @@
 using OzricEngine;
 using OzricEngine.engine;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 using OzricService;
 
 namespace OzricUI.Mock;

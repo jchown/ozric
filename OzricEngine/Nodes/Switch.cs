@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using ValueType = OzricEngine.Values.ValueType;
 using Boolean = OzricEngine.Values.Boolean;
 
-namespace OzricEngine.logic;
+namespace OzricEngine.Nodes;
 
 [TypeKey(NodeType.Switch)]
 public class Switch: EntityNode

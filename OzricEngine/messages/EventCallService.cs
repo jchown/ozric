@@ -1,4 +1,4 @@
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 
 namespace OzricEngine
 {

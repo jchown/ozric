@@ -1,4 +1,4 @@
-namespace OzricEngine.nodes;
+namespace OzricEngine.Nodes;
 
 public enum Category
 {

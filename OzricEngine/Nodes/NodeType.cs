@@ -1,20 +1,19 @@
 using System.Text.Json.Serialization;
 
-namespace OzricEngine.logic
+namespace OzricEngine.Nodes;
+
+[JsonConverter(typeof(JsonStringEnumConverter))] 
+public enum NodeType
 {
-    [JsonConverter(typeof(JsonStringEnumConverter))] 
-    public enum NodeType
-    {
-        Constant, 
-        DayPhases, 
-        IfAll, 
-        IfAny, 
-        Light, 
-        ModeSwitch, 
-        Sensor, 
-        SkyBrightness,
-        BooleanChoice,
-        Switch,
-        MediaPlayer
-    }
+    Constant, 
+    DayPhases, 
+    IfAll, 
+    IfAny, 
+    Light, 
+    ModeSwitch, 
+    Sensor, 
+    SkyBrightness,
+    BooleanChoice,
+    Switch,
+    MediaPlayer
 }

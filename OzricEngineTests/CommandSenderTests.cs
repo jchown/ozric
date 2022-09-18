@@ -1,6 +1,6 @@
 ﻿using OzricEngine;
 using System.Collections.Generic;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 using Xunit;
 using System;
 

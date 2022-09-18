@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using OzricEngine;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 
 namespace OzricEngineTests
 {

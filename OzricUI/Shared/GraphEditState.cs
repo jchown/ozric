@@ -1,6 +1,6 @@
 using Blazor.Diagrams.Core.Models.Base;
 using Microsoft.AspNetCore.Components.Web;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 
 namespace OzricUI.Shared;
 

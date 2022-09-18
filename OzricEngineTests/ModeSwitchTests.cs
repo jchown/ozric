@@ -2,7 +2,7 @@ using System;
 using OzricEngineTests;
 using Xunit;
 
-namespace OzricEngine.logic
+namespace OzricEngine.Nodes
 {
     public class ModeSwitchTests
     {

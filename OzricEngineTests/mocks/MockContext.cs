@@ -1,6 +1,6 @@
 using OzricEngineTests;
 
-namespace OzricEngine.logic
+namespace OzricEngine.Nodes
 {
     public class MockContext : Context
     {

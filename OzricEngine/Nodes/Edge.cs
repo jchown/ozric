@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 
-namespace OzricEngine.nodes;
+namespace OzricEngine.Nodes;
 
 public record Edge(OutputSelector from, InputSelector to) : IGraphObject
 {

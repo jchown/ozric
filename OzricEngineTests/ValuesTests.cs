@@ -1,7 +1,7 @@
 ﻿using OzricEngine;
 using System.Collections.Generic;
 using System.Text.Json;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 using Xunit;
 using OzricEngine.Values;
 using Boolean = OzricEngine.Values.Boolean;

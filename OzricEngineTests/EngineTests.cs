@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using OzricEngine;
 using OzricEngine.ext;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 using Xunit;
 using OzricEngine.Values;
 using ValueType = OzricEngine.Values.ValueType;

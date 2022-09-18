@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Threading.Tasks.Dataflow;
 using OzricEngine.ext;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 using WatsonWebsocket;
 
 namespace OzricEngine

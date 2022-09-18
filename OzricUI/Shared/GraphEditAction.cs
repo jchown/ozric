@@ -2,8 +2,7 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
-using OzricEngine.logic;
-using OzricEngine.nodes;
+using OzricEngine.Nodes;
 using OzricUI;
 using OzricUI.Components;
 

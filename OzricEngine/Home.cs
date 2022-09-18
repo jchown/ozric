@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace OzricEngine.logic
+namespace OzricEngine.Nodes
 {
     public class Home
     {

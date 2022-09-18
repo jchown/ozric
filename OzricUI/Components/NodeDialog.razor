@@ -1,12 +1,12 @@
 @using OzricUI.Model
-@using OzricEngine.logic
+@using OzricEngine.Nodes
 
 <MudDialog>
     <DialogContent>
 
         <MudContainer Style="max-height: 60vh; overflow-y: scroll">
 
-            <MudTextField Label="Title" HelperText="The unique name for this node" Value="ID" />
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
             
             <MudDivider DividerType="DividerType.Middle" Class="my-4" />
 

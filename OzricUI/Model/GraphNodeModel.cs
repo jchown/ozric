@@ -1,7 +1,7 @@
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using OzricEngine.ext;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 using OzricUI.Shared;
 
 namespace OzricUI.Model;
@@ -40,7 +40,7 @@ public abstract class GraphNodeModel: NodeModel
         return portMappings.GetGraph(port);
     }
 
-    private void AddInput(Pin pin)
+    public void AddInput(Pin pin)
     {
         var port = AddPort(new InputPortModel(this, pin, PortAlignment.Left));
         portMappings.Add(pin, port);

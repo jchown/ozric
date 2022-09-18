@@ -4,52 +4,51 @@ using System.Threading.Tasks;
 using Boolean = OzricEngine.Values.Boolean;
 using ValueType = OzricEngine.Values.ValueType;
 
-namespace OzricEngine.logic
+namespace OzricEngine.Nodes;
+
+/// <summary>
+/// Choose from two values based on the state of an OnOff input
+/// </summary>
+[TypeKey(NodeType.BooleanChoice)]
+public class BooleanChoice: Node
 {
-    /// <summary>
-    /// Choose from two values based on the state of an OnOff input
-    /// </summary>
-    [TypeKey(NodeType.BooleanChoice)]
-    public class BooleanChoice: Node
+    public override NodeType nodeType => NodeType.BooleanChoice;
+
+    public ValueType valueType { get; set; }
+        
+    public const string INPUT_NAME_ON = "on";
+    public const string INPUT_NAME_OFF = "off";
+    public const string INPUT_NAME_SWITCH = "switch";
+    public const string OUTPUT_NAME = "output";
+        
+    public BooleanChoice(string id, ValueType valueType): base(id, new List<Pin> { new(INPUT_NAME_ON, valueType), new(INPUT_NAME_OFF, valueType), new(INPUT_NAME_SWITCH, ValueType.Boolean) }, new List<Pin> { new(OUTPUT_NAME, valueType) })
     {
-        public override NodeType nodeType => NodeType.BooleanChoice;
-
-        public ValueType valueType { get; set; }
-        
-        public const string INPUT_NAME_ON = "on";
-        public const string INPUT_NAME_OFF = "off";
-        public const string INPUT_NAME_SWITCH = "switch";
-        public const string OUTPUT_NAME = "output";
-        
-        public BooleanChoice(string id, ValueType valueType): base(id, new List<Pin> { new(INPUT_NAME_ON, valueType), new(INPUT_NAME_OFF, valueType), new(INPUT_NAME_SWITCH, ValueType.Boolean) }, new List<Pin> { new(OUTPUT_NAME, valueType) })
-        {
-            this.valueType = valueType;
-        }
+        this.valueType = valueType;
+    }
             
-        public override Task OnInit(Context context)
+    public override Task OnInit(Context context)
+    {
+        UpdateValue();
+        return Task.CompletedTask;
+    }
+
+    public override Task OnUpdate(Context context)
+    {
+        UpdateValue();
+        return Task.CompletedTask;
+    }
+
+    private void UpdateValue()
+    {
+        var switcher = GetInput(INPUT_NAME_SWITCH).value as Boolean ?? throw new Exception("No 'switch' found");
+
+        if (switcher.value)
         {
-            UpdateValue();
-            return Task.CompletedTask;
+            SetOutputValue(OUTPUT_NAME, GetInput(INPUT_NAME_ON).value);
         }
-
-        public override Task OnUpdate(Context context)
+        else
         {
-            UpdateValue();
-            return Task.CompletedTask;
-        }
-
-        private void UpdateValue()
-        {
-            var switcher = GetInput(INPUT_NAME_SWITCH).value as Boolean ?? throw new Exception("No 'switch' found");
-
-            if (switcher.value)
-            {
-                SetOutputValue(OUTPUT_NAME, GetInput(INPUT_NAME_ON).value);
-            }
-            else
-            {
-                SetOutputValue(OUTPUT_NAME, GetInput(INPUT_NAME_OFF).value);
-            }
+            SetOutputValue(OUTPUT_NAME, GetInput(INPUT_NAME_OFF).value);
         }
     }
 }

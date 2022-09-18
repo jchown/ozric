@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Humanizer;
 using OzricEngine.ext;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 using ValueType = System.ValueType;
 
 namespace OzricEngine

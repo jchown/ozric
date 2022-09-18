@@ -1,6 +1,6 @@
 using NUnit.Framework;
 using OzricEngine;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 using OzricEngine.Values;
 using OzricUI;
 

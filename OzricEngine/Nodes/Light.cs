@@ -8,7 +8,7 @@ using OzricEngine.ext;
 using OzricEngine.Values;
 using ValueType = OzricEngine.Values.ValueType;
 
-namespace OzricEngine.logic;
+namespace OzricEngine.Nodes;
 
 [TypeKey(NodeType.Light)]
 public class Light: EntityNode

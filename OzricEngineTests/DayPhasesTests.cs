@@ -5,7 +5,7 @@ using OzricEngineTests;
 using Xunit;
 using ValueType = OzricEngine.Values.ValueType;
 
-namespace OzricEngine.logic
+namespace OzricEngine.Nodes
 {
     public class DayPhasesTests
     {

@@ -1,5 +1,5 @@
 ﻿using System;
-using OzricEngine.logic;
+using OzricEngine.Nodes;
 using Xunit;
 
 namespace OzricEngineTests
