@@ -248,7 +248,7 @@ namespace OzricEngine
                         {
                             //  No messages? Check server is still reachable
 
-                            await PingPong();
+                            await CheckConnected();
                         }
                         else
                         {
@@ -338,7 +338,7 @@ namespace OzricEngine
             }
         }
 
-        private async Task PingPong()
+        protected virtual async Task CheckConnected()
         {
             await Send(new ClientPing());
             while (true)

@@ -5,8 +5,8 @@ namespace OzricUI.Model;
 
 internal class PinPortOutput: PinPort, IPort
 {
-    public bool input => false;
-    public string cssClass => "output-port";
+    public bool IsInput => false;
+    public string CssClass => "output-port";
 
     public PinPortOutput(NodeModel parent, Pin pin, PortAlignment alignment) : base(parent, pin, alignment)
     {
@@ -14,6 +14,6 @@ internal class PinPortOutput: PinPort, IPort
     
     public override bool CanAttachTo(PortModel port)
     {
-        return port is IPort { input: true } input && valueType == input.valueType;
+        return port is IPort { IsInput: true } input && valueType == input.valueType;
     }
 }

@@ -7,6 +7,25 @@
     width: 170px;
 }
 
+.ozric-height-0 {
+    height: 208px;
+}
+.ozric-height-1 {
+    height: 48px;
+}
+.ozric-height-2 {
+    height: 68px;
+}
+.ozric-height-3 {
+    height: 88px;
+}
+.ozric-height-4 {
+    height: 108px;
+}
+.ozric-height-5 {
+    height: 128px;
+}
+
 .ozric-node-icon {
     display: flex;
     justify-content: center;
@@ -17,8 +36,8 @@
     position: absolute;
     top: 5px;
     left: 5px;
-    width: 20px;
-    height: 20px;
+    width: 16px;
+    height: 16px;
 
     border: 1px solid #e8e8e8;
     border-radius: 5px;
@@ -26,8 +45,10 @@
 
 .ozric-node-title {
     text-align: center;
+    align-content: center;
     border-bottom: 1px;
     border-bottom-color: black;
+    padding-top: 2px;
 }
 
 .ozric-node.selected {
@@ -35,14 +56,30 @@
 }
 
 .input-port {
-    color: #115811;
-    width: 20px;
-    left: -20px;
+    position: absolute;
+    left: 4px;
 }
 .output-port {
     position: absolute;
-    color: blue;
-    width: 20px;
-    top: 0px;
-    right: 0px;
+    right: 4px;
 }
+
+.port-0 {
+    top: 24px;
+}
+.port-1 {
+    top: 44px;
+}
+.port-2 {
+    top: 64px;
+}
+.port-3 {
+    top: 84px;
+}
+.port-4 {
+    top: 104px;
+}
+.port-5 {
+    top: 124px;
+}
+

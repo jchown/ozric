@@ -2,8 +2,10 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using OzricEngine.Nodes;
+using OzricEngine.Values;
 using Xunit;
 using Xunit.Abstractions;
+using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngineTests
 {

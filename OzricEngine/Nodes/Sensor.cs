@@ -32,7 +32,13 @@ public class Sensor : EntityNode
     private void UpdateState(Context context)
     {
         var engine = context.engine;
-        var device = engine.home.GetEntityState(entityID) ?? throw new Exception($"Unknown device {entityID}");
+        var device = engine.home.GetEntityState(entityID);
+        if (device == null)
+        {
+            Log(LogLevel.Warning, $"Unknown device {entityID}");
+            return;
+        }
+        
         var value = new Boolean(device.state != "off");
 
         Log(LogLevel.Debug, "activity = {0}", value);

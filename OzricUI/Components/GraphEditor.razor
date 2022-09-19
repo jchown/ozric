@@ -145,8 +145,8 @@
 
             foreach (var port in node.Ports)
                 port.Locked = locked;
-            
-            node.ReinitializePorts();
+
+            node.Refresh();
         }
 
         foreach (var link in diagram.Nodes)
@@ -241,9 +241,17 @@
             throw new Exception($"Graph Node {diagramNode} has {diagramNode.Ports.Count} ports but expected {expectedPortCount}");
         }*/
 
-        for (int i = 0; i < node.inputs.Count; i++)
+        int iy = 0, oy = 0, dy = 20;
+        
+        for (int i = 0; i < diagramNode.Ports.Count; i++)
         {
-            diagramNode.Ports[i].Position = position.Add(0f, i * 20f);
+            var port = diagramNode.Ports[i];
+            var iport = (IPort) port;
+            port.Position = position.Add(0f, iport.IsInput ? iy : oy);
+            if (iport.IsInput)
+                iy += dy;
+            else
+                oy += dy;
         }
     }
 

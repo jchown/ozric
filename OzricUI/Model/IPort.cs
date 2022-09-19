@@ -6,9 +6,9 @@ public interface IPort
 {
     public ValueType valueType { get; }
     
-    public string cssClass { get; }
+    public string CssClass { get; }
 
-    public bool input { get; }
+    public bool IsInput { get; }
     
-    public bool hiddenIfLocked { get; }
+    public bool HiddenIfLocked { get; }
 }

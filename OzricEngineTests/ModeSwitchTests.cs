@@ -1,6 +1,8 @@
 using System;
 using OzricEngineTests;
 using Xunit;
+using OzricEngine.Values;
+using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine.Nodes
 {

@@ -8,10 +8,9 @@ namespace OzricUI.Model;
 /// </summary>
 public class PortInputAdd : PortModel, IPort
 {
-    public bool hiddenIfLocked => true;
-    public bool input => true;
-    public string cssClass => "input-port";
-
+    public bool HiddenIfLocked => true;
+    public bool IsInput => true;
+    public string CssClass => "input-port";
     public ValueType valueType { get; }
 
     public PortInputAdd(VariableInputsModel model, ValueType valueType, PortAlignment alignment) : base(model, alignment)
@@ -21,6 +20,6 @@ public class PortInputAdd : PortModel, IPort
 
     public override bool CanAttachTo(PortModel port)
     {
-        return port is IPort { input: false } output && output.valueType == valueType;
+        return port is IPort { IsInput: false } output && output.valueType == valueType;
     }
 }

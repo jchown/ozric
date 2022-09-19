@@ -59,5 +59,40 @@ public abstract class GraphNodeModel: NodeModel
         portMappings.Remove(pin);
     }
     
+    public int PortHeight()
+    {
+        int nl = 0, nr = 0;
+        
+        foreach (var port in Ports)
+        {
+            var ip = (IPort)port; 
+            if (ip.HiddenIfLocked && Locked)
+                continue;
+            
+            if (ip.IsInput)
+                nl++;
+            else
+                nr++;
+        }
+
+        return Math.Max(nl, nr);
+    }
+    
     public abstract string Icon { get; }
+
+    public object GetPortPosition(IPort port)
+    {
+        var input = port.IsInput;
+        int position = 0;
+        foreach (var p in Ports)
+        {
+            if (p == port)
+                return position;
+
+            if (((IPort)p).IsInput == input)
+                position++;
+        }
+
+        throw new Exception();
+    }
 }
