@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using OzricEngine.Values;
 using ValueType = OzricEngine.Values.ValueType;
@@ -46,7 +45,6 @@ public class IfAny: VariableInputs
             on |= onOff?.value ?? false;
 
         var value = new Boolean(on);
-        Log(LogLevel.Debug, "output = {0}", value);
-        SetOutputValue("output", value);
+        SetOutputValue(OUTPUT_NAME, value);
     }
 }

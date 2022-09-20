@@ -22,10 +22,10 @@ namespace OzricEngineTests
 
             var nodes = new List<Node>
             {
-                new Sensor("s1", "e1"),
-                new Sensor("s2", "e2"),
-                new Sensor("s3", "e3"),
-                new Sensor("s4", "e4"),
+                new BinarySensor("s1", "e1"),
+                new BinarySensor("s2", "e2"),
+                new BinarySensor("s3", "e3"),
+                new BinarySensor("s4", "e4"),
                 o1, o2, o3
             };
             nodes.Shuffle();
@@ -120,7 +120,7 @@ namespace OzricEngineTests
             var engine = new MockEngine(home);
             var context = new MockContext(engine);
 
-            var sensor = new Sensor("sensor_1", "binary_sensor.sensor_1");
+            var sensor = new BinarySensor("sensor_1", "binary_sensor.sensor_1");
             engine.graph.AddNode(sensor);
 
             await sensor.OnInit(context);

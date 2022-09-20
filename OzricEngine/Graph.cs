@@ -225,9 +225,14 @@ namespace OzricEngine
             return $"{prefix}-{i}";
         }
 
-        public EntityNode? GetDevicesNode(string entityID)
+        public bool HasDevicesNode(string entityID)
         {
-            return nodes.Values.Select(node => node as EntityNode).FirstOrDefault(node => node?.entityID == entityID);
+            return nodes.Values.Any(node => node is EntityNode en && en.entityID == entityID);
+        }
+
+        public EntityNode GetDevicesNode(string entityID)
+        {
+            return (EntityNode) nodes.Values.First(node => node is EntityNode en && en.entityID == entityID);
         }
     }
 }

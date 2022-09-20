@@ -7,13 +7,13 @@ using Boolean = OzricEngine.Values.Boolean;
 namespace OzricEngine.Nodes;
 
 [TypeKey(NodeType.Sensor)]
-public class Sensor : EntityNode
+public class BinarySensor : EntityNode
 {
     public override NodeType nodeType => NodeType.Sensor;
 
     public const string OUTPUT_NAME = "activity";
 
-    public Sensor(string id, string entityID) : base(id, entityID, null, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) })
+    public BinarySensor(string id, string entityID) : base(id, entityID, null, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) })
     {
     }
 
@@ -38,10 +38,7 @@ public class Sensor : EntityNode
             Log(LogLevel.Warning, $"Unknown device {entityID}");
             return;
         }
-        
-        var value = new Boolean(device.state != "off");
 
-        Log(LogLevel.Debug, "activity = {0}", value);
-        SetOutputValue(OUTPUT_NAME, value);
+        SetOutputValue(OUTPUT_NAME, new Boolean(device.state != "off"));
     }
 }

@@ -10,7 +10,8 @@ public static class CategoryModelMappings
     {
         { Category.Light, typeof(Light) },
         { Category.Switch, typeof(Switch) },
-        { Category.Sensor, typeof(Sensor) },
+        { Category.Sensor, typeof(BinarySensor) },
+        { Category.ModeSensor, typeof(ModeSensor) },
         { Category.MediaPlayer, typeof(MediaPlayer) }
     };
     

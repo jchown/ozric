@@ -7,7 +7,7 @@ public class SensorModel: GraphNodeModel
 {
     public const string ICON = "mdi:motion-sensor";
 
-    public SensorModel(Sensor sensor, Point? point = null): base(sensor, point)
+    public SensorModel(BinarySensor sensor, Point? point = null): base(sensor, point)
     {
     }
     

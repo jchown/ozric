@@ -36,7 +36,6 @@ public class IfAll: VariableInputs
             on &= onOff.value;
 
         var value = new Boolean(on);
-        Log(LogLevel.Debug, "output = {0}", value);
-        SetOutputValue("output", value);
+        SetOutputValue(OUTPUT_NAME, value);
     }
 }

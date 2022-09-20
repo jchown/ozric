@@ -15,5 +15,7 @@ public enum NodeType
     SkyBrightness,
     BooleanChoice,
     Switch,
-    MediaPlayer
+    MediaPlayer,
+    ModeSensor,
+    ModeMatch
 }

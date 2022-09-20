@@ -111,6 +111,12 @@ public abstract class Node: OzricObject, IGraphObject, IEquatable<Node>
         return output as ColorValue ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(ColorValue)}");
     }
 
+    public Mode GetInputMode(string name)
+    {
+        var output = GetOutputValue(name);
+        return output as Mode ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(Mode)}");
+    }
+
     public Boolean GetOutputOnOff(string name)
     {
         var output = GetOutputValue(name);

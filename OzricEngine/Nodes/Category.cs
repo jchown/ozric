@@ -8,5 +8,6 @@ public enum Category
     Sensor,
     Logic,
     Constant,
-    MediaPlayer
+    MediaPlayer,
+    ModeSensor
 }

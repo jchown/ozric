@@ -217,16 +217,21 @@
     private async Task OnClickAdd()
     {
         var choices = EngineService.Home.states
-            .Where(device => Graph.GetDevicesNode(device.Key) == null && CategoryModelMappings.Exists(device.Value.GetCategory()))
+            .Where(device => !Graph.HasDevicesNode(device.Key) && CategoryModelMappings.Exists(device.Value.GetCategory()))
             .Select(device =>
             {
                 var category = device.Value.GetCategory();
                 var type = CategoryModelMappings.Get(category);
+                var entityID = device.Key;
+                var id = entityID.Substring(entityID.IndexOf('.') + 1);
+                if (Graph.HasDevicesNode(id))
+                    id = Graph.CreateNodeID(category.ToString().ToLowerInvariant());
+                
                 return new AddNodeChoice(
                     category: category,
-                    name: device.Key,
+                    name: entityID,
                     icon: LightModel.ICON,
-                    create: () => (Node) Activator.CreateInstance(type, Graph.CreateNodeID(category.ToString().ToLowerInvariant()), device.Key)!,
+                    create: () => (Node) Activator.CreateInstance(type, id, entityID)!,
                     once: true);
             })
             .ToList();
@@ -250,6 +255,13 @@
             name: "Colour",
             icon: ColorConstantModel.ICON,
             create: () => new Constant(Graph.CreateNodeID("colour-"), ColorRGB.WHITE),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "Mode Matches",
+            icon: ModeMatchModel.ICON,
+            create: () => new ModeMatch(Graph.CreateNodeID("match-")),
             once: false));
 
         var parameters = new DialogParameters
@@ -277,6 +289,7 @@
     private ModelDialog[] _dialogTypes = 
     {
         new(typeof(LightModel), typeof(LightDialog), "Light"),
+        new(typeof(ModeMatchModel), typeof(ModeMatchDialog), "Mode Match"),
         new(typeof(ColorConstantModel), typeof(ColorConstantDialog), "Color"),
         new(typeof(EntityModel), typeof(EntityDialog), "Entity"),
         new(typeof(GraphNodeModel), typeof(NodeDialog), "Node"),

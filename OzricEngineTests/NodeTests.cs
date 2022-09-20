@@ -29,9 +29,9 @@ namespace OzricEngineTests
             assertSerializeRoundTripWorks(new IfAny("any-left"));
             assertSerializeRoundTripWorks(new Light("Main Light", "hue-light-1"));
             assertSerializeRoundTripWorks(new ModeSwitch("bot-mode"));
-            assertSerializeRoundTripWorks(new Sensor("Main Sensor", "sensor-01"));
+            assertSerializeRoundTripWorks(new BinarySensor("Main Sensor", "sensor-01"));
             assertSerializeRoundTripWorks(new SkyBrightness());
-            assertSerializeRoundTripWorks(new BooleanChoice("bot-colour", ValueType.Color));
+            assertSerializeRoundTripWorks(new BinaryChoice("bot-colour", ValueType.Color));
         }
                 
         [Fact]

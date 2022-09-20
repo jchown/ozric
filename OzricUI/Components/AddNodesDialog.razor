@@ -7,6 +7,7 @@
             
         <MudChip Text="All" Default="true"></MudChip>
         <MudChip Text="Sensors" Value="Category.Sensor" />
+        <MudChip Text="Modes" Value="Category.ModeSensor" />
         <MudChip Text="Lights" Value="Category.Light"  />
         <MudChip Text="Switches" Value="Category.Switch" />
         <MudChip Text="Media Players" Value="Category.MediaPlayer"  />
@@ -59,13 +60,6 @@
 
     private string Search { get; set; } = "";
 
-    private bool ShowSensors => SelectedCategories.Contains(Category.Sensor);
-    private bool ShowLights => SelectedCategories.Contains(Category.Light);
-    private bool ShowSwitches => SelectedCategories.Contains(Category.Switch);
-    private bool ShowMediaPlayers => SelectedCategories.Contains(Category.MediaPlayer);
-    private bool ShowLogic => SelectedCategories.Contains(Category.Logic);
-    private bool ShowConstants => SelectedCategories.Contains(Category.Constant);
-
     void Cancel() => MudDialog.Cancel();
 
     private Task<IEnumerable<string>> DoSearch(string arg)
@@ -82,39 +76,18 @@
                 return false;
         }
 
-        switch (choice.Category)
-        {
-            case Category.Light:
-                return ShowLights;
-
-            case Category.Switch:
-                return ShowSwitches;
-
-            case Category.Sensor:
-                return ShowSensors;
-
-            case Category.Logic:
-                return ShowLogic;
-
-            case Category.Constant:
-                return ShowConstants;
-                
-            case Category.MediaPlayer:
-                return ShowMediaPlayers;
-        }
-
-        throw new ArgumentOutOfRangeException();
+        return SelectedCategories.Contains(choice.Category);
     }
 
     private void OnSelectionChanged(MudChip[] selection)
     {
         if (selection[0].Value is MudChip)            //  "All" doesn't have a Category enum value 
         {
-            SelectedCategories = new() { Category.Light, Category.Logic, Category.Sensor, Category.Switch, Category.Constant, Category.MediaPlayer };
+            SelectedCategories = new() { Category.Light, Category.Logic, Category.Sensor, Category.ModeSensor, Category.Switch, Category.Constant, Category.MediaPlayer };
         }
         else
         {
-            SelectedCategories = new() { (Category) (selection[0].Value) };
+            SelectedCategories = new() { (Category) selection[0].Value };
         }
         
         StateHasChanged();

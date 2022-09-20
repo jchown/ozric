@@ -30,8 +30,8 @@
 
     private bool IsChanged => !IsNotChanged;
     private bool IsNotChanged => GetHistory().IsAtCheckpoint();
-    private bool CanUndo => GraphEditState.IsEditing && (GetHistory().CanUndo());
-    private bool CanRedo => GraphEditState.IsEditing && (GetHistory().CanRedo());
+    private bool CanUndo => GraphEditState.IsEditing && GetHistory().CanUndo();
+    private bool CanRedo => GraphEditState.IsEditing && GetHistory().CanRedo();
 
     private EditHistory? history;
     private EditHistory GetHistory() => history!;
@@ -47,7 +47,8 @@
         
         var options = new DiagramOptions
         {
-            DeleteKey = "Delete", // What key deletes the selected nodes/links
+//            DeleteKey = "Delete", // What key deletes the selected nodes/links
+            DeleteKey = "",
             DefaultNodeComponent = null, // Default component for nodes
             AllowMultiSelection = true, // Whether to allow multi selection using CTRL
             Links = new DiagramLinkOptions
@@ -61,15 +62,14 @@
         };
         
         diagram = new Diagram(options);
-        diagram.RegisterModelComponent<SensorModel, GraphNodeComponent>();
-        diagram.RegisterModelComponent<SwitchModel, GraphNodeComponent>();
-        diagram.RegisterModelComponent<LightModel, GraphNodeComponent>();
-        diagram.RegisterModelComponent<IfAnyModel, GraphNodeComponent>();
-        diagram.RegisterModelComponent<DayPhasesModel, GraphNodeComponent>();
-        diagram.RegisterModelComponent<BooleanChoiceModel, GraphNodeComponent>();
-        diagram.RegisterModelComponent<ModeSwitchModel, GraphNodeComponent>();
-        diagram.RegisterModelComponent<ColorConstantModel, GraphNodeComponent>();
-        diagram.RegisterModelComponent<MediaPlayerModel, GraphNodeComponent>();
+
+        foreach (var modelType in AppDomain.CurrentDomain.GetAssemblies()
+            .SelectMany(s => s.GetTypes())
+            .Where(t => typeof(GraphNodeModel).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract))
+        {
+            diagram.RegisterModelComponent(modelType, typeof(GraphNodeComponent));
+        }
+        
         diagram.SelectionChanged += OnSelectionChanged;
         // diagram.Nodes.Removed += OnNodeRemoved;
         diagram.Links.Added += OnDiagramLinkAdded;
@@ -229,7 +229,7 @@
 
     public void AddNode(Node node, Point position)
     {
-        var diagramNode = NewNode(node, position);
+        var diagramNode = CreateModel(node, position);
 
         nodeMappings.Add(node, diagramNode);
         diagram.Nodes.Add(diagramNode);
@@ -292,76 +292,65 @@
         Graph.RemoveEdge(edge);
     }
 
-    private GraphNodeModel NewNode(Node node, Point? point = null)
+    private GraphNodeModel CreateModel(Node node, Point? point = null)
     {
-        GraphNodeModel model;
+        var model = CreateModelForNode(node, point);
+        model.Moving += OnNodeModelMoving;
+        model.Locked = !GraphEditState.IsEditing; 
+        return model;
+    }
+
+    private static GraphNodeModel CreateModelForNode(Node node, Point? point)
+    {
         switch (node)
         {
             case Light l:
-            {
-                model = new LightModel(l, point);
-                break;
-            }
-            case Sensor s:
-            {
-                model = new SensorModel(s, point);
-                break;
-            }
+                return new LightModel(l, point);
+
+            case BinarySensor s:
+                return new SensorModel(s, point);
+
+            case ModeSensor m:
+                return new ModeSensorModel(m, point);
+
             case Switch sw:
-            {
-                model = new SwitchModel(sw, point);
-                break;
-            }
+                return new SwitchModel(sw, point);
+                
             case MediaPlayer mp:
-            {
-                model = new MediaPlayerModel(mp, point);
-                break;
-            }
-            case BooleanChoice s:
-            {
-                model = new BooleanChoiceModel(s, point);
-                break;
-            }
+                return new MediaPlayerModel(mp, point);
+
+            case BinaryChoice s:
+                return new BooleanChoiceModel(s, point);
+
             case ModeSwitch ms:
-            {
-                model = new ModeSwitchModel(ms, point);
-                break;
-            }
+                return new ModeSwitchModel(ms, point);
+
+            case ModeMatch mm:
+                return new ModeMatchModel(mm, point);
+
             case IfAny ia:
-            {
-                model = new IfAnyModel(ia, point);
-                break;
-            }
+                return new IfAnyModel(ia, point);
+
             case DayPhases dp:
-            {
-                model = new DayPhasesModel(dp, point);
-                break;
-            }
+                return new DayPhasesModel(dp, point);
+
             case Constant c:
             {
                 switch (c.value.ValueType)
                 {
                     case ValueType.Color:
-                    {
-                        model = new ColorConstantModel(c, point);
-                        break;
-                    }
+                        return new ColorConstantModel(c, point);
+
                     case ValueType.Boolean:
                     case ValueType.Scalar:
                     case ValueType.Mode:
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
-                break;
-            }
-            default:
-            {
-                throw new Exception($"Unhandled type {node.GetType()}");
             }
         }
-        model.Moving += OnNodeModelMoving;
-        model.Locked = !GraphEditState.IsEditing; 
-        return model;
+
+        throw new Exception($"Unhandled type {node.GetType()}");
     }
 
     private void OnNodeModelMoving(NodeModel nodeModel)

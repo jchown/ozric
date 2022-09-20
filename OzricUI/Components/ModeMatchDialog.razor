@@ -1,0 +1,157 @@
+@using OzricUI.Model
+@using OzricEngine.Nodes
+@using Size = MudBlazor.Size
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
+            
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            @if (Elements.Count > 0)
+            {
+                <MudTable Items="@Elements" T="ModeMatch.Pattern" CanCancelEdit="true"
+                          @bind-SelectedItem="selected" CommitEditTooltip="Commit Edit" 
+                          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
+                          Class="border-none" Elevation="0"
+                          ApplyButtonPosition="TableApplyButtonPosition.End">
+                    <ColGroup>
+                        <col />
+            		    <col style="width:50px;" />
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>Pattern</MudTh>
+                        <MudTh>Regex</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Pattern">@context.pattern</MudTd>
+                        <MudTd DataLabel="Regex"><MudSwitch Checked="@context.regex" ReadOnly="true" /></MudTd>
+                    </RowTemplate>
+                    <RowEditingTemplate>
+                        <MudTd DataLabel="Pattern">
+                            <MudTextField @bind-Value="@context.pattern" Required />
+                        </MudTd>
+                        <MudTd DataLabel="Regex">
+                            <MudSwitch T="Boolean" @bind-Value="@context.regex" Required />
+                        </MudTd>
+                    </RowEditingTemplate>
+                    
+                </MudTable>
+                    
+                <MudDivider DividerType="DividerType.Middle" Class="my-2" />
+            }
+
+            <MudGrid>
+                <MudItem xs="9">
+                    <MudTextField Label="Add Pattern" HelperText="The pattern to match. Use wildcards or regular expression" @bind-Value="addPattern" />
+                </MudItem>
+                <MudItem xs="3" Class="align-self-center">
+                    <MudButton OnClick="Add">Add</MudButton>
+                </MudItem>
+            </MudGrid>
+            
+            @if (Elements.Count > 0)
+            {
+                <MudGrid>
+                    <MudItem xs="9">
+                        <MudTextField Label="Test Pattern" HelperText="Enter a mode to see if it matches" @bind-Value="testPattern" Immediate="true" />
+                    </MudItem>
+                    <MudItem xs="3" Class="align-self-center" hidden="@string.IsNullOrWhiteSpace(testPattern)">
+                        <MudToggleIconButton Toggled="@TestMatch()" Disabled="true"
+                                             Icon="@Icons.Material.Outlined.Cancel" 
+                                             ToggledIcon="@Icons.Material.Outlined.CheckBox" />
+                        
+                        <span>@(TestMatch() ? "Match" : "No Match")</span>
+                    </MudItem>
+                </MudGrid>
+            
+            }
+            
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    [Parameter]
+    public ModeMatchModel Model { get; set; }
+
+    [Parameter]
+    public ModeMatch Node { get; set; }
+
+    private string ID;
+    private ModeMatch.Pattern selected;
+    private List<ModeMatch.Pattern> Elements = new();
+    private ModeMatch.Pattern elementBeforeEdit;
+    private string addPattern { get; set; }
+    private string? testPattern { get; set; }
+    private bool TestMatch()
+    {
+        if (string.IsNullOrWhiteSpace(testPattern))
+            return false;
+        
+        return ModeMatch.Compile(Elements).Any(r => r.Match(testPattern).Success);
+    }
+    
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+
+    protected override void OnInitialized()
+    {
+        ID = Node.id;
+        Elements = new List<ModeMatch.Pattern>(Node.patterns);
+    }
+
+    private List<GraphEditAction> GetChanges()
+    {
+        var changes = new List<GraphEditAction>();
+        if (ID != Node.id)
+            changes.Add(new GraphEditAction.RenameNode(Node, ID));
+        
+        var elements = Elements.ToArray();
+        if (Enumerable.SequenceEqual(Elements, elements))
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.patterns)), elements));
+
+        return changes;
+    }
+
+    private void Add()
+    {
+        Elements.Add(new ModeMatch.Pattern
+        {
+            pattern = addPattern
+        });
+        addPattern = "";
+    }
+    
+    private void BackupItem(object element)
+    {
+        elementBeforeEdit = new()
+        {
+            regex = ((ModeMatch.Pattern)element).regex,
+            pattern = ((ModeMatch.Pattern)element).pattern,
+        };
+    }
+
+    private void ResetItemToOriginalValues(object element)
+    {
+        var pattern = (ModeMatch.Pattern) element;
+        pattern.regex = elementBeforeEdit.regex;
+        pattern.pattern = elementBeforeEdit.pattern;
+    }
+}

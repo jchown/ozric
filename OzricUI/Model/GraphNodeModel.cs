@@ -59,7 +59,7 @@ public abstract class GraphNodeModel: NodeModel
         portMappings.Remove(pin);
     }
     
-    public int PortHeight()
+    public virtual int PortHeight()
     {
         int nl = 0, nr = 0;
         
@@ -80,7 +80,7 @@ public abstract class GraphNodeModel: NodeModel
     
     public abstract string Icon { get; }
 
-    public object GetPortPosition(IPort port)
+    public virtual int GetPortPosition(IPort port)
     {
         var input = port.IsInput;
         int position = 0;

@@ -13,7 +13,7 @@ public abstract class VariableInputsModel: GraphNodeModel
         plus = new PortInputAdd(this, node.valueType, PortAlignment.BottomLeft);
         AddPort(plus);
     }
-    
+
     public void AddInput(Pin pin)
     {
         // Make sure the "add" port is always last
@@ -21,5 +21,15 @@ public abstract class VariableInputsModel: GraphNodeModel
         RemovePort(plus);
         base.AddInput(pin);
         AddPort(plus);
+    }
+
+    public override int PortHeight()
+    {
+        return 1;
+    }
+
+    public override int GetPortPosition(IPort port)
+    {
+        return 0;
     }
 }

@@ -10,7 +10,7 @@ namespace OzricEngine.Nodes;
 /// Choose from two values based on the state of an OnOff input
 /// </summary>
 [TypeKey(NodeType.BooleanChoice)]
-public class BooleanChoice: Node
+public class BinaryChoice: Node
 {
     public override NodeType nodeType => NodeType.BooleanChoice;
 
@@ -21,7 +21,7 @@ public class BooleanChoice: Node
     public const string INPUT_NAME_SWITCH = "switch";
     public const string OUTPUT_NAME = "output";
         
-    public BooleanChoice(string id, ValueType valueType): base(id, new List<Pin> { new(INPUT_NAME_ON, valueType), new(INPUT_NAME_OFF, valueType), new(INPUT_NAME_SWITCH, ValueType.Boolean) }, new List<Pin> { new(OUTPUT_NAME, valueType) })
+    public BinaryChoice(string id, ValueType valueType): base(id, new List<Pin> { new(INPUT_NAME_ON, valueType), new(INPUT_NAME_OFF, valueType), new(INPUT_NAME_SWITCH, ValueType.Boolean) }, new List<Pin> { new(OUTPUT_NAME, valueType) })
     {
         this.valueType = valueType;
     }
