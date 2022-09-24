@@ -1,6 +1,5 @@
 @using OzricUI.Model
 @using OzricEngine.Nodes
-@using Size = MudBlazor.Size
 
 <MudDialog>
     <DialogContent>
@@ -11,31 +10,41 @@
             
             <MudDivider DividerType="DividerType.Middle" Class="my-4" />
 
-            @if (Elements.Count > 0)
+            @if (patterns.Count > 0)
             {
-                <MudTable Items="@Elements" T="ModeMatch.Pattern" CanCancelEdit="true"
-                          @bind-SelectedItem="selected" CommitEditTooltip="Commit Edit" 
-                          RowEditPreview="BackupItem" RowEditCancel="ResetItemToOriginalValues"
-                          Class="border-none" Elevation="0"
-                          ApplyButtonPosition="TableApplyButtonPosition.End">
+                <MudTable Items="@patterns" T="ModeMatch.Pattern" 
+                          @bind-SelectedItem="selected"  
+                          CanCancelEdit="true"
+                          CommitEditTooltip="Apply"
+                          CancelEditTooltip="Revert"
+                          RowEditPreview="BackupItem" 
+                          RowEditCancel="ResetItem"
+                          ApplyButtonPosition="TableApplyButtonPosition.End"
+                          Dense="true" Class="border-none" Elevation="0">
                     <ColGroup>
                         <col />
-            		    <col style="width:50px;" />
+            		    <col style="width:150px;" />
+                        <col style="width:150px;" />
                     </ColGroup>
                     <HeaderContent>
                         <MudTh>Pattern</MudTh>
-                        <MudTh>Regex</MudTh>
+                        <MudTh>Type</MudTh>
+                        <MudTh></MudTh>
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="Pattern">@context.pattern</MudTd>
-                        <MudTd DataLabel="Regex"><MudSwitch Checked="@context.regex" ReadOnly="true" /></MudTd>
+                        <MudTd DataLabel="Type">@context.type</MudTd>
                     </RowTemplate>
                     <RowEditingTemplate>
                         <MudTd DataLabel="Pattern">
                             <MudTextField @bind-Value="@context.pattern" Required />
                         </MudTd>
-                        <MudTd DataLabel="Regex">
-                            <MudSwitch T="Boolean" @bind-Value="@context.regex" Required />
+                        <MudTd DataLabel="Type">
+                            <MudSelect @bind-Value="@context.type" Variant="Variant.Text">
+                                <MudSelectItem Value="ModeMatch.PatternType.Exact">Exact</MudSelectItem>
+                                <MudSelectItem Value="ModeMatch.PatternType.Wildcard">Wildcard</MudSelectItem>
+                                <MudSelectItem Value="ModeMatch.PatternType.Regex">Regex</MudSelectItem>
+                            </MudSelect>
                         </MudTd>
                     </RowEditingTemplate>
                     
@@ -53,21 +62,25 @@
                 </MudItem>
             </MudGrid>
             
-            @if (Elements.Count > 0)
+            @if (patterns.Count > 0)
             {
                 <MudGrid>
                     <MudItem xs="9">
                         <MudTextField Label="Test Pattern" HelperText="Enter a mode to see if it matches" @bind-Value="testPattern" Immediate="true" />
                     </MudItem>
                     <MudItem xs="3" Class="align-self-center" hidden="@string.IsNullOrWhiteSpace(testPattern)">
-                        <MudToggleIconButton Toggled="@TestMatch()" Disabled="true"
-                                             Icon="@Icons.Material.Outlined.Cancel" 
-                                             ToggledIcon="@Icons.Material.Outlined.CheckBox" />
-                        
-                        <span>@(TestMatch() ? "Match" : "No Match")</span>
+                        @if (TestMatch())
+                        {
+                            <MudIcon Color="Color.Success" Icon="@Icons.Material.Outlined.CheckBox"/>
+                            <span>Match</span>
+                        }
+                        else
+                        {
+                            <MudIcon Color="Color.Error" Icon="@Icons.Material.Outlined.Cancel"/>
+                            <span>No Match</span>
+                        }
                     </MudItem>
                 </MudGrid>
-            
             }
             
         </MudContainer>
@@ -94,16 +107,17 @@
 
     private string ID;
     private ModeMatch.Pattern selected;
-    private List<ModeMatch.Pattern> Elements = new();
+    private List<ModeMatch.Pattern> patterns = new();
     private ModeMatch.Pattern elementBeforeEdit;
-    private string addPattern { get; set; }
+    private string? addPattern { get; set; }
     private string? testPattern { get; set; }
+    
     private bool TestMatch()
     {
         if (string.IsNullOrWhiteSpace(testPattern))
             return false;
         
-        return ModeMatch.Compile(Elements).Any(r => r.Match(testPattern).Success);
+        return ModeMatch.ToRegex(patterns).Any(r => r.Match(testPattern).Success);
     }
     
     void Cancel() => MudDialog.Cancel();
@@ -114,7 +128,7 @@
     protected override void OnInitialized()
     {
         ID = Node.id;
-        Elements = new List<ModeMatch.Pattern>(Node.patterns);
+        patterns = new List<ModeMatch.Pattern>(Node.patterns);
     }
 
     private List<GraphEditAction> GetChanges()
@@ -123,8 +137,8 @@
         if (ID != Node.id)
             changes.Add(new GraphEditAction.RenameNode(Node, ID));
         
-        var elements = Elements.ToArray();
-        if (Enumerable.SequenceEqual(Elements, elements))
+        var elements = patterns.ToArray();
+        if (Enumerable.SequenceEqual(patterns, elements))
             changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.patterns)), elements));
 
         return changes;
@@ -132,7 +146,7 @@
 
     private void Add()
     {
-        Elements.Add(new ModeMatch.Pattern
+        patterns.Add(new ModeMatch.Pattern
         {
             pattern = addPattern
         });
@@ -143,15 +157,15 @@
     {
         elementBeforeEdit = new()
         {
-            regex = ((ModeMatch.Pattern)element).regex,
+            type = ((ModeMatch.Pattern)element).type,
             pattern = ((ModeMatch.Pattern)element).pattern,
         };
     }
 
-    private void ResetItemToOriginalValues(object element)
+    private void ResetItem(object element)
     {
         var pattern = (ModeMatch.Pattern) element;
-        pattern.regex = elementBeforeEdit.regex;
+        pattern.type = elementBeforeEdit.type;
         pattern.pattern = elementBeforeEdit.pattern;
     }
 }

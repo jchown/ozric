@@ -17,8 +17,8 @@ namespace OzricEngine
     {
         public override string Name => "Comms";
 
-        public static Uri INGRESS_API = new("ws://supervisor/core/websocket");
-        public static Uri CORE_API = new("ws://homeassistant:8123/api/websocket");
+        public static readonly Uri INGRESS_API = new("ws://supervisor/core/websocket");
+        public static readonly Uri CORE_API = new("ws://homeassistant:8123/api/websocket");
 
         public CommsStatus Status => new() { messagePump = messagePumpRunning };
 
@@ -26,6 +26,10 @@ namespace OzricEngine
         private WatsonWsClient? client;
 
         private bool messagePumpRunning;
+        
+        /// <summary>
+        /// All incoming messages that need to be processed 
+        /// </summary>
         private readonly BufferBlock<string> receivedMessages;
         private readonly BlockingCollection<ServerEvent> pendingEvents;
         private readonly ConcurrentDictionary<int, TaskCompletionSource<ServerResult>> asyncResults;
@@ -33,13 +37,15 @@ namespace OzricEngine
         private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(60);
         private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
 
+        /// <summary>
+        /// Our authentication token 
+        /// </summary>
         private readonly string llat;
 
         public delegate void MessageHandler(string message);
 
         private MessageHandler? sendHandler;
         private MessageHandler? receiveHandler;
-
 
         public Comms(string llat): this(CORE_API, llat)
         {
@@ -262,9 +268,11 @@ namespace OzricEngine
                         while (true)
                         {
                             await Task.Delay(TimeSpan.FromSeconds(3));
-
+                            
                             try
                             {
+                                FlushPendingMessages();
+
                                 Log(LogLevel.Info, "Reconnecting...");
 
                                 Disconnect();
@@ -291,6 +299,17 @@ namespace OzricEngine
             finally
             {
                 messagePumpRunning = false;
+            }
+        }
+        
+        /// <summary>
+        /// Throw away all buffered messages
+        /// </summary>
+
+        private void FlushPendingMessages()
+        {
+            while (receivedMessages.TryReceive(out _))
+            {
             }
         }
 
@@ -323,6 +342,14 @@ namespace OzricEngine
 
 
                         break;
+                    }
+
+                    case ServerAuthRequired:
+                    case ServerAuthOK:
+                    {
+                        //  These messages should be handled by Authenticate(). Server forgot about us?
+
+                        throw new Exception("Authentication required");
                     }
 
                     default:

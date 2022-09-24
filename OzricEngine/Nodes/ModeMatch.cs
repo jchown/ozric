@@ -1,9 +1,10 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using OzricEngine.Values;
+using Boolean = OzricEngine.Values.Boolean;
 using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine.Nodes;
@@ -16,10 +17,18 @@ public class ModeMatch: Node
         
     public override NodeType nodeType => NodeType.ModeMatch;
 
-    public struct Pattern
+    [JsonConverter(typeof(JsonStringEnumConverter))] 
+    public enum PatternType
+    {
+        Exact,
+        Wildcard,
+        Regex
+    }
+
+    public class Pattern
     {
         public string pattern { get; set; }
-        public bool regex { get; set; }
+        public PatternType type { get; set; }
     };
 
     public Pattern[] patterns { get; set; }
@@ -39,7 +48,7 @@ public class ModeMatch: Node
 
     public override Task OnInit(Context context)
     {
-        regex = Compile(patterns);
+        regex = ToRegex(patterns, compiled: true);
 
         UpdateValue(context);
         return Task.CompletedTask;
@@ -59,18 +68,32 @@ public class ModeMatch: Node
         SetOutputValue(OUTPUT_NAME, new Boolean(match));
     }
 
-    public static Regex[] Compile(IList<Pattern> patterns)
+    public static Regex[] ToRegex(IList<Pattern> patterns, bool compiled = false)
     {
-        var compiled = new Regex[patterns.Count];
+        var options = compiled ? RegexOptions.Compiled | RegexOptions.Singleline : RegexOptions.Singleline;
+        var regexes = new Regex[patterns.Count];
+
         int i = 0;
         foreach (var pattern in patterns)
+            regexes[i++] = ToRegex(pattern, options);
+
+        return regexes;
+    }
+
+    private static Regex ToRegex(Pattern pattern, RegexOptions options)
+    {
+        switch (pattern.type)
         {
-            if (pattern.regex)
-                compiled[i++] = new Regex(pattern.pattern, RegexOptions.Compiled | RegexOptions.Singleline);
-            else
-                compiled[i++] = new Regex(Regex.Escape(pattern.pattern).Replace("?", ".").Replace("*", ".*"), RegexOptions.Compiled | RegexOptions.Singleline);
+            case PatternType.Regex:
+                return new Regex(pattern.pattern, options);
+
+            case PatternType.Wildcard:
+                return new Regex("^" + Regex.Escape(pattern.pattern).Replace("?", ".").Replace("*", ".*") + "$", options);
+
+            case PatternType.Exact:
+                return new Regex(Regex.Escape(pattern.pattern), options);
         }
 
-        return compiled;
+        throw new ArgumentOutOfRangeException();
     }
 }

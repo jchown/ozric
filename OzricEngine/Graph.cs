@@ -122,7 +122,7 @@ namespace OzricEngine
 
         public List<string> GetInterestedEntityIDs()
         {
-            return nodes.Values.Select(node => node as EntityNode).Where(node => node != null).Select(node => node.entityID).Distinct().ToList();
+            return nodes.Values.Select(node => node as EntityNode).Where(node => node != null).Select(node => node!.entityID).Distinct().ToList();
         }
 
         /// <summary>
