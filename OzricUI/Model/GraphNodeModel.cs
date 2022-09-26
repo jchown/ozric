@@ -34,6 +34,11 @@ public abstract class GraphNodeModel: NodeModel
     {
         return Ports.FirstOrDefault(p => p.Id == id) ?? throw new Exception($"Port id {id} not found in [{Ports.Select(p => p.Id).Join(",")}]");
     }
+    
+    public bool HasPin(PortModel port)
+    {
+        return portMappings.HasDiagramModel(port);
+    }
 
     public Pin GetPin(PortModel port)
     {

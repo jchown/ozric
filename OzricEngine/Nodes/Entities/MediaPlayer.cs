@@ -34,7 +34,7 @@ public class MediaPlayer : EntityNode
     {
         var engine = context.engine;
         var device = engine.home.GetEntityState(entityID) ?? throw new Exception($"Unknown device {entityID}");
-        var value = new Boolean(device.state != "off");
+        var value = new Boolean(device.state != "unavailable" && device.state != "off");
 
         Log(LogLevel.Debug, "on = {0}", value);
         SetOutputValue(ON_NAME, value);

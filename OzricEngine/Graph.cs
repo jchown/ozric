@@ -189,7 +189,7 @@ namespace OzricEngine
         {
             foreach (var edge in edges.Values.Where(edge => edge.from.nodeID == node.id).ToList())
             {
-                var value = node.GetOutputValue(edge.from.outputName);
+                var value = node.GetOutput(edge.from.outputName).value;
                 Log(LogLevel.Debug, "{0}.{1} = {2}", edge.to.nodeID, edge.to.inputName, value);
                 nodes[edge.to.nodeID].SetInputValue(edge.to.inputName, value);
             }

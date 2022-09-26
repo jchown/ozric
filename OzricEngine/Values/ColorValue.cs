@@ -63,11 +63,7 @@ namespace OzricEngine.Values
         /// <param name="r"></param>
         /// <param name="g"></param>
         /// <param name="b"></param>
-        /// <exception cref="NotImplementedException"></exception>
-        public virtual void GetRGB(out float r, out float g, out float b)
-        {
-            throw new NotImplementedException();
-        }
+        public abstract void GetRGB(out float r, out float g, out float b);
 
         public override void WriteAsJSON(Utf8JsonWriter writer)
         {

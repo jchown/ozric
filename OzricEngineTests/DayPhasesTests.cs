@@ -20,12 +20,12 @@ namespace OzricEngine.Nodes
             var homePM = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_morning");
             var enginePM = new MockEngine(homePM);
             node.OnInit(new MockContext(enginePM));
-            Assert.Equal(new Mode("pm"), node.GetOutputValue("mode"));
+            Assert.Equal(new Mode("pm"), node.GetOutput("mode").value);
 
             var homeAM = new MockHome(DateTime.Parse("2021-11-29T09:21:25.459551+00:00"), "sun_morning");
             var engineAM = new MockEngine(homeAM);
             node.OnInit(new MockContext(engineAM));
-            Assert.Equal(new Mode("am"), node.GetOutputValue("mode"));
+            Assert.Equal(new Mode("am"), node.GetOutput("mode").value);
         }
 
         [Fact]
@@ -44,19 +44,19 @@ namespace OzricEngine.Nodes
             
             node.OnInit(context);
 
-            Assert.Equal(new Mode("after-midnight"), node.GetOutputValue("mode"));
+            Assert.Equal(new Mode("after-midnight"), node.GetOutput("mode").value);
 
             home.SetTime(DateTime.Parse("2021-11-29T09:21:25.459551+00:00"));
             node.OnUpdate(context);
-            Assert.Equal(new Mode("after-6am"), node.GetOutputValue("mode"));
+            Assert.Equal(new Mode("after-6am"), node.GetOutput("mode").value);
 
             home.SetTime(DateTime.Parse("2021-11-29T13:21:25.459551+00:00"));
             node.OnUpdate(context);
-            Assert.Equal(new Mode("after-noon"), node.GetOutputValue("mode"));
+            Assert.Equal(new Mode("after-noon"), node.GetOutput("mode").value);
 
             home.SetTime(DateTime.Parse("2021-11-29T23:21:25.459551+00:00"));
             node.OnUpdate(context);
-            Assert.Equal(new Mode("after-6pm"), node.GetOutputValue("mode"));
+            Assert.Equal(new Mode("after-6pm"), node.GetOutput("mode").value);
         }
 
         [Fact]
@@ -75,19 +75,19 @@ namespace OzricEngine.Nodes
             var context = new MockContext(engine);
 
             node.OnInit(context);
-            Assert.Equal(new Mode("near-midnight"), node.GetOutputValue("mode"));
+            Assert.Equal(new Mode("near-midnight"), node.GetOutput("mode").value);
 
             home.SetTime(DateTime.Parse("2021-11-29T09:21:25.459551+00:00"));
             node.OnUpdate(context);
-            Assert.Equal(new Mode("after-6am"), node.GetOutputValue("mode"));
+            Assert.Equal(new Mode("after-6am"), node.GetOutput("mode").value);
 
             home.SetTime(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"));
             node.OnUpdate(context);
-            Assert.Equal(new Mode("after-7pm"), node.GetOutputValue("mode"));
+            Assert.Equal(new Mode("after-7pm"), node.GetOutput("mode").value);
 
             home.SetTime(DateTime.Parse("2021-11-29T23:41:25.459551+00:00"));
             node.OnUpdate(context);
-            Assert.Equal(new Mode("near-midnight"), node.GetOutputValue("mode"));
+            Assert.Equal(new Mode("near-midnight"), node.GetOutput("mode").value);
         }
     }
 }

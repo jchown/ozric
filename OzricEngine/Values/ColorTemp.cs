@@ -55,6 +55,48 @@ namespace OzricEngine.Values
             return $"{temp:F1} @ {(int) (brightness * 100)}%";
         }
 
+        public override void GetRGB(out float r, out float g, out float b)
+        {
+            //  See https://stackoverflow.com/questions/60777515/how-can-i-convert-mireds-to-rgb-or-display-mireds-in-css/
+            //  then https://gist.github.com/paulkaplan/5184275
+            
+            double kelvin = 10e6f / temp;
+            var t = kelvin / 100;
+            double red, green, blue;
+
+            if( t <= 66 ){ 
+
+                red = 255; 
+                green = t;
+                green = 99.4708025861 * Math.Log(green) - 161.1195681661;
+        
+                if( t <= 19){
+
+                    blue = 0;
+
+                } else {
+
+                    blue = t-10;
+                    blue = 138.5177312231 * Math.Log(blue) - 305.0447927307;
+
+                }
+
+            } else {
+
+                red = t - 60;
+                red = 329.698727446 * Math.Pow(red, -0.1332047592);
+        
+                green = t - 60;
+                green = 288.1221695283 * Math.Pow(green, -0.0755148492 );
+
+                blue = 255;
+            }
+
+            r = (float)Math.Clamp(red / 255, 0, 1);
+            g = (float)Math.Clamp(green / 255, 0, 1);
+            b = (float)Math.Clamp(blue / 255, 0, 1);
+        }
+
         public override void WriteAsJSON(Utf8JsonWriter writer)
         {
             base.WriteAsJSON(writer);    

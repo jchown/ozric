@@ -357,9 +357,16 @@ namespace OzricEngine
             {
                 var node = graph.GetNode(nodeID);
 
-                await nodeProcessor(node, context);
+                try
+                {
+                    await nodeProcessor(node, context);
 
-                graph.CopyNodeOutputValues(node);
+                    graph.CopyNodeOutputValues(node);
+                }
+                catch (Exception e)
+                {
+                    Log(LogLevel.Error, "Failed to process node {0}: {1}", node.Name, e.Message);
+                }
             }
 
             if (commandSender.commands.Count > 0)

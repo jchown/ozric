@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using OzricEngine.Values;
 using Boolean = OzricEngine.Values.Boolean;
 using ValueType = OzricEngine.Values.ValueType;
 
@@ -62,7 +63,7 @@ public class ModeMatch: Node
 
     private void UpdateValue(Context engine)
     {
-        var mode = GetInputMode(INPUT_NAME).value;
+        var mode = GetInputValue<Mode>(INPUT_NAME).value;
         var match = regex.Any(r => r.Match(mode).Success);
 
         SetOutputValue(OUTPUT_NAME, new Boolean(match));

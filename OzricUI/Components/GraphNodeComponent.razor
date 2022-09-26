@@ -1,5 +1,8 @@
 @using Blazor.Diagrams.Components.Renderers;
+@using OzricEngine.Values
 @using OzricUI.Model
+@using ValueType = OzricEngine.Values.ValueType
+@using Boolean = OzricEngine.Values.Boolean
 
 <div class="ozric-node @(Node.Selected ? " selected" : "") ozric-height-@(Node.PortHeight())">
     <div class="ozric-node-icon"><span class="iconify" data-icon="@(Node.Icon)"></span></div>
@@ -7,8 +10,52 @@
     @foreach (var port in Node.Ports.Select(p => p as IPort).Where(p => p != null))
     {
         <div class="@(port.CssClass) port-@(Node.GetPortPosition(port))" hidden="@(port.HiddenIfLocked && Node.Locked)">
-            <PortRenderer Port="@((PortModel) port)">
-                <img src="icons/@(port.valueType).png" width="16" height="16" />
+            <PortRenderer Port="@((PortModel)port)">
+                @if (Node.Locked)
+                {
+                    if (Node.HasPin((PortModel)port))
+                    {
+                        var pin = Node.GetPin((PortModel)port);
+
+                        //  Show the live state
+                        switch (port.valueType)
+                        {
+                            case ValueType.Scalar:
+                                break;
+                            case ValueType.Boolean:
+                                var pinValue = ((Boolean)pin.value);
+                                if (pinValue.value)
+                                {
+                                    <img src="icons/Binary-true.png" width="16" height="16"/>
+                                }
+                                else
+                                {
+                                    <img src="icons/Binary-false.png" width="16" height="16"/>
+                                }
+                                break;
+                            case ValueType.Color:
+                                var color = ((ColorValue)pin.value);
+                                if (color.brightness == 0)
+                                {
+                                    <img src="icons/Color-off.png" width="16" height="16"/>
+                                }
+                                else
+                                {
+                                    <div style="background: #@(color.ToHexString()); width:16px; height:16px; border-radius: 50%">&nbsp;</div>
+                                }
+                                break;
+                            case ValueType.Mode:
+                                break;
+                            default:
+                                throw new ArgumentOutOfRangeException();
+                        }
+                    }
+                }
+                else
+                {
+                    //  Show the type
+                    <img src="icons/@(port.valueType).png" width="16" height="16"/>
+                }
             </PortRenderer>
         </div>
     }

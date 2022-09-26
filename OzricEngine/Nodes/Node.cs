@@ -52,9 +52,15 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
         return outputs.Any(o => o.name == name);
     }
 
-    protected Pin GetOutput(string name)
+    public Pin GetOutput(string name)
     {
-        return outputs.FirstOrDefault(o => o.name == name) ?? throw new Exception($"No output named {name} in {id}, possible values [{outputs.Select(o => o.name).Join(",")}]");
+        return outputs.FirstOrDefault(o => o.name == name)
+               ?? throw new Exception($"No output named {name} in {id}, possible values [{outputs.Select(o => o.name).Join(",")}]");
+    }
+
+    public int GetInputIndex(string name)
+    {
+        return inputs.FindIndex(o => o.name == name);
     }
 
     public int GetOutputIndex(string name)
@@ -64,18 +70,20 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
 
     protected Pin GetInput(string name)
     {
-        return inputs.FirstOrDefault(o => o.name == name) ?? throw new Exception($"No input named {name} in {id}, possible values [{inputs.Select(i => i.name).Join(",")}]");
+        return inputs.FirstOrDefault(o => o.name == name)
+               ?? throw new Exception($"No input named {name} in {id}, possible values [{inputs.Select(i => i.name).Join(",")}]");
     }
 
     protected T GetInputValue<T>(string name) where T : class
     {
         var pin = GetInput(name);
-        return pin.value as T ?? throw new Exception($"{name} was not a {nameof(T)}");
+        return pin.value as T ?? throw new Exception($"Input {name} was not a {typeof(T).Name}, was {pin.value?.GetType().Name}");
     }
 
-    public int GetInputIndex(string name)
+    protected T GetOutputValue<T>(string name) where T : class
     {
-        return inputs.FindIndex(o => o.name == name);
+        var pin = GetOutput(name);
+        return pin.value as T ?? throw new Exception($"Output {name} was not a {typeof(T).Name}, was {pin.value?.GetType().Name}");
     }
 
     internal void SetOutputValue(string name, Value value)
@@ -91,41 +99,6 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
     {
         var input = GetInput(name);
         input.SetValue(value);
-    }
-
-    public Value GetOutputValue(string name)
-    {
-        return GetOutput(name).value!;
-    }
-
-    public Scalar GetOutputScalar(string name)
-    {
-        var output = GetOutputValue(name);
-        return output as Scalar ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(Scalar)}");
-    }
-
-    public ColorValue GetOutputColor(string name)
-    {
-        var output = GetOutputValue(name);
-        return output as ColorValue ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(ColorRGB)}");
-    }
-
-    public ColorValue GetInputColor(string name)
-    {
-        var output = GetOutputValue(name);
-        return output as ColorValue ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(ColorValue)}");
-    }
-
-    public Mode GetInputMode(string name)
-    {
-        var output = GetOutputValue(name);
-        return output as Mode ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(Mode)}");
-    }
-
-    public Boolean GetOutputOnOff(string name)
-    {
-        var output = GetOutputValue(name);
-        return output as Boolean ?? throw new Exception($"Output {name} is a {output.GetType().Name}, not a {nameof(Boolean)}");
     }
         
     public PropertyInfo GetProperty(string name)

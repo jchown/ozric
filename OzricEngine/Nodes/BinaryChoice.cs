@@ -40,15 +40,8 @@ public class BinaryChoice: Node
 
     private void UpdateValue()
     {
-        var switcher = GetInput(INPUT_NAME_SWITCH).value as Boolean ?? throw new Exception("No 'switch' found");
-
-        if (switcher.value)
-        {
-            SetOutputValue(OUTPUT_NAME, GetInput(INPUT_NAME_ON).value);
-        }
-        else
-        {
-            SetOutputValue(OUTPUT_NAME, GetInput(INPUT_NAME_OFF).value);
-        }
+        var switcher = GetInputValue<Boolean>(INPUT_NAME_SWITCH);
+        var input = (switcher.value) ? GetInput(INPUT_NAME_ON) : GetInput(INPUT_NAME_OFF);
+        SetOutputValue(OUTPUT_NAME, input.value!);
     }
 }

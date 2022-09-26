@@ -57,8 +57,8 @@ public class EngineService: IEngineService
 
     public static async Task SaveGraph(Graph graph)
     {
-        var json = Json.Serialize(graph);
-        Console.WriteLine(Json.Prettify(json));
+        var json = Json.Prettify(Json.Serialize(graph));
+        Console.WriteLine(json);
         await File.WriteAllTextAsync(GRAPH_FILENAME, json);
     }
 
