@@ -12,7 +12,8 @@ public static class CategoryModelMappings
         { Category.Switch, typeof(Switch) },
         { Category.Sensor, typeof(BinarySensor) },
         { Category.ModeSensor, typeof(ModeSensor) },
-        { Category.MediaPlayer, typeof(MediaPlayer) }
+        { Category.MediaPlayer, typeof(MediaPlayer) },
+        { Category.Person, typeof(Person) }
     };
     
     public static bool Exists(Category category)

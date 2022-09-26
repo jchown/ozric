@@ -17,5 +17,6 @@ public enum NodeType
     Switch,
     MediaPlayer,
     ModeSensor,
-    ModeMatch
+    ModeMatch,
+    Person
 }

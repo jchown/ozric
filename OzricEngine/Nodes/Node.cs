@@ -11,13 +11,12 @@ using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine.Nodes;
 
-public abstract class Node: OzricObject, IGraphObject, IEquatable<Node>
+public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
 {
-    [JsonIgnore]
-    public override string Name => $"{GetType().Name}.{id}";
+    [JsonIgnore] public override string Name => $"{GetType().Name}.{id}";
 
     public abstract NodeType nodeType { get; }
-        
+
     public string id { get; set; }
     public List<Pin> inputs { get; set; }
     public List<Pin> outputs { get; set; }
@@ -28,9 +27,9 @@ public abstract class Node: OzricObject, IGraphObject, IEquatable<Node>
         this.inputs = inputs ?? new List<Pin>();
         this.outputs = outputs ?? new List<Pin>();
     }
-        
+
     public abstract Task OnInit(Context context);
-        
+
     public abstract Task OnUpdate(Context context);
 
     public void AddInput(string name, ValueType type)
@@ -57,7 +56,7 @@ public abstract class Node: OzricObject, IGraphObject, IEquatable<Node>
     {
         return outputs.FirstOrDefault(o => o.name == name) ?? throw new Exception($"No output named {name} in {id}, possible values [{outputs.Select(o => o.name).Join(",")}]");
     }
-        
+
     public int GetOutputIndex(string name)
     {
         return outputs.FindIndex(o => o.name == name);
@@ -67,7 +66,13 @@ public abstract class Node: OzricObject, IGraphObject, IEquatable<Node>
     {
         return inputs.FirstOrDefault(o => o.name == name) ?? throw new Exception($"No input named {name} in {id}, possible values [{inputs.Select(i => i.name).Join(",")}]");
     }
-        
+
+    protected T GetInputValue<T>(string name) where T : class
+    {
+        var pin = GetInput(name);
+        return pin.value as T ?? throw new Exception($"{name} was not a {nameof(T)}");
+    }
+
     public int GetInputIndex(string name)
     {
         return inputs.FindIndex(o => o.name == name);

@@ -15,18 +15,9 @@ builder.Services.AddSingleton<DataService>();
 builder.Services.AddMudServices();
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
 
-if (Environment.GetEnvironmentVariable("OZRIC_MOCK") != null)
-{
-    var service = new MockEngineService();
-    await service.Start(CancellationToken.None);
-    builder.Services.AddSingleton<IEngineService>(_ => service);
-}
-else
-{
-    var service = new EngineService();
-    await service.Start(CancellationToken.None);
-    builder.Services.AddSingleton<IEngineService>(_ => service);
-}
+IEngineService engine = (Environment.GetEnvironmentVariable("OZRIC_MOCK") != null) ? new MockEngineService() : new EngineService();
+await engine.Start(CancellationToken.None);
+builder.Services.AddSingleton(_ => engine);
 
 var app = builder.Build();
 

@@ -31,6 +31,8 @@ namespace OzricEngine
                     return Category.Sensor;
                 case "media_player":
                     return Category.MediaPlayer;
+                case "person":
+                    return Category.Person;
                 default:
                     return Category.Unknown;
             }

@@ -24,7 +24,7 @@ public class MockEngineService: IEngineService
         Home = Json.Deserialize<Home>(File.ReadAllText("Mock/Home.json"));
     }
 
-    public async Task Start(CancellationToken token)
+    public async Task Start(CancellationToken _)
     {
         Graph = await EngineService.LoadGraph();
     }

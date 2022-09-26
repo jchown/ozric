@@ -64,7 +64,7 @@ public class ModeSwitch: Node
 
     private void UpdateValue()
     {
-        var currentMode = GetInput(INPUT_NAME)?.value as Mode ?? throw new Exception("No 'mode' found");
+        var currentMode = GetInputValue<Mode>(INPUT_NAME);
 
         foreach (var modeValue in modeValues)
         {

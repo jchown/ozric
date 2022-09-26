@@ -11,6 +11,8 @@ public interface IEngineService
     Graph Graph { get; }
     
     Home Home { get; }
+
+    Task Start(CancellationToken token);
     
     void SetPaused(bool statusPaused);
     
