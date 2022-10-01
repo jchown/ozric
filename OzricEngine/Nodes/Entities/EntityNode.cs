@@ -20,13 +20,13 @@ public abstract class EntityNode: Node
         this.entityID = entityID;
     }
 
-    protected float GetSecondsSinceLastUpdated(Engine engine)
+    protected float GetSecondsSinceLastUpdated(Home home)
     {
-        var state = engine.home.GetEntityState(entityID);
+        var state = home.GetEntityState(entityID);
         if (state == null)
             return float.MaxValue;
 
-        return (float)(engine.home.GetTime() - state.last_updated).TotalSeconds;
+        return (float) (home.GetTime() - state.last_updated).TotalSeconds;
     }
 
     public override bool Equals(object? obj)

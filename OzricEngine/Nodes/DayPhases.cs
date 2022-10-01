@@ -172,8 +172,8 @@ public class DayPhases: Node
 
         //  Figure out what phase are we in
 
-        var sun = context.engine.home.GetEntityState("sun.sun");
-        var now = context.engine.home.GetTime();
+        var sun = context.home.GetEntityState("sun.sun");
+        var now = context.home.GetTime();
 
         int i = 1;
         var startTime = phases[0].GetStartTime(now, sun.attributes);

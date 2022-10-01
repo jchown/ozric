@@ -234,5 +234,10 @@ namespace OzricEngine
         {
             return (EntityNode) nodes.Values.First(node => node is EntityNode en && en.entityID == entityID);
         }
+
+        public List<T> GetAll<T>() where T : class
+        {
+            return nodes.Values.Select(n => n as T).Where(n => n != null).ToList();
+        }
     }
 }

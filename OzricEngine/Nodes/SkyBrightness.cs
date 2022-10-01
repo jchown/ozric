@@ -39,9 +39,8 @@ public class SkyBrightness: Node
 
     private void CalculateValue(Context context)
     {
-        var engine = context.engine;
-        var sunLevel = GetSunLevel(engine.home);
-        var cloudLevel = GetCloudLevel(engine);
+        var sunLevel = GetSunLevel(context.home);
+        var cloudLevel = GetCloudLevel(context.home);
 
         SetOutputValue(sun, new Scalar(sunLevel));
         SetOutputValue(clouds, new Scalar(cloudLevel));
@@ -112,9 +111,9 @@ public class SkyBrightness: Node
         return (float) (timeBefore / (timeBefore + timeAfter));
     }
 
-    private float GetCloudLevel(Engine engine)
+    private float GetCloudLevel(Home home)
     {
-        var weather = engine.home.GetEntityState("weather.home");
+        var weather = home.GetEntityState("weather.home");
         if (weather == null)
         {
             Log(LogLevel.Warning, "No weather state found");

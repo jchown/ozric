@@ -1,5 +1,6 @@
 ﻿using System;
 using OzricEngine.Nodes;
+using OzricEngine.Values;
 using Xunit;
 
 namespace OzricEngineTests
@@ -15,7 +16,7 @@ namespace OzricEngineTests
             var context = new MockContext(engine);
             skyBrightness.OnInit(context);
             
-            Assert.Equal(0f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
+            Assert.Equal(0f, skyBrightness.GetOutputValue<Scalar>(SkyBrightness.brightness).value);
         }
         
         [Fact]
@@ -28,12 +29,12 @@ namespace OzricEngineTests
             var context = new MockContext(engine);
 
             skyBrightness.OnInit(context);
-            Assert.Equal(0.71f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value, 2);
+            Assert.Equal(0.71f, skyBrightness.GetOutputValue<Scalar>(SkyBrightness.brightness).value, 2);
 
             home.SetTime(morning.AddMinutes(10));
 
             skyBrightness.OnUpdate(context);
-            Assert.Equal(0.95f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value, 2);
+            Assert.Equal(0.95f, skyBrightness.GetOutputValue<Scalar>(SkyBrightness.brightness).value, 2);
         }
         
         [Fact]
@@ -46,7 +47,7 @@ namespace OzricEngineTests
 
             skyBrightness.OnInit(context);
             
-            Assert.Equal(1f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
+            Assert.Equal(1f, skyBrightness.GetOutputValue<Scalar>(SkyBrightness.brightness).value);
         }
         
         [Fact]
@@ -59,7 +60,7 @@ namespace OzricEngineTests
 
             skyBrightness.OnInit(context);
             
-            Assert.Equal(0.6f, skyBrightness.GetOutputScalar(SkyBrightness.brightness).value);
+            Assert.Equal(0.6f, skyBrightness.GetOutputValue<Scalar>(SkyBrightness.brightness).value);
         }
     }
 }

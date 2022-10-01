@@ -2,6 +2,9 @@
 @using OzricEngine.Nodes
 @using MudBlazor.Utilities
 @using OzricEngine.Values
+@using OzricService
+@using System.Timers
+
 
 <MudDialog>
     <DialogContent>
@@ -61,6 +64,16 @@
                                     ValueChanged="OnColorPickerChanged"/>
                 </MudItem>
 
+                <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
+                    
+                <MudSelect Value="_previewLight" Style="z-index:9999;" ValueChanged="OnPreviewLightChanged" HelperText="Choose a light to directly preview the color" T="Light?" Label="Preview Light" Variant="Variant.Text">
+                    <MudSelectItem Value="@((Light) null)">(None)</MudSelectItem>
+                    @foreach (var light in _lights)
+                    {
+                        <MudSelectItem Value="@(light)">@light.Name</MudSelectItem>
+                    }
+                </MudSelect>
+
             </MudGrid>
 
         </MudContainer>
@@ -85,9 +98,14 @@
     [Parameter]
     public Constant Node { get; set; }
 
+    [Parameter]
+    public IEngineService Engine { get; set; }
+
     private string _id;
     private MudColor _pickerColor { get; set; }
     private ColorMode _colorMode { get; set; }
+    private Light? _previewLight { get; set; }
+    private System.Timers.Timer _timer;
 
     private const int H_SCALE = 360;
     private const int S_SCALE = 100;
@@ -116,6 +134,7 @@
     private bool HasChanges => GetChanges().Count > 0;
     private bool _settingSliders;
     private bool _settingPicker;
+    private List<Light> _lights;
 
     protected override void OnInitialized()
     {
@@ -124,6 +143,17 @@
         _id = Node.id;
         SetColorSliders(colorValue);
         _brightness = (int)(colorValue.brightness * BRIGHTNESS_SCALE);
+        _lights = Engine.Graph.GetAll<Light>();
+        
+        _timer = new Timer(500);
+        _timer.Elapsed += TimerCallback;
+        _timer.Enabled = true;
+    }
+
+    private async void TimerCallback(object o, ElapsedEventArgs elapsedEventArgs)
+    {
+        if (_previewLight != null)
+            await InvokeAsync(UpdatePreview);
     }
 
     private void SetColorSliders(ColorValue colorValue)
@@ -211,53 +241,17 @@
         SetColorSliders(_pickerColor);
     }
 
-    private void OnSliderHChanged(int h)
-    {
-        _h = h;
-        OnColorSlidersChanged();
-    }
+    private void OnSliderHChanged(int h) { _h = h; OnColorSlidersChanged(); }
+    private void OnSliderSChanged(int s) { _s = s; OnColorSlidersChanged(); }
+    
+    private void OnSliderRChanged(int r) { _r = r; OnColorSlidersChanged(); }
+    private void OnSliderGChanged(int g) { _g = g; OnColorSlidersChanged(); }
+    private void OnSliderBChanged(int b) { _b = b; OnColorSlidersChanged(); }
 
-    private void OnSliderSChanged(int s)
-    {
-        _s = s;
-        OnColorSlidersChanged();
-    }
+    private void OnSliderXChanged(float x) { _x = x; OnColorSlidersChanged(); }
+    private void OnSliderYChanged(float y) { _y = y; OnColorSlidersChanged(); }
 
-    private void OnSliderRChanged(int r)
-    {
-        _r = r;
-        OnColorSlidersChanged();
-    }
-
-    private void OnSliderGChanged(int g)
-    {
-        _g = g;
-        OnColorSlidersChanged();
-    }
-
-    private void OnSliderBChanged(int b)
-    {
-        _b = b;
-        OnColorSlidersChanged();
-    }
-
-    private void OnSliderXChanged(float x)
-    {
-        _x = x;
-        OnColorSlidersChanged();
-    }
-
-    private void OnSliderYChanged(float y)
-    {
-        _y = y;
-        OnColorSlidersChanged();
-    }
-
-    private void OnSliderTChanged(int t)
-    {
-        _temp = t;
-        OnColorSlidersChanged();
-    }
+    private void OnSliderTChanged(int t) { _temp = t; OnColorSlidersChanged(); }
 
     private void OnColorSlidersChanged()
     {
@@ -331,5 +325,28 @@
 
         SetColorSliders(value);
     }
-}
+    
+    private void OnPreviewLightChanged(Light light)
+    {
+        _previewLight = light;
+    }
 
+    private void UpdatePreview()
+    {
+        if (_previewLight == null)
+            return;
+
+        var command = _previewLight.GetCommand(GetColorSliders(), Engine.Home.GetEntityState(_previewLight.entityID)!);
+        if (command == null)
+            return;
+
+        Task.Run(async () =>
+        {
+            var result = await Engine.CommandSender.Send(command);
+            if (!result.success)
+            {
+                Console.WriteLine("Service call failed ({0}) - {1}", result.error.code, result.error.message);
+            }
+        });
+    }
+}

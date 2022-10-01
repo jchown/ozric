@@ -11,6 +11,8 @@ public interface IEngineService
     Graph Graph { get; }
     
     Home Home { get; }
+    
+    ICommandSender CommandSender { get; }
 
     Task Start(CancellationToken token);
     

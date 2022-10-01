@@ -16,6 +16,7 @@ namespace OzricEngine
         public readonly Home home;
         public readonly Graph graph;
         public readonly Comms comms;
+        public readonly CommandBatcher commandBatcher;
 
         private bool _paused;
         private bool _serial = true;
@@ -37,6 +38,7 @@ namespace OzricEngine
             this.home = home;
             this.graph = graph;
             this.comms = comms;
+            this.commandBatcher = new CommandBatcher();
         }
 
         public async Task MainLoop(CancellationToken? cancellationToken = null)
@@ -259,19 +261,13 @@ namespace OzricEngine
                 await ProcessNodesParallel((node, context) => node.OnUpdate(context));
         }
 
-        public interface ICommandSender
-        {
-            void Add(ClientCommand command, Action<ServerResult> resultHandler);
-        }
-
         /// <summary>
         /// Process all nodes, ordering according to dependencies.
         /// </summary>
         /// <param name="nodeProcessor"></param>
         private async Task ProcessNodesParallel(Func<Node, Context, Task> nodeProcessor)
         {
-            var commandSender = new CommandSender();
-            var context = new Context(this, commandSender);
+            var context = new Context(home, commandBatcher);
             var dependencies = graph.GetNodeDependencies();
             var readiness = new Dictionary<string, SemaphoreSlim>();
             var tasks = new List<Task>();
@@ -325,23 +321,7 @@ namespace OzricEngine
 
             Task.WaitAll(tasks.ToArray());
 
-            if (commandSender.commands.Count > 0)
-            {
-                await SendCommands(commandSender);
-            }
-        }
-
-        public async Task SendCommands(CommandSender commandSender)
-        {
-            //  Record the commands we are about to send, so we can match the response and grab the context ID 
-
-            var dateTime = home.GetTime();
-            foreach (var command in commandSender.commands)
-                sentCommands.Add(new SentCommand(dateTime, command));
-
-            //  Fire them off and wait for results
-
-            await commandSender.Send(comms);
+            await SendCommands();
         }
 
         /// <summary>
@@ -350,8 +330,7 @@ namespace OzricEngine
         /// <param name="nodeProcessor"></param>
         public async Task ProcessNodesSerial(Func<Node, Context, Task> nodeProcessor)
         {
-            var commandSender = new CommandSender();
-            var context = new Context(this, commandSender);
+            var context = new Context(home, commandBatcher);
 
             foreach (var nodeID in graph.GetNodesInOrder())
             {
@@ -369,10 +348,21 @@ namespace OzricEngine
                 }
             }
 
-            if (commandSender.commands.Count > 0)
-            {
-                await SendCommands(commandSender);
-            }
+            await SendCommands();
+        }
+
+        private async Task SendCommands()
+        {
+            if (commandBatcher.commands.Count == 0)
+                return;
+            
+            //  Record the commands we are about to send, so we can match the response and grab the context ID 
+
+            var dateTime = home.GetTime();
+            foreach (var command in commandBatcher.commands)
+                sentCommands.Add(new SentCommand(dateTime, command));
+
+            await commandBatcher.Send(comms);
         }
 
         public const int SELF_EVENT_SECS = 30;

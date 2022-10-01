@@ -11,7 +11,7 @@ namespace OzricEngineTests
         [Fact]
         public void canMergeCallServicesTurnOff()
         {
-            var sender = new MockCommandSender();
+            var sender = new MockCommandBatcher();
 
             var turnOff1 = TurnOff("1");
             var turnOff2 = TurnOff("2");
@@ -29,7 +29,7 @@ namespace OzricEngineTests
         [Fact]
         public void canMergeCallServicesTurnOn()
         {
-            var sender = new MockCommandSender();
+            var sender = new MockCommandBatcher();
 
             var turnOff1 = TurnOn("1");
             var turnOff2 = TurnOn("2");

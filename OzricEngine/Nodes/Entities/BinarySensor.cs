@@ -31,8 +31,7 @@ public class BinarySensor : EntityNode
 
     private void UpdateState(Context context)
     {
-        var engine = context.engine;
-        var device = engine.home.GetEntityState(entityID);
+        var device = context.home.GetEntityState(entityID);
         if (device == null)
         {
             Log(LogLevel.Warning, $"Unknown device {entityID}");

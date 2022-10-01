@@ -1,5 +1,6 @@
 @using OzricUI.Model
 @using OzricEngine.Nodes
+@using OzricService
 
 <MudDialog>
     <DialogContent>
@@ -105,6 +106,9 @@
     [Parameter]
     public ModeMatch Node { get; set; }
 
+    [Parameter]
+    public IEngineService Engine { get; set; }
+    
     private string ID;
     private ModeMatch.Pattern selected;
     private List<ModeMatch.Pattern> patterns = new();

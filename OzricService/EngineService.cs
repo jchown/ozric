@@ -5,32 +5,34 @@ using Graph = OzricEngine.Graph;
 
 namespace OzricService;
 
-public class EngineService: IEngineService
+public class EngineService: IEngineService, ICommandSender
 {
     const string GRAPH_FILENAME = "/data/graph.json";
 
     private Engine? engine;
     private Task? mainLoop;
+    private Comms? comms;
 
     public EngineStatus Status => engine?.Status ?? new EngineStatus();
     public Graph Graph => engine?.graph ?? throw new InvalidOperationException();
     public Home Home => engine?.home ?? throw new InvalidOperationException();
+    public ICommandSender CommandSender => this;
 
     public async Task Start(CancellationToken cancellationToken)
     {
         var graph = await LoadGraph();
 
-        var connection = Connect();
+        comms = Connect();
 
-        await connection.Authenticate();
+        await comms.Authenticate();
 
-        await connection.Send(new ClientGetStates());
+        await comms.Send(new ClientGetStates());
 
-        var states = await connection.Receive<ServerGetStates>() ?? throw new InvalidOperationException();
+        var states = await comms.Receive<ServerGetStates>() ?? throw new InvalidOperationException();
 
         var home = new Home(states.result);
 
-        engine = new Engine(home, graph, connection);
+        engine = new Engine(home, graph, comms);
 
         mainLoop = Task.Run(() => engine.MainLoop());
     }
@@ -122,5 +124,13 @@ public class EngineService: IEngineService
         {
             engine.paused = paused;
         }
+    }
+
+    public async Task<ServerResult> Send(ClientCommand command)
+    {
+        if (comms == null)
+            throw new Exception("Not connected");
+        
+        return await comms.SendCommand(command, 1000);
     }
 }

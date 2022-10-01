@@ -24,13 +24,13 @@ namespace OzricEngine.Nodes
             var context = new MockContext(engine);
 
             node.OnInit(context);
-            Assert.Equal(ColorRGB.RED, node.GetOutputValue("shirts"));
-            Assert.Equal(ColorRGB.RED, node.GetOutputValue("shorts"));
+            Assert.Equal(ColorRGB.RED, node.GetOutput("shirts").value);
+            Assert.Equal(ColorRGB.RED, node.GetOutput("shorts").value);
 
             node.SetInputValue("mode", new Mode("everton"));
             node.OnUpdate(context);
-            Assert.Equal(ColorRGB.BLUE, node.GetOutputValue("shirts"));
-            Assert.Equal(ColorRGB.WHITE, node.GetOutputValue("shorts"));
+            Assert.Equal(ColorRGB.BLUE, node.GetOutput("shirts").value);
+            Assert.Equal(ColorRGB.WHITE, node.GetOutput("shorts").value);
         }
    }
 }

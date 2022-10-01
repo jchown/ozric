@@ -15,8 +15,10 @@ public class MockEngineService: IEngineService
     
     public Graph Graph { get; private set; }
     
-    public Home Home { get; private set; }
+    public Home Home { get; }
 
+    public ICommandSender CommandSender => throw new InvalidOperationException();
+        
     private bool _paused;
 
     public MockEngineService()

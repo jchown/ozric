@@ -5,9 +5,9 @@ using OzricEngine.ext;
 
 namespace OzricEngine.Nodes
 {
-    public class MockCommandSender : CommandSender
+    public class MockCommandBatcher : CommandBatcher
     {
-        public MockCommandSender(params string[] events)
+        public MockCommandBatcher(params string[] events)
         {
             Array.ForEach(events, (ev) => Add(LoadMockCommand(ev), (e) => { }));
         }

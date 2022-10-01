@@ -80,7 +80,7 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
         return pin.value as T ?? throw new Exception($"Input {name} was not a {typeof(T).Name}, was {pin.value?.GetType().Name}");
     }
 
-    protected T GetOutputValue<T>(string name) where T : class
+    public T GetOutputValue<T>(string name) where T : class
     {
         var pin = GetOutput(name);
         return pin.value as T ?? throw new Exception($"Output {name} was not a {typeof(T).Name}, was {pin.value?.GetType().Name}");

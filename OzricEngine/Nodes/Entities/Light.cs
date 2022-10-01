@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using OzricEngine.ext;
@@ -40,7 +39,7 @@ public class Light: EntityNode
             return Task.CompletedTask;
         }
 
-        var state = context.engine.home.GetEntityState(entityID);
+        var state = context.home.GetEntityState(entityID);
         if (state != null)
         {
             var attributes = state.LightAttributes;
@@ -90,42 +89,164 @@ public class Light: EntityNode
 
     private void UpdateValue(Context context)
     {
-        var engine = context.engine;
-            
-        var input = GetInput("color");
-        
-        var entityState = engine.home.GetEntityState(entityID);
-        if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
+        var entityState = context.home.GetEntityState(entityID);
+        if (GetSecondsSinceLastUpdated(context.home) < MIN_UPDATE_INTERVAL_SECS)
             return;
 
-        if (entityState.IsOverridden(engine.home.GetTime(), secondsToAllowOverrideByOthers))
+        if (entityState.IsOverridden(context.home.GetTime(), secondsToAllowOverrideByOthers))
         {
-            Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, entityState.GetNumSecondsSinceOverride(engine.home.GetTime()));
+            Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, entityState.GetNumSecondsSinceOverride(context.home.GetTime()));
             return;
         }
-            
+
+        var desired = GetInputValue<ColorValue>(INPUT_NAME);
+        var command = GetCommand(desired, entityState);
+        if (command == null)
+            return;
+        
+        entityState.last_updated = context.home.GetTime();
+        entityState.lastUpdatedByOzric = context.home.GetTime();
+
+        context.commands.Add(command, result =>
+        {
+            if (!result.success)
+            {
+                Log(LogLevel.Warning, "Service call failed ({0}) - {1}", result.error.code, result.error.message);
+            }
+        });
+    }
+
+    public ClientCallService? GetCommand(ColorValue desired, EntityState entityState)
+    {
+        var attributes = GetLightUpdate(desired, entityState, out var on, out var brightness, out var desiredOn, out var update, out var colorKey, out var colorValue);
+
+        if (!update.update)
+            return null;
+
+        entityState.LogLightState(LogLevel.Info);
+        Log(LogLevel.Info, "Update needed: {0}", update.reason);
+
+        var callServices = new ClientCallService
+        {
+            domain = "light",
+            service = desiredOn ? "turn_on" : "turn_off",
+            target = new Attributes
+            {
+                { "entity_id", new List<string> { entityID } }
+            },
+        };
+
+        if (desiredOn)
+        {
+            if (colorKey == null || colorValue == null)
+                throw new Exception("Internal error: No color chosen");
+
+            if (GetColourSwitchMode() == ColourSwitchMode.Fast)
+            {
+                // Don't care about the current state, switch.
+
+                callServices.service_data = new Attributes
+                {
+                    { "brightness", brightness },
+                    { colorKey, colorValue }
+                };
+            }
+            else
+            {
+                // Cheap lights (in my case, model tuyatec_zn9wyqtr_rh3040) don't like
+                // changing brightness AND color mode at the same time
+
+                if (on && brightness == attributes.brightness || attributes.color_mode != GetColorMode(colorKey))
+                {
+                    //  Just change color
+
+                    callServices.service_data = new Attributes
+                    {
+                        { colorKey, colorValue }
+                    };
+
+                    Log(LogLevel.Info, "call service {0}, {1}={2}", callServices.service, colorKey, colorValue);
+                }
+                else if (on && brightness != attributes.brightness && attributes.color_mode == GetColorMode(colorKey))
+                {
+                    //  Just change brightness
+
+                    callServices.service_data = new Attributes
+                    {
+                        { "brightness", brightness },
+                    };
+
+                    Log(LogLevel.Info, "call service {0}, brightness {1}", callServices.service, brightness);
+                }
+                else
+                {
+                    //  Already in right color mode, so safe to change everything
+
+                    callServices.service_data = new Attributes
+                    {
+                        { "brightness", brightness },
+                        { colorKey, colorValue }
+                    };
+
+                    Log(LogLevel.Info, "call service {0}, {1}={2}, brightness {3}", callServices.service, colorKey, colorValue, brightness);
+                }
+            }
+        }
+        else
+            Log(LogLevel.Info, "call service {0}", callServices.service);
+
+        return callServices;
+    }
+    /*
+    //  Success, record the state (the actual color the light uses may be subtly different, if it's gamut doesn't support
+    //  it, for example, so we assume that it is what we asked and then ignore the actual state changes from the device) 
+
+    lock (entityState)
+    {
+        if (desiredOn)
+        {
+            Log(LogLevel.Info, "Command succeeded, light is on");
+
+            entityState.state = "on";
+            entityState.attributes["brightness"] = brightness;
+
+            if (colorKey != null)
+            {
+                entityState.attributes[colorKey] = colorValue;
+                entityState.attributes["color_mode"] = GetColorMode(colorKey);
+            }
+        }
+        else
+        {
+            Log(LogLevel.Info, "Command succeeded, light is off");
+
+            entityState.state = "off";
+        }
+        
+        entityState.LogLightState();
+    }*/
+
+    private LightAttributes GetLightUpdate(ColorValue desired, EntityState entityState, out bool on, out int brightness, out bool desiredOn, out UpdateReason update, out string? colorKey,
+        out object? colorValue)
+    {
         var attributes = entityState.LightAttributes;
 
-        bool on = (entityState.state == "on") && attributes.brightness > 0;
+        on = (entityState.state == "on") && attributes.brightness > 0;
         Log(LogLevel.Debug, "{0}.on = {1}", entityID, on);
         if (on)
             Log(LogLevel.Debug, "brightness = {0}", attributes.brightness);
 
-        var desired = (input.value as ColorValue);
-        if (desired == null)
-            throw new Exception($"${entityID}.input[color] is a {input.value.GetType().Name}, not a {nameof(ColorValue)}");
-            
-        var brightness = ((int)(desired.brightness * 255 + 0.5f));
-        var desiredOn = brightness > 0;
+        brightness = (int)(desired.brightness * 255 + 0.5f);
+        desiredOn = brightness > 0;
 
-        var update = new UpdateReason();
+        update = new UpdateReason();
         update.Check(desiredOn != on);
         update.Check(on && brightness != attributes.brightness);
-            
+
         bool needsConversion = false;
 
-        string colorKey = null;
-        object colorValue = null;
+        colorKey = null;
+        colorValue = null;
 
         if (desiredOn)
         {
@@ -191,121 +312,7 @@ public class Light: EntityNode
             }
         }
 
-        if (update.update)
-        {
-            entityState.LogLightState(LogLevel.Info);
-            Log(LogLevel.Info, "Update needed: {0}", update.reason);
-
-            var callServices = new ClientCallService
-            {
-                domain = "light",
-                service = desiredOn ? "turn_on" : "turn_off",
-                target = new Attributes
-                {
-                    { "entity_id", new List<string> { entityID } }
-                },
-            };
-
-            if (desiredOn)
-            {
-                if (colorKey == null || colorValue == null)
-                    throw new Exception("Internal error: No color chosen");
-
-                if (GetColourSwitchMode() == ColourSwitchMode.Fast)
-                {
-                    // Don't care about the current state, switch.
-                    
-                    callServices.service_data = new Attributes
-                    {
-                        { "brightness", brightness },
-                        { colorKey, colorValue }
-                    };
-                }
-                else
-                {
-                    // Cheap lights (in my case, model tuyatec_zn9wyqtr_rh3040) don't like
-                    // changing brightness AND color mode at the same time
-
-                    if (on && brightness == attributes.brightness || attributes.color_mode != GetColorMode(colorKey))
-                    {
-                        //  Just change color
-
-                        callServices.service_data = new Attributes
-                        {
-                            { colorKey, colorValue }
-                        };
-
-                        Log(LogLevel.Info, "call service {0}, {1}={2}", callServices.service, colorKey, colorValue);
-                    }
-                    else if (on && brightness != attributes.brightness && attributes.color_mode == GetColorMode(colorKey))
-                    {
-                        //  Just change brightness
-
-                        callServices.service_data = new Attributes
-                        {
-                            { "brightness", brightness },
-                        };
-
-                        Log(LogLevel.Info, "call service {0}, brightness {1}", callServices.service, brightness);
-                    }
-                    else
-                    {
-                        //  Already in right color mode, so safe to change everything
-
-                        callServices.service_data = new Attributes
-                        {
-                            { "brightness", brightness },
-                            { colorKey, colorValue }
-                        };
-
-                        Log(LogLevel.Info, "call service {0}, {1}={2}, brightness {3}", callServices.service, colorKey, colorValue, brightness);
-                    }
-                }
-            }
-            else
-                Log(LogLevel.Info, "call service {0}", callServices.service);
-                
-            entityState.last_updated = engine.home.GetTime();
-            entityState.lastUpdatedByOzric = engine.home.GetTime();
-
-            context.commandSender.Add(callServices, result =>
-            {
-                if (!result.success)
-                {
-                    Log(LogLevel.Warning, "Service call failed ({0}) - {1}",  result.error.code, result.error.message);
-                    return;
-                }
-                    
-                /*
-                //  Success, record the state (the actual color the light uses may be subtly different, if it's gamut doesn't support
-                //  it, for example, so we assume that it is what we asked and then ignore the actual state changes from the device) 
-
-                lock (entityState)
-                {
-                    if (desiredOn)
-                    {
-                        Log(LogLevel.Info, "Command succeeded, light is on");
-
-                        entityState.state = "on";
-                        entityState.attributes["brightness"] = brightness;
-
-                        if (colorKey != null)
-                        {
-                            entityState.attributes[colorKey] = colorValue;
-                            entityState.attributes["color_mode"] = GetColorMode(colorKey);
-                        }
-                    }
-                    else
-                    {
-                        Log(LogLevel.Info, "Command succeeded, light is off");
-
-                        entityState.state = "off";
-                    }
-                    
-                    entityState.LogLightState();
-                }*/
-            });
-        }
+        return attributes;
     }
 
     public ColourSwitchMode GetColourSwitchMode()
@@ -514,35 +521,3 @@ public class Light: EntityNode
     }
 
 }
-
-internal class UpdateReason
-{
-    public bool update;
-    public string reason;
-
-    public void CheckApprox(float v0, float v1, float epsilon, [CallerArgumentExpression("v0")] string? v0s = null, [CallerArgumentExpression("v1")] string? v1s = null)
-    {
-        if (!update && Math.Abs(v0 - v1) > epsilon)
-        {
-            update = true;
-            reason = $"{v0s} ({v0:F2}) !~= {v1s} ({v1:F2}), ε={epsilon:F2}";
-        }
-    }
-
-    public bool Check(bool condition, [CallerArgumentExpression("condition")] string? conditionString = null)
-    {
-        if (!update && condition)
-        {
-            update = true;
-            reason = conditionString;
-        }
-
-        return update;
-    }
-
-    public void Set(string reason)
-    {
-        Check(true, reason);
-    }
-}
-    

@@ -23,6 +23,11 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((_) => DrawerToggle())" />
         
         <MudText>Ozric</MudText>
+
+        Engine
+        
+        <MudIconButton Icon="@Icons.Material.Filled.PauseCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickPause" Disabled="@(IsEditing || EngineService.Status.paused)" />
+        <MudIconButton Icon="@Icons.Material.Filled.PlayCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickContinue" Disabled="@(IsEditing || !EngineService.Status.paused)" />
  
         <MudSpacer />
 
@@ -152,6 +157,12 @@
 
     private void OnGraphEditStateChanged()
     {
+        if (GraphEditState.IsEditing && !EngineService.Status.paused)
+            EngineService.SetPaused(true);
+            
+        if (!GraphEditState.IsEditing && EngineService.Status.paused)
+            EngineService.SetPaused(false);
+
         StateHasChanged();
     }
 
@@ -213,6 +224,16 @@
     private void OnClickRedo()
     {
         GraphEditState.DoCommand(GraphEditState.Command.Redo);
+    }
+
+    private async Task OnClickPause()
+    {
+        EngineService.SetPaused(true);
+    }
+
+    private async Task OnClickContinue()
+    {
+        EngineService.SetPaused(false);
     }
 
     private async Task OnClickAdd()
@@ -322,7 +343,8 @@
         var parameters = new DialogParameters
         {
             { "Model", model },
-            { "Node", node }
+            { "Node", node },
+            { "Engine", EngineService }
         };
 
         var options = GetDialogOptions();

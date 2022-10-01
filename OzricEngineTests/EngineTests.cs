@@ -124,11 +124,11 @@ namespace OzricEngineTests
             engine.graph.AddNode(sensor);
 
             await sensor.OnInit(context);
-            Assert.Equal(new Boolean(false), sensor.GetOutputOnOff("activity"));
+            Assert.Equal(new Boolean(false), sensor.GetOutputValue<Boolean>("activity"));
 
             engine.ProcessMockEvent("sensor_1_on");
             await sensor.OnUpdate(context);
-            Assert.Equal(new Boolean(true), sensor.GetOutputOnOff("activity"));
+            Assert.Equal(new Boolean(true), sensor.GetOutputValue<Boolean>("activity"));
         }
 
         class VerboseObject : OzricObject
@@ -158,7 +158,7 @@ namespace OzricEngineTests
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sensor_1");
             var engine = new MockEngine(home);
 
-            var sender = new MockCommandSender("lights_on");
+            var sender = new MockCommandBatcher("lights_on");
             await engine.SendCommands(sender);
 
             engine.ProcessMockEvent("lights_on");

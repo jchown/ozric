@@ -19,17 +19,17 @@ public class IfAll: VariableInputs
             
     public override Task OnInit(Context context)
     {
-        UpdateValue(context.engine);
+        UpdateValue();
         return Task.CompletedTask;
     }
 
     public override Task OnUpdate(Context context)
     {
-        UpdateValue(context.engine);
+        UpdateValue();
         return Task.CompletedTask;
     }
 
-    private void UpdateValue(Engine engine)
+    private void UpdateValue()
     {
         var on = true;
         foreach (var onOff in GetInputValues<Boolean>())

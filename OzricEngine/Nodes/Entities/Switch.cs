@@ -43,8 +43,6 @@ public class Switch: EntityNode
 
     private void UpdateValue(Context context)
     {
-        var engine = context.engine;
-            
         var input = GetInput(INPUT_NAME);
         if (input.value == null)
         {
@@ -52,13 +50,13 @@ public class Switch: EntityNode
             return;
         }
 
-        var entityState = engine.home.GetEntityState(entityID)!;
-        if (GetSecondsSinceLastUpdated(engine) < MIN_UPDATE_INTERVAL_SECS)
+        var entityState = context.home.GetEntityState(entityID)!;
+        if (GetSecondsSinceLastUpdated(context.home) < MIN_UPDATE_INTERVAL_SECS)
             return;
 
-        if (entityState.IsOverridden(engine.home.GetTime(), secondsToAllowOverrideByOthers))
+        if (entityState.IsOverridden(context.home.GetTime(), secondsToAllowOverrideByOthers))
         {
-            Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, entityState.GetNumSecondsSinceOverride(engine.home.GetTime()));
+            Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, entityState.GetNumSecondsSinceOverride(context.home.GetTime()));
             return;
         }
             
@@ -82,10 +80,10 @@ public class Switch: EntityNode
                 },
             };
                 
-            entityState.last_updated = engine.home.GetTime();
-            entityState.lastUpdatedByOzric = engine.home.GetTime();
+            entityState.last_updated = context.home.GetTime();
+            entityState.lastUpdatedByOzric = context.home.GetTime();
 
-            context.commandSender.Add(callServices, result =>
+            context.commands.Add(callServices, result =>
             {
                 if (!result.success)
                 {

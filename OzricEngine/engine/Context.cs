@@ -2,13 +2,13 @@ namespace OzricEngine.Nodes
 {
     public class Context
     {
-        public Context(Engine engine, Engine.ICommandSender commandSender)
+        public Context(Home home, CommandBatcher commands)
         {
-            this.engine = engine;
-            this.commandSender = commandSender;
+            this.home = home;
+            this.commands = commands;
         }
 
-        public Engine engine { get;}
-        public Engine.ICommandSender commandSender { get;}
+        public Home home { get;}
+        public CommandBatcher commands { get;}
     }
 }
