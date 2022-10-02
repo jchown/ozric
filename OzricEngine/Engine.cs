@@ -38,7 +38,8 @@ namespace OzricEngine
             this.home = home;
             this.graph = graph;
             this.comms = comms;
-            this.commandBatcher = new CommandBatcher();
+            
+            commandBatcher = new CommandBatcher();
         }
 
         public async Task MainLoop(CancellationToken? cancellationToken = null)
@@ -51,7 +52,10 @@ namespace OzricEngine
 
                 while (!(cancellationToken?.IsCancellationRequested ?? false))
                 {
-                    await UpdateNodes();
+                    if (!paused)
+                    {
+                        await UpdateNodes();
+                    }
 
                     //  Avoid spinning constantly by waiting for an event (that we aren't responsible for)
                     //  OR a period of time has elapsed.
@@ -67,15 +71,8 @@ namespace OzricEngine
                         var events = comms.TakePendingEvents(millisToWait);
                         if (events.Count > 0)
                         {
-                            if (!paused)
-                            {
-                                if (ProcessEvents(events))
-                                    break;
-                            }
-                            else
-                            {
-                                Log(LogLevel.Debug, "Paused: Discarding events");
-                            }
+                            if (ProcessEvents(events))
+                                break;
                         }
                     }
                 }
@@ -344,6 +341,7 @@ namespace OzricEngine
                 }
                 catch (Exception e)
                 {
+                    Console.Write(e);
                     Log(LogLevel.Error, "Failed to process node {0}: {1}", node.Name, e.Message);
                 }
             }

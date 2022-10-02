@@ -3,6 +3,7 @@
 @using OzricService
 @using OzricEngine.ext
 @using OzricEngine.Values
+@using Humanizer
 @inject IEngineService EngineService
 
 <MudDialog>
@@ -22,10 +23,10 @@
 
             <MudDivider DividerType="DividerType.Middle" Class="my-4" />
 
-            <MudSelect @bind-Value="ColourSwitchMode" Style="z-index:9999;" @bind-Text="ColourSwitchModeText" @onchange="OnColourSwitchModeChanged" HelperText="@ColourSwitchHelperText" T="Light.ColourSwitchMode" Label="Colour Switch Mode" Variant="Variant.Text">
-                <MudSelectItem Value="@(Light.ColourSwitchMode.Automatic)"/>
-                <MudSelectItem Value="@(Light.ColourSwitchMode.Fast)"/>
-                <MudSelectItem Value="@(Light.ColourSwitchMode.TwoPhase)"/>
+            <MudSelect @bind-Value="ColourSwitchMode" Style="z-index:9999;" HelperText="@CSMHelperText" T="Light.ColourSwitchMode" Label="Colour Switch Mode" Variant="Variant.Text">
+                <MudSelectItem Value="@(Light.ColourSwitchMode.Automatic)">Automatic (Use Default)</MudSelectItem>
+                <MudSelectItem Value="@(Light.ColourSwitchMode.Fast)">Fast</MudSelectItem>
+                <MudSelectItem Value="@(Light.ColourSwitchMode.TwoPhase)">Two Phase</MudSelectItem>
             </MudSelect>
 
         </MudContainer>
@@ -55,11 +56,10 @@
     
     private string ID;
     private string EntityID;
-    private Light.ColourSwitchMode ColourSwitchMode;
+    private Light.ColourSwitchMode ColourSwitchMode { get; set; }
     private string _colorModes;
-    
-    public string ColourSwitchModeText { get; set; }
-    public string ColourSwitchHelperText { get; set; }
+
+    private string CSMHelperText => $"Default for this light: {Node.GetColourSwitchModeAuto().ToString().Humanize(LetterCasing.Sentence)}";
 
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
@@ -71,7 +71,6 @@
         ID = Node.id;
         EntityID = Node.entityID;
         ColourSwitchMode = Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic;
-        ColourSwitchHelperText = GetColourSwitchHelperText();
         _colorModes = Node.GetSupportedColorModes(EngineService.Home).Select(ColorValue.DescribeColorMode).Join(", ");
     }
 
@@ -80,55 +79,17 @@
         var changes = new List<GraphEditAction>();
         if (ID != Node.id)
             changes.Add(new GraphEditAction.RenameNode(Node, ID));
-        if (ColourSwitchMode != (Node.colourSwitchMode ?? ColourSwitchMode))
+        if (ColourSwitchMode != (Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic))
         {
             var csm = ColourSwitchMode != Light.ColourSwitchMode.Automatic ? ColourSwitchMode : ((Light.ColourSwitchMode?) null);
             changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.colourSwitchMode)), csm));
         }
         return changes;
     }
-    
-    public string GetColourSwitchHelperText()
+
+    private void OnCSMChanged(Light.ColourSwitchMode csm)
     {
-        switch (ColourSwitchMode)
-        {
-            case Light.ColourSwitchMode.Fast:
-            {
-                return "Switch colour-space & brightness simultaneously";
-            }
-            case Light.ColourSwitchMode.TwoPhase:
-            {
-                return "Don't switch colour-space & brightness simultaneously";
-            }
-            case Light.ColourSwitchMode.Automatic:
-            {
-                return $"Automatically choose: Currently {Node.GetColourSwitchMode()}";
-            }
-        }
-
-        throw new InvalidOperationException();
-    }
-    
-    private string GetColourSwitchModeText()
-    {
-        switch (ColourSwitchMode)
-        {
-            case Light.ColourSwitchMode.Automatic:
-                return "Automatic";
-
-            case Light.ColourSwitchMode.Fast:
-                return "Fast";
-
-            case Light.ColourSwitchMode.TwoPhase:
-                return "Two Phase";
-        }
-
-        throw new InvalidOperationException();
-    }
-
-    private void OnColourSwitchModeChanged()
-    {
-        ColourSwitchHelperText = GetColourSwitchHelperText();
+        
     }
 
 }

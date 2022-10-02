@@ -51,15 +51,17 @@ namespace OzricEngine
 
                 var value = typeProperty.GetString()!;
                 if (!ResultTypes.ContainsKey(value))
-                    throw new JsonException($"Unknown class for \"{value}\" of {typeof(T)}");
+                    OnUnrecognisedType(value);
                     
                 var type = ResultTypes[value];
-                if (type == null)
-                    throw new JsonException($"Unknown class for \"{value}\" of {typeof(T)}");
-
                 var jsonObject = jsonDocument.RootElement.GetRawText();
                 return (T) JsonSerializer.Deserialize(jsonObject, type, options)!;
             }
+        }
+
+        protected virtual T OnUnrecognisedType(string name)
+        {
+            throw new JsonException($"Unknown class for \"{name}\" of {typeof(T)}");
         }
 
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)

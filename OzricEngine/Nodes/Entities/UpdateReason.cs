@@ -21,6 +21,15 @@ class UpdateReason
         }
     }
 
+    public void CheckEquals<T>(T v0, T v1, [CallerArgumentExpression("v0")] string? v0s = null, [CallerArgumentExpression("v1")] string? v1s = null)
+    {
+        if (!update && !Equals(v0, v1))
+        {
+            update = true;
+            reason = $"{v0s} ({v0:F2}) != {v1s} ({v1:F2})";
+        }
+    }
+
     public bool Check(bool condition, [CallerArgumentExpression("condition")] string? conditionString = null)
     {
         if (!update && condition)

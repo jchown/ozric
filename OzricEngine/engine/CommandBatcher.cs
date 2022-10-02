@@ -43,8 +43,16 @@ public class CommandBatcher: OzricObject
     public async Task Send(Comms comms)
     {
         Dictionary<int, Task<ServerResult>> tasks = new Dictionary<int, Task<ServerResult>>();
-            
-        foreach (var command in commands)
+
+        ClientCommand[] _commands;
+
+        lock (commands)
+        {
+            _commands = commands.ToArray();
+            commands.Clear();
+        }
+
+        foreach (var command in _commands)
         {
             tasks[command.id] = comms.SendCommand(command, COMMAND_TIMEOUT_MS);
         }
@@ -56,9 +64,9 @@ public class CommandBatcher: OzricObject
                 continue;
                 
             foreach (var handler in handlers[task.Key])
-            {
                 handler.Invoke(result);
-            }
+
+            handlers.Remove(task.Key);
         }
     }
 

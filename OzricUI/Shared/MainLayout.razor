@@ -24,7 +24,7 @@
         
         <MudText>Ozric</MudText>
 
-        Engine
+        <MudText>Engine</MudText>
         
         <MudIconButton Icon="@Icons.Material.Filled.PauseCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickPause" Disabled="@(IsEditing || EngineService.Status.paused)" />
         <MudIconButton Icon="@Icons.Material.Filled.PlayCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickContinue" Disabled="@(IsEditing || !EngineService.Status.paused)" />

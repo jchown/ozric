@@ -55,7 +55,15 @@
                         Brightness: @_brightness.ToString()
                     </MudSlider>
                     <p class="mud-input-helper-text">Brightness is not affected by the color luminance.</p>
-                    
+                                        
+                    <MudSelect Value="_previewLight" Style="z-index:9999;" ValueChanged="OnPreviewLightChanged" HelperText="Choose a light to directly preview the color" T="Light?" Label="Preview Light" Variant="Variant.Text">
+                        <MudSelectItem Value="@((Light) null)">(None)</MudSelectItem>
+                        @foreach (var light in _lights)
+                        {
+                            <MudSelectItem Value="@(light)">@light.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+
                 </MudItem>
 
                 <MudItem xs="6">
@@ -63,16 +71,6 @@
                                     DisableToolbar="true" DisableAlpha="true" DisableModeSwitch="true" DisableInputs="true"
                                     ValueChanged="OnColorPickerChanged"/>
                 </MudItem>
-
-                <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
-                    
-                <MudSelect Value="_previewLight" Style="z-index:9999;" ValueChanged="OnPreviewLightChanged" HelperText="Choose a light to directly preview the color" T="Light?" Label="Preview Light" Variant="Variant.Text">
-                    <MudSelectItem Value="@((Light) null)">(None)</MudSelectItem>
-                    @foreach (var light in _lights)
-                    {
-                        <MudSelectItem Value="@(light)">@light.Name</MudSelectItem>
-                    }
-                </MudSelect>
 
             </MudGrid>
 
@@ -145,7 +143,7 @@
         _brightness = (int)(colorValue.brightness * BRIGHTNESS_SCALE);
         _lights = Engine.Graph.GetAll<Light>();
         
-        _timer = new Timer(500);
+        _timer = new Timer(300);
         _timer.Elapsed += TimerCallback;
         _timer.Enabled = true;
     }
@@ -336,7 +334,7 @@
         if (_previewLight == null)
             return;
 
-        var command = _previewLight.GetCommand(GetColorSliders(), Engine.Home.GetEntityState(_previewLight.entityID)!);
+        var command = _previewLight.GetCommand(GetColorSliders(), Engine.Home);
         if (command == null)
             return;
 

@@ -89,24 +89,11 @@ public class Light: EntityNode
 
     private void UpdateValue(Context context)
     {
-        var entityState = context.home.GetEntityState(entityID);
-        if (GetSecondsSinceLastUpdated(context.home) < MIN_UPDATE_INTERVAL_SECS)
-            return;
-
-        if (entityState.IsOverridden(context.home.GetTime(), secondsToAllowOverrideByOthers))
-        {
-            Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, entityState.GetNumSecondsSinceOverride(context.home.GetTime()));
-            return;
-        }
-
         var desired = GetInputValue<ColorValue>(INPUT_NAME);
-        var command = GetCommand(desired, entityState);
+        var command = GetCommand(desired, context.home);
         if (command == null)
             return;
         
-        entityState.last_updated = context.home.GetTime();
-        entityState.lastUpdatedByOzric = context.home.GetTime();
-
         context.commands.Add(command, result =>
         {
             if (!result.success)
@@ -116,14 +103,25 @@ public class Light: EntityNode
         });
     }
 
-    public ClientCallService? GetCommand(ColorValue desired, EntityState entityState)
+    public ClientCallService? GetCommand(ColorValue desired, Home home)
     {
-        var attributes = GetLightUpdate(desired, entityState, out var on, out var brightness, out var desiredOn, out var update, out var colorKey, out var colorValue);
+        //  Spamming some lights causes them to stop responding
+        
+        var entityState = home.GetEntityState(entityID)!;
+        if (GetSecondsSinceLastUpdated(home) < MIN_UPDATE_INTERVAL_SECS)
+            return null;
 
+        if (entityState.IsOverridden(home.GetTime(), secondsToAllowOverrideByOthers))
+        {
+            Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, entityState.GetNumSecondsSinceOverride(home.GetTime()));
+            return null;
+        }
+            
+        var attributes = GetLightUpdate(desired, entityState, out var on, out var brightness, out var desiredOn, out var update, out var colorKey, out var colorValue);
         if (!update.update)
             return null;
 
-        entityState.LogLightState(LogLevel.Info);
+//        entityState.LogLightState();
         Log(LogLevel.Info, "Update needed: {0}", update.reason);
 
         var callServices = new ClientCallService
@@ -194,6 +192,9 @@ public class Light: EntityNode
         }
         else
             Log(LogLevel.Info, "call service {0}", callServices.service);
+               
+        entityState.last_updated = home.GetTime();
+        entityState.lastUpdatedByOzric = home.GetTime();
 
         return callServices;
     }
@@ -240,8 +241,9 @@ public class Light: EntityNode
         desiredOn = brightness > 0;
 
         update = new UpdateReason();
-        update.Check(desiredOn != on);
-        update.Check(on && brightness != attributes.brightness);
+        update.CheckEquals(desiredOn, on);
+        if (on)
+            update.CheckEquals(brightness, attributes.brightness);
 
         bool needsConversion = false;
 
@@ -320,9 +322,14 @@ public class Light: EntityNode
         var mode = colourSwitchMode ?? ColourSwitchMode.Automatic;
         
         if (mode == ColourSwitchMode.Automatic)
-            mode = (entityID.ToLowerInvariant().Contains("hue") ? ColourSwitchMode.Fast : ColourSwitchMode.TwoPhase);
+            mode = GetColourSwitchModeAuto();
 
         return mode;
+    }
+
+    public ColourSwitchMode GetColourSwitchModeAuto()
+    {
+        return (entityID.ToLowerInvariant().Contains("hue") ? ColourSwitchMode.Fast : ColourSwitchMode.TwoPhase);
     }
 
     private static string GetColorMode(string colorKey)
