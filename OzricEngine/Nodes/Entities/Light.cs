@@ -15,9 +15,6 @@ public class Light: EntityNode
     public override NodeType nodeType => NodeType.Light;
 
     public const string INPUT_NAME = "color";
-
-    [JsonIgnore]
-    private int secondsToAllowOverrideByOthers { get; }
     
     public ColourSwitchMode? colourSwitchMode { get; set; }
 
@@ -28,7 +25,6 @@ public class Light: EntityNode
 
     public Light(string id, string entityID) : base(id, entityID, new List<Pin> { new(INPUT_NAME, ValueType.Color) }, null)
     {
-        secondsToAllowOverrideByOthers = 10 * 60;
     }
 
     public override Task OnInit(Context context)
@@ -105,18 +101,11 @@ public class Light: EntityNode
 
     public ClientCallService? GetCommand(ColorValue desired, Home home)
     {
-        //  Spamming some lights causes them to stop responding
-        
         var entityState = home.GetEntityState(entityID)!;
-        if (GetSecondsSinceLastUpdated(home) < MIN_UPDATE_INTERVAL_SECS)
-            return null;
-
-        if (entityState.IsOverridden(home.GetTime(), secondsToAllowOverrideByOthers))
-        {
-            Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, entityState.GetNumSecondsSinceOverride(home.GetTime()));
-            return null;
-        }
             
+        if (!home.CanUpdateEntity(entityState))
+            return null;
+        
         var attributes = GetLightUpdate(desired, entityState, out var on, out var brightness, out var desiredOn, out var update, out var colorKey, out var colorValue);
         if (!update.update)
             return null;
@@ -192,9 +181,6 @@ public class Light: EntityNode
         }
         else
             Log(LogLevel.Info, "call service {0}", callServices.service);
-               
-        entityState.last_updated = home.GetTime();
-        entityState.lastUpdatedByOzric = home.GetTime();
 
         return callServices;
     }
@@ -243,7 +229,12 @@ public class Light: EntityNode
         update = new UpdateReason();
         update.CheckEquals(desiredOn, on);
         if (on)
-            update.CheckEquals(brightness, attributes.brightness);
+        {
+            if (brightness == 0 || attributes.brightness == 0)
+                update.CheckEquals(brightness, attributes.brightness);
+            else
+                update.CheckApprox(brightness, attributes.brightness, 3);
+        }
 
         bool needsConversion = false;
 
@@ -502,12 +493,11 @@ public class Light: EntityNode
         return colorValue;
     }
 
-    private const double MIN_UPDATE_INTERVAL_SECS = 0.5f;
     public static readonly string[] ATTRIBUTE_KEYS = { "brightness", "color_mode", "xy_color", "hs_color", "rgb_color" };
     
     public List<ColorMode> GetSupportedColorModes(Home home)
     {
-        var entityState = home.GetEntityState(entityID);
+        var entityState = home.GetEntityState(entityID)!;
         var attributes = entityState.LightAttributes;
         return attributes.supported_color_modes.Select(s =>
         {

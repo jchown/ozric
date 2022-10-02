@@ -42,10 +42,12 @@ namespace OzricEngine
         /// </summary>
         private readonly string llat;
 
-        public delegate void MessageHandler(string message);
+        public delegate void MessageHandler(object o);
+        public delegate void JsonHandler(string message);
 
-        private MessageHandler? sendHandler;
-        private MessageHandler? receiveHandler;
+        private event MessageHandler? sentMessageHandler;
+        private event JsonHandler? sentJsonHandler;
+        private event JsonHandler? receivedJsonHandler;
 
         public Comms(string llat): this(CORE_API, llat)
         {
@@ -113,7 +115,7 @@ namespace OzricEngine
                 try
                 {
                     var t = Json.Deserialize<T>(json);
-                    receiveHandler?.Invoke(json);
+                    receivedJsonHandler?.Invoke(json);
                     return t;
                 }
                 catch (Exception e)
@@ -135,6 +137,8 @@ namespace OzricEngine
             if (client == null)
                 throw new IOException("Not connected");
 
+            sentMessageHandler?.Invoke(t);
+
             if (t is ClientCommand cc && cc.id == 0)
             {
                 lock (sendCommandLock)
@@ -149,17 +153,9 @@ namespace OzricEngine
             var json = Json.Serialize(t, t.GetType());
 
             Log(LogLevel.Debug, ">> {0}", json);
-            sendHandler?.Invoke(json);
+            sentJsonHandler?.Invoke(json);
 
             await client.SendAsync(json, WebSocketMessageType.Text, cancellation.Token);
-        }
-
-        private void WriteLine(string s)
-        {
-            var before = Console.ForegroundColor;
-            Console.ForegroundColor = ConsoleColor.DarkBlue;
-            Console.WriteLine(s);
-            Console.ForegroundColor = before;
         }
 
         public void Dispose()
@@ -406,19 +402,19 @@ namespace OzricEngine
             return taken;
         }
 
-        public void OnSend(MessageHandler action)
+        public void OnSentMessage(MessageHandler action)
         {
-            sendHandler += action;
+            sentMessageHandler += action;
         }
 
-        public void OnReceive(MessageHandler action)
+        public void OnSentJson(JsonHandler action)
         {
-            receiveHandler += action;
+            sentJsonHandler += action;
         }
-    }
 
-    public class CommsStatus
-    {
-        public bool messagePump { get; set; }
+        public void OnReceivedJson(JsonHandler action)
+        {
+            receivedJsonHandler += action;
+        }
     }
 }

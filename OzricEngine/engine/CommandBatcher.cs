@@ -22,15 +22,15 @@ public class CommandBatcher: OzricObject
         {
             if (command is IMergable)
             {
-                foreach (var otherCommand in commands)
+                foreach (var oc in commands)
                 {
-                    if (otherCommand is IMergable otherMergable)
+                    if (oc is not IMergable om)
+                        continue;
+
+                    if (om.Merge(command))
                     {
-                        if (otherMergable.Merge(command))
-                        {
-                            handlers[otherCommand.id].Add(resultHandler);
-                            return;
-                        }
+                        handlers[oc.id].Add(resultHandler);
+                        return;
                     }
                 }    
             }

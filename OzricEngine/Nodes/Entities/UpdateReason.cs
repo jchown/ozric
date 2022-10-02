@@ -21,6 +21,15 @@ class UpdateReason
         }
     }
 
+    public void CheckApprox(int v0, int v1, int epsilon, [CallerArgumentExpression("v0")] string? v0s = null, [CallerArgumentExpression("v1")] string? v1s = null)
+    {
+        if (!update && Math.Abs(v0 - v1) > epsilon)
+        {
+            update = true;
+            reason = $"{v0s} ({v0}) !~= {v1s} ({v1}), ε={epsilon}";
+        }
+    }
+
     public void CheckEquals<T>(T v0, T v1, [CallerArgumentExpression("v0")] string? v0s = null, [CallerArgumentExpression("v1")] string? v1s = null)
     {
         if (!update && !Equals(v0, v1))

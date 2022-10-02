@@ -13,12 +13,8 @@ public class Switch: EntityNode
 
     public const string INPUT_NAME = "state";
 
-    [JsonIgnore]
-    private int secondsToAllowOverrideByOthers { get; }
-
     public Switch(string id, string entityID) : base(id, entityID, new List<Pin> { new(INPUT_NAME, ValueType.Boolean) }, null)
     {
-        secondsToAllowOverrideByOthers = 10 * 60;
     }
 
     public override Task OnInit(Context context)
@@ -39,8 +35,6 @@ public class Switch: EntityNode
         return Task.CompletedTask;
     }
 
-    private const double MIN_UPDATE_INTERVAL_SECS = 0.5f;
-
     private void UpdateValue(Context context)
     {
         var input = GetInput(INPUT_NAME);
@@ -51,14 +45,8 @@ public class Switch: EntityNode
         }
 
         var entityState = context.home.GetEntityState(entityID)!;
-        if (GetSecondsSinceLastUpdated(context.home) < MIN_UPDATE_INTERVAL_SECS)
+        if (!context.home.CanUpdateEntity(entityState))
             return;
-
-        if (entityState.IsOverridden(context.home.GetTime(), secondsToAllowOverrideByOthers))
-        {
-            Log(LogLevel.Warning, "{0} has been controlled by another service for {1:F1} seconds", entityID, entityState.GetNumSecondsSinceOverride(context.home.GetTime()));
-            return;
-        }
             
         bool on = (entityState.state == "on");
         Log(LogLevel.Debug, "{0}.on = {1}", entityID, on);
@@ -79,9 +67,6 @@ public class Switch: EntityNode
                     { "entity_id", new List<string> { entityID } }
                 },
             };
-                
-            entityState.last_updated = context.home.GetTime();
-            entityState.lastUpdatedByOzric = context.home.GetTime();
 
             context.commands.Add(callServices, result =>
             {

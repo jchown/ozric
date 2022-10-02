@@ -31,10 +31,15 @@ namespace OzricEngine
             if (target.Count != 1 || !target.ContainsKey("entity_id"))
                 return false;
 
-            var entityID = target["entity_id"] as List<string> ?? throw new Exception("Missing entity_id");
+            var entityID = GetEntities();
             entityID.AddRange(other.target["entity_id"] as List<string> ?? throw new Exception("Missing entity_id"));
             entityID.Sort();
             return true;
+        }
+
+        public List<string> GetEntities()
+        {
+            return (List<string>) target["entity_id"] ?? throw new Exception("Missing entity_id");
         }
 
         public bool Equals(ClientCallService? other)

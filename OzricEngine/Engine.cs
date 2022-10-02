@@ -40,6 +40,26 @@ namespace OzricEngine
             this.comms = comms;
             
             commandBatcher = new CommandBatcher();
+            comms.OnSentMessage(OnSendUpdateEntityUpdateTime);
+        }
+        
+        /// <summary>
+        /// Housekeeping to avoid spamming entities
+        /// </summary>
+        /// <param name="message"></param>
+
+        private void OnSendUpdateEntityUpdateTime(object message)
+        {
+            switch (message)
+            {
+                case ClientCallService ccs:
+                {
+                    foreach (var entityID in ccs.GetEntities())
+                        home.SetUpdatedTime(entityID);
+                    
+                    break;
+                }
+            }
         }
 
         public async Task MainLoop(CancellationToken? cancellationToken = null)
@@ -194,12 +214,6 @@ namespace OzricEngine
         {
             var newState = stateChanged.data.new_state;
 
-            if (newState.state == "unavailable")
-            {
-                Log(LogLevel.Debug, "Entity {0}: {1}, ignoring", newState.entity_id, newState.state);
-                return false;
-            }
-
             var entityState = home.GetEntityState(newState.entity_id);
             if (entityState == null)
             {
@@ -207,7 +221,8 @@ namespace OzricEngine
                 return false;
             }
 
-            Log(LogLevel.Info, "Event - {0}: {1}", newState.entity_id, newState.state);
+            if (!newState.IsRedacted())
+                Log(LogLevel.Info, "Event - {0}: {1}", newState.entity_id, newState.state);
 
             lock (entityState)
             {
@@ -222,13 +237,12 @@ namespace OzricEngine
                     }
                 }
 
-                var now = home.GetTime();
-                var expected = IGNORE_OWN_STATE_CHANGES && entityState.WasRecentlyUpdatedByOzric(now, SELF_EVENT_SECS);
+                var expected = IGNORE_OWN_STATE_CHANGES && home.WasRecentlyUpdatedByOzric(entityState.entity_id, Home.SELF_EVENT_SECS);
                 if (!expected)
                 {
                     entityState.state = newState.state;
                     entityState.attributes = newState.attributes;
-                    entityState.last_updated = now;
+                    entityState.last_updated = home.GetTime();
 
                     if (entityState.entity_id.StartsWith("light."))
                         entityState.LogLightState();
@@ -362,8 +376,6 @@ namespace OzricEngine
 
             await commandBatcher.Send(comms);
         }
-
-        public const int SELF_EVENT_SECS = 30;
 
         public override string Name => "Engine";
         

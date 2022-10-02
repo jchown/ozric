@@ -21,5 +21,10 @@ namespace OzricEngine
         {
             return Json.Serialize(this);
         }
+
+        public bool IsRedacted()
+        {
+            return entity_id.EndsWith("_geocoded_location");
+        }
     }
 }

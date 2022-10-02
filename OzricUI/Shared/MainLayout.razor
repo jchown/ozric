@@ -23,8 +23,9 @@
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((_) => DrawerToggle())" />
         
         <MudText>Ozric</MudText>
-
-        <MudText>Engine</MudText>
+        
+        &nbsp;
+        &nbsp;
         
         <MudIconButton Icon="@Icons.Material.Filled.PauseCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickPause" Disabled="@(IsEditing || EngineService.Status.paused)" />
         <MudIconButton Icon="@Icons.Material.Filled.PlayCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickContinue" Disabled="@(IsEditing || !EngineService.Status.paused)" />
@@ -49,8 +50,8 @@
             Edit
         </MudButton>
         
-        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickCancel" Disabled="@(Saving || !IsEditing)" hidden="@(!IsEditing)"> 
-            Cancel
+        <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDone" Disabled="@(Saving || !IsEditing)" hidden="@(!IsEditing)"> 
+            Done
         </MudButton>
                
         <MudButton Color="Color.Tertiary" Variant="Variant.Filled"  @onclick="OnClickSave" Disabled="@(Saving || !IsChanged)" hidden="@(!IsEditing)">
@@ -171,7 +172,7 @@
         GraphEditState.OnEdit();
     }
 
-    private void OnClickCancel()
+    private void OnClickDone()
     {
         if (!GraphEditState.IsChanged)
         {

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using OzricEngine.ext;
 using OzricEngine.Nodes;
@@ -14,7 +15,7 @@ namespace OzricEngine
         public DateTime last_updated { get; set; }
         public MessageContext context { get; set; }
 
-        public DateTime? lastUpdatedByOzric;
+        [JsonIgnore]
         public DateTime? lastUpdatedByOther;
 
         public Category GetCategory()
@@ -66,18 +67,6 @@ namespace OzricEngine
                 return 999999999;
             
             return (float)(now - lastUpdatedByOther.Value).TotalSeconds;
-        }
-        
-        /// <summary>
-        /// We would like to know if an event was (probably) due to something we did.
-        /// </summary>
-        /// <param name="now"></param>
-        /// <param name="secondsRecent"></param>
-        /// <returns></returns>
-        
-        public bool WasRecentlyUpdatedByOzric(DateTime now, int secondsRecent)
-        {
-            return lastUpdatedByOzric != null && (now - lastUpdatedByOzric.Value).TotalSeconds < secondsRecent;
         }
 
         public void LogLightState(LogLevel level = LogLevel.Info)
