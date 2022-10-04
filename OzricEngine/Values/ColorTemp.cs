@@ -20,7 +20,7 @@ namespace OzricEngine.Values
             this.temp = temp;
         }
 
-        public int temp { get; }
+        public float temp { get; }
         
         [JsonIgnore]
         public override float luminance => brightness;

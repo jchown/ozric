@@ -18,6 +18,9 @@ namespace OzricEngine
         public readonly Comms comms;
         public readonly CommandBatcher commandBatcher;
 
+        public delegate void StateChangedHandler(EventStateChanged o);
+        public event StateChangedHandler? stateChangeHandlers;
+
         private bool _paused;
         private bool _serial = true;
         private readonly List<SentCommand> sentCommands = new();
@@ -138,6 +141,7 @@ namespace OzricEngine
                         case EventStateChanged stateChanged:
                         {
                             external |= ProcessEventStateChanged(stateChanged);
+                            stateChangeHandlers?.Invoke(stateChanged);
                             break;
                         }
 
@@ -166,8 +170,7 @@ namespace OzricEngine
         /// state that gets sent back and assume it did what we asked. This doesn't work if the
         /// setting mechanism isn't robust and we need to retry.
         /// </summary>
-
-        private const bool IGNORE_OWN_STATE_CHANGES = false;
+        internal const bool IGNORE_OWN_STATE_CHANGES = false;
 
         /// <summary>
         /// Process a service call. Tries to find if it is due to one of our command sends. 
@@ -212,48 +215,12 @@ namespace OzricEngine
 
         private bool ProcessEventStateChanged(EventStateChanged stateChanged)
         {
-            var newState = stateChanged.data.new_state;
+            if (!stateChanged.data.new_state.IsRedacted())
+                Log(LogLevel.Info, "Event - {0}: {1}", stateChanged.data.new_state.entity_id, stateChanged.data.new_state.state);
+            
+            
 
-            var entityState = home.GetEntityState(newState.entity_id);
-            if (entityState == null)
-            {
-                Log(LogLevel.Warning, "Unknown entity {0}", newState.entity_id);
-                return false;
-            }
-
-            if (!newState.IsRedacted())
-                Log(LogLevel.Info, "Event - {0}: {1}", newState.entity_id, newState.state);
-
-            lock (entityState)
-            {
-                if (entityState.entity_id.StartsWith("light."))
-                {
-                    //  Check only the relevant details, ignoring timers etc.
-
-                    if (entityState.state == newState.state && entityState.attributes.EqualsKeys(newState.attributes, Light.ATTRIBUTE_KEYS))
-                    {
-                        Log(entityState.entity_id.Contains("panasonic") ? LogLevel.Debug : LogLevel.Info, "Entity {0}: unchanged, ignoring", newState.entity_id);
-                        return false;
-                    }
-                }
-
-                var expected = IGNORE_OWN_STATE_CHANGES && home.WasRecentlyUpdatedByOzric(entityState.entity_id, Home.SELF_EVENT_SECS);
-                if (!expected)
-                {
-                    entityState.state = newState.state;
-                    entityState.attributes = newState.attributes;
-                    entityState.last_updated = home.GetTime();
-
-                    if (entityState.entity_id.StartsWith("light."))
-                        entityState.LogLightState();
-                }
-                else
-                {
-                    Log(LogLevel.Info, "Expected: {0}: {1}", newState.entity_id, newState.state);
-                }
-
-                return !expected;
-            }
+            return home.OnEventStateChanged(stateChanged);
         }
 
         public async Task InitNodes()

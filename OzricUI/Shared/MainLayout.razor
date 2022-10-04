@@ -1,18 +1,21 @@
 ﻿@using OzricUI.Data
 @using OzricEngine
 @using OzricEngine.Nodes
+@using OzricEngine.Values
 @using OzricService
 @using OzricUI.Components 
 @using OzricUI.Model
 @using Size = MudBlazor.Size
 @using Edge = MudBlazor.Edge
 @using Blazor.Diagrams.Core.Models.Base
-@using OzricEngine.Values
+@using Microsoft.AspNetCore.SignalR.Client
+@using OzricUI.Hubs
 @using ValueType = OzricEngine.Values.ValueType
 @inject IDialogService DialogService
 @inherits LayoutComponentBase
 @inject DataService Data
 @inject IEngineService EngineService
+@inject NavigationManager Navigation
 
 <MudDialogProvider/>
 <MudSnackbarProvider/>
@@ -108,7 +111,8 @@
     private GraphLayout GraphLayout { get; set; }
     private GraphEditState GraphEditState { get; set; } = new();
     private List<KeyValuePair<SelectableModel, IGraphObject>> SelectedItems { get; set; } = new();
-
+    private HubConnection? hubConnection;
+    
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
     private bool HasSelection => (SelectedItems.Count > 0);
     private bool CanGetInfo => SelectedItems.Count == 1 && SelectedItems[0].Key is GraphNodeModel;
@@ -137,6 +141,25 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadGraph();
+        
+        hubConnection = new HubConnectionBuilder()
+            .WithUrl(Navigation.ToAbsoluteUri(HomeHub.ENDPOINT))
+            .Build();
+
+        hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (s) =>
+        {
+            Console.WriteLine(s);
+        });
+
+        hubConnection.On<EventStateChanged>(HomeHub.STATE_CHANGED_MESSAGE, (esc) =>
+        {
+            EngineService.Home.OnEventStateChanged(esc);
+            if (!GraphEditState.IsLocked())
+                GraphEditState.RefreshEntity(esc.data.new_state.entity_id);
+            InvokeAsync(StateHasChanged);
+        });
+
+        await hubConnection.StartAsync();
     }
 
     private async Task LoadGraph()

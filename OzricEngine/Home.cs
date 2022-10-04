@@ -151,6 +151,45 @@ namespace OzricEngine.Nodes
 
             return true;
         }
+
+        public bool OnEventStateChanged(EventStateChanged stateChanged)
+        {
+            var newState = stateChanged.data.new_state;
+
+            var entityState = GetEntityState(newState.entity_id);
+            if (entityState == null)
+            {
+                //  TODO: New device?
+                
+                return false;
+            }
+
+            lock (entityState)
+            {
+                if (entityState.entity_id.StartsWith("light."))
+                {
+                    //  Check only the relevant details, ignoring timers etc.
+
+                    if (entityState.state == newState.state && entityState.attributes.EqualsKeys(newState.attributes, Light.ATTRIBUTE_KEYS))
+                    {
+                        return false;
+                    }
+                }
+
+                var expected = Engine.IGNORE_OWN_STATE_CHANGES && WasRecentlyUpdatedByOzric(entityState.entity_id, Home.SELF_EVENT_SECS);
+                if (!expected)
+                {
+                    entityState.state = newState.state;
+                    entityState.attributes = newState.attributes;
+                    entityState.last_updated = GetTime();
+
+                    if (entityState.entity_id.StartsWith("light."))
+                        entityState.LogLightState();
+                }
+
+                return !expected;
+            }
+        }
     }
 
     public record EntityUpdate(string entityID, DateTime when);

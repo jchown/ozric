@@ -27,6 +27,7 @@ public class GraphEditState
 
     public event Action<Command>? OnDoCommand;
     public event Action<GraphEditAction>? OnDoAction;
+    public event Action<string>? OnEntityRefresh;
     
     /// <summary>
     /// Events sent by GraphEditor
@@ -87,6 +88,11 @@ public class GraphEditState
     public void KeyDown(KeyboardEventArgs kea)
     {
         OnKeyDown?.Invoke(kea);
+    }
+    
+    public void RefreshEntity(string entityID)
+    {
+        OnEntityRefresh?.Invoke(entityID);
     }
     
     public bool IsLocked()

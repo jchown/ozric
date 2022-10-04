@@ -18,5 +18,6 @@ public enum NodeType
     MediaPlayer,
     ModeSensor,
     ModeMatch,
-    Person
+    Person,
+    Tween
 }

@@ -86,7 +86,7 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
         return pin.value as T ?? throw new Exception($"Output {name} was not a {typeof(T).Name}, was {pin.value?.GetType().Name}");
     }
 
-    internal void SetOutputValue(string name, Value value)
+    public void SetOutputValue(string name, Value value)
     {
         var output = GetOutput(name);
         if (output.value != value)

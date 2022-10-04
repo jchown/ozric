@@ -10,10 +10,12 @@
     @foreach (var port in Node.Ports.Select(p => p as IPort).Where(p => p != null))
     {
         <div class="@(port.CssClass) port-@(Node.GetPortPosition(port))" hidden="@(port.HiddenIfLocked && Node.Locked)">
-            <PortRenderer Port="@((PortModel)port)">
-                @if (Node.Locked)
-                {
-                    if (Node.HasPin((PortModel)port))
+            @if (Node.Locked)
+            {
+                // When locked, we show the live state
+                
+                <PortRenderer Port="@((PortModel)port)">
+                    @if (Node.HasPin((PortModel)port))
                     {
                         var pin = Node.GetPin((PortModel)port);
 
@@ -54,13 +56,17 @@
                                 throw new ArgumentOutOfRangeException();
                         }
                     }
-                }
-                else
-                {
-                    //  Show the type
+                </PortRenderer>
+            }
+            else
+            {
+                //  When editing, we just show the type
+                
+                <PortRenderer Port="@((PortModel)port)">
                     <img src="icons/@(port.valueType).png" width="16" height="16"/>
-                }
-            </PortRenderer>
+                </PortRenderer>
+            }
+
         </div>
     }
 </div>

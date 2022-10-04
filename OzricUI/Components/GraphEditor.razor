@@ -44,6 +44,7 @@
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnDoCommand += DoCommand;
         GraphEditState.OnDoAction += DoAction;
+        GraphEditState.OnEntityRefresh += DoEntityRefresh;
         
         var options = new DiagramOptions
         {
@@ -123,6 +124,7 @@
 
     public void Dispose()
     {
+        GraphEditState.OnEntityRefresh -= DoEntityRefresh;
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
     }
 
@@ -175,6 +177,16 @@
     {
         GetHistory().Do(editAction);
         OnHistoryChanged();
+    }
+    
+    private void DoEntityRefresh(string entityID)
+    {
+        var node = Graph.nodes.Values.FirstOrDefault(n => n is EntityNode en && en.entityID == entityID);
+        if (node == null)
+            return;
+
+        var dnode = nodeMappings.GetDiagram(node);
+        dnode.Refresh();
     }
 
     private void PopulateDiagram()
