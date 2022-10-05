@@ -3,9 +3,9 @@ using OzricEngine.Nodes;
 
 namespace OzricUI.Model;
 
-public class ColorConstantModel: ConstantModel
+public class ConstantColorModel: ConstantModel
 {
-    public ColorConstantModel(Constant constant, Point? point = null): base(constant, point)
+    public ConstantColorModel(Constant constant, Point? point = null): base(constant, point)
     {
     }
     

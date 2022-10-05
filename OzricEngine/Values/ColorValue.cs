@@ -6,9 +6,13 @@ using System.Text.Json.Serialization;
 namespace OzricEngine.Values
 {
     /// <summary>
-    /// Base class for all colors. All colors have a single <see cref="ValueType" />, 
-    /// and use <see cref="ColorMode"/> to distinguish them.
+    /// Base class for all colors. All color representations (e.g. <see cref="ColorRGB"/>, <see cref="ColorHS"/> etc.)
+    /// have a single <see cref="ValueType" /> of "Color" and use <see cref="ColorMode"/> to distinguish them.
+    /// Formally speaking we have several ways of defining the chrominance.
+    /// We separate this from the luminance, which we refer to as <see cref="brightness"/>.
+    /// A brightness of 0 for lights is considered as "off". 
     /// </summary>
+    /// <seealso cref="https://en.wikipedia.org/wiki/Chrominance"/>
 
     public abstract class ColorValue: Value
     {
@@ -98,7 +102,7 @@ namespace OzricEngine.Values
         }
         
         /// <summary>
-        /// Convert the primary color component (ignoring brightness) to the nearest equivalent HS
+        /// Convert the chrominance to the nearest equivalent HS
         /// </summary>
         /// <returns></returns>
 
@@ -137,6 +141,22 @@ namespace OzricEngine.Values
             }
 
             return new ColorHS(h / 6, s, brightness);
+        }
+
+        public ColorRGB ToRGB()
+        {
+            GetRGB(out var r, out var g, out var b);
+            return new ColorRGB(r, g, b, brightness);
+        }
+
+        public ColorTemp ToTemp()
+        {
+            throw new NotImplementedException();
+        }
+
+        public ColorXY ToXY()
+        {
+            throw new NotImplementedException();
         }
     }
 }

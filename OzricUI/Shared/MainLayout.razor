@@ -306,7 +306,7 @@
         choices.Add(new AddNodeChoice(
             category: Category.Constant,
             name: "Colour",
-            icon: ColorConstantModel.ICON,
+            icon: ConstantColorModel.ICON,
             create: () => new Constant(Graph.CreateNodeID("colour-"), ColorRGB.WHITE),
             once: false));
 
@@ -315,6 +315,20 @@
             name: "Mode Matches",
             icon: ModeMatchModel.ICON,
             create: () => new ModeMatch(Graph.CreateNodeID("match-")),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "Tween Color",
+            icon: TweenModel.ICON,
+            create: () => new Tween(Graph.CreateNodeID("tween-"), ValueType.Color),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "Tween Scalar",
+            icon: TweenModel.ICON,
+            create: () => new Tween(Graph.CreateNodeID("tween-"), ValueType.Scalar),
             once: false));
 
         var parameters = new DialogParameters
@@ -343,7 +357,7 @@
     {
         new(typeof(LightModel), typeof(LightDialog), "Light"),
         new(typeof(ModeMatchModel), typeof(ModeMatchDialog), "Mode Match"),
-        new(typeof(ColorConstantModel), typeof(ColorConstantDialog), "Color"),
+        new(typeof(ConstantColorModel), typeof(ColorConstantDialog), "Color"),
         new(typeof(EntityModel), typeof(EntityDialog), "Entity"),
         new(typeof(GraphNodeModel), typeof(NodeDialog), "Node"),
     };

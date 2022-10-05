@@ -26,8 +26,8 @@
                                 break;
                                 
                             case ValueType.Boolean:
-                                var pinValue = ((Boolean)pin.value);
-                                if (pinValue.value)
+                                var pinValue = ((Boolean?)pin.value);
+                                if (pinValue?.value ?? false)
                                 {
                                     <img src="icons/Binary-true.png" width="16" height="16"/>
                                 }
@@ -38,8 +38,8 @@
                                 break;
                                 
                             case ValueType.Color:
-                                var color = ((ColorValue)pin.value);
-                                if (color.brightness == 0)
+                                var color = ((ColorValue?)pin.value);
+                                if ((color?.brightness ?? 0) == 0)
                                 {
                                     <img src="icons/Color-off.png" width="16" height="16"/>
                                 }
@@ -50,7 +50,7 @@
                                 break;
                                 
                             case ValueType.Mode:
-                    <img src="icons/@(port.valueType).png" width="16" height="16"/>
+                                <img src="icons/@(port.valueType).png" width="16" height="16"/>
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();
