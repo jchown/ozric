@@ -25,9 +25,6 @@ namespace OzricEngine.Values
         /// </summary>
         public float brightness { get; set; }
 
-        [JsonIgnore]
-        public abstract float luminance { get; }
-
         protected ColorValue()
         {
         }
@@ -157,6 +154,25 @@ namespace OzricEngine.Values
         public ColorXY ToXY()
         {
             throw new NotImplementedException();
+        }
+        
+        /// <summary>
+        /// Clone this chrominance (including color mode) with the given brightness. 
+        /// </summary>
+        /// <param name="brightness"></param>
+        /// <returns></returns>
+
+        public abstract ColorValue WithBrightness(float brightness);
+                
+        // Just to handle the "both brightness 0" case.
+        // (derived classes should implement the rest)
+
+        protected bool AreBothOff(ColorValue? other)
+        {
+            if (other == null)
+                return false;
+
+            return brightness == 0 && other.brightness == 0;
         }
     }
 }

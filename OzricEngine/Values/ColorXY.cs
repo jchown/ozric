@@ -26,9 +26,6 @@ namespace OzricEngine.Values
             this.y = y;
         }
 
-        [JsonIgnore]
-        public override float luminance => (float)(0.3 * x + 0.59 * y + 0.11);
-
         public override void GetRGB(out float r, out float g, out float b)
         {
             //  See https://gist.github.com/popcorn245/30afa0f98eea1c2fd34d
@@ -59,7 +56,7 @@ namespace OzricEngine.Values
         
         public static bool operator !=(ColorXY? lhs, ColorXY? rhs) => !(lhs == rhs);
         
-        public override bool Equals(object? o) => Equals(o as ColorXY);
+        public override bool Equals(object? o) => AreBothOff(o as ColorValue) || Equals(o as ColorXY);
 
         public bool Equals(ColorXY? other)
         {
@@ -81,6 +78,11 @@ namespace OzricEngine.Values
             base.WriteAsJSON(writer);
             writer.WriteNumber("x", x);
             writer.WriteNumber("y", y);
+        }
+
+        public override ColorValue WithBrightness(float brightness)
+        {
+            return new ColorXY(x, y, brightness);
         }
 
         public new static ColorValue ReadFromJSON(ref Utf8JsonReader reader)

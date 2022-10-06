@@ -15,15 +15,12 @@ namespace OzricEngine.Values
         {
         }
 
-        public ColorTemp(int temp, float brightness): base(brightness)
+        public ColorTemp(float temp, float brightness): base(brightness)
         {
             this.temp = temp;
         }
 
         public float temp { get; }
-        
-        [JsonIgnore]
-        public override float luminance => brightness;
 
         public static bool operator ==(ColorTemp? lhs, ColorTemp? rhs)
         {
@@ -35,11 +32,11 @@ namespace OzricEngine.Values
         
         public static bool operator !=(ColorTemp? lhs, ColorTemp? rhs) => !(lhs == rhs);
         
-        public override bool Equals(object? o) => Equals(o as ColorTemp);
+        public override bool Equals(object? o) => AreBothOff(o as ColorValue) || Equals(o as ColorTemp);
 
         public bool Equals(ColorTemp? other)
         {
-            return (other != null) && temp == other.temp;
+            return (other != null) && (temp == other.temp && brightness == other.brightness);
         }
         
         public override int GetHashCode()
@@ -102,7 +99,12 @@ namespace OzricEngine.Values
             base.WriteAsJSON(writer);    
             writer.WriteNumber("temp", temp);
         }
-        
+
+        public override ColorValue WithBrightness(float brightness)
+        {
+            return new ColorTemp(temp, brightness);
+        }
+
         public new static ColorValue ReadFromJSON(ref Utf8JsonReader reader)
         {
             var brightness = ReadBrightnessFromJSON(ref reader);

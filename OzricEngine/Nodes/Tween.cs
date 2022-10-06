@@ -72,24 +72,33 @@ public class Tween: Node
         switch (valueType)
         {
             case ValueType.Scalar:
-                var inScalar = input as Scalar; 
-                var outScalar = output as Scalar;
+                var inScalar = (Scalar) input; 
+                var outScalar = (Scalar) output;
                 tweened = new Scalar(Lerp(outScalar.value, inScalar.value, lerpRate));
                 break;
             
             case ValueType.Color:
-                var inColor = input as ColorValue; 
-                var outColor = output as ColorValue; 
+                var inColor = (ColorValue) input; 
+                var outColor = (ColorValue) output; 
                 
-                //  Special case: If the input is "off" we should use the output's color mode
+                //  Special cases:
+
+                //  1. If the input is "off" we should use the output's color mode
                 //  so that we retain the correct color space for the chrominance. 
 
                 if (inColor.brightness == 0 && inColor.ColorMode != outColor.ColorMode)
                 {
-                    inColor = Json.Clone(outColor);
-                    inColor.brightness = 0;
+                    inColor = outColor.WithBrightness(0);
                 }
-                
+
+                //  2. If the output is "off" we should use the input's color mode
+                //  so that we retain the correct color space for the chrominance. 
+
+                if (outColor.brightness == 0 && inColor.ColorMode != outColor.ColorMode)
+                {
+                    outColor = inColor.WithBrightness(0);
+                }
+
                 var brightness = Lerp(outColor.brightness, inColor.brightness, lerpRate);
                 switch (inColor.ColorMode)
                 {

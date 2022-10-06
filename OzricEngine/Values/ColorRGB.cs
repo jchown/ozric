@@ -49,9 +49,6 @@ namespace OzricEngine.Values
         /// 0-1
         /// </summary>
         public float b { get; }
-        
-        [JsonIgnore]
-        public override float luminance => (float)(0.3 * r + 0.59 * g + 0.11 * b) * brightness;
 
         public override void GetRGB(out float r, out float g, out float b)
         {
@@ -70,11 +67,11 @@ namespace OzricEngine.Values
         
         public static bool operator !=(ColorRGB? lhs, ColorRGB? rhs) => !(lhs == rhs);
         
-        public override bool Equals(object? o) => Equals(o as ColorRGB);
+        public override bool Equals(object? o) => AreBothOff(o as ColorValue) || Equals(o as ColorRGB);
 
         public bool Equals(ColorRGB? other)
         {
-            return (other != null) && (ToRGB24() == other.ToRGB24() && brightness == other.brightness);
+            return (other != null) && (r == other.r && g == other.g && b == other.b && brightness == other.brightness);
         }
 
         public override int GetHashCode()
@@ -107,6 +104,11 @@ namespace OzricEngine.Values
         {
             base.WriteAsJSON(writer);
             writer.WriteString("rgb", $"{ToHex(r)}{ToHex(g)}{ToHex(b)}");
+        }
+
+        public override ColorValue WithBrightness(float brightness)
+        {
+            return new ColorRGB(r, g, b, brightness);
         }
 
         public new static ColorValue ReadFromJSON(ref Utf8JsonReader reader)

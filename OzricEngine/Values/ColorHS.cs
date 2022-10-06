@@ -33,9 +33,6 @@ namespace OzricEngine.Values
             this.s = s;
         }
 
-        [JsonIgnore]
-        public override float luminance => (float)(0.3 * h + 0.59 * s + 0.11);
-
         public override void GetRGB(out float r, out float g, out float b)
         {
             //  See https://stackoverflow.com/questions/3018313/algorithm-to-convert-rgb-to-hsv-and-hsv-to-rgb-in-range-0-255-for-both
@@ -95,7 +92,7 @@ namespace OzricEngine.Values
         
         public static bool operator !=(ColorHS? lhs, ColorHS? rhs) => !(lhs == rhs);
         
-        public override bool Equals(object? o) => Equals(o as ColorHS);
+        public override bool Equals(object? o) => AreBothOff(o as ColorValue) || Equals(o as ColorHS);
 
         public bool Equals(ColorHS? other)
         {
@@ -117,6 +114,11 @@ namespace OzricEngine.Values
             base.WriteAsJSON(writer);
             writer.WriteNumber("h", h);
             writer.WriteNumber("s", s);
+        }
+
+        public override ColorValue WithBrightness(float brightness)
+        {
+            return new ColorHS(h, s, brightness);
         }
 
         public new static ColorValue ReadFromJSON(ref Utf8JsonReader reader)
