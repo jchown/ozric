@@ -14,9 +14,11 @@ builder.Services.AddRazorPages();
 builder.Services.AddSignalR();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
-builder.Services.AddSingleton<DataService>();
-builder.Services.AddMudServices();
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
+builder.Services.AddSignalR().AddJsonProtocol(options => Json.Configure(options.PayloadSerializerOptions));
+builder.Services.AddSingleton<DataService>();
+builder.Services.AddSingleton<HomeHubController>();
+builder.Services.AddMudServices();
 builder.Services.AddResponseCompression(opts => opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" }));
 
 IEngineService engine = (Environment.GetEnvironmentVariable("OZRIC_MOCK") != null) ? new MockEngineService() : new EngineService();
@@ -37,6 +39,7 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapHub<HomeHub>(HomeHub.ENDPOINT);
+var hcc = app.Services.GetService<IHomeHubController>();
 app.MapFallbackToPage("/_Host");
 
 API.Map(app);

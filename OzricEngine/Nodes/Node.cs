@@ -6,7 +6,6 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using OzricEngine.ext;
 using OzricEngine.Values;
-using Boolean = OzricEngine.Values.Boolean;
 using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine.Nodes;
@@ -34,12 +33,23 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
 
     public void AddInput(string name, ValueType type)
     {
+        if (HasPin(name))
+            throw new Exception($"Cannot have more than one pin called {name}");
+        
         inputs.Add(new Pin(name, type));
     }
 
     public void AddOutput(string name, ValueType type)
     {
+        if (HasPin(name))
+            throw new Exception($"Cannot have more than one pin called {name}");
+        
         outputs.Add(new Pin(name, type));
+    }
+
+    private bool HasPin(string name)
+    {
+        return HasInput(name) || HasOutput(name);
     }
 
     public bool HasInput(string name)
@@ -54,8 +64,7 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
 
     public Pin GetOutput(string name)
     {
-        return outputs.FirstOrDefault(o => o.name == name)
-               ?? throw new Exception($"No output named {name} in {id}, possible values [{outputs.Select(o => o.name).Join(",")}]");
+        return outputs.FirstOrDefault(o => o.name == name) ?? throw new Exception($"No output named {name} in {id}, possible values [{outputs.Select(o => o.name).Join(",")}]");
     }
 
     public int GetInputIndex(string name)
@@ -70,8 +79,7 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
 
     protected Pin GetInput(string name)
     {
-        return inputs.FirstOrDefault(o => o.name == name)
-               ?? throw new Exception($"No input named {name} in {id}, possible values [{inputs.Select(i => i.name).Join(",")}]");
+        return inputs.FirstOrDefault(o => o.name == name) ?? throw new Exception($"No input named {name} in {id}, possible values [{inputs.Select(i => i.name).Join(",")}]");
     }
 
     protected T GetInputValue<T>(string name) where T : class
@@ -86,21 +94,43 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
         return pin.value as T ?? throw new Exception($"Output {name} was not a {typeof(T).Name}, was {pin.value?.GetType().Name}");
     }
 
-    public void SetOutputValue(string name, Value value)
+    public void SetOutputValue(string name, Value value, Context context)
     {
         var output = GetOutput(name);
         if (output.value != value)
+        {
             Log(LogLevel.Info, "{0} = {1}", name, value);
-            
+            context.pinChanged?.Invoke(id, output.name, value);
+        }
+
         output.SetValue(value);
     }
 
-    public void SetInputValue(string name, Value value)
+    public void SetInputValue(string name, Value value, Context context)
     {
         var input = GetInput(name);
+        if (input.value != value)
+        {
+            context.pinChanged?.Invoke(id, input.name, value);
+        }
+
         input.SetValue(value);
     }
+
+    /// <summary>
+    /// Set an input or an output directly, without triggering any change notification
+    /// </summary>
+    /// <param name="pinName"></param>
+    /// <param name="value"></param>
+    public void SetPinValue(string name, Value value)
+    {
+        var pin = inputs.FirstOrDefault(i => i.name == name) ?? 
+                  outputs.FirstOrDefault(o => o.name == name) ?? 
+                  throw new Exception($"Pin {name} not found");
         
+        pin.SetValue(value);
+    }
+    
     public PropertyInfo GetProperty(string name)
     {
         return GetType().GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new Exception($"Property {name} not found");

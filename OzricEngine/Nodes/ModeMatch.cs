@@ -61,12 +61,12 @@ public class ModeMatch: Node
         return Task.CompletedTask;
     }
 
-    private void UpdateValue(Context engine)
+    private void UpdateValue(Context context)
     {
         var mode = GetInputValue<Mode>(INPUT_NAME).value;
         var match = regex.Any(r => r.Match(mode).Success);
 
-        SetOutputValue(OUTPUT_NAME, new Boolean(match));
+        SetOutputValue(OUTPUT_NAME, new Boolean(match), context);
     }
 
     public static Regex[] ToRegex(IList<Pattern> patterns, bool compiled = false)

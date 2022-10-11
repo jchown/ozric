@@ -4,6 +4,7 @@
 @using Blazor.Diagrams.Components
 @using Blazor.Diagrams.Core.Models.Base
 @using OzricEngine
+@using OzricEngine.Values
 @using _Imports = OzricUI._Imports
 @using ValueType = OzricEngine.Values.ValueType
 @using Edge = OzricEngine.Nodes.Edge
@@ -45,6 +46,7 @@
         GraphEditState.OnDoCommand += DoCommand;
         GraphEditState.OnDoAction += DoAction;
         GraphEditState.OnEntityRefresh += DoEntityRefresh;
+        GraphEditState.OnPinChanged += DoPinChanged;
         
         var options = new DiagramOptions
         {
@@ -124,6 +126,7 @@
 
     public void Dispose()
     {
+        GraphEditState.OnPinChanged -= DoPinChanged;
         GraphEditState.OnEntityRefresh -= DoEntityRefresh;
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
     }
@@ -185,6 +188,18 @@
         if (node == null)
             return;
 
+        var dnode = nodeMappings.GetDiagram(node);
+        dnode.Refresh();
+    }
+
+    
+    private void DoPinChanged(string nodeID, string pinName, Value value)
+    {
+        var node = Graph.nodes[nodeID];
+        if (node == null)
+            return;
+
+        node.SetPinValue(pinName, value);
         var dnode = nodeMappings.GetDiagram(node);
         dnode.Refresh();
     }

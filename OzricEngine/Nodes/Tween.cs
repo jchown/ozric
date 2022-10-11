@@ -30,7 +30,7 @@ public class Tween: Node
     {
         var value = GetInput(INPUT_NAME).value;
         if (value != null)
-            SetOutputValue(OUTPUT_NAME, value);
+            SetOutputValue(OUTPUT_NAME, value, context);
         _lastTimeUpdated = context.home.GetTime(); 
         return Task.CompletedTask;
     }
@@ -46,7 +46,7 @@ public class Tween: Node
 
         if (output == null)
         {
-            SetOutputValue(OUTPUT_NAME, input);
+            SetOutputValue(OUTPUT_NAME, input, context);
             _lastTimeUpdated = now; 
             return Task.CompletedTask;
         }
@@ -150,7 +150,7 @@ public class Tween: Node
         Log(LogLevel.Info, $"Tween {output} -> {input}, {dt:F1}s, lerp {lerpRate * 100:F2}% = {tweened}");
 
         _lastTimeUpdated = now; 
-        SetOutputValue(OUTPUT_NAME, tweened);
+        SetOutputValue(OUTPUT_NAME, tweened, context);
         return Task.CompletedTask;
     }
 

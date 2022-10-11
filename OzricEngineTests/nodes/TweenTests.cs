@@ -17,31 +17,33 @@ namespace OzricEngine.Nodes
             node10.speed = 0.25f;
             
             DateTime now = DateTime.Now;
+            var context = MockContextAtTime(now);
             
             //  Init node01 = 1 -> 1
-            node01.SetInputValue(Tween.INPUT_NAME, new Scalar(1));            
-            node01.OnInit(MockContextAtTime(now));
+            node01.SetInputValue(Tween.INPUT_NAME, new Scalar(1), context);
+            node01.OnInit(context);
 
             //  Init node10 = 0 -> 0
-            node10.SetInputValue(Tween.INPUT_NAME, new Scalar(0));            
-            node10.OnInit(MockContextAtTime(now));
+            node10.SetInputValue(Tween.INPUT_NAME, new Scalar(0), context);            
+            node10.OnInit(context);
             
             //  Set node01 = 0 -> 1, node10 = 1 -> 0  
-            node01.SetInputValue(Tween.INPUT_NAME, new Scalar(0));
-            node10.SetInputValue(Tween.INPUT_NAME, new Scalar(1));            
+            node01.SetInputValue(Tween.INPUT_NAME, new Scalar(0), context);
+            node10.SetInputValue(Tween.INPUT_NAME, new Scalar(1), context);            
             
             //  Move forward two "updates" = 75% of 75% = 0.5625
             now = now.AddSeconds(Tween.UPDATE_INTERVAL_SECS * 2);
-            node01.OnUpdate(MockContextAtTime(now));
-            node10.OnUpdate(MockContextAtTime(now));
+            context = MockContextAtTime(now);
+            node01.OnUpdate(context);
+            node10.OnUpdate(context);
             
             Assert.Equal(1 - 0.5625f, node01.GetOutputValue<Scalar>(Tween.OUTPUT_NAME).value);
             Assert.Equal(0.5625f, node10.GetOutputValue<Scalar>(Tween.OUTPUT_NAME).value);
             
             //  Move forward 8 more "updates" = .75 ^ 10 = 0.05631351
             now = now.AddSeconds(Tween.UPDATE_INTERVAL_SECS * 8);
-            node01.OnUpdate(MockContextAtTime(now));
-            node10.OnUpdate(MockContextAtTime(now));
+            node01.OnUpdate(context);
+            node10.OnUpdate(context);
             
             Assert.Equal(1 - 0.05631351f, node01.GetOutputValue<Scalar>(Tween.OUTPUT_NAME).value);
             Assert.Equal(0.05631351f, node10.GetOutputValue<Scalar>(Tween.OUTPUT_NAME).value);

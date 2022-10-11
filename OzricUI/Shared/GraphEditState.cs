@@ -1,6 +1,7 @@
 using Blazor.Diagrams.Core.Models.Base;
 using Microsoft.AspNetCore.Components.Web;
 using OzricEngine.Nodes;
+using OzricEngine.Values;
 
 namespace OzricUI.Shared;
 
@@ -28,7 +29,8 @@ public class GraphEditState
     public event Action<Command>? OnDoCommand;
     public event Action<GraphEditAction>? OnDoAction;
     public event Action<string>? OnEntityRefresh;
-    
+    public event Action<string, string, Value>? OnPinChanged;
+
     /// <summary>
     /// Events sent by GraphEditor
     /// </summary>
@@ -93,6 +95,11 @@ public class GraphEditState
     public void RefreshEntity(string entityID)
     {
         OnEntityRefresh?.Invoke(entityID);
+    }
+
+    public void PinChanged(string nodeID, string pinName, Value value)
+    {
+        OnPinChanged?.Invoke(nodeID, pinName, value);
     }
     
     public bool IsLocked()

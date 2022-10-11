@@ -13,7 +13,7 @@ namespace OzricEngine
     /// </summary>
     public class JsonConverterValue: JsonConverter<Value>
     {
-        static readonly Dictionary<ValueType, Json.CreateObject<Value>> creators = new Dictionary<ValueType, Json.CreateObject<Value>>
+        static readonly Dictionary<ValueType, Json.CreateObject<Value>> creators = new()
         {
             { ValueType.Boolean, Boolean.ReadFromJSON },
             { ValueType.Mode, Mode.ReadFromJSON },
@@ -26,8 +26,12 @@ namespace OzricEngine
             if (reader.TokenType != JsonTokenType.StartObject || !reader.Read())
                 throw new Exception();
 
-            if (reader.TokenType != JsonTokenType.PropertyName || reader.GetString() != "value-type")
+            if (reader.TokenType != JsonTokenType.PropertyName)
                 throw new Exception();
+
+            var propertyName = reader.GetString();
+            if (propertyName != "value-type")
+                throw new Exception($"Expected value-type but was {propertyName}");
 
             return Json.DeserializeViaEnum(ref reader, creators);
         }

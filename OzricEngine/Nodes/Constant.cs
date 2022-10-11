@@ -21,13 +21,13 @@ public class Constant: Node
 
     public override Task OnInit(Context context)
     {
-        SetOutputValue(OUTPUT_NAME, value);
+        SetOutputValue(OUTPUT_NAME, value, context);
         return Task.CompletedTask;
     }
 
     public override Task OnUpdate(Context context)
     {
-        SetOutputValue(OUTPUT_NAME, value);
+        SetOutputValue(OUTPUT_NAME, value, context);
         return Task.CompletedTask;
     }
 }

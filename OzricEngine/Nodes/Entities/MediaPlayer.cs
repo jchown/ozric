@@ -36,6 +36,6 @@ public class MediaPlayer : EntityNode
         var value = new Boolean(device.state != "unavailable" && device.state != "off");
 
         Log(LogLevel.Debug, "on = {0}", value);
-        SetOutputValue(ON_NAME, value);
+        SetOutputValue(ON_NAME, value, context);
     }
 }

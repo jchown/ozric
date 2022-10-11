@@ -38,6 +38,6 @@ public class BinarySensor : EntityNode
             return;
         }
 
-        SetOutputValue(OUTPUT_NAME, new Boolean(device.state != "off"));
+        SetOutputValue(OUTPUT_NAME, new Boolean(device.state != "off"), context);
     }
 }

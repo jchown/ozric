@@ -18,6 +18,8 @@ public class Pin : IGraphObject
     public ValueType type { get; set; }
     public Value? value { get; set; }
 
+    public delegate void Changed(string nodeID, string pinName, Value value);
+
     public Pin(string name, ValueType type, Value? value = null)
     {
         this.name = name;

@@ -42,9 +42,9 @@ public class SkyBrightness: Node
         var sunLevel = GetSunLevel(context.home);
         var cloudLevel = GetCloudLevel(context.home);
 
-        SetOutputValue(sun, new Scalar(sunLevel));
-        SetOutputValue(clouds, new Scalar(cloudLevel));
-        SetOutputValue(brightness, new Scalar(sunLevel - (cloudLevel * 0.8f)));
+        SetOutputValue(sun, new Scalar(sunLevel), context);
+        SetOutputValue(clouds, new Scalar(cloudLevel), context);
+        SetOutputValue(brightness, new Scalar(sunLevel - (cloudLevel * 0.8f)), context);
     }
 
     private float GetSunLevel(Home home)

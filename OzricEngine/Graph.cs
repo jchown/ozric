@@ -180,18 +180,19 @@ namespace OzricEngine
 
             return ordered;
         }
-        
+
         /// <summary>
         /// Copy all output values to connected nodes' inputs
         /// </summary>
         /// <param name="node"></param>
-        public void CopyNodeOutputValues(Node node)
+        /// <param name="context"></param>
+        public void CopyNodeOutputValues(Node node, Context context)
         {
             foreach (var edge in edges.Values.Where(edge => edge.from.nodeID == node.id).ToList())
             {
                 var value = node.GetOutput(edge.from.outputName).value;
                 Log(LogLevel.Debug, "{0}.{1} = {2}", edge.to.nodeID, edge.to.inputName, value);
-                nodes[edge.to.nodeID].SetInputValue(edge.to.inputName, value);
+                nodes[edge.to.nodeID].SetInputValue(edge.to.inputName, value, context);
             }
         }
 

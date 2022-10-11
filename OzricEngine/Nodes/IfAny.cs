@@ -38,13 +38,13 @@ public class IfAny: VariableInputs
         return Task.CompletedTask;
     }
 
-    private void UpdateValue(Context engine)
+    private void UpdateValue(Context context)
     {
         var on = false;
         foreach (var onOff in GetInputValues<Boolean>())
             on |= onOff?.value ?? false;
 
         var value = new Boolean(on);
-        SetOutputValue(OUTPUT_NAME, value);
+        SetOutputValue(OUTPUT_NAME, value, context);
     }
 }

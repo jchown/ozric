@@ -166,7 +166,7 @@ public class DayPhases: Node
 
             Log(LogLevel.Debug, "phase can only be [{0}]", onlyPhase);
 
-            SetOutputValue("mode", onlyPhase.mode);
+            SetOutputValue(OUTPUT_NAME, onlyPhase.mode, context);
             return;
         }
 
@@ -205,7 +205,7 @@ public class DayPhases: Node
             
         Log(LogLevel.Debug, "phase is between {0} and {1}", currentPhase, nextPhase);
 
-        SetOutputValue("mode", currentPhase.mode);
+        SetOutputValue(OUTPUT_NAME, currentPhase.mode, context);
     }
 
     public void AddPhase(PhaseStart phaseStart)

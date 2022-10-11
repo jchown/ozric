@@ -5,6 +5,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using OzricEngine.engine;
 using OzricEngine.Nodes;
+using OzricEngine.Values;
 
 namespace OzricEngine
 {
@@ -19,7 +20,9 @@ namespace OzricEngine
         public readonly CommandBatcher commandBatcher;
 
         public delegate void StateChangedHandler(EventStateChanged o);
-        public event StateChangedHandler? stateChangeHandlers;
+        public event StateChangedHandler? entityStateChanged;
+        
+        public event Pin.Changed? pinChanged;
 
         private bool _paused;
         private bool _serial = true;
@@ -141,7 +144,7 @@ namespace OzricEngine
                         case EventStateChanged stateChanged:
                         {
                             external |= ProcessEventStateChanged(stateChanged);
-                            stateChangeHandlers?.Invoke(stateChanged);
+                            entityStateChanged?.Invoke(stateChanged);
                             break;
                         }
 
@@ -217,8 +220,6 @@ namespace OzricEngine
         {
             if (!stateChanged.data.new_state.IsRedacted())
                 Log(LogLevel.Info, "Event - {0}: {1}", stateChanged.data.new_state.entity_id, stateChanged.data.new_state.state);
-            
-            
 
             return home.OnEventStateChanged(stateChanged);
         }
@@ -245,7 +246,7 @@ namespace OzricEngine
         /// <param name="nodeProcessor"></param>
         private async Task ProcessNodesParallel(Func<Node, Context, Task> nodeProcessor)
         {
-            var context = new Context(home, commandBatcher);
+            var context = new Context(home, commandBatcher, pinChanged);
             var dependencies = graph.GetNodeDependencies();
             var readiness = new Dictionary<string, SemaphoreSlim>();
             var tasks = new List<Task>();
@@ -283,7 +284,7 @@ namespace OzricEngine
 
                         //  Copy outputs to relevant inputs
 
-                        graph.CopyNodeOutputValues(node);
+                        graph.CopyNodeOutputValues(node, context);
                     }
                     finally
                     {
@@ -308,7 +309,7 @@ namespace OzricEngine
         /// <param name="nodeProcessor"></param>
         public async Task ProcessNodesSerial(Func<Node, Context, Task> nodeProcessor)
         {
-            var context = new Context(home, commandBatcher);
+            var context = new Context(home, commandBatcher, pinChanged);
 
             foreach (var nodeID in graph.GetNodesInOrder())
             {
@@ -318,7 +319,7 @@ namespace OzricEngine
                 {
                     await nodeProcessor(node, context);
 
-                    graph.CopyNodeOutputValues(node);
+                    graph.CopyNodeOutputValues(node, context);
                 }
                 catch (Exception e)
                 {

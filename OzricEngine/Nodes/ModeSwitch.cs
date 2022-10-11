@@ -52,17 +52,17 @@ public class ModeSwitch: Node
 
     public override Task OnInit(Context context)
     {
-        UpdateValue();
+        UpdateValue(context);
         return Task.CompletedTask;
     }
 
     public override Task OnUpdate(Context context)
     {
-        UpdateValue();
+        UpdateValue(context);
         return Task.CompletedTask;
     }
 
-    private void UpdateValue()
+    private void UpdateValue(Context context)
     {
         var currentMode = GetInputValue<Mode>(INPUT_NAME);
 
@@ -71,7 +71,7 @@ public class ModeSwitch: Node
             if (modeValue.mode == currentMode)
             {
                 foreach (var value in modeValue.values)
-                    SetOutputValue(value.Key, value.Value);
+                    SetOutputValue(value.Key, value.Value, context);
                     
                 return;
             }

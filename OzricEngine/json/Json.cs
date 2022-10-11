@@ -106,7 +106,7 @@ namespace OzricEngine
                     }
                     else
                     {
-                        sb.Append(ch);
+                        sb.Append(Char.ToLower(ch));
                     }
                 }
 

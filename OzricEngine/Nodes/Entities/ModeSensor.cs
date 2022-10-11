@@ -37,6 +37,6 @@ public class ModeSensor : EntityNode
             return;
         }
 
-        SetOutputValue(OUTPUT_NAME, new Mode(device.state));
+        SetOutputValue(OUTPUT_NAME, new Mode(device.state), context);
     }
 }
