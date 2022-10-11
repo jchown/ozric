@@ -27,7 +27,7 @@ namespace OzricEngine.Values
             if (!reader.Read() || reader.GetString() != "value" || !reader.Read())
                 throw new Exception();
             
-            return new Mode(reader.GetString());
+            return new Mode(reader.GetString()!);
         }
         
         public bool Equals(Mode? other)
