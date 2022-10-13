@@ -28,9 +28,12 @@ public class HomeHubController: IHomeHubController
             await _hubContext.Clients.All.PinChanged(nodeID, pinName, value);
         });
 
+        _hubContext.Clients.All.Test(ColorRGB.RED);
+
         var heartbeat = new System.Timers.Timer();
         heartbeat.Interval = 3000;
-        heartbeat.Elapsed += (_, _) => Task.Run(() => _hubContext.Clients.All.Heartbeat("❤️"));
+        heartbeat.Elapsed += (_, _) => Task.Run(() => _hubContext.Clients.All.Test(new Scalar(666)));
+//        heartbeat.Elapsed += (_, _) => Task.Run(() => _hubContext.Clients.All.Heartbeat("❤️"));
         heartbeat.Enabled = true;
     }
 }

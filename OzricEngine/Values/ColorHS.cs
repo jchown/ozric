@@ -23,10 +23,6 @@ namespace OzricEngine.Values
         /// </summary>
         public float s { get; }
 
-        public ColorHS()
-        {
-        }
-
         public ColorHS(float h, float s, float brightness): base(brightness)
         {
             this.h = h;

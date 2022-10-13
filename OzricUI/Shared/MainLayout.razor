@@ -150,11 +150,16 @@
             .ConfigureLogging(logging =>
             {
                 logging.AddConsole();
-                logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Debug);
+                logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
             })
             .Build();
 
-        hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (s) =>
+        hubConnection.On<Value>(HomeHub.TEST_MESSAGE, (v) =>
+        {
+            Console.WriteLine("Value: {0}", v);
+        });
+        
+        hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (m) =>
         {
         });
 

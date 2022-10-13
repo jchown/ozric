@@ -17,24 +17,12 @@ namespace OzricEngine.Values
 
         public override ColorMode ColorMode => ColorMode.RGB;
 
-        public ColorRGB()
+        public class Serialized
         {
+            public string rgb { get; set; }
+            public float brightness { get; set; }
         }
 
-        public ColorRGB(int rgb, float brightness = 1f): base(brightness)
-        {
-            b = (rgb & 0xff) / 255f;
-            g = ((rgb >> 8) & 0xff) / 255f;
-            r = ((rgb >> 16) & 0xff) / 255f;
-        }
-
-        public ColorRGB(float r, float g, float b, float brightness): base(brightness)
-        {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-        }
-        
         /// <summary>
         /// 0-1
         /// </summary>
@@ -50,6 +38,20 @@ namespace OzricEngine.Values
         /// </summary>
         public float b { get; }
 
+        public ColorRGB(float r, float g, float b, float brightness): base(brightness)
+        {
+            this.r = r;
+            this.g = g;
+            this.b = b;
+        }
+
+        public ColorRGB(int rgb, float brightness = 1f): base(brightness)
+        {
+            b = (rgb & 0xff) / 255f;
+            g = ((rgb >> 8) & 0xff) / 255f;
+            r = ((rgb >> 16) & 0xff) / 255f;
+        }
+        
         public override void GetRGB(out float r, out float g, out float b)
         {
             r = this.r;
@@ -121,7 +123,7 @@ namespace OzricEngine.Values
             return FromHex(reader.GetString(), brightness);
         }
 
-        private static ColorRGB FromHex(string hexString, float brightness)
+        public static ColorRGB FromHex(string hexString, float brightness)
         {
             var r = FromHex(hexString, 0);
             var g = FromHex(hexString, 2);

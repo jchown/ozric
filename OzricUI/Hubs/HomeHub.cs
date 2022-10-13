@@ -8,6 +8,8 @@ namespace OzricUI.Hubs;
 public class HomeHub: Hub<IHomeEvents>
 {
     public const string ENDPOINT = "/home/hub";
+    
+    public const string TEST_MESSAGE = "Test";
     public const string HEARTBEAT_MESSAGE = "Heartbeat";
     public const string ENTITY_STATE_CHANGED_MESSAGE = "EntityStateChanged";
     public const string PIN_CHANGED_MESSAGE = "PinChanged";

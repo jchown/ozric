@@ -9,10 +9,6 @@ namespace OzricEngine.Values
 
         public float value { get; }
 
-        public Scalar()
-        {
-        }
-        
         public Scalar(float value)
         {
             this.value = value;

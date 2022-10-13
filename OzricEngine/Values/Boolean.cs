@@ -6,12 +6,8 @@ namespace OzricEngine.Values
     public sealed class Boolean: Value, IEquatable<Boolean>
     {
         public override ValueType ValueType => ValueType.Boolean;
-
+        
         public bool value { get; }
-
-        public Boolean()
-        {
-        }
 
         public Boolean(bool value)
         {

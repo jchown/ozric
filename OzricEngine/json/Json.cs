@@ -50,11 +50,11 @@ namespace OzricEngine
             if (!reader.Read() || reader.TokenType != JsonTokenType.String)
                 throw new JsonException();
             
-            string enumName = reader.GetString()!;
+            string enumName = reader.GetString();
             if (!Enum.TryParse(typeof(TEnum), enumName, out var enumType))
                 throw new JsonException($"Unknown {nameof(TEnum)} {enumName}");
 
-            TEnum type = (TEnum) enumType!;
+            TEnum type = (TEnum) enumType;
             var creator = creators.GetOrSet(type, () => throw new Exception($"No {nameof(TEnum)} creator for {enumName}"));
             TObject o = creator(ref reader);
             

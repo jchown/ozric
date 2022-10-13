@@ -11,10 +11,6 @@ namespace OzricEngine.Values
     {
         public override ColorMode ColorMode => ColorMode.Temp;
 
-        public ColorTemp()
-        {
-        }
-
         public ColorTemp(float temp, float brightness): base(brightness)
         {
             this.temp = temp;

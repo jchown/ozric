@@ -7,6 +7,9 @@ namespace OzricUI.Hubs;
 
 public interface IHomeEvents
 {
+    [HubMethodName(HomeHub.TEST_MESSAGE)]
+    public Task Test(Value value);
+
     [HubMethodName(HomeHub.HEARTBEAT_MESSAGE)]
     public Task Heartbeat(string message);
 

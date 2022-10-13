@@ -16,10 +16,6 @@ namespace OzricEngine.Values
         public float x { get; }
         public float y { get; }
 
-        public ColorXY()
-        {
-        }
-
         public ColorXY(float x, float y, float brightness): base(brightness)
         {
             this.x = x;

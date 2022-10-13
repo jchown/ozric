@@ -67,7 +67,7 @@ namespace OzricEngineTests
         private static Graph GetSimpleGraph()
         {
             var graph = new Graph();
-            var a = new Constant("a", new Boolean());
+            var a = new Constant("a", new Boolean(false));
             var b = new IfAny("b");
             var c = new IfAny("c");
 

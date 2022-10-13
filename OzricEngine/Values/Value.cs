@@ -9,6 +9,7 @@ namespace OzricEngine.Values
     /// </summary>
     public abstract class Value
     {
+        [JsonPropertyOrder(-999)]
         public abstract ValueType ValueType { get; }
 
         public abstract void WriteAsJSON(Utf8JsonWriter writer);

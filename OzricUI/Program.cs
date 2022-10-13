@@ -10,12 +10,11 @@ using OzricUI.Mock;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorPages();
-builder.Services.AddSignalR();
-builder.Services.AddServerSideBlazor();
-builder.Services.AddHttpClient();
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
 builder.Services.AddSignalR().AddJsonProtocol(options => Json.Configure(options.PayloadSerializerOptions));
+builder.Services.AddRazorPages();
+builder.Services.AddServerSideBlazor();
+builder.Services.AddHttpClient();
 builder.Services.AddSingleton<DataService>();
 builder.Services.AddSingleton<HomeHubController>();
 builder.Services.AddMudServices();
