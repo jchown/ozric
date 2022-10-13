@@ -13,6 +13,9 @@ namespace OzricEngine;
 /// </summary>
 public class JsonConverterValue: JsonConverter<Value>
 {
+    public override bool CanConvert(Type typeToConvert) =>
+        typeof(Value).IsAssignableFrom(typeToConvert);
+    
     private const string valueKey = "value-type";
     private const string colorKey = "color-type";
     
