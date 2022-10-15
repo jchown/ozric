@@ -5,7 +5,7 @@ using OzricService;
 
 namespace OzricUI.Mock;
 
-public class MockEngineService: IEngineService
+public class MockOzricService: IEngineService
 {
     public EngineStatus Status  => new EngineStatus
     {
@@ -21,14 +21,14 @@ public class MockEngineService: IEngineService
         
     private bool _paused;
 
-    public MockEngineService()
+    public MockOzricService()
     {
         Home = Json.Deserialize<Home>(File.ReadAllText("Mock/Home.json"));
     }
 
     public async Task Start(CancellationToken _)
     {
-        Graph = await EngineService.LoadGraph();
+        Graph = await OzricService.EngineService.LoadGraph();
     }
     
     public void SetPaused(bool statusPaused)
@@ -38,7 +38,11 @@ public class MockEngineService: IEngineService
 
     public async Task Restart(Graph graph)
     {
-        await EngineService.SaveGraph(graph);
+        await OzricService.EngineService.SaveGraph(graph);
         Graph = graph;
+    }
+
+    public void Subscribe(Pin.Changed pinChanged)
+    {
     }
 }

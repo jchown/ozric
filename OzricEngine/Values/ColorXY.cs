@@ -97,5 +97,14 @@ namespace OzricEngine.Values
 
             return new ColorXY(x, y, brightness);
         }
+
+        public static Value ReadFromJSON(JsonDocument document)
+        {
+            var json = document.RootElement;
+            var x = json.GetProperty("x").GetSingle();
+            var y = json.GetProperty("y").GetSingle();
+            var brightness = json.GetProperty("brightness").GetSingle();
+            return new ColorXY(x, y, brightness);
+        }
     }
 }

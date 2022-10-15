@@ -13,25 +13,22 @@ namespace OzricEngine;
 /// </summary>
 public class JsonConverterValue: JsonConverter<Value>
 {
-    public override bool CanConvert(Type typeToConvert) =>
-        typeof(Value).IsAssignableFrom(typeToConvert);
-    
     private const string valueKey = "value-type";
     private const string colorKey = "color-type";
-    
-    static readonly Dictionary<ValueType, Type> nonColorCreators = new()
-    {
-        { ValueType.Boolean, typeof(Boolean) },
-        { ValueType.Mode, typeof(Mode) },
-        { ValueType.Scalar, typeof(Scalar) }
-    };
 
-    static readonly Dictionary<ColorMode, Type> colorCreators = new()
+    public override bool CanConvert(Type typeToConvert) => typeof(Value).IsAssignableFrom(typeToConvert);
+
+    public delegate Value ValueCreator(JsonDocument document);
+
+    static readonly Dictionary<String, ValueCreator> creators = new()
     {
-        { ColorMode.XY, typeof(ColorXY) },
-        { ColorMode.HS, typeof(ColorHS) },
-        { ColorMode.Temp, typeof(ColorTemp) },
-        { ColorMode.RGB, typeof(ColorRGB.Serialized) }  //  Special case, see below
+        { nameof(ValueType.Boolean), Boolean.ReadFromJSON },
+        { nameof(ValueType.Mode), Mode.ReadFromJSON },
+        { nameof(ValueType.Scalar), Scalar.ReadFromJSON },
+        { nameof(ColorMode.XY), ColorXY.ReadFromJSON },
+        { nameof(ColorMode.HS), ColorHS.ReadFromJSON },
+        { nameof(ColorMode.Temp), ColorTemp.ReadFromJSON },
+        { nameof(ColorMode.RGB), ColorRGB.ReadFromJSON }
     };
 
     public override Value Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
@@ -45,50 +42,22 @@ public class JsonConverterValue: JsonConverter<Value>
                 throw new JsonException($"Missing {valueKey} in {jsonDocument}");
 
             var valueTypeName = typeProperty.GetString()!;
-            if (!Enum.TryParse(typeof(ValueType), valueTypeName, out var vt))
+            if (!Enum.TryParse(typeof(ValueType), valueTypeName, out _))
                 throw new JsonException($"Unknown {nameof(ValueType)} {valueTypeName}");
 
-            var valueType = (ValueType) vt!;
-            switch (valueType)
+            if (valueTypeName == "Color")
             {
-                case ValueType.Color:
-                {
-                    //  Need to do an extra look-up based on the color mode to determine final type
-                    
-                    if (!jsonDocument.RootElement.TryGetProperty(colorKey, out var modeProperty))
-                        throw new JsonException($"Missing {colorKey} in {jsonDocument}");
+                //  Need to do an extra look-up based on the color mode to determine final type
 
-                    var colorModeName = modeProperty.GetString()!;
-                    if (!Enum.TryParse(typeof(ColorMode), colorModeName, out var cm))
-                        throw new JsonException($"Unknown {nameof(ColorMode)} {colorModeName}");
+                if (!jsonDocument.RootElement.TryGetProperty(colorKey, out var modeProperty))
+                    throw new JsonException($"Missing {colorKey} in {jsonDocument}");
 
-                    var colorMode = (ColorMode) cm!;
-                    var type = colorCreators[colorMode];
-                    var jsonObject = jsonDocument.RootElement.GetRawText();
-
-                    switch (colorMode)
-                    {
-                        case ColorMode.RGB:
-                        {
-                            //  I was a smart arse and encoded the channels as hex, sorry...
-
-                            var intermediate = (ColorRGB.Serialized) JsonSerializer.Deserialize(jsonObject, type, options)!;
-                            return ColorRGB.FromHex(intermediate.rgb, intermediate.brightness);
-                        }
-                        default:
-                        {
-                            return (Value) JsonSerializer.Deserialize(jsonObject, type, options)!;
-                        }
-                    }
-                }
-                
-                default:
-                {
-                    var type = nonColorCreators[valueType];
-                    var jsonObject = jsonDocument.RootElement.GetRawText();
-                    return (Value) JsonSerializer.Deserialize(jsonObject, type, options)!;
-                }
+                valueTypeName = modeProperty.GetString()!;
+                if (!Enum.TryParse(typeof(ColorMode), valueTypeName, out _))
+                    throw new JsonException($"Unknown {nameof(ColorMode)} {valueTypeName}");
             }
+
+            return creators[valueTypeName].Invoke(jsonDocument);
         }
     }
 

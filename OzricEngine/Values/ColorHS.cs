@@ -133,5 +133,14 @@ namespace OzricEngine.Values
 
             return new ColorHS(h, s, brightness);
         }
+
+        public static Value ReadFromJSON(JsonDocument document)
+        {
+            var json = document.RootElement;
+            var h = json.GetProperty("h").GetSingle();
+            var s = json.GetProperty("s").GetSingle();
+            var brightness = json.GetProperty("brightness").GetSingle();
+            return new ColorHS(h, s, brightness);
+        }
     }
 }

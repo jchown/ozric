@@ -27,6 +27,12 @@ namespace OzricEngine.Values
             return new Boolean(reader.GetBoolean());
         }
 
+        public static Value ReadFromJSON(JsonDocument document)
+        {
+            var value = document.RootElement.GetProperty("value");
+            return new Boolean(value.GetBoolean());
+        }
+
         public override string ToString()
         {
             return value ? "True" : "False";

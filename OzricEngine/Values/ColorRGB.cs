@@ -123,6 +123,14 @@ namespace OzricEngine.Values
             return FromHex(reader.GetString(), brightness);
         }
 
+        public static Value ReadFromJSON(JsonDocument document)
+        {
+            var json = document.RootElement;
+            var rgb = json.GetProperty("rgb").GetString();
+            var brightness = json.GetProperty("brightness").GetSingle();
+            return FromHex(rgb, brightness);
+        }
+
         public static ColorRGB FromHex(string hexString, float brightness)
         {
             var r = FromHex(hexString, 0);

@@ -18,6 +18,16 @@
       "launchUrl": "graph",
       "dotnetRunMessages": true
     },
+    "OzricUI - Mock": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "OZRIC_MOCK": "true"
+      },
+      "applicationUrl": "http://localhost:8099",
+      "launchUrl": "graph",
+      "dotnetRunMessages": true
+    },
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,

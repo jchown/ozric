@@ -20,9 +20,10 @@ builder.Services.AddSingleton<HomeHubController>();
 builder.Services.AddMudServices();
 builder.Services.AddResponseCompression(opts => opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" }));
 
-IEngineService engine = (Environment.GetEnvironmentVariable("OZRIC_MOCK") != null) ? new MockEngineService() : new EngineService();
-await engine.Start(CancellationToken.None);
-builder.Services.AddSingleton(_ => engine);
+IEngineService ozricEngine = (Environment.GetEnvironmentVariable("OZRIC_MOCK") != null) ? new MockOzricService() : new OzricService.EngineService();
+await ozricEngine.Start(CancellationToken.None);
+builder.Services.AddSingleton<IEngineService>(_ => ozricEngine);
+builder.Services.AddSingleton<IOzricService>(_ => ozricEngine);
 
 var app = builder.Build();
 app.UseResponseCompression();

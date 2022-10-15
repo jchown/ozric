@@ -25,10 +25,6 @@ namespace OzricEngine.Values
         /// </summary>
         public float brightness { get; set; }
 
-        protected ColorValue()
-        {
-        }
-
         protected ColorValue(float brightness)
         {
             this.brightness = brightness;
@@ -87,12 +83,16 @@ namespace OzricEngine.Values
             {
                 case ColorMode.HS:
                     return "Hue & Saturation";
+                
                 case ColorMode.Temp:
                     return "White Temperature";
+                
                 case ColorMode.RGB:
                     return "Red Green Blue";
+                
                 case ColorMode.XY:
                     return "X/Y";
+                
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -163,10 +163,13 @@ namespace OzricEngine.Values
         /// <returns></returns>
 
         public abstract ColorValue WithBrightness(float brightness);
-                
-        // Just to handle the "both brightness 0" case.
-        // (derived classes should implement the rest)
-
+          
+        /// <summary>
+        /// Helper to handle the "both brightness 0" case in derived Equals implementations
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        
         protected bool AreBothOff(ColorValue? other)
         {
             if (other == null)

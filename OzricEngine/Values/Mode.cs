@@ -30,6 +30,12 @@ namespace OzricEngine.Values
             return new Mode(reader.GetString()!);
         }
         
+        public static Value ReadFromJSON(JsonDocument document)
+        {
+            var value = document.RootElement.GetProperty("value");
+            return new Mode(value.GetString()!);
+        }
+        
         public bool Equals(Mode? other)
         {
             return (other != null) && (value == other.value);

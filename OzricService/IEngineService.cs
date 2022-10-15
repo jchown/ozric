@@ -1,22 +1,12 @@
 using OzricEngine;
-using OzricEngine.engine;
 using OzricEngine.Nodes;
 
 namespace OzricService;
 
-public interface IEngineService
+/// <summary>
+/// Server-side only extensions to IOzricService 
+/// </summary>
+public interface IEngineService: IOzricService
 {
-    EngineStatus Status { get; }
-    
-    Graph Graph { get; }
-    
-    Home Home { get; }
-    
-    ICommandSender CommandSender { get; }
-
-    Task Start(CancellationToken token);
-    
-    void SetPaused(bool statusPaused);
-    
-    Task Restart(Graph graph);
+    public void Subscribe(Pin.Changed? pinChanged);
 }

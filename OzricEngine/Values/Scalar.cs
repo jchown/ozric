@@ -26,7 +26,13 @@ namespace OzricEngine.Values
             
             return new Scalar(reader.GetSingle());
         }
-
+        
+        public static Value ReadFromJSON(JsonDocument document)
+        {
+            var value = document.RootElement.GetProperty("value");
+            return new Scalar(value.GetSingle());
+        }
+        
         public static bool operator ==(Scalar? lhs, Scalar? rhs)
         {
             if (lhs is null)

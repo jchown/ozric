@@ -97,7 +97,7 @@
     public Constant Node { get; set; }
 
     [Parameter]
-    public IEngineService Engine { get; set; }
+    public IOzricService Ozric { get; set; }
 
     private string _id;
     private MudColor _pickerColor { get; set; }
@@ -141,7 +141,7 @@
         _id = Node.id;
         SetColorSliders(colorValue);
         _brightness = (int)(colorValue.brightness * BRIGHTNESS_SCALE);
-        _lights = Engine.Graph.GetAll<Light>();
+        _lights = Ozric.Graph.GetAll<Light>();
         
         _timer = new Timer(300);
         _timer.Elapsed += TimerCallback;
@@ -334,13 +334,13 @@
         if (_previewLight == null)
             return;
 
-        var command = _previewLight.GetCommand(GetColorSliders(), Engine.Home);
+        var command = _previewLight.GetCommand(GetColorSliders(), Ozric.Home);
         if (command == null)
             return;
 
         Task.Run(async () =>
         {
-            var result = await Engine.CommandSender.Send(command);
+            var result = await Ozric.CommandSender.Send(command);
             if (!result.success)
             {
                 Console.WriteLine("Service call failed ({0}) - {1}", result.error.code, result.error.message);

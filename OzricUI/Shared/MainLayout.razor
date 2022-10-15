@@ -15,7 +15,7 @@
 @inherits LayoutComponentBase
 @inject DataService Data
 @inject HomeHubController HomeHubController
-@inject IEngineService EngineService
+@inject IOzricService OzricService
 @inject NavigationManager Navigation
 
 <MudDialogProvider/>
@@ -31,8 +31,8 @@
         &nbsp;
         &nbsp;
         
-        <MudIconButton Icon="@Icons.Material.Filled.PauseCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickPause" Disabled="@(IsEditing || EngineService.Status.paused)" />
-        <MudIconButton Icon="@Icons.Material.Filled.PlayCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickContinue" Disabled="@(IsEditing || !EngineService.Status.paused)" />
+        <MudIconButton Icon="@Icons.Material.Filled.PauseCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickPause" Disabled="@(IsEditing || OzricService.Status.paused)" />
+        <MudIconButton Icon="@Icons.Material.Filled.PlayCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickContinue" Disabled="@(IsEditing || !OzricService.Status.paused)" />
  
         <MudSpacer />
 
@@ -165,7 +165,7 @@
 
         hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, (esc) =>
         {
-            EngineService.Home.OnEventStateChanged(esc);
+            OzricService.Home.OnEventStateChanged(esc);
             if (GraphEditState.IsLocked())
                 GraphEditState.RefreshEntity(esc.data.new_state.entity_id);
             InvokeAsync(StateHasChanged);
@@ -182,7 +182,7 @@
 
     private async Task LoadGraph()
     {
-        Graph = Json.Clone(EngineService.Graph);    // Don't edit the live graph!
+        Graph = Json.Clone(OzricService.Graph);    // Don't edit the live graph!
         GraphLayout = await Data.GetGraphLayoutAsync();
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnSelectionChanged += GraphSelectionChanged;
@@ -199,11 +199,11 @@
 
     private void OnGraphEditStateChanged()
     {
-        if (GraphEditState.IsEditing && !EngineService.Status.paused)
-            EngineService.SetPaused(true);
+        if (GraphEditState.IsEditing && !OzricService.Status.paused)
+            OzricService.SetPaused(true);
             
-        if (!GraphEditState.IsEditing && EngineService.Status.paused)
-            EngineService.SetPaused(false);
+        if (!GraphEditState.IsEditing && OzricService.Status.paused)
+            OzricService.SetPaused(false);
 
         StateHasChanged();
     }
@@ -243,7 +243,7 @@
             try
             {
                 await Task.Delay(100);
-                await EngineService.Restart(Graph);
+                await OzricService.Restart(Graph);
                 await Data.SetGraphLayoutAsync(GraphLayout);
                 await InvokeAsync(() => GraphEditState.DoCommand(GraphEditState.Command.SetCheckpoint));
             }
@@ -270,17 +270,17 @@
 
     private async Task OnClickPause()
     {
-        EngineService.SetPaused(true);
+        OzricService.SetPaused(true);
     }
 
     private async Task OnClickContinue()
     {
-        EngineService.SetPaused(false);
+        OzricService.SetPaused(false);
     }
 
     private async Task OnClickAdd()
     {
-        var choices = EngineService.Home.states
+        var choices = OzricService.Home.states
             .Where(device => !Graph.HasDevicesNode(device.Key) && CategoryModelMappings.Exists(device.Value.GetCategory()))
             .Select(device =>
             {
@@ -400,7 +400,7 @@
         {
             { "Model", model },
             { "Node", node },
-            { "Engine", EngineService }
+            { "Engine", OzricService }
         };
 
         var options = GetDialogOptions();

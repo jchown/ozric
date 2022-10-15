@@ -4,7 +4,7 @@
 @using OzricEngine.ext
 @using OzricEngine.Values
 @using Humanizer
-@inject IEngineService EngineService
+@inject IOzricService OzricService
 
 <MudDialog>
     <DialogContent>
@@ -52,7 +52,7 @@
     public Light Node { get; set; }
 
     [Parameter]
-    public IEngineService Engine { get; set; }
+    public IOzricService Ozric { get; set; }
     
     private string ID;
     private string EntityID;
@@ -71,7 +71,7 @@
         ID = Node.id;
         EntityID = Node.entityID;
         ColourSwitchMode = Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic;
-        _colorModes = Node.GetSupportedColorModes(EngineService.Home).Select(ColorValue.DescribeColorMode).Join(", ");
+        _colorModes = Node.GetSupportedColorModes(OzricService.Home).Select(ColorValue.DescribeColorMode).Join(", ");
     }
 
     private List<GraphEditAction> GetChanges()

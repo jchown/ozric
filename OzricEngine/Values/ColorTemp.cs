@@ -110,5 +110,13 @@ namespace OzricEngine.Values
 
             return new ColorTemp(reader.GetInt32(), brightness);
         }
+
+        public static Value ReadFromJSON(JsonDocument document)
+        {
+            var json = document.RootElement;
+            var temp = json.GetProperty("temp").GetSingle();
+            var brightness = json.GetProperty("brightness").GetSingle();
+            return new ColorTemp(temp, brightness);
+        }
     }
 }
