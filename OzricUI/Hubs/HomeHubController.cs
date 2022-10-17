@@ -1,8 +1,8 @@
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SignalR;
-using OzricEngine.Nodes;
+using OzricEngine;
 using OzricEngine.Values;
 using OzricService;
+using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace OzricUI.Hubs;
 
@@ -24,12 +24,9 @@ public class HomeHubController: IHomeHubController
         
         engineService.Subscribe(OnPinChanged);
 
-        _hubContext.Clients.All.Test(ColorRGB.RED);
-
         var heartbeat = new System.Timers.Timer();
         heartbeat.Interval = 3000;
-        heartbeat.Elapsed += (_, _) => Task.Run(() => _hubContext.Clients.All.Test(ColorRGB.RED));
-//        heartbeat.Elapsed += (_, _) => Task.Run(() => _hubContext.Clients.All.Heartbeat("❤️"));
+        heartbeat.Elapsed += (_, _) => Task.Run(() => _hubContext.Clients.All.Heartbeat("❤️"));
         heartbeat.Enabled = true;
     }
 
@@ -37,7 +34,7 @@ public class HomeHubController: IHomeHubController
     {
         Task.Run(async () =>
         {
-            await _hubContext.Clients.All.PinChanged(nodeID, pinName, value);
+            await _hubContext.Clients.All.PinChanged(nodeID, pinName, Json.Serialize(value));
         });
     }
 }

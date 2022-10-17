@@ -44,7 +44,7 @@ class UpdateReason
         if (!update && condition)
         {
             update = true;
-            reason = conditionString;
+            reason = conditionString ?? "?";
         }
 
         return update;

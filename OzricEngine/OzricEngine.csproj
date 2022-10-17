@@ -11,6 +11,7 @@
     <ItemGroup>
       <PackageReference Include="Humanizer.Core" Version="2.13.14" />
       <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />
+      <PackageReference Include="System.Memory" Version="4.5.5" />
       <PackageReference Include="System.Threading.Tasks.Dataflow" Version="6.0.2-mauipre.1.22054.8" />
       <PackageReference Include="WatsonWebsocket" Version="3.0.1" />
     </ItemGroup>

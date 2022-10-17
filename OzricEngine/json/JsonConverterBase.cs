@@ -13,8 +13,7 @@ namespace OzricEngine
     /// <typeparam name="T"></typeparam>
     public class JsonConverterBase<T>: JsonConverter<T>, ITypes
     {
-        public override bool CanConvert(Type typeToConvert) =>
-            typeof(T).IsAssignableFrom(typeToConvert);
+//        public override bool CanConvert(Type typeToConvert) => typeof(T).IsAssignableFrom(typeToConvert);
 
         private readonly IDictionary<string, Type> ResultTypes = new Dictionary<string, Type>();
         private readonly string key;

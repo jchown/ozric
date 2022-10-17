@@ -1,3 +1,6 @@
+using System.Buffers;
+using System.Text;
+using System.Text.Json;
 using OzricEngine;
 using OzricEngine.engine;
 using OzricEngine.Nodes;
@@ -48,16 +51,52 @@ public class EngineService: IEngineService, ICommandSender
         try
         {
             var json = await File.ReadAllTextAsync(GRAPH_FILENAME);
-            graph = Json.Deserialize<Graph>(json);
+            try
+            {
+                graph = Json.Deserialize<Graph>(json);
 
-            Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count} edges");
+                Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count} edges");
+
+                return graph;
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Failed to load graph: {e.Message}");
+
+                ExamineGraph(json);
+            }
         }
         catch (Exception e)
         {
             Console.WriteLine($"Failed to load graph: {e.Message}");
         }
 
+        Console.WriteLine($"Starting with empty graph");
         return graph;
+    }
+
+    private static void ExamineGraph(string json)
+    {
+        Console.WriteLine("Checking nodes");
+        var bytes = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(json));
+        var options = new JsonReaderOptions();
+        var reader = new Utf8JsonReader(bytes, options);
+        using (var jsonDocument = JsonDocument.ParseValue(ref reader))
+        {
+            var nodes = jsonDocument.RootElement.GetProperty("nodes");
+            foreach (var node in nodes.EnumerateObject())
+            {
+                try
+                {
+                    var nodeJson = node.Value.ToString();
+                    Json.Deserialize<Node>(nodeJson);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Failed to load node {node.Name}: {e.Message}\nValue was {node.Value}");
+                }
+            }
+        }
     }
 
 

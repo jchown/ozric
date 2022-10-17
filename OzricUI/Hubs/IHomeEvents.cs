@@ -17,5 +17,5 @@ public interface IHomeEvents
     public Task EntityStateChanged(EventStateChanged esc);
     
     [HubMethodName(HomeHub.PIN_CHANGED_MESSAGE)]
-    public Task PinChanged(string nodeID, string pinName, Value value);
+    public Task PinChanged(string nodeID, string pinName, string valueJson);
 }

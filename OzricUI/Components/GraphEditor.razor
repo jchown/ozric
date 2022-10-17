@@ -151,7 +151,7 @@
             foreach (var port in node.Ports)
                 port.Locked = locked;
 
-            node.Refresh();
+            node.RefreshAll();
         }
 
         foreach (var link in diagram.Links)
@@ -191,17 +191,17 @@
         var dnode = nodeMappings.GetDiagram(node);
         dnode.Refresh();
     }
-
     
     private void DoPinChanged(string nodeID, string pinName, Value value)
     {
-        var node = Graph.nodes[nodeID];
+        var node = Graph.nodes.Get(nodeID);
         if (node == null)
             return;
 
         node.SetPinValue(pinName, value);
         var dnode = nodeMappings.GetDiagram(node);
-        dnode.Refresh();
+        var pinID = $"{node.id}.{pinName}";
+        dnode.GetPort(pinID).RefreshAll();
     }
 
     private void PopulateDiagram()

@@ -13,7 +13,7 @@ namespace OzricEngine.ext
         /// <typeparam name="K"></typeparam>
         /// <typeparam name="V"></typeparam>
         /// <returns></returns>
-        public static V Get<K,V>(this IDictionary<K,V> dictionary, K key) where V: class
+        public static V? Get<K,V>(this IDictionary<K,V> dictionary, K key) where V: class
         {
             if (!dictionary.ContainsKey(key))
                 return null;

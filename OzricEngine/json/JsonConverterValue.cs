@@ -16,11 +16,11 @@ public class JsonConverterValue: JsonConverter<Value>
     private const string valueKey = "value-type";
     private const string colorKey = "color-type";
 
-    public override bool CanConvert(Type typeToConvert) => typeof(Value).IsAssignableFrom(typeToConvert);
+//    public override bool CanConvert(Type typeToConvert) => typeof(Value).IsAssignableFrom(typeToConvert);
 
     public delegate Value ValueCreator(JsonDocument document);
 
-    static readonly Dictionary<String, ValueCreator> creators = new()
+    static readonly Dictionary<string, ValueCreator> creators = new()
     {
         { nameof(ValueType.Boolean), Boolean.ReadFromJSON },
         { nameof(ValueType.Mode), Mode.ReadFromJSON },

@@ -9,7 +9,7 @@ public class Values: Dictionary<string, Value>
     {
     }
 
-    public Values((string, Value)[] attributes)
+    public Values(IEnumerable<(string, Value)> attributes)
     {
         foreach (var kv in attributes)
             Add(kv.Item1, kv.Item2);
