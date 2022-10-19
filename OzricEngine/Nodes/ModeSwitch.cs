@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using OzricEngine.Values;
 using ValueType = OzricEngine.Values.ValueType;
@@ -24,10 +25,10 @@ public class ModeSwitch: Node
             this.values = values;
         }
 
-        public Mode mode { get; }
-        public Values values { get; }
+        public Mode mode { get; set; }
+        public Values values { get; set; }
     }
-        
+    
     public List<ModeValues> modeValues { get; set; }
         
     public ModeSwitch(string id): base(id, new List<Pin> { new(INPUT_NAME, ValueType.Mode) }, null)
@@ -79,4 +80,10 @@ public class ModeSwitch: Node
 
         throw new Exception($"Unknown mode {currentMode}");
     }
+
+    public IEnumerable<string> GetKeys()
+    {
+        return outputs.Select(o => o.name);
+    }
+
 }

@@ -6,6 +6,7 @@
     <MudChipSet Filter="true" SelectedChipsChanged="OnSelectionChanged" Mandatory="true" >
             
         <MudChip Text="All" Default="true"></MudChip>
+        <MudChip Text="Environment" Value="Category.Environment" />
         <MudChip Text="Sensors" Value="Category.Sensor" />
         <MudChip Text="Modes" Value="Category.ModeSensor" />
         <MudChip Text="Lights" Value="Category.Light"  />
@@ -84,11 +85,11 @@
     {
         if (selection[0].Value is MudChip)            //  "All" doesn't have a Category enum value 
         {
-            SelectedCategories = new() { Category.Light, Category.Logic, Category.Sensor, Category.ModeSensor, Category.Switch, Category.Constant, Category.MediaPlayer };
+            SelectedCategories = new(Enum.GetValues<Category>());
         }
         else
         {
-            SelectedCategories = new() { (Category) selection[0].Value };
+            SelectedCategories = new(){ (Category) selection[0].Value };
         }
         
         StateHasChanged();

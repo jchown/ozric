@@ -13,5 +13,6 @@ public enum Category
     Constant,
     MediaPlayer,
     ModeSensor,
-    Person
+    Person,
+    Environment
 }

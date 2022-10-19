@@ -39,7 +39,7 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapHub<HomeHub>(HomeHub.ENDPOINT);
-var hcc = app.Services.GetService<IHomeHubController>();
+app.Services.GetService<IHomeHubController>();
 app.MapFallbackToPage("/_Host");
 
 API.Map(app);

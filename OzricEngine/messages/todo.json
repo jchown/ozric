@@ -1,0 +1,1 @@
+{"id":2,"type":"event","event":{"event_type":"area_registry_updated","data":{"action":"create","area_id":"dining"},"origin":"LOCAL","time_fired":"2022-10-19T19:58:36.317029+00:00","context":{"id":"01GFRX72RXYH62STCXSAVJ0950","parent_id":null,"user_id":null}}}

@@ -85,6 +85,9 @@ public class Light: EntityNode
 
     private void UpdateValue(Context context)
     {
+        if (!HasInputValue(INPUT_NAME))
+            return;
+        
         var desired = GetInputValue<ColorValue>(INPUT_NAME);
         var command = GetCommand(desired, context.home);
         if (command == null)

@@ -1,13 +1,21 @@
 using Blazor.Diagrams.Core.Geometry;
 using OzricEngine.Nodes;
+using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricUI.Model;
 
-public class BooleanChoiceModel: GraphNodeModel
+public class BinaryChoiceModel: GraphNodeModel
 {
-    public BooleanChoiceModel(BinaryChoice s, Point? point = null): base(s, point)
+    public BinaryChoiceModel(BinaryChoice choice, Point? point = null): base(choice, point)
     {
     }
     
-    public override string Icon => "mdi:switch";
+    public override string Icon => ICON;
+
+    public const string ICON = "mdi:call-split";
+
+    public static BinaryChoice Color(string nodeID)
+    {
+        return new BinaryChoice(nodeID, ValueType.Color);
+    }
 }

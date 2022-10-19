@@ -27,6 +27,11 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
         this.outputs = outputs ?? new List<Pin>();
     }
 
+    public virtual bool IsReady()
+    {
+        return inputs.All(input => input.value != null);
+    }
+
     public abstract Task OnInit(Context context);
 
     public abstract Task OnUpdate(Context context);
@@ -57,11 +62,16 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
         return inputs.Any(i => i.name == name);
     }
 
+    public bool HasInputValue(string name)
+    {
+        return inputs.FirstOrDefault(i => i.name == name)?.value != null;
+    }
+
     public bool HasOutput(string name)
     {
         return outputs.Any(o => o.name == name);
     }
-
+    
     public Pin GetOutput(string name)
     {
         return outputs.FirstOrDefault(o => o.name == name) ?? throw new Exception($"No output named {name} in {id}, possible values [{outputs.Select(o => o.name).Join(",")}]");

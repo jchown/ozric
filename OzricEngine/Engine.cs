@@ -218,6 +218,8 @@ namespace OzricEngine
 
         private bool ProcessEventStateChanged(EventStateChanged stateChanged)
         {
+            //  TODO: if this is a new entity ID, re-sync Home
+            
             if (!stateChanged.data.new_state.IsRedacted())
                 Log(LogLevel.Info, "Event - {0}: {1}", stateChanged.data.new_state.entity_id, stateChanged.data.new_state.state);
 
@@ -278,13 +280,16 @@ namespace OzricEngine
                     {
                         Log(LogLevel.Trace, "Processing {0}", nodeID);
 
-                        //  Run node lifecycle method
+                        if (node.IsReady())
+                        {
+                            //  Run node lifecycle method
 
-                        await nodeProcessor(node, context);
+                            await nodeProcessor(node, context);
 
-                        //  Copy outputs to relevant inputs
+                            //  Copy outputs to relevant inputs
 
-                        graph.CopyNodeOutputValues(node, context);
+                            graph.CopyNodeOutputValues(node, context);
+                        }
                     }
                     finally
                     {
@@ -317,9 +322,12 @@ namespace OzricEngine
 
                 try
                 {
-                    await nodeProcessor(node, context);
+                    if (node.IsReady())
+                    {
+                        await nodeProcessor(node, context);
 
-                    graph.CopyNodeOutputValues(node, context);
+                        graph.CopyNodeOutputValues(node, context);
+                    }
                 }
                 catch (Exception e)
                 {

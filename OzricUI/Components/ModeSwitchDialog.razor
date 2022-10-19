@@ -1,0 +1,148 @@
+@using OzricUI.Model
+@using OzricEngine.Nodes
+@using OzricEngine.Values
+@using OzricService
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
+            
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            @if (patterns.Count > 0)
+            {
+                <MudTable Items="@patterns" T="ModeSwitch.ModeValues" 
+                          @bind-SelectedItem="selected"  
+                          CanCancelEdit="true"
+                          CommitEditTooltip="Apply"
+                          CancelEditTooltip="Revert"
+                          RowEditPreview="BackupItem" 
+                          RowEditCancel="ResetItem"
+                          ApplyButtonPosition="TableApplyButtonPosition.End"
+                          Dense="true" Class="border-none" Elevation="0">
+                    <ColGroup>
+                        <col />
+            		    <col style="width:150px;" />
+                        <col style="width:150px;" />
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>Mode</MudTh>
+                        @foreach (var key in Node.GetKeys())
+                        {
+                            <MudTh>@key</MudTh>
+                        }
+                        <MudTh></MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Mode">@context.mode</MudTd>
+                        @foreach (var key in Node.GetKeys())
+                        {
+                            <MudTd DataLabel="Values">@context.values</MudTd>
+                        }
+                    </RowTemplate>
+                    <RowEditingTemplate>
+                        <MudTd DataLabel="Mode">
+                            <MudTextField @bind-Value="@context.mode" Required />
+                        </MudTd>
+                        @foreach (var key in Node.GetKeys())
+                        {
+                            <MudTd DataLabel="@key">
+                                <MudSelect @bind-Value="@context.values[key]" Variant="Variant.Text">
+                                    <MudSelectItem Value="ModeMatch.PatternType.Exact">Exact</MudSelectItem>
+                                    <MudSelectItem Value="ModeMatch.PatternType.Wildcard">Wildcard</MudSelectItem>
+                                    <MudSelectItem Value="ModeMatch.PatternType.Regex">Regex</MudSelectItem>
+                                </MudSelect>
+                            </MudTd>
+                        }
+                    </RowEditingTemplate>
+                    
+                </MudTable>
+                    
+                <MudDivider DividerType="DividerType.Middle" Class="my-2" />
+            }
+
+            <MudGrid>
+                <MudItem xs="9">
+                    <MudTextField Label="Add Pattern" HelperText="The pattern to match. Use wildcards or regular expression" @bind-Value="addPattern" />
+                </MudItem>
+                <MudItem xs="3" Class="align-self-center">
+                    <MudButton OnClick="Add">Add</MudButton>
+                </MudItem>
+            </MudGrid>
+            
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    [Parameter]
+    public ModeSwitchModel Model { get; set; }
+
+    [Parameter]
+    public ModeSwitch Node { get; set; }
+
+    [Parameter]
+    public IOzricService Ozric { get; set; }
+    
+    private string ID;
+    private ModeSwitch.ModeValues selected;
+    private List<ModeSwitch.ModeValues> patterns = new();
+    private ModeSwitch.ModeValues elementBeforeEdit;
+    private string? addPattern { get; set; }
+    
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+
+    protected override void OnInitialized()
+    {
+        ID = Node.id;
+        patterns = new List<ModeSwitch.ModeValues>(Node.modeValues);
+    }
+
+    private List<GraphEditAction> GetChanges()
+    {
+        var changes = new List<GraphEditAction>();
+        if (ID != Node.id)
+            changes.Add(new GraphEditAction.RenameNode(Node, ID));
+        
+        var elements = patterns.ToArray();
+        if (Enumerable.SequenceEqual(patterns, elements))
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.modeValues)), elements));
+
+        return changes;
+    }
+
+    private void Add()
+    {
+        patterns.Add(new ModeSwitch.ModeValues(new Mode(addPattern), new Values()));
+        addPattern = "";
+    }
+    
+    private void BackupItem(object element)
+    {
+        elementBeforeEdit = new ModeSwitch.ModeValues(((ModeSwitch.ModeValues)element).mode, ((ModeSwitch.ModeValues)element).values);
+    }
+
+    private void ResetItem(object element)
+    {
+        var pattern = (ModeSwitch.ModeValues) element;
+        pattern.mode = elementBeforeEdit.mode;
+        pattern.values = elementBeforeEdit.values;
+    }
+}

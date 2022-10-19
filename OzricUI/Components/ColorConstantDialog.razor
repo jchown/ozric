@@ -34,7 +34,7 @@
                             <MudSlider T="int" Value="@_s" Max="S_SCALE" Immediate="true" ValueChanged="OnSliderSChanged">Saturation: @_s.ToString()</MudSlider>
                             break;
                         case ColorMode.Temp:
-                            <MudSlider T="int" Value="@_temp" Max="100" Immediate="true" ValueChanged="OnSliderTChanged">Temperature: @_temp.ToString()</MudSlider>
+                            <MudSlider T="int" Value="@_temp" Min="50" Max="500" Immediate="true" ValueChanged="OnSliderTChanged">Temperature: @_temp.ToString()</MudSlider>
                             break;
                         case ColorMode.RGB:
                             <MudSlider T="int" Value="_r" Max="RGB_SCALE" Immediate="true" ValueChanged="OnSliderRChanged">Red: @_r.ToString()</MudSlider>
@@ -317,7 +317,7 @@
             */
             default:
             {
-                throw new ArgumentOutOfRangeException();
+                return;
             }
         }
 

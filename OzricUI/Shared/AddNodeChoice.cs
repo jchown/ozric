@@ -1,4 +1,8 @@
+using OzricEngine;
 using OzricEngine.Nodes;
+using OzricEngine.Values;
+using OzricUI.Model;
+using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricUI.Shared;
 
@@ -17,5 +21,102 @@ public class AddNodeChoice
         Icon = icon;
         Create = create;
         Once = once;
+    }
+
+    public static List<AddNodeChoice> GetChoices(Home home, Graph graph)
+    {
+        var choices = home.states
+            .Where(device => !graph.HasDevicesNode(device.Key) && CategoryModelMappings.Exists(device.Value.GetCategory()))
+            .Select(device =>
+            {
+                var category = device.Value.GetCategory();
+                var type = CategoryModelMappings.Get(category);
+                var entityID = device.Key;
+                var id = entityID.Substring(entityID.IndexOf('.') + 1);
+                if (graph.HasDevicesNode(id))
+                    id = graph.CreateNodeID(category.ToString().ToLowerInvariant());
+                
+                return new AddNodeChoice(
+                    category: category,
+                    name: entityID,
+                    icon: LightModel.ICON,
+                    create: () => (Node) Activator.CreateInstance(type, id, entityID)!,
+                    once: true);
+            })
+            .ToList();
+        
+        //  TODO: Do this via reflection?
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "If Any - OR",
+            icon: IfAnyModel.ICON,
+            create: () => new IfAny(graph.CreateNodeID("ifany-")),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "If All - AND",
+            icon: IfAllModel.ICON,
+            create: () => new IfAny(graph.CreateNodeID("ifall-")),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "Binary Choice - Color",
+            icon: BinaryChoiceModel.ICON,
+            create: () => new BinaryChoice(graph.CreateNodeID("color-choice-"), ValueType.Color),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Constant,
+            name: "Color",
+            icon: ConstantColorModel.ICON,
+            create: () => new Constant(graph.CreateNodeID("colour-"), ColorRGB.WHITE),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "Mode Matches",
+            icon: ModeMatchModel.ICON,
+            create: () => new ModeMatch(graph.CreateNodeID("match-")),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "Tween - Color",
+            icon: TweenModel.ICON,
+            create: () => new Tween(graph.CreateNodeID("tween-"), ValueType.Color),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "Tween - Scalar",
+            icon: TweenModel.ICON,
+            create: () => new Tween(graph.CreateNodeID("tween-"), ValueType.Scalar),
+            once: false));
+        
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "Binary Choice - Color",
+            icon: BinaryChoiceModel.ICON,
+            create: () => BinaryChoiceModel.Color(graph.CreateNodeID("color-mode-switch-")),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "Mode Switch/Color",
+            icon: ModeSwitchModel.ICON,
+            create: () => ModeSwitchModel.Color(graph.CreateNodeID("color-mode-switch-")),
+            once: false));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Environment,
+            name: "Day Phases",
+            icon: DayPhasesModel.ICON,
+            create: () => new DayPhases(graph.CreateNodeID("day-phases-")),
+            once: false));
+
+        return choices;
     }
 }
