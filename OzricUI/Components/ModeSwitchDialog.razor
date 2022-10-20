@@ -12,9 +12,9 @@
             
             <MudDivider DividerType="DividerType.Middle" Class="my-4" />
 
-            @if (patterns.Count > 0)
+            @if (modeValues.Count > 0)
             {
-                <MudTable Items="@patterns" T="ModeSwitch.ModeValues" 
+                <MudTable Items="@modeValues" T="ModeSwitch.ModeValues" 
                           @bind-SelectedItem="selected"  
                           CanCancelEdit="true"
                           CommitEditTooltip="Apply"
@@ -100,8 +100,8 @@
     
     private string ID;
     private ModeSwitch.ModeValues selected;
-    private List<ModeSwitch.ModeValues> patterns = new();
-    private ModeSwitch.ModeValues elementBeforeEdit;
+    private List<ModeSwitch.ModeValues> modeValues = new();
+    private ModeSwitch.ModeValues preEdit;
     private string? addPattern { get; set; }
     
     void Cancel() => MudDialog.Cancel();
@@ -112,7 +112,7 @@
     protected override void OnInitialized()
     {
         ID = Node.id;
-        patterns = new List<ModeSwitch.ModeValues>(Node.modeValues);
+        modeValues = new List<ModeSwitch.ModeValues>(Node.modeValues);
     }
 
     private List<GraphEditAction> GetChanges()
@@ -121,28 +121,27 @@
         if (ID != Node.id)
             changes.Add(new GraphEditAction.RenameNode(Node, ID));
         
-        var elements = patterns.ToArray();
-        if (Enumerable.SequenceEqual(patterns, elements))
-            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.modeValues)), elements));
+        if (!modeValues.SequenceEqual(Node.modeValues))
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.modeValues)), modeValues));
 
         return changes;
     }
 
     private void Add()
     {
-        patterns.Add(new ModeSwitch.ModeValues(new Mode(addPattern), new Values()));
+        modeValues.Add(new ModeSwitch.ModeValues(new Mode(addPattern), new Values()));
         addPattern = "";
     }
     
     private void BackupItem(object element)
     {
-        elementBeforeEdit = new ModeSwitch.ModeValues(((ModeSwitch.ModeValues)element).mode, ((ModeSwitch.ModeValues)element).values);
+        preEdit = new ModeSwitch.ModeValues(((ModeSwitch.ModeValues)element).mode, ((ModeSwitch.ModeValues)element).values);
     }
 
     private void ResetItem(object element)
     {
         var pattern = (ModeSwitch.ModeValues) element;
-        pattern.mode = elementBeforeEdit.mode;
-        pattern.values = elementBeforeEdit.values;
+        pattern.mode = preEdit.mode;
+        pattern.values = preEdit.values;
     }
 }

@@ -10,6 +10,7 @@
 @using Blazor.Diagrams.Core.Models.Base
 @using Microsoft.AspNetCore.SignalR.Client
 @using OzricUI.Hubs
+@using System.Reflection
 @inject IDialogService DialogService
 @inherits LayoutComponentBase
 @inject DataService Data
@@ -307,33 +308,20 @@
         StateHasChanged();
     }
 
-    record ModelDialog(Type modelType, Type dialogType, string dialogTitle);
-
-    private ModelDialog[] _dialogTypes = 
-    {
-        new(typeof(LightModel), typeof(LightDialog), "Light"),
-        new(typeof(ModeMatchModel), typeof(ModeMatchDialog), "Mode Match"),
-        new(typeof(ModeSwitchModel), typeof(ModeSwitchDialog), "Mode Switch"),
-        new(typeof(ConstantColorModel), typeof(ColorConstantDialog), "Color"),
-        new(typeof(EntityModel), typeof(EntityDialog), "Entity"),
-        new(typeof(GraphNodeModel), typeof(NodeDialog), "Node"),
-    };
-
     private async Task OnClickInfo()
     {
         if (SelectedItems.Count != 1)
             return;
 
         var (model, node) = SelectedItems[0];
-        if (model is not GraphNodeModel)
+        if (model is not GraphNodeModel gm)
             return;
         
-        var modelType = model.GetType();
-        var dialog = _dialogTypes.First(d => modelType.IsAssignableTo(d.modelType));
-        await ShowNodeDialog(model, node, dialog);
+        var editDialog = model.GetType().GetCustomAttribute<EditDialogAttribute>()!;
+        await ShowNodeDialog(model, node, editDialog.type, editDialog.title);
     }
 
-    private async Task ShowNodeDialog(SelectableModel model, IGraphObject node, ModelDialog dialog)
+    private async Task ShowNodeDialog(SelectableModel model, IGraphObject node, Type type, string title)
     {
         var parameters = new DialogParameters
         {
@@ -344,7 +332,7 @@
 
         var options = GetDialogOptions();
 
-        var result = await DialogService.Show(dialog.dialogType, dialog.dialogTitle, parameters, options).Result;
+        var result = await DialogService.Show(type, title, parameters, options).Result;
         if (result.Cancelled)
             return;
 

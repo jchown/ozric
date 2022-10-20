@@ -20,6 +20,7 @@ public class DayPhases: Node
 
     public List<PhaseStart> phases { get; set; }
             
+    public const string SUN_ENTITY_ID = "sun.sun";
     public const string OUTPUT_NAME = "mode";
         
     public DayPhases(string id) : base(id, null, new List<Pin> { new(OUTPUT_NAME, ValueType.Mode) })
@@ -63,9 +64,9 @@ public class DayPhases: Node
 
     public class PhaseStart
     {
-        public SunPhase start { get; }
-        public int startOffsetSeconds { get; }
-        public Mode mode { get; }
+        public SunPhase start { get; set; }
+        public int startOffsetSeconds { get; set; }
+        public Mode mode { get; set; }
 
         public PhaseStart(Mode mode, SunPhase start, int startOffsetSeconds = 0)
         {
@@ -172,7 +173,7 @@ public class DayPhases: Node
 
         //  Figure out what phase are we in
 
-        var sun = context.home.GetEntityState("sun.sun");
+        var sun = context.home.GetEntityState(SUN_ENTITY_ID);
         var now = context.home.GetTime();
 
         int i = 1;

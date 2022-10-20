@@ -141,9 +141,8 @@
         if (ID != Node.id)
             changes.Add(new GraphEditAction.RenameNode(Node, ID));
         
-        var elements = patterns.ToArray();
-        if (Enumerable.SequenceEqual(patterns, elements))
-            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.patterns)), elements));
+        if (!Node.patterns.SequenceEqual(patterns))
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.patterns)), patterns.ToArray()));
 
         return changes;
     }

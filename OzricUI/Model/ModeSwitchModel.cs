@@ -1,9 +1,11 @@
 using Blazor.Diagrams.Core.Geometry;
 using OzricEngine.Nodes;
+using OzricUI.Components;
 using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricUI.Model;
 
+[EditDialog(typeof(ModeSwitchDialog), "Mode Switch")]
 public class ModeSwitchModel: GraphNodeModel
 {
     public static string ICON = "fluent:table-switch-28-regular";

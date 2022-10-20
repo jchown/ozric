@@ -1,0 +1,271 @@
+@using OzricUI.Model
+@using OzricEngine.Nodes
+@using OzricEngine.Values
+@using OzricService
+@using OzricEngine
+@using Humanizer
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
+            
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            @if (phases.Count > 0)
+            {
+                <MudTable Items="@phases" T="DayPhases.PhaseStart" 
+                          @bind-SelectedItem="selected"  
+                          CanCancelEdit="true"
+                          CommitEditTooltip="Apply"
+                          CancelEditTooltip="Revert"
+                          RowEditPreview="BackupItem" 
+                          RowEditCancel="ResetItem"
+                          ApplyButtonPosition="TableApplyButtonPosition.End"
+                          Dense="true" Class="border-none" Elevation="0">
+                    <ColGroup>
+            		    <col style="width:150px;" />
+                        <col />
+                        <col style="width:150px;" />
+                        <col style="width:150px;" />
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>Mode</MudTh>
+                        <MudTh>Start</MudTh>
+                        <MudTh>(example)</MudTh>
+                        <MudTh></MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Mode">@context.mode</MudTd>
+                        <MudTd DataLabel="Start">@DescribeSeconds(context.startOffsetSeconds) @DescribePhaseStart(context.start)</MudTd>
+                        <MudTd>@context.GetStartTime(DateTime.Now, Sun).ToShortTimeString()</MudTd>
+                    </RowTemplate>
+                    <RowEditingTemplate>
+                        <MudTd DataLabel="Mode">
+                            <MudTextField @bind-Value="@context.mode" Required />
+                        </MudTd>
+                        <MudTd DataLabel="Offset">
+                            <MudSelect @bind-Value="@context.start" Variant="Variant.Text" Required>
+                                @foreach(var sunPhase in SunPhases)
+                                {
+                                    <MudSelectItem Value="sunPhase">@sunPhase (@DescribePhaseStart(sunPhase))</MudSelectItem>
+                                }
+                            </MudSelect>
+                            <MudNumericField Value="@offsetValue" TextChanged="@((y) => OnOffsetValueChanged(y))" />
+                            <MudSelect Value="@offsetScale" T="int" Variant="Variant.Text" ValueChanged="@((x) => OnOffsetScaleChanged(x))" >
+                                <MudSelectItem Value="1">Seconds</MudSelectItem>
+                                <MudSelectItem Value="60">Minutes</MudSelectItem>
+                                <MudSelectItem Value="3600">Hours</MudSelectItem>
+                            </MudSelect>
+                        </MudTd>
+                    </RowEditingTemplate>
+                    
+                </MudTable>
+                    
+                <MudDivider DividerType="DividerType.Middle" Class="my-2" />
+            }
+
+            <MudGrid>
+                <MudItem xs="9">
+                    <MudTextField Label="Add Mode" HelperText="The new mode's name" @bind-Value="addPhase" />
+                </MudItem>
+                <MudItem xs="3" Class="align-self-center">
+                    <MudButton OnClick="Add">Add</MudButton>
+                </MudItem>
+            </MudGrid>
+            
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    [Parameter]
+    public DayPhasesModel Model { get; set; }
+
+    [Parameter]
+    public DayPhases Node { get; set; }
+
+    [Parameter]
+    public IOzricService Ozric { get; set; }
+    
+    public Attributes Sun { get; set; }
+
+    private string ID;
+    private List<DayPhases.PhaseStart> phases = new();
+    private DayPhases.PhaseStart selected;
+    private DayPhases.PhaseStart preEdit;
+    private string? addPhase { get; set; }
+    private DayPhases.SunPhase[] SunPhases = Enum.GetValues<DayPhases.SunPhase>();
+    
+    private int offsetScale { get; set; } = 60;
+    private double offsetValue { get; set; }
+
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+
+    protected override void OnInitialized()
+    {
+        ID = Node.id;
+        phases = new List<DayPhases.PhaseStart>(Node.phases);
+        Sun = Ozric.Home.GetEntityState(DayPhases.SUN_ENTITY_ID)?.attributes ?? FakeSunAttributes();
+    }
+
+    private Attributes FakeSunAttributes()
+    {
+        return new Attributes
+        {
+            { "next_dawn", GetNextTime(8) },
+            { "next_dusk", GetNextTime(20) },
+            { "next_midnight", GetNextTime(24) },
+            { "next_noon", GetNextTime(12) },
+            { "next_rising", GetNextTime(6) },
+            { "next_setting", GetNextTime(18) }
+        };
+    }
+    
+    //  "2022-02-04T07:13:41.474171+00:00"
+
+    string GetNextTime(int hour)
+    {
+        var dateTimeHour = DateTime.Now.At(hour);
+        if (DateTime.Now >= dateTimeHour)
+            dateTimeHour.AddDays(1);
+
+        return dateTimeHour.ToString("yyyy-MM-ddTHH:mm:ss");
+    }
+
+    private List<GraphEditAction> GetChanges()
+    {
+        var changes = new List<GraphEditAction>();
+        if (ID != Node.id)
+            changes.Add(new GraphEditAction.RenameNode(Node, ID));
+        
+        if (!phases.SequenceEqual(Node.phases))
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(DayPhases.phases)), phases));
+
+        return changes;
+    }
+
+    private void Add()
+    {
+        phases.Add(new DayPhases.PhaseStart(new Mode(addPhase), DayPhases.SunPhase.Dawn));
+        addPhase = "";
+    }
+    
+    private void BackupItem(object element)
+    {
+        var phaseStart = (DayPhases.PhaseStart) element;
+        preEdit = new DayPhases.PhaseStart(phaseStart.mode, phaseStart.start, phaseStart.startOffsetSeconds);
+        
+        if (phaseStart.startOffsetSeconds % 3600 == 0)
+            offsetScale = 3600;
+        else if (phaseStart.startOffsetSeconds % 60 == 0)
+            offsetScale = 60;
+        else
+            offsetScale = 1;
+        
+        offsetValue = ((double) phaseStart.startOffsetSeconds) / offsetScale;
+    }
+
+    private void ResetItem(object element)
+    {
+        var phaseStart = (DayPhases.PhaseStart) element;
+        phaseStart.mode = preEdit.mode;
+        phaseStart.start = preEdit.start;
+        phaseStart.startOffsetSeconds = preEdit.startOffsetSeconds;
+    }
+
+    private string DescribeSeconds(int offsetSeconds)
+    {
+        if (offsetSeconds == 0)
+            return "";
+
+        return $"{DescribeAbsSeconds(Math.Abs(offsetSeconds))} {(offsetSeconds > 0 ? "after" : "before")} ";
+    }
+
+    private string DescribeAbsSeconds(int seconds)
+    {
+        if (seconds % 3600 == 0)
+        {
+            int hours = seconds / 3600;
+            if (hours > 1)
+            {
+                return $"{hours} hours";
+            }
+
+            return "1 hour";
+        }
+
+        if (seconds % 60 == 0)
+        {
+            int minutes = seconds / 60;
+            if (minutes > 1)
+            {
+                return $"{minutes} minutes";
+            }
+
+            return "1 minute";
+        }
+
+        if (seconds > 1)
+        {
+            return $"{seconds} seconds";
+        }
+
+        return "1 second";
+    }
+
+    private string DescribePhaseStart(DayPhases.SunPhase contextStart)
+    {
+        switch (contextStart)
+        {
+            case DayPhases.SunPhase.Dawn:
+                return "the sun starts to rise";
+                
+            case DayPhases.SunPhase.Dusk:
+                return "the sun has fully set";
+                
+            case DayPhases.SunPhase.Rising:
+                return "dawn has finished";
+                
+            case DayPhases.SunPhase.Setting:
+                return "sunset has started";
+
+            case DayPhases.SunPhase.Noon:
+                return "solar midday";
+            
+            case DayPhases.SunPhase.Midnight:
+                return "solar midnight";
+                
+            default:
+                throw new ArgumentOutOfRangeException(nameof(contextStart), contextStart, null);
+        }
+    }
+
+    private void OnOffsetValueChanged(string value)
+    {
+        offsetValue = Double.Parse(value);
+        selected.startOffsetSeconds = (int)(offsetValue * offsetScale);
+    }
+
+    private void OnOffsetScaleChanged(int seconds)
+    {
+        offsetScale = seconds;
+        offsetValue = selected.startOffsetSeconds / (double) offsetScale;
+    }
+}

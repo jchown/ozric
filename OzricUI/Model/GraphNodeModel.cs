@@ -2,10 +2,12 @@ using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using OzricEngine.ext;
 using OzricEngine.Nodes;
+using OzricUI.Components;
 using OzricUI.Shared;
 
 namespace OzricUI.Model;
 
+[EditDialog(typeof(NodeDialog), "Node")]
 public abstract class GraphNodeModel: NodeModel
 {
     public readonly Node node;
