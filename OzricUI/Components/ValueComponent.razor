@@ -1,0 +1,67 @@
+@using OzricEngine.Values
+@using ValueType = OzricEngine.Values.ValueType
+@using Boolean = OzricEngine.Values.Boolean
+@switch (Value)
+{
+    case Boolean b:
+    {
+        <span>@(b.value ? "on" : "off")</span>
+        break;
+    }
+    case ColorValue c:
+    {
+        if (c.brightness == 0)
+        {
+            <span style="background-color: black; display: inline-block; width: 16px; height: 16px;">&nbsp;</span>
+            <span>&nbsp;</span>
+            <span>Off</span>
+        }
+        else
+        {
+            <span style="background-color: #@(c.ToHexString()); display: inline-block; width: 16px; height: 16px;">&nbsp;</span>
+            <span>&nbsp;</span>
+
+            switch (c)
+            {
+                case ColorRGB rgb:
+                {
+                    <span>RGB #@rgb.ToHexString()</span>
+                    break;
+                }
+                case ColorTemp t:
+                {
+                    <span>@(t.temp) mired</span>
+                    break;
+                }
+                case ColorHS hs:
+                {
+                    <span>H/S: @(hs.h)/@(hs.s)</span>
+                    break;
+                }
+                case ColorXY xy:
+                {
+                    <span>X/Y: @(xy.x)/@(xy.y)</span>
+                    break;
+                }
+            }
+        }
+        break;
+    }
+    case Mode m:
+    {
+        <span>@m.value</span>
+        break;
+    }
+    case Scalar s:
+    {
+        <span>@s.value</span>
+        break;
+    }
+}
+
+@code {
+    
+    [Parameter]
+    public Value Value { get; set; }
+   
+}

@@ -40,7 +40,9 @@
                         <MudTd DataLabel="Mode">@context.mode</MudTd>
                         @foreach (var key in Node.GetKeys())
                         {
-                            <MudTd DataLabel="Values">@context.values</MudTd>
+                            <MudTd DataLabel="@key">
+                                <ValueComponent Value="context.values[key]" />
+                            </MudTd>
                         }
                     </RowTemplate>
                     <RowEditingTemplate>

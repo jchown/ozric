@@ -42,6 +42,7 @@ namespace OzricEngine.Nodes
             
             //  Move forward 8 more "updates" = .75 ^ 10 = 0.05631351
             now = now.AddSeconds(Tween.UPDATE_INTERVAL_SECS * 8);
+            context = MockContextAtTime(now);
             node01.OnUpdate(context);
             node10.OnUpdate(context);
             
