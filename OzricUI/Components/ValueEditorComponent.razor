@@ -1,0 +1,100 @@
+@using OzricEngine.Values
+@using Boolean = OzricEngine.Values.Boolean
+@using Size = MudBlazor.Size
+@switch (Value)
+{
+    case Boolean:
+    {
+        <MudBooleanInput T="Boolean" @bind="boolean" />
+        break;
+    }
+    case ColorValue c:
+    {
+        if (c.brightness == 0)
+        {
+            <div>
+                <MudButton Variant="Variant.Filled" Size="Size.Small">Edit</MudButton>
+            </div>
+            <span>&nbsp;</span>
+            <span>Off</span>
+        }
+        else
+        {
+            <MudButton Variant="Variant.Filled" Size="Size.Small">
+                <span style="background-color: #@(c.ToHexString()); display: inline-block; width: 16px; height: 16px;" class="rounded">&nbsp;</span>
+                <span>&nbsp;</span>
+
+            @switch (c)
+            {
+                case ColorRGB rgb:
+                {
+                    <span>RGB #@rgb.ToHexString()</span>
+                    break;
+                }
+                case ColorTemp t:
+                {
+                    <span>@(t.temp) mired</span>
+                    break;
+                }
+                case ColorHS hs:
+                {
+                    <span>H/S: @(hs.h.ToString("F2"))/@(hs.s.ToString("F2"))</span>
+                    break;
+                }
+                case ColorXY xy:
+                {
+                    <span>X/Y: @(xy.x.ToString("F2"))/@(xy.y.ToString("F2"))</span>
+                    break;
+                }
+            }
+            </MudButton>
+        }
+        break;
+    }
+    case Mode:
+    {
+        <MudTextField T="string" @bind-Text="mode" />
+        break;
+    }
+    case Scalar:
+    {
+        <MudNumericField Value="scalar" />
+        break;
+    }
+}
+
+@code {
+    
+    [Parameter]
+    public Value Value { get; set; }
+ 
+    [Parameter]
+    public EventCallback<Value> OnEdited { get; set; }
+
+    public bool boolean;
+    public float scalar;
+    public string mode;
+    public ColorValue color;
+
+    protected override void OnInitialized()
+    {
+        switch (Value)
+        {
+            case Boolean b:
+                boolean = b.value;
+                break;
+                
+            case Scalar s:
+                scalar = s.value;
+                break;
+                
+            case Mode m:
+                mode = m.value;
+                break;
+                
+            case ColorValue c:
+                color = c;
+                break;
+        }    
+    }
+}

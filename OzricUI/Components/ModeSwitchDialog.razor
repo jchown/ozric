@@ -24,10 +24,10 @@
                           ApplyButtonPosition="TableApplyButtonPosition.End"
                           Dense="true" Class="border-none" Elevation="0">
                     <ColGroup>
-                        <col />
-            		    <col style="width:150px;" />
                         <col style="width:150px;" />
-                    </ColGroup>
+            		    <col />
+                        <col style="width:150px;" />
+                     </ColGroup>
                     <HeaderContent>
                         <MudTh>Mode</MudTh>
                         @foreach (var key in Node.GetKeys())
@@ -52,11 +52,7 @@
                         @foreach (var key in Node.GetKeys())
                         {
                             <MudTd DataLabel="@key">
-                                <MudSelect @bind-Value="@context.values[key]" Variant="Variant.Text">
-                                    <MudSelectItem Value="ModeMatch.PatternType.Exact">Exact</MudSelectItem>
-                                    <MudSelectItem Value="ModeMatch.PatternType.Wildcard">Wildcard</MudSelectItem>
-                                    <MudSelectItem Value="ModeMatch.PatternType.Regex">Regex</MudSelectItem>
-                                </MudSelect>
+                                <ValueEditorComponent Value="context.values[key]" />
                             </MudTd>
                         }
                     </RowEditingTemplate>
@@ -68,7 +64,7 @@
 
             <MudGrid>
                 <MudItem xs="9">
-                    <MudTextField Label="Add Pattern" HelperText="The pattern to match. Use wildcards or regular expression" @bind-Value="addPattern" />
+                    <MudTextField Label="Add Mode" HelperText="The mode" @bind-Value="addMode" />
                 </MudItem>
                 <MudItem xs="3" Class="align-self-center">
                     <MudButton OnClick="Add">Add</MudButton>
@@ -104,7 +100,7 @@
     private ModeSwitch.ModeValues selected;
     private List<ModeSwitch.ModeValues> modeValues = new();
     private ModeSwitch.ModeValues preEdit;
-    private string? addPattern { get; set; }
+    private string? addMode { get; set; }
     
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
@@ -131,8 +127,8 @@
 
     private void Add()
     {
-        modeValues.Add(new ModeSwitch.ModeValues(new Mode(addPattern), new Values()));
-        addPattern = "";
+        modeValues.Add(new ModeSwitch.ModeValues(new Mode(addMode), new Values()));
+        addMode = "";
     }
     
     private void BackupItem(object element)
