@@ -1,10 +1,7 @@
 @using OzricUI.Model
 @using OzricEngine.Nodes
-@using MudBlazor.Utilities
 @using OzricEngine.Values
 @using OzricService
-@using System.Timers
-
 
 <MudDialog>
     <DialogContent>
@@ -15,64 +12,7 @@
 
             <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
 
-            <MudSelect Value="_colorMode" Style="z-index:9999;" ValueChanged="OnColorModeChanged" HelperText="Matching colorspace modes with your lights can ensure accurate color reproduction" T="ColorMode" Label="Color Mode" Variant="Variant.Text">
-                @foreach (var e in Enum.GetValues(typeof(ColorMode)))
-                {
-                    var colorMode = (ColorMode)e;
-                    <MudSelectItem Value="@(colorMode)">@ColorValue.DescribeColorMode(colorMode)</MudSelectItem>
-                }
-            </MudSelect>
-
-            <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
-
-            <MudGrid>
-                <MudItem xs="6">
-                    @switch (_colorMode)
-                    {
-                        case ColorMode.HS:
-                            <MudSlider T="int" Value="@_h" Max="H_SCALE" Immediate="true" ValueChanged="OnSliderHChanged">Hue: @_h.ToString()</MudSlider>
-                            <MudSlider T="int" Value="@_s" Max="S_SCALE" Immediate="true" ValueChanged="OnSliderSChanged">Saturation: @_s.ToString()</MudSlider>
-                            break;
-                        case ColorMode.Temp:
-                            <MudSlider T="int" Value="@_temp" Min="50" Max="500" Immediate="true" ValueChanged="OnSliderTChanged">Temperature: @_temp.ToString()</MudSlider>
-                            break;
-                        case ColorMode.RGB:
-                            <MudSlider T="int" Value="_r" Max="RGB_SCALE" Immediate="true" ValueChanged="OnSliderRChanged">Red: @_r.ToString()</MudSlider>
-                            <MudSlider T="int" Value="_g" Max="RGB_SCALE" Immediate="true" ValueChanged="OnSliderGChanged">Green: @_g.ToString()</MudSlider>
-                            <MudSlider T="int" Value="_b" Max="RGB_SCALE" Immediate="true" ValueChanged="OnSliderBChanged">Blue: @_b.ToString()</MudSlider>
-                            break;
-                        case ColorMode.XY:
-                            <MudSlider T="float" Value="@_x" Max="100" Immediate="true" ValueChanged="OnSliderXChanged">X: @_x.ToString()</MudSlider>
-                            <MudSlider T="float" Value="@_y" Max="100" Immediate="true" ValueChanged="OnSliderYChanged">Y: @_y.ToString()</MudSlider>
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-
-                    <MudDivider DividerType="DividerType.Middle" Class="my-2"/>
-
-                    <MudSlider @bind-Value="_brightness" Min="0" Max="BRIGHTNESS_SCALE">
-                        Brightness: @_brightness.ToString()
-                    </MudSlider>
-                    <p class="mud-input-helper-text">Brightness is not affected by the color luminance.</p>
-                                        
-                    <MudSelect Value="_previewLight" Style="z-index:9999;" ValueChanged="OnPreviewLightChanged" HelperText="Choose a light to directly preview the color" T="Light?" Label="Preview Light" Variant="Variant.Text">
-                        <MudSelectItem Value="@((Light) null)">(None)</MudSelectItem>
-                        @foreach (var light in _lights)
-                        {
-                            <MudSelectItem Value="@(light)">@light.Name</MudSelectItem>
-                        }
-                    </MudSelect>
-
-                </MudItem>
-
-                <MudItem xs="6">
-                    <MudColorPicker Label="Color" Value="_pickerColor" Style="@($"color: {_pickerColor};")" Placeholder="Select Color" PickerVariant="PickerVariant.Static"
-                                    DisableToolbar="true" DisableAlpha="true" DisableModeSwitch="true" DisableInputs="true"
-                                    ValueChanged="OnColorPickerChanged"/>
-                </MudItem>
-
-            </MudGrid>
+            <ColorValuePicker Value="@(Node.value as ColorValue)" Ozric="Ozric" />
 
         </MudContainer>
 
@@ -100,251 +40,29 @@
     public IOzricService Ozric { get; set; }
 
     private string _id;
-    private MudColor _pickerColor { get; set; }
-    private ColorMode _colorMode { get; set; }
-    private Light? _previewLight { get; set; }
-    private Timer _timer;
-
-    private const int H_SCALE = 360;
-    private const int S_SCALE = 100;
-
-    private int _h { get; set; }
-    private int _s { get; set; }
-
-    private int _temp { get; set; }
-
-    private const int RGB_SCALE = 255;
-
-    private int _r { get; set; }
-    private int _g { get; set; }
-    private int _b { get; set; }
-
-    private float _x { get; set; }
-    private float _y { get; set; }
-
-    private const int BRIGHTNESS_SCALE = 100;
-
-    private int _brightness { get; set; }
+    private ColorValue _color;
 
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
 
     private bool HasChanges => GetChanges().Count > 0;
-    private bool _settingSliders;
-    private bool _settingPicker;
-    private List<Light> _lights;
 
     protected override void OnInitialized()
     {
-        var colorValue = (ColorValue)Node.value;
-
         _id = Node.id;
-        SetColorSliders(colorValue);
-        _brightness = (int)(colorValue.brightness * BRIGHTNESS_SCALE);
-        _lights = Ozric.Graph.GetAll<Light>();
-        
-        _timer = new Timer(300);
-        _timer.Elapsed += TimerCallback;
-        _timer.Enabled = true;
+        _color = Node.value as ColorValue;
     }
-
-    private async void TimerCallback(object o, ElapsedEventArgs elapsedEventArgs)
-    {
-        if (_previewLight != null)
-            await InvokeAsync(UpdatePreview);
-    }
-
-    private void SetColorSliders(ColorValue colorValue)
-    {
-        _colorMode = colorValue.ColorMode;
-        _pickerColor = colorValue.ToHexString();
-        switch (colorValue)
-        {
-            case ColorRGB rgb:
-            {
-                _r = (int)(rgb.r * RGB_SCALE);
-                _g = (int)(rgb.g * RGB_SCALE);
-                _b = (int)(rgb.b * RGB_SCALE);
-                break;
-            }
-            case ColorHS hs:
-            {
-                _h = (int)(hs.h * H_SCALE);
-                _s = (int)(hs.s * S_SCALE);
-                break;
-            }
-            case ColorXY xy:
-            {
-                _x = xy.x;
-                _y = xy.y;
-                break;
-            }
-            case ColorTemp temp:
-            {
-                _temp = (int) temp.temp;
-                break;
-            }
-            default:
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-        }
-    }
-
-    private ColorValue GetColorSliders()
-    {
-        var brightness = _brightness / (float)BRIGHTNESS_SCALE;
-
-        switch (_colorMode)
-        {
-            case ColorMode.HS:
-            {
-                return new ColorHS(_h / (float)H_SCALE, _s / (float)S_SCALE, brightness);
-            }
-            case ColorMode.Temp:
-            {
-                return new ColorTemp(_temp, brightness);
-            }
-            case ColorMode.RGB:
-            {
-                return new ColorRGB(_r / (float)RGB_SCALE, _g / (float)RGB_SCALE, _b / (float)RGB_SCALE, brightness);
-            }
-            case ColorMode.XY:
-            {
-                return new ColorXY(_x, _y, brightness);
-            }
-            default:
-            {
-                throw new ArgumentOutOfRangeException();
-            }
-        }
-    }
-
+    
     private List<GraphEditAction> GetChanges()
     {
         var changes = new List<GraphEditAction>();
         if (_id != Node.id)
             changes.Add(new GraphEditAction.RenameNode(Node, _id));
 
-        var value = GetColorSliders();
-        if (value != Node.value)
-            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), value));
+        if (_color != Node.value)
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), _color));
 
         return changes;
     }
 
-    private void OnColorModeChanged(ColorMode mode)
-    {
-        _colorMode = mode;
-        SetColorSliders(_pickerColor);
-    }
-
-    private void OnSliderHChanged(int h) { _h = h; OnColorSlidersChanged(); }
-    private void OnSliderSChanged(int s) { _s = s; OnColorSlidersChanged(); }
-    
-    private void OnSliderRChanged(int r) { _r = r; OnColorSlidersChanged(); }
-    private void OnSliderGChanged(int g) { _g = g; OnColorSlidersChanged(); }
-    private void OnSliderBChanged(int b) { _b = b; OnColorSlidersChanged(); }
-
-    private void OnSliderXChanged(float x) { _x = x; OnColorSlidersChanged(); }
-    private void OnSliderYChanged(float y) { _y = y; OnColorSlidersChanged(); }
-
-    private void OnSliderTChanged(int t) { _temp = t; OnColorSlidersChanged(); }
-
-    private void OnColorSlidersChanged()
-    {
-        if (!_settingSliders)
-        {
-            var value = GetColorSliders();
-
-            _settingPicker = true;
-            try
-            {
-                _pickerColor = value.ToHexString();
-            }
-            finally
-            {
-                _settingPicker = false;
-            }
-        }
-    }
-
-    private void OnColorPickerChanged(MudColor color)
-    {
-        if (!_settingPicker)
-        {
-            _settingSliders = true;
-            try
-            {
-                SetColorSliders(color);
-            }
-            finally
-            {
-                _settingSliders = false;
-            }
-        }
-    }
-
-    private void SetColorSliders(MudColor obj)
-    {
-        ColorValue value;
-        var brightness = _brightness / (float)BRIGHTNESS_SCALE;
-
-        switch (_colorMode)
-        {
-            case ColorMode.HS:
-            {
-                var rgb = new ColorRGB(obj.R / 255f, obj.G / 255f, obj.B / 255f, brightness);
-                value = rgb.ToHS();
-                break;
-            }
-    /*
-            case ColorMode.Temp:
-            {
-                break;
-            }
-            */
-            case ColorMode.RGB:
-            {
-                value = new ColorRGB(obj.R / 255f, obj.G / 255f, obj.B / 255f, brightness);
-                break;
-            }
-    /*
-            case ColorMode.XY:
-            {
-                break;
-            }
-            */
-            default:
-            {
-                return;
-            }
-        }
-
-        SetColorSliders(value);
-    }
-    
-    private void OnPreviewLightChanged(Light light)
-    {
-        _previewLight = light;
-    }
-
-    private void UpdatePreview()
-    {
-        if (_previewLight == null)
-            return;
-
-        var command = _previewLight.GetCommand(GetColorSliders(), Ozric.Home);
-        if (command == null)
-            return;
-
-        Task.Run(async () =>
-        {
-            var result = await Ozric.CommandSender.Send(command);
-            if (!result.success)
-            {
-                Console.WriteLine("Service call failed ({0}) - {1}", result.error.code, result.error.message);
-            }
-        });
-    }
 }

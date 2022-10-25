@@ -100,12 +100,12 @@ public class AddNodeChoice
             category: Category.Logic,
             name: "Binary Choice - Color",
             icon: BinaryChoiceModel.ICON,
-            create: () => BinaryChoiceModel.Color(graph.CreateNodeID("color-mode-switch-")),
+            create: () => BinaryChoiceModel.Color(graph.CreateNodeID("binary-choice-")),
             once: false));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
-            name: "Mode Switch/Color",
+            name: "Mode Switch - Color",
             icon: ModeSwitchModel.ICON,
             create: () => ModeSwitchModel.Color(graph.CreateNodeID("color-mode-switch-")),
             once: false));

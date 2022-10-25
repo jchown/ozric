@@ -1,7 +1,6 @@
 @using OzricUI.Model
 @using OzricEngine.Nodes
 @using OzricService
-@inject IOzricService OzricService
 
 <MudDialog>
     <DialogContent>
@@ -39,10 +38,7 @@
 
     [Parameter]
     public EntityNode Node { get; set; }
-
-    [Parameter]
-    public IOzricService Ozric { get; set; }
-    
+   
     private string ID { get; set; }
     private NodeType Type;
     private string EntityID;

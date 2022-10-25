@@ -1,9 +1,10 @@
 @using OzricUI.Model
 @using OzricEngine.Nodes
 @using OzricEngine.Values
-@using OzricService
 @using OzricEngine
 @using Humanizer
+@using OzricService
+@inject IOzricService Ozric
 
 <MudDialog>
     <DialogContent>
@@ -97,9 +98,6 @@
 
     [Parameter]
     public DayPhases Node { get; set; }
-
-    [Parameter]
-    public IOzricService Ozric { get; set; }
     
     public Attributes Sun { get; set; }
 

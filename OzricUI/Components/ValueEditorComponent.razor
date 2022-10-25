@@ -1,6 +1,9 @@
 @using OzricEngine.Values
+@using OzricService
 @using Boolean = OzricEngine.Values.Boolean
 @using Size = MudBlazor.Size
+@inject IDialogService DialogService
+
 @switch (Value)
 {
     case Boolean:
@@ -20,7 +23,7 @@
         }
         else
         {
-            <MudButton Variant="Variant.Filled" Size="Size.Small">
+            <MudButton Variant="Variant.Filled" Size="Size.Small" OnClick="PickColor">
                 <span style="background-color: #@(c.ToHexString()); display: inline-block; width: 16px; height: 16px;" class="rounded">&nbsp;</span>
                 <span>&nbsp;</span>
 
@@ -97,4 +100,29 @@
                 break;
         }    
     }
+
+    private async Task PickColor()
+    {
+        var parameters = new DialogParameters
+        {
+            { "Value", color }
+        };
+
+        var options = new DialogOptions
+        {
+            CloseOnEscapeKey = true,
+            CloseButton = true,
+            Position = DialogPosition.TopCenter,
+            MaxWidth = MaxWidth.Medium,
+            FullWidth = true
+        };
+
+        var result = await DialogService.Show(typeof(ColorPickerDialog), "Choose Color", parameters, options).Result;
+        if (result.Cancelled)
+            return;
+
+        color = (ColorValue) result.Data;
+        StateHasChanged();
+    }
+
 }

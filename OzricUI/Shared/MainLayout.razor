@@ -24,6 +24,7 @@
 <MudSnackbarProvider/>
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode"/>
 
+<CascadingValue Value="@OzricService">
 <MudLayout>
     <MudAppBar>
         <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((_) => DrawerToggle())" />
@@ -103,6 +104,7 @@
     </MudMainContent>
 
 </MudLayout>
+</CascadingValue>
 
 @code {
     bool _settingsDrawerOpen = true;
@@ -326,8 +328,7 @@
         var parameters = new DialogParameters
         {
             { "Model", model },
-            { "Node", node },
-            { "Ozric", OzricService }
+            { "Node", node }
         };
 
         var options = GetDialogOptions();

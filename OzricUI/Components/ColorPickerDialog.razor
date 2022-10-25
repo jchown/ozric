@@ -1,0 +1,45 @@
+@using OzricEngine.Values
+@using OzricService
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;">
+
+            <ColorValuePicker Value="_color" />
+
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="OK" Disabled="!HasChanges">OK</MudButton>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    [Parameter]
+    public ColorValue Value { get; set; }
+
+    [Parameter]
+    public IOzricService Ozric { get; set; }
+
+    private ColorValue _color;
+
+    void Cancel() => MudDialog.Cancel();
+    void OK() => MudDialog.Close(DialogResult.Ok(_color));
+
+    private bool HasChanges => _color != Value;
+
+    protected override void OnInitialized()
+    {
+        _color = Value;
+    }
+
+}

@@ -1,7 +1,6 @@
 @using OzricUI.Model
 @using OzricEngine.Nodes
 @using OzricEngine.Values
-@using OzricService
 
 <MudDialog>
     <DialogContent>
@@ -93,9 +92,6 @@
     [Parameter]
     public ModeSwitch Node { get; set; }
 
-    [Parameter]
-    public IOzricService Ozric { get; set; }
-    
     private string ID;
     private ModeSwitch.ModeValues selected;
     private List<ModeSwitch.ModeValues> modeValues = new();
