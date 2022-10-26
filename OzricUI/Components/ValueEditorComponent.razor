@@ -122,6 +122,7 @@
             return;
 
         color = (ColorValue) result.Data;
+        OnEdited.InvokeAsync(color);
         StateHasChanged();
     }
 

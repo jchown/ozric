@@ -51,7 +51,7 @@
                         @foreach (var key in Node.GetKeys())
                         {
                             <MudTd DataLabel="@key">
-                                <ValueEditorComponent Value="context.values[key]" />
+                                <ValueEditorComponent Value="context.values[key]" OnEdited="v => context.values[key] = v" />
                             </MudTd>
                         }
                     </RowEditingTemplate>
@@ -106,7 +106,7 @@
     protected override void OnInitialized()
     {
         ID = Node.id;
-        modeValues = new List<ModeSwitch.ModeValues>(Node.modeValues);
+        modeValues = new List<ModeSwitch.ModeValues>(Node.modeValues.Select(mv => mv.Clone()));
     }
 
     private List<GraphEditAction> GetChanges()

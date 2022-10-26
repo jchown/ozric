@@ -1,12 +1,13 @@
 @using OzricEngine.Values
 @using OzricService
+@inject IOzricService Ozric
 
 <MudDialog>
     <DialogContent>
 
         <MudContainer Style="max-height: 60vh; overflow-y: scroll;">
 
-            <ColorValuePicker Value="_color" />
+            <ColorValuePicker Value="_color" Picked="OnPicked" />
 
         </MudContainer>
 
@@ -27,9 +28,6 @@
     [Parameter]
     public ColorValue Value { get; set; }
 
-    [Parameter]
-    public IOzricService Ozric { get; set; }
-
     private ColorValue _color;
 
     void Cancel() => MudDialog.Cancel();
@@ -42,4 +40,8 @@
         _color = Value;
     }
 
+    private void OnPicked(ColorValue value)
+    {
+        _color = value;
+    }
 }

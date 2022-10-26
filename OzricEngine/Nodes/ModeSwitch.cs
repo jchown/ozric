@@ -27,6 +27,11 @@ public class ModeSwitch: Node
 
         public Mode mode { get; set; }
         public Values values { get; set; }
+
+        public ModeValues Clone()
+        {
+            return new ModeValues(mode, values.Clone());
+        }
     }
     
     public List<ModeValues> modeValues { get; set; }

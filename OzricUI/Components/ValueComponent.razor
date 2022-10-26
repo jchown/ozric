@@ -1,5 +1,6 @@
 @using OzricEngine.Values
 @using Boolean = OzricEngine.Values.Boolean
+@using System.Runtime.Intrinsics.X86
 
 @switch (Value)
 {
@@ -35,7 +36,7 @@
                 }
                 case ColorHS hs:
                 {
-                    <span>H/S: @(hs.h.ToString("F2"))/@(hs.s.ToString("F2"))</span>
+                    <span>H/S: @((hs.h * 100).ToString("N0"))/@((hs.s * 100).ToString("N0"))</span>
                     break;
                 }
                 case ColorXY xy:
@@ -44,6 +45,8 @@
                     break;
                 }
             }
+            <span>-</span>
+            <span>@(Math.Round(c.brightness * 100).ToString())%</span>
         }
         break;
     }

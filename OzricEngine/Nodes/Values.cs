@@ -14,4 +14,15 @@ public class Values: Dictionary<string, Value>
         foreach (var kv in attributes)
             Add(kv.Item1, kv.Item2);
     }
+
+    private Values(Values values)
+    {
+        foreach (var kv in values)
+            Add(kv.Key, kv.Value);
+    }
+
+    public Values Clone()
+    {
+        return new Values(this);
+    }
 }
