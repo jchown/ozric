@@ -50,6 +50,8 @@
                     break;
                 }
             }
+            <span> - </span>
+            <span>@(Math.Round(c.brightness * 100).ToString())%</span>
             </MudButton>
         }
         break;
@@ -122,7 +124,7 @@
             return;
 
         color = (ColorValue) result.Data;
-        OnEdited.InvokeAsync(color);
+        await OnEdited.InvokeAsync(color);
         StateHasChanged();
     }
 

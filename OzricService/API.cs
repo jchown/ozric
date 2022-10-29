@@ -8,7 +8,7 @@ public class API
 {
     public static void Map(WebApplication app)
     {
-        var engineService = app.Services.GetService<IEngineService>() ?? throw new InvalidOperationException();
+        var engineService = app.Services.GetService<IEngineService>() ?? throw new InvalidOperationException("No IEngineService");
         
         app.MapGet("/api/options", () => Options.Instance);
         app.MapGet("/api/status", () => engineService.Status);

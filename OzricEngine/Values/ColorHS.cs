@@ -9,8 +9,6 @@ namespace OzricEngine.Values
     /// </summary>
     public sealed class ColorHS: ColorValue, IEquatable<ColorHS>
     {
-        public static readonly ColorHS WHITE = new ColorHS(1f,1f,1f);
-
         public override ColorMode ColorMode => ColorMode.HS;
         
         /// <summary>

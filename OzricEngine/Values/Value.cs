@@ -14,6 +14,17 @@ namespace OzricEngine.Values
 
         public abstract void WriteAsJSON(Utf8JsonWriter writer);
         
+        /// <summary>
+        /// Force definition in subclasses
+        /// </summary>
+
+        public abstract override bool Equals(object? obj);
+
+        /// <summary>
+        /// Force definition in subclasses
+        /// </summary>
+        public abstract override int GetHashCode();
+
         public static bool operator ==(Value? lhs, Value? rhs)
         {
             if (lhs is null)
@@ -23,7 +34,5 @@ namespace OzricEngine.Values
         }
         
         public static bool operator !=(Value? lhs, Value? rhs) => !(lhs == rhs);
-
-        public abstract override int GetHashCode();
     }
 }

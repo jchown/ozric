@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.FileProviders;
 using OzricUI.Data;
 using MudBlazor.Services;
 using OzricEngine;
@@ -7,7 +8,35 @@ using OzricService;
 using OzricUI.Hubs;
 using OzricUI.Mock;
 
+const int homeAssistantIngressPort = 8099;
+const string dockerWwwRoot = "/ozric/wwwroot";
+StaticFileOptions? staticFileOptions;
+
+Console.WriteLine("Environment:");
+var env = Environment.GetEnvironmentVariables();
+foreach (var key in env.Keys)
+    Console.WriteLine($"  {key} = {env[key]}");
+
+if (Directory.Exists(dockerWwwRoot))
+{
+    Console.WriteLine($"Static files: {dockerWwwRoot}");
+
+    staticFileOptions = new StaticFileOptions
+    {
+        FileProvider = new PhysicalFileProvider(dockerWwwRoot),
+        RequestPath = ""
+    };
+}
+else
+{
+    Console.WriteLine("Static files: default");
+
+    staticFileOptions = new StaticFileOptions();
+}
+
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(homeAssistantIngressPort));
 
 // Add services to the container.
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
@@ -34,7 +63,8 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 
-app.UseStaticFiles();
+app.UseStaticFiles(staticFileOptions);
+app.UseStaticFiles();  // https://stackoverflow.com/questions/58088302/blazor-server-js-file-not-found
 app.UseRouting();
 
 app.MapBlazorHub();
