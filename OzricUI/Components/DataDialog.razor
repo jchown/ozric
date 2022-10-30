@@ -1,0 +1,39 @@
+@using OzricEngine.Nodes
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll">
+            
+            <MudTextField @bind-Value="Graph" Lines="15"></MudTextField>
+
+            <MudTextField @bind-Value="GraphLayout" Lines="15"></MudTextField>
+
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    [Parameter]
+    public string Graph { get; set; } = "";
+
+    [Parameter]
+    public string GraphLayout { get; set; } = "";
+
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(new Result(Graph, GraphLayout)));
+
+    public record Result(string graph, string graphLayout);
+
+}
