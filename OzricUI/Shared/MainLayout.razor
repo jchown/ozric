@@ -16,6 +16,7 @@
 @inject DataService Data
 @inject IOzricService OzricService
 @inject NavigationManager Navigation
+@inject IJSRuntime JS
 
 @* Why is this needed? If I remove it, we get no HHC events *@
 @inject HomeHubController HHC
@@ -120,11 +121,14 @@
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
     private bool HasSelection => (SelectedItems.Count > 0);
     private bool CanGetInfo => SelectedItems.Count == 1 && SelectedItems[0].Key is GraphNodeModel;
+    private List<String> log = new();
 
     public bool IsEditing => GraphEditState.IsEditing;
     public bool IsChanged => GraphEditState.IsChanged;
     public bool CanUndo => GraphEditState.CanUndo && !Saving;
     public bool CanRedo => GraphEditState.CanRedo && !Saving;
+    
+    
 
     void DrawerToggle()
     {
@@ -140,60 +144,82 @@
             _isDarkMode = false && dark;
             StateHasChanged();
         }
+        
+        if (log.Count == 0)
+            return;
+
+        var toLog = log;
+        log = new();
+
+        foreach (var log in toLog)
+            await JS.InvokeVoidAsync("console.log", log);
     }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadGraph();
-        
-        hubConnection = new HubConnectionBuilder()
-            .WithAutomaticReconnect()
-            .WithUrl(Navigation.ToAbsoluteUri(HomeHub.ENDPOINT))
-            .AddJsonProtocol(json => Json.Configure(json.PayloadSerializerOptions))
-            // .ConfigureLogging(logging =>
-            // {
-            //     logging.AddConsole();
-            //     logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-            // })
-            .Build();
 
-        hubConnection.On<Value>(HomeHub.TEST_MESSAGE, (v) =>
+        try
         {
-            Console.WriteLine("Value: {0}", v);
-        });
-        
-        hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (m) =>
-        {
-        });
+            hubConnection = new HubConnectionBuilder()
+                .WithAutomaticReconnect()
+                .WithUrl(Navigation.ToAbsoluteUri(HomeHub.ENDPOINT))
+                .AddJsonProtocol(json => Json.Configure(json.PayloadSerializerOptions))
+    // .ConfigureLogging(logging =>
+    // {
+    //     logging.AddConsole();
+    //     logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+    // })
+                .Build();
 
-        hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, (esc) =>
-        {
-            InvokeAsync(() =>
+            hubConnection.On<Value>(HomeHub.TEST_MESSAGE, (v) =>
             {
-                OzricService.Home.OnEventStateChanged(esc);
-                if (GraphEditState.IsLocked())
-                    GraphEditState.RefreshEntity(esc.data.new_state.entity_id);
-                
-                StateHasChanged();
+                Console.WriteLine("Value: {0}", v);
             });
-        });
-        
-        hubConnection.On<string,string,string>(HomeHub.PIN_CHANGED_MESSAGE, (nodeID, pinName, value) =>
-        {
-            InvokeAsync(() =>
+
+            hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (m) =>
             {
-                GraphEditState.PinChanged(nodeID, pinName, Json.Deserialize<Value>(value));
-                StateHasChanged();
             });
-        });
-        
-        await hubConnection.StartAsync();
+
+            hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, (esc) =>
+            {
+                InvokeAsync(() =>
+                {
+                    OzricService.Home.OnEventStateChanged(esc);
+                    if (GraphEditState.IsLocked())
+                        GraphEditState.RefreshEntity(esc.data.new_state.entity_id);
+
+                    StateHasChanged();
+                });
+            });
+
+            hubConnection.On<string, string, string>(HomeHub.PIN_CHANGED_MESSAGE, (nodeID, pinName, value) =>
+            {
+                InvokeAsync(() =>
+                {
+                    GraphEditState.PinChanged(nodeID, pinName, Json.Deserialize<Value>(value));
+                    StateHasChanged();
+                });
+            });
+
+            await hubConnection.StartAsync();
+        }
+        catch (Exception e)
+        {
+            log.Add($"Hub init failed: {e.Message}");
+        }
     }
 
     private async Task LoadGraph()
     {
+        log.Add("Loading graph");
         Graph = Json.Clone(OzricService.Graph);    // Don't edit the live graph!
+        log.Add($"Loaded {Graph.nodes.Count} nodes");
+ 
+        log.Add("Loading graph layout");
         GraphLayout = await Data.GetGraphLayoutAsync();
+        log.Add($"Loaded {GraphLayout.nodeLayout.Count} node positions");
+        
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnSelectionChanged += GraphSelectionChanged;
         GraphEditState.OnKeyDown += OnDiagramKeyDown;

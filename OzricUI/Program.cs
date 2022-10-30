@@ -9,6 +9,8 @@ using OzricUI.Hubs;
 using OzricUI.Mock;
 
 const int homeAssistantIngressPort = 8099;
+const int homeAssistantOtherPort = 9098;
+
 const string dockerWwwRoot = "/ozric/wwwroot";
 StaticFileOptions? staticFileOptions;
 
@@ -36,7 +38,7 @@ else
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(homeAssistantIngressPort));
+builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(homeAssistantOtherPort));
 
 // Add services to the container.
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
