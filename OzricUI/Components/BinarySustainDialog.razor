@@ -1,6 +1,6 @@
 @using OzricUI.Model
 @using OzricEngine.Nodes
-@using OzricEngine.Values
+@using Humanizer
 
 <MudDialog>
     <DialogContent>
@@ -13,9 +13,13 @@
             
             <MudCheckBox @bind-Checked="sustainValue" Label="Sustained Value"></MudCheckBox>
                         
-            <SecondsEditorComponent @bind-Value="@sustainActivateSecs" Label="Activate Time" />
+            <SecondsEditorComponent @bind-Value="@sustainActivateSecs" Label="Activate Time" Min="0" />
 
-            <SecondsEditorComponent @bind-Value="@sustainDeactivateSecs" Label="De-activate Time" />
+            <SecondsEditorComponent @bind-Value="@sustainDeactivateSecs" Label="De-activate Time" Min="0" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            <MudText>@Summary()</MudText>
 
         </MudContainer>
 
@@ -73,5 +77,15 @@
             changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.sustainDeactivateSecs)), sustainDeactivateSecs));
 
         return changes;
+    }
+
+    private string Summary()
+    {
+        var a = sustainValue ? "on" : "off";
+        var b = sustainValue ? "off" : "on";
+        var x = TimeSpan.FromSeconds(sustainActivateSecs).Humanize();
+        var y = TimeSpan.FromSeconds(sustainDeactivateSecs).Humanize();
+        
+        return $"If the input is {a} for over {x}, then the output will stay {a} until the input is {b} for {y}";
     }
 }

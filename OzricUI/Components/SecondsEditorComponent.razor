@@ -5,10 +5,10 @@
 
 <MudGrid>
     <MudItem xs="3">
-        <MudNumericField Value="@scaledValue" TextChanged="@(OnOffsetValueChanged)" Immediate="true" />
+        <MudNumericField Value="@CurrentScaledValue" TextChanged="@(OnOffsetValueChanged)" Immediate="true" Label="@Label" Min="@Min" Max="@Max"/>
     </MudItem>
     <MudItem xs="6">
-        <MudSelect Value="@scale" T="int" Variant="Variant.Text" ValueChanged="@(OnOffsetScaleChanged)" >
+        <MudSelect Value="@CurrentScale" T="int" Variant="Variant.Text" ValueChanged="@(OnOffsetScaleChanged)">
             <MudSelectItem Value="1">Seconds</MudSelectItem>
             <MudSelectItem Value="60">Minutes</MudSelectItem>
             <MudSelectItem Value="3600">Hours</MudSelectItem>
@@ -27,40 +27,48 @@
     [Parameter]
     public string? Label { get; set; }
 
-    public double value { get; set; }
-    private int scale { get; set; } = 60;
-    private double scaledValue { get; set; }
+    [Parameter]
+    public double? Min { get; set; }
+ 
+    [Parameter]
+    public double? Max { get; set; }
+
+    public double CurrentValue { get; set; }
+    private int CurrentScale { get; set; }
+    private double CurrentScaledValue { get; set; }
+
+    public bool Error { get; set; }
+    public string? ErrorText { get; set; }
 
     protected override void OnInitialized()
     {
-        value = Value;
+        CurrentValue = Value;
 
-        if (value % 3600 == 0)
-            scale = 3600;
-        else if (value % 60 == 0)
-            scale = 60;
+        if (CurrentValue % 3600 == 0)
+            CurrentScale = 3600;
+        else if (CurrentValue % 60 == 0)
+            CurrentScale = 60;
         else
-            scale = 1;
+            CurrentScale = 1;
         
-        scaledValue = value / scale;
+        CurrentScaledValue = CurrentValue / CurrentScale;
     }
-
-
+    
     private void OnOffsetValueChanged(string s)
     {
         if (Double.TryParse(s, out var v))
         {
-            scaledValue = v;
-            value = scaledValue * scale;
+            CurrentScaledValue = v;
+            CurrentValue = CurrentScaledValue * CurrentScale;
             if (ValueChanged.HasDelegate)
-                ValueChanged.InvokeAsync(value);
+                ValueChanged.InvokeAsync(CurrentValue);
         }
     }
 
     private void OnOffsetScaleChanged(int seconds)
     {
-        scale = seconds;
-        scaledValue = value / scale;
+        CurrentScale = seconds;
+        CurrentScaledValue = CurrentValue / CurrentScale;
     }
 
 }

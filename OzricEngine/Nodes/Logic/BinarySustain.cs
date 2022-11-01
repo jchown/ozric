@@ -15,9 +15,9 @@ public class BinarySustain: Node
 {
     public override NodeType nodeType => NodeType.BinarySustain;
 
-    public bool sustainValue { get; set; }
-    public double sustainActivateSecs { get; set; }
-    public double sustainDeactivateSecs { get; set; }
+    public bool sustainValue { get; set; } = true;
+    public double sustainActivateSecs { get; set; } = 120;
+    public double sustainDeactivateSecs { get; set; } = 600;
 
     [JsonIgnore]
     private DateTime? _valueSet;
