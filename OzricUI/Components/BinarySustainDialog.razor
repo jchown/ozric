@@ -1,0 +1,77 @@
+@using OzricUI.Model
+@using OzricEngine.Nodes
+@using OzricEngine.Values
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
+            
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+            
+            <MudCheckBox @bind-Checked="sustainValue" Label="Sustained Value"></MudCheckBox>
+                        
+            <SecondsEditorComponent @bind-Value="@sustainActivateSecs" Label="Activate Time" />
+
+            <SecondsEditorComponent @bind-Value="@sustainDeactivateSecs" Label="De-activate Time" />
+
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    [Parameter]
+    public BinarySustainModel Model { get; set; }
+
+    [Parameter]
+    public BinarySustain Node { get; set; }
+
+    private string ID;
+    private bool sustainValue { get; set; }
+    private double sustainActivateSecs { get; set; }
+    private double sustainDeactivateSecs { get; set; }
+    
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+
+    protected override void OnInitialized()
+    {
+        ID = Node.id;
+        sustainValue = Node.sustainValue;
+        sustainActivateSecs = Node.sustainActivateSecs;
+        sustainDeactivateSecs = Node.sustainDeactivateSecs;
+    }
+
+    private List<GraphEditAction> GetChanges()
+    {
+        var changes = new List<GraphEditAction>();
+        if (ID != Node.id)
+            changes.Add(new GraphEditAction.RenameNode(Node, ID));
+        
+        if (sustainValue != Node.sustainValue)
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.sustainValue)), sustainValue));
+        
+        if (sustainActivateSecs != Node.sustainActivateSecs)
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.sustainActivateSecs)), sustainActivateSecs));
+        
+        if (sustainDeactivateSecs != Node.sustainDeactivateSecs)
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.sustainDeactivateSecs)), sustainDeactivateSecs));
+
+        return changes;
+    }
+}

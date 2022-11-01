@@ -5,6 +5,7 @@ namespace OzricEngine.Values
     [JsonConverter(typeof(JsonStringEnumConverter))] 
     public enum ColorMode
     {
-        HS, Temp, RGB, XY
+        HS, Temp, RGB, XY,
+        Unknown
     }
 }

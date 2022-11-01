@@ -54,12 +54,7 @@
                                     <MudSelectItem Value="sunPhase">@sunPhase (@DescribePhaseStart(sunPhase))</MudSelectItem>
                                 }
                             </MudSelect>
-                            <MudNumericField Value="@offsetValue" TextChanged="@((y) => OnOffsetValueChanged(y))" />
-                            <MudSelect Value="@offsetScale" T="int" Variant="Variant.Text" ValueChanged="@((x) => OnOffsetScaleChanged(x))" >
-                                <MudSelectItem Value="1">Seconds</MudSelectItem>
-                                <MudSelectItem Value="60">Minutes</MudSelectItem>
-                                <MudSelectItem Value="3600">Hours</MudSelectItem>
-                            </MudSelect>
+                            <SecondsEditorComponent @bind-Value="@context.startOffsetSeconds" />
                         </MudTd>
                     </RowEditingTemplate>
                     
@@ -107,9 +102,6 @@
     private DayPhases.PhaseStart preEdit;
     private string? addPhase { get; set; }
     private DayPhases.SunPhase[] SunPhases = Enum.GetValues<DayPhases.SunPhase>();
-    
-    private int offsetScale { get; set; } = 60;
-    private double offsetValue { get; set; }
 
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
@@ -119,7 +111,7 @@
     protected override void OnInitialized()
     {
         ID = Node.id;
-        phases = new List<DayPhases.PhaseStart>(Node.phases);
+        phases = new List<DayPhases.PhaseStart>(Node.phases.Select(p => p.Copy()));
         Sun = Ozric.Home.GetEntityState(DayPhases.SUN_ENTITY_ID)?.attributes ?? FakeSunAttributes();
     }
 
@@ -169,15 +161,6 @@
     {
         var phaseStart = (DayPhases.PhaseStart) element;
         preEdit = new DayPhases.PhaseStart(phaseStart.mode, phaseStart.start, phaseStart.startOffsetSeconds);
-        
-        if (phaseStart.startOffsetSeconds % 3600 == 0)
-            offsetScale = 3600;
-        else if (phaseStart.startOffsetSeconds % 60 == 0)
-            offsetScale = 60;
-        else
-            offsetScale = 1;
-        
-        offsetValue = ((double) phaseStart.startOffsetSeconds) / offsetScale;
     }
 
     private void ResetItem(object element)
@@ -188,12 +171,17 @@
         phaseStart.startOffsetSeconds = preEdit.startOffsetSeconds;
     }
 
-    private string DescribeSeconds(int offsetSeconds)
+    private string DescribeSeconds(double seconds)
     {
-        if (offsetSeconds == 0)
+        return DescribeSeconds((int) seconds);
+    }
+
+    private string DescribeSeconds(int seconds)
+    {
+        if (seconds == 0)
             return "";
 
-        return $"{DescribeAbsSeconds(Math.Abs(offsetSeconds))} {(offsetSeconds > 0 ? "after" : "before")} ";
+        return $"{DescribeAbsSeconds(Math.Abs(seconds))} {(seconds > 0 ? "after" : "before")} ";
     }
 
     private string DescribeAbsSeconds(int seconds)
@@ -253,17 +241,5 @@
             default:
                 throw new ArgumentOutOfRangeException(nameof(contextStart), contextStart, null);
         }
-    }
-
-    private void OnOffsetValueChanged(string value)
-    {
-        offsetValue = Double.Parse(value);
-        selected.startOffsetSeconds = (int)(offsetValue * offsetScale);
-    }
-
-    private void OnOffsetScaleChanged(int seconds)
-    {
-        offsetScale = seconds;
-        offsetValue = selected.startOffsetSeconds / (double) offsetScale;
     }
 }

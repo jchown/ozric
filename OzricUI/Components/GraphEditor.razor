@@ -378,6 +378,9 @@
 
             case Tween t:
                 return new TweenModel(t, point);
+
+            case BinarySustain bs:
+                return new BinarySustainModel(bs, point);
         }
 
         throw new Exception($"Unhandled type {node.GetType()}");

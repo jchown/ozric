@@ -409,11 +409,6 @@
         return options;
     }
 
-    private static bool IsClass<T>(Type baseClass)
-    {
-        return baseClass == typeof(T) || baseClass.IsSubclassOf(typeof(T));
-    }
-
     private Task OnClickDelete()
     {
         GraphEditState.DoCommand(GraphEditState.Command.Delete);        

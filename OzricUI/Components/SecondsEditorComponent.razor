@@ -1,0 +1,66 @@
+@using OzricEngine.Values
+@using OzricService
+@using Boolean = OzricEngine.Values.Boolean
+@using Size = MudBlazor.Size
+
+<MudGrid>
+    <MudItem xs="3">
+        <MudNumericField Value="@scaledValue" TextChanged="@(OnOffsetValueChanged)" Immediate="true" />
+    </MudItem>
+    <MudItem xs="6">
+        <MudSelect Value="@scale" T="int" Variant="Variant.Text" ValueChanged="@(OnOffsetScaleChanged)" >
+            <MudSelectItem Value="1">Seconds</MudSelectItem>
+            <MudSelectItem Value="60">Minutes</MudSelectItem>
+            <MudSelectItem Value="3600">Hours</MudSelectItem>
+        </MudSelect>
+    </MudItem>
+</MudGrid>
+
+@code {
+    
+    [Parameter]
+    public double Value { get; set; }
+ 
+    [Parameter]
+    public EventCallback<double> ValueChanged { get; set; }
+
+    [Parameter]
+    public string? Label { get; set; }
+
+    public double value { get; set; }
+    private int scale { get; set; } = 60;
+    private double scaledValue { get; set; }
+
+    protected override void OnInitialized()
+    {
+        value = Value;
+
+        if (value % 3600 == 0)
+            scale = 3600;
+        else if (value % 60 == 0)
+            scale = 60;
+        else
+            scale = 1;
+        
+        scaledValue = value / scale;
+    }
+
+
+    private void OnOffsetValueChanged(string s)
+    {
+        if (Double.TryParse(s, out var v))
+        {
+            scaledValue = v;
+            value = scaledValue * scale;
+            if (ValueChanged.HasDelegate)
+                ValueChanged.InvokeAsync(value);
+        }
+    }
+
+    private void OnOffsetScaleChanged(int seconds)
+    {
+        scale = seconds;
+        scaledValue = value / scale;
+    }
+
+}

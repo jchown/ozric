@@ -514,10 +514,12 @@ public class Light: EntityNode
                     return ColorMode.RGB;
                 case "color_temp":
                     return ColorMode.Temp;
+                
                 default:
-                    throw new Exception();
+                    Log(LogLevel.Warning, "Unknown color mode: {0}", s);
+                    return ColorMode.Unknown;
             }
-        }).ToList();
+        }).Where(s => s != ColorMode.Unknown).ToList();
     }
 
 }

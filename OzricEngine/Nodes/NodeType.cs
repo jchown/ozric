@@ -19,5 +19,6 @@ public enum NodeType
     ModeSensor,
     ModeMatch,
     Person,
-    Tween
+    Tween,
+    BinarySustain
 }

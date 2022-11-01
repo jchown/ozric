@@ -14,7 +14,7 @@ public class AddNodeChoice
     public readonly Func<Node> Create;
     public readonly bool Once;
 
-    public AddNodeChoice(Category category, string name, string icon, Func<Node> create, bool once)
+    public AddNodeChoice(Category category, string name, string icon, Func<Node> create, bool once = false)
     {
         Category = category;
         Name = name;
@@ -51,71 +51,67 @@ public class AddNodeChoice
             category: Category.Logic,
             name: "If Any - OR",
             icon: IfAnyModel.ICON,
-            create: () => new IfAny(graph.CreateNodeID("ifany-")),
-            once: false));
+            create: () => new IfAny(graph.CreateNodeID("ifany-"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "If All - AND",
             icon: IfAllModel.ICON,
-            create: () => new IfAny(graph.CreateNodeID("ifall-")),
-            once: false));
+            create: () => new IfAny(graph.CreateNodeID("ifall-"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Binary Choice - Color",
             icon: BinaryChoiceModel.ICON,
-            create: () => new BinaryChoice(graph.CreateNodeID("color-choice-"), ValueType.Color),
-            once: false));
+            create: () => new BinaryChoice(graph.CreateNodeID("color-choice-"), ValueType.Color)));
 
         choices.Add(new AddNodeChoice(
             category: Category.Constant,
             name: "Color",
             icon: ConstantColorModel.ICON,
-            create: () => new Constant(graph.CreateNodeID("colour-"), ColorRGB.WHITE),
-            once: false));
+            create: () => new Constant(graph.CreateNodeID("colour-"), ColorRGB.WHITE)));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Mode Matches",
             icon: ModeMatchModel.ICON,
-            create: () => new ModeMatch(graph.CreateNodeID("match-")),
-            once: false));
+            create: () => new ModeMatch(graph.CreateNodeID("match-"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Tween - Color",
             icon: TweenModel.ICON,
-            create: () => new Tween(graph.CreateNodeID("tween-"), ValueType.Color),
-            once: false));
+            create: () => new Tween(graph.CreateNodeID("tween-"), ValueType.Color)));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Tween - Scalar",
             icon: TweenModel.ICON,
-            create: () => new Tween(graph.CreateNodeID("tween-"), ValueType.Scalar),
-            once: false));
+            create: () => new Tween(graph.CreateNodeID("tween-"), ValueType.Scalar)));
         
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Binary Choice - Color",
             icon: BinaryChoiceModel.ICON,
-            create: () => BinaryChoiceModel.Color(graph.CreateNodeID("binary-choice-")),
-            once: false));
+            create: () => BinaryChoiceModel.Color(graph.CreateNodeID("binary-choice-"))));
+        
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
+            name: "Binary Sustain",
+            icon: BinarySustainModel.ICON,
+            create: () => new BinarySustain(graph.CreateNodeID("sustain-"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Mode Switch - Color",
             icon: ModeSwitchModel.ICON,
-            create: () => ModeSwitchModel.Color(graph.CreateNodeID("color-mode-switch-")),
-            once: false));
+            create: () => ModeSwitchModel.Color(graph.CreateNodeID("color-mode-switch-"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Environment,
             name: "Day Phases",
             icon: DayPhasesModel.ICON,
-            create: () => new DayPhases(graph.CreateNodeID("day-phases-")),
-            once: false));
+            create: () => new DayPhases(graph.CreateNodeID("day-phases-"))));
 
         return choices;
     }

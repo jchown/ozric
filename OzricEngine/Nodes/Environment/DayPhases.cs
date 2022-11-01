@@ -65,10 +65,10 @@ public class DayPhases: Node
     public class PhaseStart
     {
         public SunPhase start { get; set; }
-        public int startOffsetSeconds { get; set; }
+        public double startOffsetSeconds { get; set; }
         public Mode mode { get; set; }
 
-        public PhaseStart(Mode mode, SunPhase start, int startOffsetSeconds = 0)
+        public PhaseStart(Mode mode, SunPhase start, double startOffsetSeconds = 0)
         {
             this.start = start;
             this.startOffsetSeconds = startOffsetSeconds;
@@ -141,6 +141,29 @@ public class DayPhases: Node
         public static PhaseStart Create(SunPhase sunPhase, int offsetSeconds, Mode mode)
         {
             return new PhaseStart(mode, sunPhase, offsetSeconds);
+        }
+
+        public PhaseStart Copy()
+        {
+            return new PhaseStart(mode, start, startOffsetSeconds);
+        }
+
+        public override bool Equals(object? obj)
+        {
+            if (obj is not PhaseStart ps)
+                return false;
+
+            return Equals(ps);
+        }
+
+        private bool Equals(PhaseStart other)
+        {
+            return start == other.start && startOffsetSeconds.Equals(other.startOffsetSeconds) && mode.Equals(other.mode);
+        }
+
+        public override int GetHashCode()
+        {
+            return HashCode.Combine((int)start, startOffsetSeconds, mode);
         }
     }
 
