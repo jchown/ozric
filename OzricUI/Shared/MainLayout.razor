@@ -21,6 +21,8 @@
 @* Why is this needed? If I remove it, we get no HHC events *@
 @inject HomeHubController HHC
 
+<PageTitle>Ozric - Graph</PageTitle>
+
 <MudDialogProvider/>
 <MudSnackbarProvider/>
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode"/>
@@ -53,16 +55,12 @@
 
         <MudSpacer />
         
-        <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickEdit" Disabled="@IsEditing" Hidden="@IsEditing">
+        <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickEdit" Disabled="@IsEditing" hidden="@IsEditing">
             Edit
         </MudButton>
         
         <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDone" Disabled="@(Saving || !IsEditing)" hidden="@(!IsEditing)"> 
             Done
-        </MudButton>
-
-        <MudButton StartIcon="@Icons.Material.Filled.DataExploration" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickData" Disabled="@IsEditing" Hidden="@IsEditing">
-            Data
         </MudButton>
                 
         <MudButton Color="Color.Tertiary" Variant="Variant.Filled"  @onclick="OnClickSave" Disabled="@(Saving || !IsChanged)" hidden="@(!IsEditing)">

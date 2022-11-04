@@ -11,12 +11,13 @@ namespace OzricUI.Model;
 public abstract class GraphNodeModel: NodeModel
 {
     public readonly Node node;
-    private Mapping<Pin, PortModel> portMappings;
+    
+    private readonly Mapping<Pin, PortModel> _portMappings;
 
     public GraphNodeModel(Node node, Point? point = null) : base(node.id, point)
     {
         this.node = node;
-        portMappings = new();
+        _portMappings = new();
 
         foreach (var input in node.inputs)
             AddInput(input);
@@ -26,6 +27,8 @@ public abstract class GraphNodeModel: NodeModel
 
         Load();
     }
+
+    public abstract string Icon { get; }
 
     public virtual void Load()
     {
@@ -39,31 +42,31 @@ public abstract class GraphNodeModel: NodeModel
     
     public bool HasPin(PortModel port)
     {
-        return portMappings.HasDiagramModel(port);
+        return _portMappings.HasDiagramModel(port);
     }
 
     public Pin GetPin(PortModel port)
     {
-        return portMappings.GetGraph(port);
+        return _portMappings.GetGraph(port);
     }
 
     public void AddInput(Pin pin)
     {
         var port = AddPort(new PinPortInput(this, pin, PortAlignment.Left));
-        portMappings.Add(pin, port);
+        _portMappings.Add(pin, port);
     }
 
     private void AddOutput(Pin pin)
     {
         var port = AddPort(new PinPortOutput(this, pin, PortAlignment.Right));
-        portMappings.Add(pin, port);
+        _portMappings.Add(pin, port);
     }
 
     public void RemoveInput(Pin pin)
     {
-        var port = portMappings.GetDiagram(pin);
+        var port = _portMappings.GetDiagram(pin);
         RemovePort(port);
-        portMappings.Remove(pin);
+        _portMappings.Remove(pin);
     }
     
     public virtual int PortHeight()
@@ -85,8 +88,6 @@ public abstract class GraphNodeModel: NodeModel
         return Math.Max(nl, nr);
     }
     
-    public abstract string Icon { get; }
-
     public virtual int GetPortPosition(IPort port)
     {
         var input = port.IsInput;

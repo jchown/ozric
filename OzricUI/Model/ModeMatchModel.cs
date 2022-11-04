@@ -13,5 +13,5 @@ public class ModeMatchModel: GraphNodeModel
     
     public override string Icon => ICON;
 
-    public const string ICON = "mdi:checklist";
+    public const string ICON = "icon-park-solid:checklist";
 }

@@ -1,9 +1,7 @@
 using System;
-using OzricEngine.Values;
 using OzricEngineTests;
 using Xunit;
 using Boolean = OzricEngine.Values.Boolean;
-using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine.Nodes
 {
@@ -90,13 +88,6 @@ namespace OzricEngine.Nodes
         /// <summary>
         /// Turn the input off and the on for the given seconds, then finally set the final state for the given time 
         /// </summary>
-        /// <param name="node"></param>
-        /// <param name="now"></param>
-        /// <param name="timeOff"></param>
-        /// <param name="timeOn"></param>
-        /// <param name="timeFinal"></param>
-        /// <param name="inputFinal"></param>
-        /// <param name="expectedOutput"></param>
 
         private DateTime AssertSustainRigorous(BinarySustain node, DateTime now, int timeOff, int timeOn, int timeFinal, bool inputFinal, bool expectedOutput)
         {

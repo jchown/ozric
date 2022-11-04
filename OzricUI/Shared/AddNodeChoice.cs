@@ -29,9 +29,10 @@ public class AddNodeChoice
             .Where(device => !graph.HasDevicesNode(device.Key) && CategoryModelMappings.Exists(device.Value.GetCategory()))
             .Select(device =>
             {
+                var entityID = device.Key;
                 var category = device.Value.GetCategory();
                 var type = CategoryModelMappings.Get(category);
-                var entityID = device.Key;
+                var icon = GetEntityIcon(type) ?? "icon-park-outline:chip";
                 var id = entityID.Substring(entityID.IndexOf('.') + 1);
                 if (graph.HasDevicesNode(id))
                     id = graph.CreateNodeID(category.ToString().ToLowerInvariant());
@@ -39,10 +40,11 @@ public class AddNodeChoice
                 return new AddNodeChoice(
                     category: category,
                     name: entityID,
-                    icon: LightModel.ICON,
+                    icon: icon,
                     create: () => (Node) Activator.CreateInstance(type, id, entityID)!,
                     once: true);
             })
+            .OrderBy(choice => choice.Category)
             .ToList();
         
         //  TODO: Do this via reflection?
@@ -51,68 +53,85 @@ public class AddNodeChoice
             category: Category.Logic,
             name: "If Any - OR",
             icon: IfAnyModel.ICON,
-            create: () => new IfAny(graph.CreateNodeID("ifany-"))));
+            create: () => new IfAny(graph.CreateNodeID("ifany"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "If All - AND",
             icon: IfAllModel.ICON,
-            create: () => new IfAny(graph.CreateNodeID("ifall-"))));
-
-        choices.Add(new AddNodeChoice(
-            category: Category.Logic,
-            name: "Binary Choice - Color",
-            icon: BinaryChoiceModel.ICON,
-            create: () => new BinaryChoice(graph.CreateNodeID("color-choice-"), ValueType.Color)));
+            create: () => new IfAny(graph.CreateNodeID("ifall"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Constant,
             name: "Color",
             icon: ConstantColorModel.ICON,
-            create: () => new Constant(graph.CreateNodeID("colour-"), ColorRGB.WHITE)));
+            create: () => new Constant(graph.CreateNodeID("colour"), ColorRGB.WHITE)));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Mode Matches",
             icon: ModeMatchModel.ICON,
-            create: () => new ModeMatch(graph.CreateNodeID("match-"))));
+            create: () => new ModeMatch(graph.CreateNodeID("match"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Tween - Color",
             icon: TweenModel.ICON,
-            create: () => new Tween(graph.CreateNodeID("tween-"), ValueType.Color)));
+            create: () => new Tween(graph.CreateNodeID("tween"), ValueType.Color)));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Tween - Scalar",
             icon: TweenModel.ICON,
-            create: () => new Tween(graph.CreateNodeID("tween-"), ValueType.Scalar)));
+            create: () => new Tween(graph.CreateNodeID("tween"), ValueType.Scalar)));
         
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Binary Choice - Color",
             icon: BinaryChoiceModel.ICON,
-            create: () => BinaryChoiceModel.Color(graph.CreateNodeID("binary-choice-"))));
+            create: () => BinaryChoiceModel.Color(graph.CreateNodeID("binary-choice"))));
         
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Binary Sustain",
             icon: BinarySustainModel.ICON,
-            create: () => new BinarySustain(graph.CreateNodeID("sustain-"))));
+            create: () => new BinarySustain(graph.CreateNodeID("sustain"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Mode Switch - Color",
             icon: ModeSwitchModel.ICON,
-            create: () => ModeSwitchModel.Color(graph.CreateNodeID("color-mode-switch-"))));
+            create: () => ModeSwitchModel.Color(graph.CreateNodeID("color-mode-switch"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Environment,
             name: "Day Phases",
             icon: DayPhasesModel.ICON,
-            create: () => new DayPhases(graph.CreateNodeID("day-phases-"))));
+            create: () => new DayPhases(graph.CreateNodeID("day-phases"))));
 
         return choices;
+    }
+
+    private static string? GetEntityIcon(Type type)
+    {
+        if (type == typeof(Light))
+            return LightModel.ICON;
+
+        if (type == typeof(BinarySensor))
+            return SensorModel.ICON;
+
+        if (type == typeof(Person))
+            return PersonModel.ICON;
+
+        if (type == typeof(ModeSensor))
+            return ModeSensorModel.ICON;
+
+        if (type == typeof(Switch))
+            return SwitchModel.ICON;
+
+        if (type == typeof(MediaPlayer))
+            return MediaPlayerModel.ICON;
+
+        return null;
     }
 }
