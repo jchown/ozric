@@ -27,7 +27,7 @@ namespace OzricEngine.Nodes
             var context = MockContextAtTime(now);
             node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(false), context);
             node.OnInit(context);
-            Assert.Equal(false, node.GetOutputValue<Boolean>(BinarySustain.OUTPUT_NAME).value);
+            Assert.False(node.GetOutputValue<Boolean>(BinarySustain.OUTPUT_NAME).value);
 
             //  A little later it goes on
             now = now.AddSeconds(10);
@@ -51,6 +51,82 @@ namespace OzricEngine.Nodes
             //  Much, much later it finally goes off
             now = now.AddSeconds(40);
             AssertUpdateSustain(false, false, node, now);
+        }
+
+        [Fact]
+        public void canSustainBinaryRigorous()
+        {
+            var node = new BinarySustain("sus-1");
+            node.sustainValue = true;
+            node.sustainActivateSecs = 15;
+            node.sustainDeactivateSecs = 60;
+            
+            DateTime now = DateTime.Now;
+            
+            //  Initial state is off
+
+            var context = MockContextAtTime(now);
+            node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(false), context);
+            node.OnInit(context);
+            Assert.False(node.GetOutputValue<Boolean>(BinarySustain.OUTPUT_NAME).value);
+            
+            //  No matter how many time we go off/on quickly it will go off after 
+
+            now = AssertSustainRigorous(node, now, 5, 5, 5, false, false);
+            
+            //  No matter How many time we go off/on it will stay on after 
+
+            now = AssertSustainRigorous(node, now, 20, 20, 20, false, true);
+            
+            //  Wait a bit longer and it finally goes off 
+            
+            now = now.AddSeconds(60);
+            var contextOff = MockContextAtTime(now);
+            node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(false), contextOff);
+            node.OnUpdate(contextOff);
+            Assert.False(node.GetOutputValue<Boolean>(BinarySustain.OUTPUT_NAME).value);
+        }
+        
+        /// <summary>
+        /// Turn the input off and the on for the given seconds, then finally set the final state for the given time 
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="now"></param>
+        /// <param name="timeOff"></param>
+        /// <param name="timeOn"></param>
+        /// <param name="timeFinal"></param>
+        /// <param name="inputFinal"></param>
+        /// <param name="expectedOutput"></param>
+
+        private DateTime AssertSustainRigorous(BinarySustain node, DateTime now, int timeOff, int timeOn, int timeFinal, bool inputFinal, bool expectedOutput)
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                now = now.AddSeconds(timeOff);
+
+                var contextOff = MockContextAtTime(now);
+                node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(false), contextOff);
+                node.OnUpdate(contextOff);
+
+                now = now.AddSeconds(timeOn);
+
+                var contextOn = MockContextAtTime(now);
+                node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(true), contextOn);
+                node.OnUpdate(contextOn);
+            }
+            
+            var contextPre = MockContextAtTime(now);
+            node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(inputFinal), contextPre);
+            node.OnUpdate(contextPre);
+            
+            now = now.AddSeconds(timeFinal);
+            
+            var contextPost = MockContextAtTime(now);
+            node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(inputFinal), contextPost);
+            node.OnUpdate(contextPost);
+            Assert.Equal(expectedOutput, node.GetOutputValue<Boolean>(BinarySustain.OUTPUT_NAME).value);
+            
+            return now;
         }
 
         private static void AssertUpdateSustain(bool expectedOutput, bool input, BinarySustain node, DateTime now)
