@@ -2,7 +2,6 @@
 @using OzricEngine.Values
 @using OzricUI.Model
 @using ValueType = OzricEngine.Values.ValueType
-@using Boolean = OzricEngine.Values.Boolean
 
 <div class="ozric-node @(Node.Selected ? " selected" : "") ozric-height-@(Node.PortHeight())">
     <div class="ozric-node-icon"><span class="iconify" data-icon="@(Node.Icon)"></span></div>
@@ -22,11 +21,11 @@
                         //  Show the live state
                         switch (port.valueType)
                         {
-                            case ValueType.Scalar:
+                            case ValueType.Number:
                                 break;
                                 
-                            case ValueType.Boolean:
-                                var pinValue = ((Boolean?)pin.value);
+                            case ValueType.Binary:
+                                var pinValue = ((Binary?)pin.value);
                                 if (pinValue?.value ?? false)
                                 {
                                     <img src="icons/Binary-true.png" width="16" height="16"/>

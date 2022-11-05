@@ -21,14 +21,7 @@ namespace OzricEngine
         
         public static T Deserialize<T>(string json)
         {
-            // try
-            {
-                return JsonSerializer.Deserialize<T>(json, Options)!;
-            }
-            // catch (Exception e)
-            // {
-            //     throw e.Rethrown($"... while parsing {json}");
-            // }
+            return JsonSerializer.Deserialize<T>(json, Options)!;
         }
         
         /// <summary>

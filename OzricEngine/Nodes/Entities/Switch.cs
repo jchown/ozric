@@ -1,8 +1,8 @@
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using OzricEngine.Values;
 using ValueType = OzricEngine.Values.ValueType;
-using Boolean = OzricEngine.Values.Boolean;
 
 namespace OzricEngine.Nodes;
 
@@ -13,7 +13,7 @@ public class Switch: EntityNode
 
     public const string INPUT_NAME = "state";
 
-    public Switch(string id, string entityID) : base(id, entityID, new List<Pin> { new(INPUT_NAME, ValueType.Boolean) }, null)
+    public Switch(string id, string entityID) : base(id, entityID, new List<Pin> { new(INPUT_NAME, ValueType.Binary) }, null)
     {
     }
 
@@ -51,7 +51,7 @@ public class Switch: EntityNode
         bool on = (entityState.state == "on");
         Log(LogLevel.Debug, "{0}.on = {1}", entityID, on);
 
-        bool desired = (input.value as Boolean)?.value ?? false;
+        bool desired = (input.value as Binary)?.value ?? false;
             
         if (on != desired)
         {

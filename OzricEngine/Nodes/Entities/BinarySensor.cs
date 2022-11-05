@@ -1,8 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using OzricEngine.Values;
 using ValueType = OzricEngine.Values.ValueType;
-using Boolean = OzricEngine.Values.Boolean;
 
 namespace OzricEngine.Nodes;
 
@@ -13,7 +13,7 @@ public class BinarySensor : EntityNode
 
     public const string OUTPUT_NAME = "activity";
 
-    public BinarySensor(string id, string entityID) : base(id, entityID, null, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) })
+    public BinarySensor(string id, string entityID) : base(id, entityID, null, new List<Pin> { new(OUTPUT_NAME, ValueType.Binary) })
     {
     }
 
@@ -38,6 +38,6 @@ public class BinarySensor : EntityNode
             return;
         }
 
-        SetOutputValue(OUTPUT_NAME, new Boolean(device.state != "off"), context);
+        SetOutputValue(OUTPUT_NAME, new Binary(device.state != "off"), context);
     }
 }

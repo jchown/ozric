@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
-using Boolean = OzricEngine.Values.Boolean;
+using OzricEngine.Values;
 using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine.Nodes;
@@ -28,7 +28,7 @@ public class BinarySustain: Node
     public const string INPUT_NAME = "in";
     public const string OUTPUT_NAME = "out";
         
-    public BinarySustain(string id): base(id, new List<Pin> { new(INPUT_NAME, ValueType.Boolean) }, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) })
+    public BinarySustain(string id): base(id, new List<Pin> { new(INPUT_NAME, ValueType.Binary) }, new List<Pin> { new(OUTPUT_NAME, ValueType.Binary) })
     {
     }
             
@@ -46,7 +46,7 @@ public class BinarySustain: Node
 
     private void UpdateValue(Context context)
     {
-        var input = GetInputValue<Boolean>(INPUT_NAME).value;
+        var input = GetInputValue<Binary>(INPUT_NAME).value;
         var output = input;
         
         if (input == sustainValue)
@@ -88,6 +88,6 @@ public class BinarySustain: Node
             }
         }
         
-        SetOutputValue(OUTPUT_NAME, new Boolean(output), context);
+        SetOutputValue(OUTPUT_NAME, new Binary(output), context);
     }
 }

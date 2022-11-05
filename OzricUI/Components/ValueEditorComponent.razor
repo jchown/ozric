@@ -1,14 +1,14 @@
 @using OzricEngine.Values
 @using OzricService
-@using Boolean = OzricEngine.Values.Boolean
+@using Boolean = OzricEngine.Values.Binary
 @using Size = MudBlazor.Size
 @inject IDialogService DialogService
 
 @switch (Value)
 {
-    case Boolean:
+    case Binary:
     {
-        <MudBooleanInput T="Boolean" @bind="boolean" />
+        <MudBooleanInput T="Boolean" @bind="binary" />
         break;
     }
     case ColorValue c:
@@ -61,9 +61,9 @@
         <MudTextField T="string" @bind-Text="mode" />
         break;
     }
-    case Scalar:
+    case Number:
     {
-        <MudNumericField Value="scalar" />
+        <MudNumericField Value="number" />
         break;
     }
 }
@@ -76,8 +76,8 @@
     [Parameter]
     public EventCallback<Value> OnEdited { get; set; }
 
-    public bool boolean;
-    public float scalar;
+    public bool binary;
+    public float number;
     public string mode;
     public ColorValue color;
 
@@ -85,12 +85,12 @@
     {
         switch (Value)
         {
-            case Boolean b:
-                boolean = b.value;
+            case Binary b:
+                binary = b.value;
                 break;
                 
-            case Scalar s:
-                scalar = s.value;
+            case Number s:
+                number = s.value;
                 break;
                 
             case Mode m:

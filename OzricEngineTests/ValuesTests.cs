@@ -4,7 +4,6 @@ using System.Text.Json;
 using OzricEngine.Nodes;
 using Xunit;
 using OzricEngine.Values;
-using Boolean = OzricEngine.Values.Boolean;
 
 namespace OzricEngineTests
 {
@@ -33,9 +32,9 @@ namespace OzricEngineTests
         {
             assertSerializeRoundTripWorks<Value>(new ColorRGB(40f/255f, 128f/255f, 192f/255f, 0.333f));
 
-            assertSerializeRoundTripWorks<Value>(new Scalar(3.14159f));
+            assertSerializeRoundTripWorks<Value>(new Number(3.14159f));
             
-            assertSerializeRoundTripWorks<Value>(new Boolean(true));
+            assertSerializeRoundTripWorks<Value>(new Binary(true));
             
             assertSerializeRoundTripWorks<Value>(new Mode("weekend"));
             

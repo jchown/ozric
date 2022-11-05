@@ -1,7 +1,7 @@
 using System;
+using OzricEngine.Values;
 using OzricEngineTests;
 using Xunit;
-using Boolean = OzricEngine.Values.Boolean;
 
 namespace OzricEngine.Nodes
 {
@@ -23,9 +23,9 @@ namespace OzricEngine.Nodes
             //  Initial state is off
 
             var context = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(false), context);
+            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(false), context);
             node.OnInit(context);
-            Assert.False(node.GetOutputValue<Boolean>(BinarySustain.OUTPUT_NAME).value);
+            Assert.False(node.GetOutputValue<Binary>(BinarySustain.OUTPUT_NAME).value);
 
             //  A little later it goes on
             now = now.AddSeconds(10);
@@ -64,9 +64,9 @@ namespace OzricEngine.Nodes
             //  Initial state is off
 
             var context = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(false), context);
+            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(false), context);
             node.OnInit(context);
-            Assert.False(node.GetOutputValue<Boolean>(BinarySustain.OUTPUT_NAME).value);
+            Assert.False(node.GetOutputValue<Binary>(BinarySustain.OUTPUT_NAME).value);
             
             //  No matter how many time we go off/on quickly it will go off after 
 
@@ -80,9 +80,9 @@ namespace OzricEngine.Nodes
             
             now = now.AddSeconds(60);
             var contextOff = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(false), contextOff);
+            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(false), contextOff);
             node.OnUpdate(contextOff);
-            Assert.False(node.GetOutputValue<Boolean>(BinarySustain.OUTPUT_NAME).value);
+            Assert.False(node.GetOutputValue<Binary>(BinarySustain.OUTPUT_NAME).value);
         }
         
         /// <summary>
@@ -96,26 +96,26 @@ namespace OzricEngine.Nodes
                 now = now.AddSeconds(timeOff);
 
                 var contextOff = MockContextAtTime(now);
-                node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(false), contextOff);
+                node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(false), contextOff);
                 node.OnUpdate(contextOff);
 
                 now = now.AddSeconds(timeOn);
 
                 var contextOn = MockContextAtTime(now);
-                node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(true), contextOn);
+                node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(true), contextOn);
                 node.OnUpdate(contextOn);
             }
             
             var contextPre = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(inputFinal), contextPre);
+            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(inputFinal), contextPre);
             node.OnUpdate(contextPre);
             
             now = now.AddSeconds(timeFinal);
             
             var contextPost = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(inputFinal), contextPost);
+            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(inputFinal), contextPost);
             node.OnUpdate(contextPost);
-            Assert.Equal(expectedOutput, node.GetOutputValue<Boolean>(BinarySustain.OUTPUT_NAME).value);
+            Assert.Equal(expectedOutput, node.GetOutputValue<Binary>(BinarySustain.OUTPUT_NAME).value);
             
             return now;
         }
@@ -123,9 +123,9 @@ namespace OzricEngine.Nodes
         private static void AssertUpdateSustain(bool expectedOutput, bool input, BinarySustain node, DateTime now)
         {
             var context = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Boolean(input), context);
+            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(input), context);
             node.OnUpdate(context);
-            Assert.Equal(expectedOutput, node.GetOutputValue<Boolean>(BinarySustain.OUTPUT_NAME).value);
+            Assert.Equal(expectedOutput, node.GetOutputValue<Binary>(BinarySustain.OUTPUT_NAME).value);
         }
 
         private static MockContext MockContextAtTime(DateTime now)

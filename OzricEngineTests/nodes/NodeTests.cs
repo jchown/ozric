@@ -38,8 +38,8 @@ namespace OzricEngineTests
         public void serializeRoundTripWorksWithInputs1()
         {
             var ifAll = new IfAll("all-right");
-            ifAll.inputs.Add(new Pin("input-1", ValueType.Boolean));
-            ifAll.inputs.Add(new Pin("input-2", ValueType.Boolean));
+            ifAll.inputs.Add(new Pin("input-1", ValueType.Binary));
+            ifAll.inputs.Add(new Pin("input-2", ValueType.Binary));
             assertSerializeRoundTripWorks(ifAll);
         }
                 
@@ -47,8 +47,8 @@ namespace OzricEngineTests
         public void serializeRoundTripWorksWithInputs2()
         {
             var ifAny = new IfAny("any-left");
-            ifAny.inputs.Add(new Pin("input-1", ValueType.Boolean));
-            ifAny.inputs.Add(new Pin("input-2", ValueType.Boolean));
+            ifAny.inputs.Add(new Pin("input-1", ValueType.Binary));
+            ifAny.inputs.Add(new Pin("input-2", ValueType.Binary));
             assertSerializeRoundTripWorks(ifAny);
         }
 

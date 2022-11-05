@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using OzricEngine.Values;
-using Boolean = OzricEngine.Values.Boolean;
 using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine;
@@ -22,9 +21,9 @@ public class JsonConverterValue: JsonConverter<Value>
 
     static readonly Dictionary<string, ValueCreator> creators = new()
     {
-        { nameof(ValueType.Boolean), Boolean.ReadFromJSON },
+        { nameof(ValueType.Binary), Binary.ReadFromJSON },
         { nameof(ValueType.Mode), Mode.ReadFromJSON },
-        { nameof(ValueType.Scalar), Scalar.ReadFromJSON },
+        { nameof(ValueType.Number), Number.ReadFromJSON },
         { nameof(ColorMode.XY), ColorXY.ReadFromJSON },
         { nameof(ColorMode.HS), ColorHS.ReadFromJSON },
         { nameof(ColorMode.Temp), ColorTemp.ReadFromJSON },

@@ -67,13 +67,13 @@ namespace OzricEngineTests
         private static Graph GetSimpleGraph()
         {
             var graph = new Graph();
-            var a = new Constant("a", new Boolean(false));
+            var a = new Constant("a", new Binary(false));
             var b = new IfAny("b");
             var c = new IfAny("c");
 
-            b.AddInput("value", ValueType.Boolean);
-            c.AddInput("value1", ValueType.Boolean);
-            c.AddInput("value2", ValueType.Boolean);
+            b.AddInput("value", ValueType.Binary);
+            c.AddInput("value1", ValueType.Binary);
+            c.AddInput("value2", ValueType.Binary);
 
             graph.AddNode(c);
             graph.AddNode(a);

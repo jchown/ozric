@@ -10,7 +10,7 @@ namespace OzricService;
 
 public class EngineService: IEngineService, ICommandSender
 {
-    const string GRAPH_FILENAME = "/data/graph.json";
+    const string GraphFilename = "/data/graph.json";
 
     private Engine? engine;
     private Task? mainLoop;
@@ -50,9 +50,16 @@ public class EngineService: IEngineService, ICommandSender
 
         try
         {
-            var json = await File.ReadAllTextAsync(GRAPH_FILENAME);
+            var json = await File.ReadAllTextAsync(GraphFilename);
             try
             {
+                //  TODO: Remove post v0.8
+                
+                json = json.Replace("boolean", "binary");
+                json = json.Replace("Boolean", "Binary");
+                json = json.Replace("scalar", "number");
+                json = json.Replace("Scalar", "Number");
+                
                 graph = Json.Deserialize<Graph>(json);
 
                 Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count} edges");
@@ -104,7 +111,7 @@ public class EngineService: IEngineService, ICommandSender
     {
         var json = Json.Prettify(Json.Serialize(graph));
         Console.WriteLine(json);
-        await File.WriteAllTextAsync(GRAPH_FILENAME, json);
+        await File.WriteAllTextAsync(GraphFilename, json);
     }
 
     private static Comms Connect()

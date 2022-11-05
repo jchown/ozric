@@ -368,8 +368,8 @@
                     case ValueType.Color:
                         return new ConstantColorModel(c, point);
 
-                    case ValueType.Boolean:
-                    case ValueType.Scalar:
+                    case ValueType.Binary:
+                    case ValueType.Number:
                     case ValueType.Mode:
                     default:
                         throw new ArgumentOutOfRangeException();

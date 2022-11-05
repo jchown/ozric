@@ -71,10 +71,10 @@ public class Tween: Node
         Value tweened;
         switch (valueType)
         {
-            case ValueType.Scalar:
-                var inScalar = (Scalar) input; 
-                var outScalar = (Scalar) output;
-                tweened = new Scalar(Lerp(outScalar.value, inScalar.value, lerpRate));
+            case ValueType.Number:
+                var inNum = (Number) input; 
+                var outNum = (Number) output;
+                tweened = new Number(Lerp(outNum.value, inNum.value, lerpRate));
                 break;
             
             case ValueType.Color:
@@ -140,7 +140,7 @@ public class Tween: Node
                 break;
 
             case ValueType.Mode:
-            case ValueType.Boolean:
+            case ValueType.Binary:
                 throw new Exception($"Can't tween {valueType} values");
 
             default:

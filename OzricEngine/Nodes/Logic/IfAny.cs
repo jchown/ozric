@@ -16,7 +16,7 @@ public class IfAny: VariableInputs
     {
     }
 
-    public IfAny(string id): base(id, ValueType.Boolean, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) })
+    public IfAny(string id): base(id, ValueType.Binary, new List<Pin> { new(OUTPUT_NAME, ValueType.Binary) })
     {
     }
 
@@ -41,10 +41,10 @@ public class IfAny: VariableInputs
     private void UpdateValue(Context context)
     {
         var on = false;
-        foreach (var onOff in GetInputValues<Boolean>())
+        foreach (var onOff in GetInputValues<Binary>())
             on |= onOff?.value ?? false;
 
-        var value = new Boolean(on);
+        var value = new Binary(on);
         SetOutputValue(OUTPUT_NAME, value, context);
     }
 }

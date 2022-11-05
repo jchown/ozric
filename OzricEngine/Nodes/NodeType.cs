@@ -5,20 +5,20 @@ namespace OzricEngine.Nodes;
 [JsonConverter(typeof(JsonStringEnumConverter))] 
 public enum NodeType
 {
+    BinaryChoice,
+    BinarySustain,
     Constant, 
     DayPhases, 
     IfAll, 
     IfAny, 
     Light, 
-    ModeSwitch, 
-    Sensor, 
-    SkyBrightness,
-    BooleanChoice,
-    Switch,
     MediaPlayer,
     ModeSensor,
     ModeMatch,
+    ModeSwitch, 
     Person,
-    Tween,
-    BinarySustain
+    Sensor, 
+    SkyBrightness,
+    Switch,
+    Tween
 }

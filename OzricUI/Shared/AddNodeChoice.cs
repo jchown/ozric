@@ -81,9 +81,9 @@ public class AddNodeChoice
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
-            name: "Tween - Scalar",
+            name: "Tween - Number",
             icon: TweenModel.ICON,
-            create: () => new Tween(graph.CreateNodeID("tween"), ValueType.Scalar)));
+            create: () => new Tween(graph.CreateNodeID("tween"), ValueType.Number)));
         
         choices.Add(new AddNodeChoice(
             category: Category.Logic,

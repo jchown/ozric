@@ -1,10 +1,10 @@
 @using OzricEngine.Values
-@using Boolean = OzricEngine.Values.Boolean
+@using Boolean = OzricEngine.Values.Binary
 @using System.Runtime.Intrinsics.X86
 
 @switch (Value)
 {
-    case Boolean b:
+    case Binary b:
     {
         <span>@(b.value ? "on" : "off")</span>
         break;
@@ -55,7 +55,7 @@
         <span>@m.value</span>
         break;
     }
-    case Scalar s:
+    case Number s:
     {
         <span>@s.value</span>
         break;

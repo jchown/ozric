@@ -21,7 +21,7 @@ public class SkyBrightness: Node
     public const string clouds = "clouds";
     public const string brightness = "brightness";
 
-    public SkyBrightness() : base(ID, null, new List<Pin> { new(sun, ValueType.Scalar), new(clouds, ValueType.Scalar), new(brightness, ValueType.Scalar)})
+    public SkyBrightness() : base(ID, null, new List<Pin> { new(sun, ValueType.Number), new(clouds, ValueType.Number), new(brightness, ValueType.Number)})
     {
     }
          
@@ -42,9 +42,9 @@ public class SkyBrightness: Node
         var sunLevel = GetSunLevel(context.home);
         var cloudLevel = GetCloudLevel(context.home);
 
-        SetOutputValue(sun, new Scalar(sunLevel), context);
-        SetOutputValue(clouds, new Scalar(cloudLevel), context);
-        SetOutputValue(brightness, new Scalar(sunLevel - (cloudLevel * 0.8f)), context);
+        SetOutputValue(sun, new Number(sunLevel), context);
+        SetOutputValue(clouds, new Number(cloudLevel), context);
+        SetOutputValue(brightness, new Number(sunLevel - (cloudLevel * 0.8f)), context);
     }
 
     private float GetSunLevel(Home home)

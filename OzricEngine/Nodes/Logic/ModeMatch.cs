@@ -5,7 +5,6 @@ using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using OzricEngine.Values;
-using Boolean = OzricEngine.Values.Boolean;
 using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine.Nodes;
@@ -41,7 +40,7 @@ public class ModeMatch: Node
     {
     }
 
-    public ModeMatch(string id): base(id, new List<Pin> { new(INPUT_NAME, ValueType.Mode) }, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) })
+    public ModeMatch(string id): base(id, new List<Pin> { new(INPUT_NAME, ValueType.Mode) }, new List<Pin> { new(OUTPUT_NAME, ValueType.Binary) })
     {
         patterns = new Pattern[0];
         regex = new Regex[0];
@@ -66,7 +65,7 @@ public class ModeMatch: Node
         var mode = GetInputValue<Mode>(INPUT_NAME).value;
         var match = regex.Any(r => r.Match(mode).Success);
 
-        SetOutputValue(OUTPUT_NAME, new Boolean(match), context);
+        SetOutputValue(OUTPUT_NAME, new Binary(match), context);
     }
 
     public static Regex[] ToRegex(IList<Pattern> patterns, bool compiled = false)

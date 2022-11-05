@@ -13,7 +13,7 @@ public class IfAll: VariableInputs
         
     public override NodeType nodeType => NodeType.IfAll;
 
-    public IfAll(string id): base(id, ValueType.Boolean, new List<Pin> { new(OUTPUT_NAME, ValueType.Boolean) })
+    public IfAll(string id): base(id, ValueType.Binary, new List<Pin> { new(OUTPUT_NAME, ValueType.Binary) })
     {
     }
             
@@ -32,10 +32,10 @@ public class IfAll: VariableInputs
     private void UpdateValue(Context context)
     {
         var on = true;
-        foreach (var onOff in GetInputValues<Boolean>())
+        foreach (var onOff in GetInputValues<Binary>())
             on &= onOff.value;
 
-        var value = new Boolean(on);
+        var value = new Binary(on);
         SetOutputValue(OUTPUT_NAME, value, context);
     }
 }

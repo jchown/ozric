@@ -2,7 +2,6 @@ using System;
 using System.Text.Json.Serialization;
 using OzricEngine.Values;
 using ValueType = OzricEngine.Values.ValueType;
-using Boolean = OzricEngine.Values.Boolean;
 
 namespace OzricEngine.Nodes;
 
@@ -27,24 +26,24 @@ public class Pin : IGraphObject
         this.value = value;
     }
 
-    private void SetValue(Scalar scalar)
+    private void SetValue(Number number)
     {
         switch (type)
         {
-            case ValueType.Scalar:
-                value = scalar;
+            case ValueType.Number:
+                value = number;
                 return;
 
             case ValueType.Color:
-                value = new ColorRGB(1, 1, 1, scalar.value);
+                value = new ColorRGB(1, 1, 1, number.value);
                 return;
 
-            case ValueType.Boolean:
-                value = new Boolean(scalar.value > 0);
+            case ValueType.Binary:
+                value = new Binary(number.value > 0);
                 return;
 
             default:
-                throw new Exception($"Don't know how to assign Scalar to {type}");
+                throw new Exception($"Don't know how to assign number to {type}");
         }
     }
 
@@ -52,16 +51,16 @@ public class Pin : IGraphObject
     {
         switch (type)
         {
-            case ValueType.Scalar:
-                value = new Scalar(color.brightness);
+            case ValueType.Number:
+                value = new Number(color.brightness);
                 return;
 
             case ValueType.Color:
                 value = color;
                 return;
 
-            case ValueType.Boolean:
-                value = new Boolean(color.brightness > 0);
+            case ValueType.Binary:
+                value = new Binary(color.brightness > 0);
                 return;
 
             default:
@@ -69,20 +68,20 @@ public class Pin : IGraphObject
         }
     }
 
-    private void SetValue(Boolean boolean)
+    private void SetValue(Binary binary)
     {
         switch (type)
         {
-            case ValueType.Scalar:
-                value = new Scalar(boolean.value ? 1 : 0);
+            case ValueType.Number:
+                value = new Number(binary.value ? 1 : 0);
                 return;
 
             case ValueType.Color:
-                value = new ColorRGB(1, 1, 1, boolean.value ? 1 : 0);
+                value = new ColorRGB(1, 1, 1, binary.value ? 1 : 0);
                 return;
 
-            case ValueType.Boolean:
-                value = boolean;
+            case ValueType.Binary:
+                value = binary;
                 return;
 
             default:
@@ -107,16 +106,16 @@ public class Pin : IGraphObject
     {
         switch (value)
         {
-            case Scalar scalar:
-                SetValue(scalar);
+            case Number number:
+                SetValue(number);
                 return;
 
             case ColorValue Color:
                 SetValue(Color);
                 return;
 
-            case Boolean onOff:
-                SetValue(onOff);
+            case Binary binary:
+                SetValue(binary);
                 return;
 
             case Mode mode:
