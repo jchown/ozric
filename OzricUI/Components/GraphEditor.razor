@@ -361,6 +361,9 @@
             case DayPhases dp:
                 return new DayPhasesModel(dp, point);
 
+            case SkyBrightness sb:
+                return new SkyBrightnessModel(sb, point);
+
             case Constant c:
             {
                 switch (c.value.ValueType)

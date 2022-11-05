@@ -14,14 +14,12 @@ namespace OzricEngine.Nodes;
 public class SkyBrightness: Node
 {
     public override NodeType nodeType => NodeType.SkyBrightness;
-
-    private const string ID = "sky-brightness";
         
     public const string sun = "sun";
     public const string clouds = "clouds";
     public const string brightness = "brightness";
 
-    public SkyBrightness() : base(ID, null, new List<Pin> { new(sun, ValueType.Number), new(clouds, ValueType.Number), new(brightness, ValueType.Number)})
+    public SkyBrightness(string id = "sky-brightness") : base(id, null, new() { new(sun, ValueType.Number), new(clouds, ValueType.Number), new(brightness, ValueType.Number)})
     {
     }
          

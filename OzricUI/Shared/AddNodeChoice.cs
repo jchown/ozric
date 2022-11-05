@@ -109,6 +109,12 @@ public class AddNodeChoice
             icon: DayPhasesModel.ICON,
             create: () => new DayPhases(graph.CreateNodeID("day-phases"))));
 
+        choices.Add(new AddNodeChoice(
+            category: Category.Environment,
+            name: "Sky Brightness",
+            icon: SkyBrightnessModel.ICON,
+            create: () => new SkyBrightness(graph.CreateNodeID("sky-brightness"))));
+
         return choices;
     }
 
