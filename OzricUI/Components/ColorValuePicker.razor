@@ -36,8 +36,8 @@
 
         <p class="mud-input-helper-text">Brightness is not affected by the color luminance.</p>
                             
-        <MudSelect Value="_previewLight" Style="z-index:9999;" ValueChanged="OnPreviewLightChanged" HelperText="Choose a light to directly preview the color" T="Light?" Label="Preview Light" Variant="Variant.Text">
-            <MudSelectItem Value="@((Light) null)">(None)</MudSelectItem>
+        <MudSelect Value="_previewLight" Style="z-index:9999;" ValueChanged="OnPreviewLightChanged" HelperText="Choose a light to directly preview the color" T="Light" Label="Preview Light" Variant="Variant.Text">
+            <MudSelectItem Value="@((Light?) null)">(None)</MudSelectItem>
             @foreach (var light in _lights)
             {
                 <MudSelectItem Value="@(light)">@light.Name</MudSelectItem>
@@ -104,7 +104,7 @@
         _timer.Enabled = true;
     }
     
-    private async void TimerCallback(object o, ElapsedEventArgs elapsedEventArgs)
+    private async void TimerCallback(object? o, ElapsedEventArgs elapsedEventArgs)
     {
         if (_previewLight != null)
             await InvokeAsync(UpdatePreview);
@@ -271,7 +271,7 @@
         SetColorSliders(value);
     }
     
-    private void OnPreviewLightChanged(Light light)
+    private void OnPreviewLightChanged(Light? light)
     {
         _previewLight = light;
     }

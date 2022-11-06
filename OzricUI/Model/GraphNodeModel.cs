@@ -11,6 +11,8 @@ namespace OzricUI.Model;
 public abstract class GraphNodeModel: NodeModel
 {
     public readonly Node node;
+    private readonly bool _inputLabels;
+    private readonly bool _outputLabels;
     
     private readonly Mapping<Pin, PortModel> _portMappings;
 
@@ -50,7 +52,7 @@ public abstract class GraphNodeModel: NodeModel
         return _portMappings.GetGraph(port);
     }
 
-    public void AddInput(Pin pin)
+    public virtual void AddInput(Pin pin)
     {
         var port = AddPort(new PinPortInput(this, pin, PortAlignment.Left));
         _portMappings.Add(pin, port);
@@ -102,5 +104,10 @@ public abstract class GraphNodeModel: NodeModel
         }
 
         throw new Exception();
+    }
+
+    public bool ShowLabel(IPort port)
+    {
+        return port.IsInput ? _inputLabels : _outputLabels;
     }
 }

@@ -19,8 +19,8 @@ namespace OzricEngine.Values
 
         public class Serialized
         {
-            public string rgb { get; set; }
-            public float brightness { get; set; }
+            public string rgb;
+            public float brightness;
         }
 
         /// <summary>
@@ -120,13 +120,13 @@ namespace OzricEngine.Values
             if (!reader.Read() || reader.GetString() != "rgb"|| !reader.Read())
                 throw new JsonException();
 
-            return FromHex(reader.GetString(), brightness);
+            return FromHex(reader.GetString()!, brightness);
         }
 
         public static Value ReadFromJSON(JsonDocument document)
         {
             var json = document.RootElement;
-            var rgb = json.GetProperty("rgb").GetString();
+            var rgb = json.GetProperty("rgb").GetString()!;
             var brightness = json.GetProperty("brightness").GetSingle();
             return FromHex(rgb, brightness);
         }

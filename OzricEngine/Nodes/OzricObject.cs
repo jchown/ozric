@@ -62,8 +62,9 @@ public abstract class OzricObject
     {
         for (var i = 0; i < args.Length; i++)
         {
-            if (args[i] is ICollection)
-                args[i] = Json.Serialize(args[i]);
+            var arg = args[i];
+            if (arg is ICollection)
+                args[i] = Json.Serialize(arg);
         }
             
         _Log(level, string.Format(format, args));

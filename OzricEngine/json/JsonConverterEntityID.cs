@@ -8,9 +8,9 @@ namespace OzricEngine
     /// <summary>
     /// Convert no item, a string or a list of strings to a list of strings
     /// </summary>
-    public class JsonConverterEntityID : JsonConverter<List<string>>
+    public class JsonConverterEntityID : JsonConverter<List<string>?>
     {
-        public override List<string> Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override List<string>? Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
         {
             switch (reader.TokenType)
             {
@@ -47,7 +47,7 @@ namespace OzricEngine
             }
         }
 
-        public override void Write(Utf8JsonWriter writer, List<string> value, JsonSerializerOptions options)
+        public override void Write(Utf8JsonWriter writer, List<string>? value, JsonSerializerOptions options)
         {
             JsonSerializer.Serialize(writer, value, options);
         }

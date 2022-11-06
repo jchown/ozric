@@ -100,7 +100,7 @@
     private List<DayPhases.PhaseStart> phases = new();
     private DayPhases.PhaseStart selected;
     private DayPhases.PhaseStart preEdit;
-    private string? addPhase { get; set; }
+    private string addPhase { get; set; } = "";
     private DayPhases.SunPhase[] SunPhases = Enum.GetValues<DayPhases.SunPhase>();
 
     void Cancel() => MudDialog.Cancel();

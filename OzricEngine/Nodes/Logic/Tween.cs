@@ -103,7 +103,7 @@ public class Tween: Node
                 switch (inColor.ColorMode)
                 {
                     case ColorMode.HS:
-                        var inHS = input as ColorHS; 
+                        var inHS = (ColorHS)input; 
                         var outHS = output as ColorHS ?? outColor.ToHS();
                         var h = Lerp(outHS.h, inHS.h, lerpRate);
                         var s = Lerp(outHS.s, inHS.s, lerpRate);
@@ -111,14 +111,14 @@ public class Tween: Node
                         break;
                     
                     case ColorMode.Temp:
-                        var inT = input as ColorTemp; 
+                        var inT = (ColorTemp)input; 
                         var outT = output as ColorTemp ?? outColor.ToTemp();
                         var temp = Lerp(outT.temp, inT.temp, lerpRate);
                         tweened = new ColorTemp((int) temp, brightness);
                         break;
                     
                     case ColorMode.RGB:
-                        var inRGB = input as ColorRGB; 
+                        var inRGB = (ColorRGB)input; 
                         var outRGB = output as ColorRGB ?? outColor.ToRGB();
                         var r = Lerp(outRGB.r, inRGB.r, lerpRate);
                         var g = Lerp(outRGB.g, inRGB.g, lerpRate);
@@ -127,7 +127,7 @@ public class Tween: Node
                         break;
                     
                     case ColorMode.XY:
-                        var inXY = input as ColorXY; 
+                        var inXY = (ColorXY)input; 
                         var outXY = output as ColorXY ?? outColor.ToXY();
                         var x = Lerp(outXY.x, inXY.x, lerpRate);
                         var y = Lerp(outXY.y, inXY.y, lerpRate);

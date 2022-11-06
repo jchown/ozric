@@ -28,7 +28,7 @@
 @code {
 
     [CascadingParameter]
-    MudDialogInstance MudDialog { get; set; } = new();
+    MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
     public ConstantColorModel Model { get; set; }
@@ -50,7 +50,7 @@
     protected override void OnInitialized()
     {
         _id = Node.id;
-        _color = Node.value as ColorValue;
+        _color = (ColorValue) Node.value;
     }
     
     private List<GraphEditAction> GetChanges()

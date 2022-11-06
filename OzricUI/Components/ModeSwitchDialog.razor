@@ -96,7 +96,7 @@
     private ModeSwitch.ModeValues selected;
     private List<ModeSwitch.ModeValues> modeValues = new();
     private ModeSwitch.ModeValues preEdit;
-    private string? addMode { get; set; }
+    private string addMode { get; set; } = "";
     
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));

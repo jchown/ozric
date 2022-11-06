@@ -9,7 +9,7 @@ namespace OzricEngine
 {
     public class Json
     {
-        public static string Serialize<T>(T t)
+        public static string Serialize<T>(T t) where T: class
         {
             return Serialize(t, typeof(T));
         }
@@ -31,7 +31,7 @@ namespace OzricEngine
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
 
-        public static T Clone<T>(T original)
+        public static T Clone<T>(T original) where T: class
         {
             return Deserialize<T>(Serialize(original));
         }
@@ -43,11 +43,11 @@ namespace OzricEngine
             if (!reader.Read() || reader.TokenType != JsonTokenType.String)
                 throw new JsonException();
             
-            string enumName = reader.GetString();
+            string enumName = reader.GetString()!;
             if (!Enum.TryParse(typeof(TEnum), enumName, out var enumType))
                 throw new JsonException($"Unknown {nameof(TEnum)} {enumName}");
 
-            TEnum type = (TEnum) enumType;
+            TEnum type = (TEnum) enumType!;
             var creator = creators.GetOrSet(type, () => throw new Exception($"No {nameof(TEnum)} creator for {enumName}"));
             TObject o = creator(ref reader);
             
@@ -75,6 +75,7 @@ namespace OzricEngine
         public static void Configure(JsonSerializerOptions options)
         {
             options.PropertyNamingPolicy = new PropertyNamer();
+            options.IncludeFields = true;
             options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             options.Converters.Add(new JsonConverterAttributes());
 //              new JsonConverterEntityID(),     - Only use explicitly

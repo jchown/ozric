@@ -27,18 +27,14 @@ public class ModeMatch: Node
 
     public class Pattern
     {
-        public string pattern { get; set; }
-        public PatternType type { get; set; }
+        public string pattern;
+        public PatternType type;
     };
 
     public Pattern[] patterns { get; set; }
 
     [JsonIgnore]
     public Regex[] regex; 
-
-    public ModeMatch() : this(null)
-    {
-    }
 
     public ModeMatch(string id): base(id, new List<Pin> { new(INPUT_NAME, ValueType.Mode) }, new List<Pin> { new(OUTPUT_NAME, ValueType.Binary) })
     {

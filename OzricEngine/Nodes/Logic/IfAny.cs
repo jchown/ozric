@@ -12,10 +12,6 @@ public class IfAny: VariableInputs
         
     public override NodeType nodeType => NodeType.IfAny;
 
-    public IfAny() : this(null)
-    {
-    }
-
     public IfAny(string id): base(id, ValueType.Binary, new List<Pin> { new(OUTPUT_NAME, ValueType.Binary) })
     {
     }

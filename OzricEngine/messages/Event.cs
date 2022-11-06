@@ -11,10 +11,10 @@ namespace OzricEngine
     [UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
     public abstract class Event
     {
-        public string event_type { get; set; }
-        public string origin { get; set; }
-        public DateTime time_fired { get; set; }
-        public MessageContext context { get; set; }
+        public string event_type;
+        public string origin;
+        public DateTime time_fired;
+        public MessageContext context;
 
         public override string ToString()
         {

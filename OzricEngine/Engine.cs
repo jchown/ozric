@@ -262,7 +262,7 @@ namespace OzricEngine
 
             foreach (var nodeID in graph.GetNodeIDs())
             {
-                var node = graph.GetNode(nodeID);
+                var node = graph.GetNode(nodeID)!;
                 var semaphore = readiness.GetValueOrDefault(nodeID);
                 var dependency = dependencies[nodeID];
 
@@ -318,7 +318,7 @@ namespace OzricEngine
 
             foreach (var nodeID in graph.GetNodesInOrder())
             {
-                var node = graph.GetNode(nodeID);
+                var node = graph.GetNode(nodeID)!;
 
                 try
                 {

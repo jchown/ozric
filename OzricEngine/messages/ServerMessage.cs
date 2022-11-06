@@ -8,8 +8,8 @@ namespace OzricEngine
     /// </summary>
     [UsedImplicitly(ImplicitUseTargetFlags.WithInheritors)]
     public abstract class ServerMessage
-   {
-        public string type { get; set; }
+    {
+        public string type;
 
         public override string ToString()
         {

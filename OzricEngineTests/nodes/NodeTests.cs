@@ -67,7 +67,7 @@ namespace OzricEngineTests
             assertSerializeRoundTripWorksGeneric(pins);
         }
         
-        private void assertSerializeRoundTripWorksGeneric<T>(T t)
+        private void assertSerializeRoundTripWorksGeneric<T>(T t) where T: class
         {
             var json1 = Json.Serialize(t);
             var node2 = Json.Deserialize<T>(json1);

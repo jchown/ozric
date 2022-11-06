@@ -12,7 +12,7 @@ namespace OzricEngine
     /// </summary>
     public class JsonConverterAttributes : JsonConverter<Attributes>
     {
-        public override Attributes Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+        public override Attributes Read(ref Utf8JsonReader reader, Type? typeToConvert, JsonSerializerOptions options)
         {
             if (reader.TokenType != JsonTokenType.StartObject)
                 throw new JsonException($"JsonTokenType was of type {reader.TokenType}, only objects are supported");
@@ -39,7 +39,7 @@ namespace OzricEngine
 
                 reader.Read();
 
-                dictionary.Add(propertyName, ExtractValue(ref reader, options));
+                dictionary.Add(propertyName, ExtractValue(ref reader, options)!);
             }
 
             return dictionary;
@@ -50,7 +50,7 @@ namespace OzricEngine
             JsonSerializer.Serialize(writer, (Dictionary<string, object>) value, options);
         }
 
-        private object ExtractValue(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        private object? ExtractValue(ref Utf8JsonReader reader, JsonSerializerOptions options)
         {
             switch (reader.TokenType)
             {
@@ -82,8 +82,8 @@ namespace OzricEngine
                     return Read(ref reader, null, options);
 
                 case JsonTokenType.StartArray:
-                    var list = new List<object>();
-                    Type type = null;
+                    var list = new List<object?>();
+                    Type? type = null;
                     bool setType = false;
                     while (reader.Read() && reader.TokenType != JsonTokenType.EndArray)
                     {
@@ -97,7 +97,7 @@ namespace OzricEngine
                                 type = item.GetType();
                             }
                         }
-                        else if (type != item.GetType())
+                        else if (item == null || type != item.GetType())
                             type = null;
                         
                         list.Add(item);

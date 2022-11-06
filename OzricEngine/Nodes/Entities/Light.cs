@@ -353,8 +353,9 @@ public class Light: EntityNode
 
         if (!update.Check(attributes.xy_color == null))
         {
-            update.CheckApprox(attributes.xy_color[0], x, 0.1f);
-            update.CheckApprox(attributes.xy_color[1], y, 0.1f);
+            var xy_color = attributes.xy_color!;
+            update.CheckApprox(xy_color[0], x, 0.1f);
+            update.CheckApprox(xy_color[1], y, 0.1f);
             update.Check(attributes.brightness != brightness);
         }
 
@@ -374,8 +375,9 @@ public class Light: EntityNode
 
         if (!update.Check(attributes.hs_color == null))
         {
-            update.CheckApprox(attributes.hs_color[0], h, 5f);
-            update.CheckApprox(attributes.hs_color[1], s, 0.5f);
+            var hs_color = attributes.hs_color!;
+            update.CheckApprox(hs_color[0], h, 5f);
+            update.CheckApprox(hs_color[1], s, 0.5f);
             update.Check(attributes.brightness != brightness);
         }
 

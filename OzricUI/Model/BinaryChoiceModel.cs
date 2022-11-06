@@ -11,7 +11,6 @@ public class BinaryChoiceModel: GraphNodeModel
     }
     
     public override string Icon => ICON;
-
     public const string ICON = "mdi:call-split";
 
     public static BinaryChoice Color(string nodeID)

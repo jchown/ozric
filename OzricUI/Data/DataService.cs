@@ -80,7 +80,7 @@ public class DataService
         return Json.Deserialize<TObject>(await response.Content.ReadAsStringAsync());
     }
     
-    private async Task Put<TObject>(string apiPath, TObject entity)
+    private async Task Put<TObject>(string apiPath, TObject entity) where TObject: class
     {
         var request = new HttpRequestMessage(HttpMethod.Put, $"http://localhost:8099/{apiPath}")
         {

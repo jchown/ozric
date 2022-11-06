@@ -12,6 +12,5 @@ public class ConstantColorModel: ConstantModel
     }
     
     public override string Icon => ICON;
-
     public const string ICON = "mdi:palette";
 }

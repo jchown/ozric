@@ -9,14 +9,12 @@ namespace OzricEngine.ext
     {
         class RethrownException: Exception
         {
-            private readonly string stackTrace;
-
-            public RethrownException(string message, string stackTrace): base(message)
+            public RethrownException(string message, string? stackTrace): base(message)
             {
-                this.stackTrace = stackTrace;
+                StackTrace = stackTrace;
             }
 
-            public override string StackTrace => stackTrace;
+            public override string? StackTrace { get; }
         }
         
         public static Exception Rethrown(this Exception e, string contextMessage)

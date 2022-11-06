@@ -196,7 +196,7 @@ public class DayPhases: Node
 
         //  Figure out what phase are we in
 
-        var sun = context.home.GetEntityState(SUN_ENTITY_ID);
+        var sun = context.home.GetEntityState(SUN_ENTITY_ID)!;
         var now = context.home.GetTime();
 
         int i = 1;

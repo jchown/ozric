@@ -112,25 +112,25 @@ namespace OzricEngine
     /// </summary>
     public class LightAttributes
     {
-        public int brightness { get; set; }
+        public int brightness;
         
-        public string color_mode { get; set; }
-        public string[] supported_color_modes { get; set; }
+        public string color_mode;
+        public string[] supported_color_modes;
 
-        public int color_temp { get; set; }
-        public float[] hs_color { get; set; }
-        public int[] rgb_color { get; set; }
-        public int[] rgbw_color { get; set; }
-        public int[] rgbww_color { get; set; }
-        public float[] xy_color { get; set; }
+        public int? color_temp;
+        public float[]? hs_color ;
+        public int[]? rgb_color ;
+        public int[]? rgbw_color ;
+        public int[]? rgbww_color ;
+        public float[]? xy_color ;
         
-        public string effect { get; set; }
-        public string[] effect_list { get; set; }
-        public string friendly_name { get; set; }
+        public string effect ;
+        public string[] effect_list ;
+        public string friendly_name ;
 
-        public int min_mireds  { get; set; }
-        public int max_mireds { get; set; }
+        public int min_mireds;
+        public int max_mireds;
         
-        public int supported_features { get; set; }
+        public int supported_features;
     }
 }

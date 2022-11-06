@@ -14,7 +14,7 @@ public class BinaryChoice: Node
 {
     public override NodeType nodeType => NodeType.BinaryChoice;
 
-    public ValueType valueType { get; set; }
+    public ValueType valueType;
         
     public const string INPUT_NAME_ON = "on";
     public const string INPUT_NAME_OFF = "off";

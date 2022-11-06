@@ -8,6 +8,14 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <NoWarn>1701;1702;8618</NoWarn>
+    </PropertyGroup>
+
+    <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+      <NoWarn>1701;1702;8618</NoWarn>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="Humanizer.Core" Version="2.13.14" />
       <PackageReference Include="JetBrains.Annotations" Version="2021.3.0" />

@@ -12,6 +12,5 @@ public class BinarySustainModel: GraphNodeModel
     }
         
     public override string Icon => ICON;
-
     public const string ICON = "ic:baseline-linear-scale";
 }

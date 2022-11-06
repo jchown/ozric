@@ -11,11 +11,11 @@
 
         <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
             
-            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="_id" For="@(() => _id)" Immediate="true" />
             
             <MudDivider DividerType="DividerType.Middle" Class="my-4" />
 
-            <MudTextField Label="Entity ID" HelperText="The ID used by Home Assistant" @bind-Value="EntityID" Disabled="true"/>
+            <MudTextField Label="Entity ID" HelperText="The ID used by Home Assistant" @bind-Value="_entityId" Disabled="true"/>
 
             <MudDivider DividerType="DividerType.Middle" Class="my-4" />
             
@@ -43,7 +43,7 @@
 @code {
 
     [CascadingParameter]
-    MudDialogInstance MudDialog { get; set; } = new();
+    MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
     public LightModel Model { get; set; }
@@ -51,10 +51,10 @@
     [Parameter]
     public Light Node { get; set; }
 
-    private string ID;
-    private string EntityID;
-    private Light.ColourSwitchMode ColourSwitchMode { get; set; }
+    private string _id;
+    private string _entityId;
     private string _colorModes;
+    private Light.ColourSwitchMode ColourSwitchMode { get; set; }
 
     private string CSMHelperText => $"Default for this light: {Node.GetColourSwitchModeAuto().ToString().Humanize(LetterCasing.Sentence)}";
 
@@ -65,8 +65,8 @@
 
     protected override void OnInitialized()
     {
-        ID = Node.id;
-        EntityID = Node.entityID;
+        _id = Node.id;
+        _entityId = Node.entityID;
         ColourSwitchMode = Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic;
         _colorModes = Node.GetSupportedColorModes(OzricService.Home).Select(ColorValue.DescribeColorMode).Join(", ");
     }
@@ -74,8 +74,8 @@
     private List<GraphEditAction> GetChanges()
     {
         var changes = new List<GraphEditAction>();
-        if (ID != Node.id)
-            changes.Add(new GraphEditAction.RenameNode(Node, ID));
+        if (_id != Node.id)
+            changes.Add(new GraphEditAction.RenameNode(Node, _id));
         if (ColourSwitchMode != (Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic))
         {
             var csm = ColourSwitchMode != Light.ColourSwitchMode.Automatic ? ColourSwitchMode : ((Light.ColourSwitchMode?) null);

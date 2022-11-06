@@ -191,6 +191,9 @@ namespace OzricEngine
             foreach (var edge in edges.Values.Where(edge => edge.from.nodeID == node.id).ToList())
             {
                 var value = node.GetOutput(edge.from.outputName).value;
+                if (value == null)
+                    continue;
+                
                 Log(LogLevel.Debug, "{0}.{1} = {2}", edge.to.nodeID, edge.to.inputName, value);
                 nodes[edge.to.nodeID].SetInputValue(edge.to.inputName, value, context);
             }
@@ -238,7 +241,7 @@ namespace OzricEngine
 
         public List<T> GetAll<T>() where T : class
         {
-            return nodes.Values.Select(n => n as T).Where(n => n != null).ToList();
+            return nodes.Values.Select(n => n as T).Where(n => n != null).Select(n => n!).ToList();
         }
     }
 }

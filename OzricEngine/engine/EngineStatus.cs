@@ -4,7 +4,7 @@ namespace OzricEngine.engine;
 
 public class EngineStatus
 {
-    public CommsStatus comms { get; set; }
-    public List<EntityState> states { get; set; }
-    public bool paused { get; set; }
+    public CommsStatus comms;
+    public List<EntityState> states;
+    public bool paused;
 }

@@ -7,13 +7,13 @@
 
         <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
             
-            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="_id" For="@(() => _id)" Immediate="true" />
             
             <MudDivider DividerType="DividerType.Middle" Class="my-4" />
 
-            @if (patterns.Count > 0)
+            @if (_patterns.Count > 0)
             {
-                <MudTable Items="@patterns" T="ModeMatch.Pattern" 
+                <MudTable Items="@_patterns" T="ModeMatch.Pattern" 
                           @bind-SelectedItem="selected"  
                           CanCancelEdit="true"
                           CommitEditTooltip="Apply"
@@ -63,7 +63,7 @@
                 </MudItem>
             </MudGrid>
             
-            @if (patterns.Count > 0)
+            @if (_patterns.Count > 0)
             {
                 <MudGrid>
                     <MudItem xs="9">
@@ -98,7 +98,7 @@
 @code {
 
     [CascadingParameter]
-    MudDialogInstance MudDialog { get; set; } = new();
+    MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
     public ModeMatchModel Model { get; set; }
@@ -106,21 +106,14 @@
     [Parameter]
     public ModeMatch Node { get; set; }
 
-    private string ID;
+    private string _id;
+    private List<ModeMatch.Pattern> _patterns;
+    
     private ModeMatch.Pattern selected;
-    private List<ModeMatch.Pattern> patterns = new();
     private ModeMatch.Pattern elementBeforeEdit;
-    private string? addPattern { get; set; }
-    private string? testPattern { get; set; }
-    
-    private bool TestMatch()
-    {
-        if (string.IsNullOrWhiteSpace(testPattern))
-            return false;
-        
-        return ModeMatch.ToRegex(patterns).Any(r => r.Match(testPattern).Success);
-    }
-    
+    private string addPattern { get; set; } = "";
+    private string testPattern { get; set; } = "";
+
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
 
@@ -128,25 +121,33 @@
 
     protected override void OnInitialized()
     {
-        ID = Node.id;
-        patterns = new List<ModeMatch.Pattern>(Node.patterns);
+        _id = Node.id;
+        _patterns = new List<ModeMatch.Pattern>(Node.patterns);
     }
 
+    private bool TestMatch()
+    {
+        if (string.IsNullOrWhiteSpace(testPattern))
+            return false;
+        
+        return ModeMatch.ToRegex(_patterns).Any(r => r.Match(testPattern).Success);
+    }
+    
     private List<GraphEditAction> GetChanges()
     {
         var changes = new List<GraphEditAction>();
-        if (ID != Node.id)
-            changes.Add(new GraphEditAction.RenameNode(Node, ID));
+        if (_id != Node.id)
+            changes.Add(new GraphEditAction.RenameNode(Node, _id));
         
-        if (!Node.patterns.SequenceEqual(patterns))
-            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.patterns)), patterns.ToArray()));
+        if (!Node.patterns.SequenceEqual(_patterns))
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.patterns)), _patterns.ToArray()));
 
         return changes;
     }
 
     private void Add()
     {
-        patterns.Add(new ModeMatch.Pattern
+        _patterns.Add(new ModeMatch.Pattern
         {
             pattern = addPattern
         });

@@ -51,7 +51,7 @@ public abstract class VariableInputs: Node
 
     protected IEnumerable<TValue> GetInputValues<TValue>() where TValue: Value
     {
-        return inputs.Select(input => input.value as TValue);
+        return inputs.Select(input => (TValue) input.value!);
     }
         
     #region Comparison

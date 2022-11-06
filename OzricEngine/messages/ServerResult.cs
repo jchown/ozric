@@ -19,7 +19,7 @@ namespace OzricEngine
 
     public class ServerResultError
     {
-        public string code { get; set; }
-        public string message { get; set; }
+        public string code;
+        public string message;
     }
 }

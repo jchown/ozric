@@ -183,9 +183,8 @@ public class EngineService: IEngineService, ICommandSender
         
         return await comms.SendCommand(command, 1000);
     }
-
     
-    public void Subscribe(Pin.Changed pinChanged)
+    public void Subscribe(Pin.Changed? pinChanged)
     {
         Engine.pinChanged += pinChanged;
     }

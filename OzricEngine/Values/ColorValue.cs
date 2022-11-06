@@ -16,6 +16,8 @@ namespace OzricEngine.Values
 
     public abstract class ColorValue: Value
     {
+        public static ColorValue OFF = new ColorRGB(0, 0, 0, 0);
+
         public override ValueType ValueType => ValueType.Color;
 
         public abstract ColorMode ColorMode { get; }
@@ -37,7 +39,7 @@ namespace OzricEngine.Values
             { ColorMode.Temp, ColorTemp.ReadFromJSON },
             { ColorMode.XY, ColorXY.ReadFromJSON },
         };
-            
+
         public static ColorValue ReadFromJSON(ref Utf8JsonReader reader)
         {
             if (!reader.Read() || reader.GetString() != "color-type")

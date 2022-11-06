@@ -27,7 +27,7 @@
     [Parameter]
     public GraphEditState GraphEditState { get; set; }
 
-    public Diagram diagram { get; set; } = new();
+    public Diagram diagram { get; private set; }
 
     private bool IsChanged => !IsNotChanged;
     private bool IsNotChanged => GetHistory().IsAtCheckpoint();
@@ -600,14 +600,14 @@
     public void AddNodeInput(VariableInputs variableInputs, string inputName)
     {
         var input = variableInputs.AddInput(inputName);
-        var model = nodeMappings.GetDiagram(variableInputs) as VariableInputsModel;
+        var model = (VariableInputsModel) nodeMappings.GetDiagram(variableInputs);
         model.AddInput(input);
     }
 
     public void RemoveNodeInput(VariableInputs variableInputs, string inputName)
     {
         var input = variableInputs.RemoveInput(inputName);
-        var model = nodeMappings.GetDiagram(variableInputs) as VariableInputsModel;
+        var model = (VariableInputsModel) nodeMappings.GetDiagram(variableInputs);
         model.RemoveInput(input);
     }
 }

@@ -302,22 +302,23 @@
         GraphEditState.DoCommand(GraphEditState.Command.Redo);
     }
 
-    private async Task OnClickPause()
+    private void OnClickPause()
     {
         OzricService.SetPaused(true);
     }
 
-    private async Task OnClickContinue()
+    private void OnClickContinue()
     {
         OzricService.SetPaused(false);
     }
 
     private async Task OnClickAdd()
     {
+        Action<Node> adder = AddNode;
         var parameters = new DialogParameters
         {
             { "Choices", AddNodeChoice.GetChoices(OzricService.Home, Graph) },
-            { "OnAdd", AddNode }
+            { "OnAdd", adder }
         };
 
         await DialogService.Show<AddNodesDialog>("Add Nodes", parameters, GetDialogOptions()).Result;
@@ -386,7 +387,7 @@
         if (result.Cancelled)
             return;
 
-        var json = result.Data as DataDialog.Result;
+        var json = (DataDialog.Result) result.Data;
 
         Graph = Json.Deserialize<Graph>(json.graph);
         GraphLayout = Json.Deserialize<GraphLayout>(json.graphLayout);

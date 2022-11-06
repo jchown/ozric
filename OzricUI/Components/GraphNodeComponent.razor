@@ -8,7 +8,7 @@
     <div class="ozric-node-title">@(Node.Title)</div>
     @foreach (var port in Node.Ports.Select(p => p as IPort).Where(p => p != null))
     {
-        <div class="@(port.CssClass) port-@(Node.GetPortPosition(port))" hidden="@(port.HiddenIfLocked && Node.Locked)">
+        <div class="@(port!.CssClass) port-@(Node.GetPortPosition(port))" hidden="@(port.HiddenIfLocked && Node.Locked)">
             @if (Node.Locked)
             {
                 // When locked, we show the live state
@@ -25,22 +25,22 @@
                                 break;
                                 
                             case ValueType.Binary:
-                                var pinValue = ((Binary?)pin.value);
-                                if (pinValue?.value ?? false)
+                                var pinValue = ((Binary?) (pin.value))?.value ?? false;
+                                if (pinValue)
                                 {
-                                    <img src="icons/Binary-true.png" width="16" height="16"/>
+                                    <img src="icons/Binary-true.png" width="16" height="16" alt="on"/>
                                 }
                                 else
                                 {
-                                    <img src="icons/Binary-false.png" width="16" height="16"/>
+                                    <img src="icons/Binary-false.png" width="16" height="16" alt="off"/>
                                 }
                                 break;
                                 
                             case ValueType.Color:
-                                var color = ((ColorValue?)pin.value);
-                                if ((color?.brightness ?? 0) == 0)
+                                var color = ((ColorValue?)pin.value) ?? ColorValue.OFF;
+                                if (color.brightness == 0)
                                 {
-                                    <img src="icons/Color-off.png" width="16" height="16"/>
+                                    <img src="icons/Color-off.png" width="16" height="16" alt="off"/>
                                 }
                                 else
                                 {
@@ -49,8 +49,7 @@
                                 break;
                                 
                             case ValueType.Mode:
-                                <img src="icons/@(port.valueType).png" width="16" height="16"/>
-                                <span>@(pin.value)</span>
+                                <img src="icons/@(port.valueType).png" width="16" height="16" alt="@(pin.value)"/>
                                 break;
                                 
                             default:
@@ -64,7 +63,11 @@
                 //  When editing, we just show the type
                 
                 <PortRenderer Port="@((PortModel)port)">
-                    <img src="icons/@(port.valueType).png" width="16" height="16"/>
+                    @if (Node.ShowLabel(port))
+                    {
+                        <span>@(((PortModel)port).Id)</span>
+                    }
+                    <img src="icons/@(port.valueType).png" width="16" height="16" alt="@(port.valueType)"/>
                 </PortRenderer>
             }
 
