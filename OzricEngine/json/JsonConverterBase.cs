@@ -11,7 +11,7 @@ namespace OzricEngine
     /// Generic JSON deserializer (only) for an abstract base type, using a specified field to indicate derived type. 
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class JsonConverterBase<T>: JsonConverter<T>, ITypes
+    public class JsonConverterBase<T>: JsonConverter<T>
     {
 //        public override bool CanConvert(Type typeToConvert) => typeof(T).IsAssignableFrom(typeToConvert);
 
@@ -69,11 +69,6 @@ namespace OzricEngine
         public override void Write(Utf8JsonWriter writer, T value, JsonSerializerOptions options)
         {
             JsonSerializer.Serialize(writer, (object?) value, options);
-        }
-
-        public Type[] GetTypes()
-        {
-            return ResultTypes.Values.ToArray();
         }
     }
 }

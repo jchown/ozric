@@ -17,8 +17,8 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
     public abstract NodeType nodeType { get; }
 
     public string id { get; set; }
-    public List<Pin> inputs { get; set; }
-    public List<Pin> outputs { get; set; }
+    public List<Pin> inputs;
+    public List<Pin> outputs;
 
     protected Node(string id, List<Pin>? inputs, List<Pin>? outputs)
     {
@@ -26,7 +26,7 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
         this.inputs = inputs ?? new List<Pin>();
         this.outputs = outputs ?? new List<Pin>();
     }
-
+    
     public virtual bool IsReady()
     {
         return inputs.All(input => input.value != null);

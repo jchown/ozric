@@ -8,7 +8,7 @@ namespace OzricEngine.Nodes;
 
 public abstract class VariableInputs: Node
 {
-    public ValueType valueType { get; }
+    public readonly ValueType valueType;
 
     public VariableInputs(string id, ValueType valueType, List<Pin> outputs): base(id, null, outputs)
     {

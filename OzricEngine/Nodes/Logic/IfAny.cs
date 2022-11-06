@@ -6,11 +6,15 @@ using ValueType = OzricEngine.Values.ValueType;
 namespace OzricEngine.Nodes;
 
 [TypeKey(NodeType.IfAny)]
-public class IfAny: VariableInputs
+public class IfAny : VariableInputs
 {
     public const string OUTPUT_NAME = "output";
-        
+
     public override NodeType nodeType => NodeType.IfAny;
+
+    public IfAny(): this("")
+    {
+    }
 
     public IfAny(string id): base(id, ValueType.Binary, new List<Pin> { new(OUTPUT_NAME, ValueType.Binary) })
     {

@@ -14,7 +14,7 @@ public abstract class VariableInputsModel: GraphNodeModel
         AddPort(plus);
     }
 
-    public override void AddInput(Pin pin)
+    public void AddVariableInput(Pin pin)
     {
         // Make sure the "add" port is always last
         
