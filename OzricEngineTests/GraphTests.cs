@@ -44,7 +44,7 @@ namespace OzricEngineTests
             Assert.Single(a.nodes["b"].inputs);
 
             var json = Json.Serialize(a);
-            var b = Json.Deserialize<Graph>(json);
+            var b = Graph.Deserialize(json);
             
             Assert.Equal(3, b.nodes.Count);
             Assert.Single(b.nodes["b"].inputs);
@@ -54,7 +54,7 @@ namespace OzricEngineTests
         public void canDeserialiseLargeGraph()
         {
             var json = File.ReadAllText("../../../graphs/chown_graph_1.json");
-            var graph = Json.Deserialize<Graph>(json);
+            var graph = Graph.Deserialize(json);
             
             Assert.Equal("kitchen-sensor", graph.nodes["kitchen-sensor"].id);
         }

@@ -3,7 +3,6 @@ using Blazor.Diagrams.Core.Models;
 using OzricEngine.Nodes;
 
 namespace OzricUI.Model;
-
 public abstract class VariableInputsModel: GraphNodeModel
 {
     public PortInputAdd plus;

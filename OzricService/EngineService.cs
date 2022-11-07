@@ -53,14 +53,7 @@ public class EngineService: IEngineService, ICommandSender
             var json = await File.ReadAllTextAsync(GraphFilename);
             try
             {
-                //  TODO: Remove post v0.8
-                
-                json = json.Replace("boolean", "binary");
-                json = json.Replace("Boolean", "Binary");
-                json = json.Replace("scalar", "number");
-                json = json.Replace("Scalar", "Number");
-                
-                graph = Json.Deserialize<Graph>(json);
+                graph = Graph.Deserialize(json);
 
                 Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count} edges");
 

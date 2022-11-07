@@ -243,5 +243,19 @@ namespace OzricEngine
         {
             return nodes.Values.Select(n => n as T).Where(n => n != null).Select(n => n!).ToList();
         }
+
+        public static Graph Deserialize(string json)
+        {
+            //  TODO: Remove post v0.8
+
+            Graph graph;
+            json = json.Replace("OnOff", "binary");
+            json = json.Replace("boolean", "binary");
+            json = json.Replace("Boolean", "Binary");
+            json = json.Replace("scalar", "number");
+            json = json.Replace("Scalar", "Number");
+
+            return Json.Deserialize<Graph>(json);
+        }
     }
 }
