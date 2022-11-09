@@ -9,7 +9,7 @@ public class SkyBrightnessModel: GraphNodeModel
 
     public SkyBrightnessModel(SkyBrightness skyBrightness, Point? point = null): base(skyBrightness, point)
     {
-        
+        _outputLabels = true;
     }
 
     public override string Icon => ICON;

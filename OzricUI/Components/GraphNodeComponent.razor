@@ -9,10 +9,11 @@
     @foreach (var port in Node.Ports.Select(p => p as IPort).Where(p => p != null))
     {
         <div class="@(port!.CssClass) port-@(Node.GetPortPosition(port))" hidden="@(port.HiddenIfLocked && Node.Locked)">
+
             @if (Node.Locked)
             {
                 // When locked, we show the live state
-                
+
                 <PortRenderer Port="@((PortModel)port)">
                     @if (Node.HasPin((PortModel)port))
                     {
@@ -22,10 +23,13 @@
                         switch (port.valueType)
                         {
                             case ValueType.Number:
+                                var number = ((Number?) pin.value)?.value ?? 0f;
+                                <span class="number-value">@(number.ToString("F"))</span>
+                                <img src="icons/@(port.valueType).png" width="16" height="16" alt="@(pin.value)"/>
                                 break;
-                                
+
                             case ValueType.Binary:
-                                var pinValue = ((Binary?) (pin.value))?.value ?? false;
+                                var pinValue = ((Binary?) pin.value)?.value ?? false;
                                 if (pinValue)
                                 {
                                     <img src="icons/Binary-true.png" width="16" height="16" alt="on"/>
@@ -35,9 +39,9 @@
                                     <img src="icons/Binary-false.png" width="16" height="16" alt="off"/>
                                 }
                                 break;
-                                
+
                             case ValueType.Color:
-                                var color = ((ColorValue?)pin.value) ?? ColorValue.OFF;
+                                var color = (ColorValue?) pin.value ?? ColorValue.OFF;
                                 if (color.brightness == 0)
                                 {
                                     <img src="icons/Color-off.png" width="16" height="16" alt="off"/>
@@ -47,11 +51,11 @@
                                     <div style="background: #@(color.ToHexString()); width:16px; height:16px; border-radius: 50%">&nbsp;</div>
                                 }
                                 break;
-                                
+
                             case ValueType.Mode:
                                 <img src="icons/@(port.valueType).png" width="16" height="16" alt="@(pin.value)"/>
                                 break;
-                                
+
                             default:
                                 throw new ArgumentOutOfRangeException();
                         }
@@ -61,11 +65,11 @@
             else
             {
                 //  When editing, we just show the type
-                
+
                 <PortRenderer Port="@((PortModel)port)">
                     @if (Node.ShowLabel(port))
                     {
-                        <span>@(((PortModel)port).Id)</span>
+                        <span>@port.Name</span>
                     }
                     <img src="icons/@(port.valueType).png" width="16" height="16" alt="@(port.valueType)"/>
                 </PortRenderer>

@@ -20,5 +20,6 @@ public enum NodeType
     Sensor, 
     SkyBrightness,
     Switch,
-    Tween
+    Tween,
+    NumberCompare
 }

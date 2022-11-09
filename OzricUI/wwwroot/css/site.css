@@ -63,3 +63,7 @@ a, .btn-link {
 .blazor-error-boundary::after {
     content: "An error has occurred."
 }
+
+.roman {
+    font-family: "Times New Roman",  serif;
+}

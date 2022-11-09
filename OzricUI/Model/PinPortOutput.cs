@@ -5,6 +5,7 @@ namespace OzricUI.Model;
 
 internal class PinPortOutput: PinPort, IPort
 {
+    public string Name => name;
     public bool IsInput => false;
     public string CssClass => "output-port";
 

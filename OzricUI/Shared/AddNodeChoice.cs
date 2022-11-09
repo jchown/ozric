@@ -69,6 +69,12 @@ public class AddNodeChoice
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
+            name: "Compare Number",
+            icon: NumberCompareModel.ICON,
+            create: () => new NumberCompare(graph.CreateNodeID("compare"))));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Logic,
             name: "Mode Matches",
             icon: ModeMatchModel.ICON,
             create: () => new ModeMatch(graph.CreateNodeID("match"))));

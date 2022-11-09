@@ -11,8 +11,8 @@ namespace OzricUI.Model;
 public abstract class GraphNodeModel: NodeModel
 {
     public readonly Node node;
-    private readonly bool _inputLabels;
-    private readonly bool _outputLabels;
+    protected bool _inputLabels;
+    protected bool _outputLabels;
     
     private readonly Mapping<Pin, PortModel> _portMappings;
 

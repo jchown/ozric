@@ -15,11 +15,11 @@ public class SkyBrightness: Node
 {
     public override NodeType nodeType => NodeType.SkyBrightness;
         
-    public const string sun = "sun";
-    public const string clouds = "clouds";
-    public const string brightness = "brightness";
+    public const string Sun = "sun";
+    public const string Clouds = "clouds";
+    public const string Brightness = "brightness";
 
-    public SkyBrightness(string id = "sky-brightness") : base(id, null, new() { new(sun, ValueType.Number), new(clouds, ValueType.Number), new(brightness, ValueType.Number)})
+    public SkyBrightness(string id = "sky-brightness") : base(id, null, new() { new(Sun, ValueType.Number), new(Clouds, ValueType.Number), new(Brightness, ValueType.Number)})
     {
     }
          
@@ -40,9 +40,9 @@ public class SkyBrightness: Node
         var sunLevel = GetSunLevel(context.home);
         var cloudLevel = GetCloudLevel(context.home);
 
-        SetOutputValue(sun, new Number(sunLevel), context);
-        SetOutputValue(clouds, new Number(cloudLevel), context);
-        SetOutputValue(brightness, new Number(sunLevel - (cloudLevel * 0.8f)), context);
+        SetOutputValue(Sun, new Number(sunLevel), context);
+        SetOutputValue(Clouds, new Number(cloudLevel), context);
+        SetOutputValue(Brightness, new Number(sunLevel - (cloudLevel * 0.8f)), context);
     }
 
     private float GetSunLevel(Home home)

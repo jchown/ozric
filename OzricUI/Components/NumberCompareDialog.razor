@@ -1,0 +1,177 @@
+@using OzricUI.Model
+@using OzricEngine.Nodes
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
+            
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="_id" For="@(() => _id)" Immediate="true" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+            
+            <MudGrid>
+                <MudItem xs="6">
+                    <MudSelect @bind-Value="@comparator" Label="Input is">
+                        <MudSelectItem Value="NumberCompare.Comparator.EqualTo">Equal To (= x)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.EqualToApprox">Approximately Equal To (≈ x)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.BetweenExclusive">Between (exclusive - <span class="roman">&gt; x &lt;</span>)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.BetweenInclusive">Between (inclusive - ≥ x ≤)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.LessThan">Less Than (&lt;)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.LessThanOrEqualTo">Less Than, or Equal To (≤ x)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.GreaterThan">Greater Than (&gt; x)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.GreaterThanOrEqualTo">Greater Than, or Equal To (≥ x)</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                <MudItem xs="3">
+                    <MudNumericField T="float" Label="@LabelA()" @bind-Value="a" Immediate="true" />
+                </MudItem>
+                <MudItem xs="3">
+                    <MudNumericField T="float" Label="@LabelB()" @bind-Value="b" Immediate="true" Disabled="@NotUseB()" Validation="ValidateB()" />
+                </MudItem>
+            </MudGrid>
+            
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public NumberCompareModel Model { get; set; }
+
+    [Parameter]
+    public NumberCompare Node { get; set; }
+
+    private string _id;
+    
+    private float a { get; set; }
+    private float b { get; set; }
+    private NumberCompare.Comparator comparator { get; set; }
+
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+
+    protected override void OnInitialized()
+    {
+        _id = Node.id;
+        comparator = Node.comparator;
+        a = Node.a;
+        b = Node.b;
+    }
+    
+    private List<GraphEditAction> GetChanges()
+    {
+        var changes = new List<GraphEditAction>();
+        if (_id != Node.id)
+            changes.Add(new GraphEditAction.RenameNode(Node, _id));
+        
+        if (comparator != Node.comparator)
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.comparator)), comparator));
+        
+        if (a != Node.a)
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.a)), a));
+        
+        if (b != Node.b)
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.b)), b));
+
+        return changes;
+    }
+
+    private string LabelA()
+    {
+        switch (comparator)
+        {
+            case NumberCompare.Comparator.EqualTo:
+            case NumberCompare.Comparator.EqualToApprox:
+            case NumberCompare.Comparator.LessThan:
+            case NumberCompare.Comparator.LessThanOrEqualTo:
+            case NumberCompare.Comparator.GreaterThan:
+            case NumberCompare.Comparator.GreaterThanOrEqualTo:
+                return "Value";
+ 
+            case NumberCompare.Comparator.BetweenInclusive:
+            case NumberCompare.Comparator.BetweenExclusive:
+                return "Minimum";
+
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private string LabelB()
+    {
+        switch (comparator)
+        {
+            case NumberCompare.Comparator.EqualToApprox:
+                return "+/-";
+            
+            case NumberCompare.Comparator.BetweenInclusive:
+            case NumberCompare.Comparator.BetweenExclusive:
+                return "Maximum";
+                
+            case NumberCompare.Comparator.EqualTo:
+            case NumberCompare.Comparator.LessThan:
+            case NumberCompare.Comparator.LessThanOrEqualTo:
+            case NumberCompare.Comparator.GreaterThan:
+            case NumberCompare.Comparator.GreaterThanOrEqualTo:
+                return "";
+                
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private bool NotUseB()
+    {
+        switch (comparator)
+        {
+            case NumberCompare.Comparator.EqualToApprox:
+            case NumberCompare.Comparator.BetweenInclusive:
+            case NumberCompare.Comparator.BetweenExclusive:
+                return false;
+                
+            case NumberCompare.Comparator.EqualTo:
+            case NumberCompare.Comparator.LessThan:
+            case NumberCompare.Comparator.LessThanOrEqualTo:
+            case NumberCompare.Comparator.GreaterThan:
+            case NumberCompare.Comparator.GreaterThanOrEqualTo:
+                return true;
+                
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private object? ValidateB()
+    {
+        switch (comparator)
+        {
+            case NumberCompare.Comparator.EqualToApprox:
+            {
+                return b == 0 ? "Range should not be zero" : null;
+            }
+                
+            case NumberCompare.Comparator.BetweenInclusive:
+            case NumberCompare.Comparator.BetweenExclusive:
+            {
+                return b < a ? "Maximal value should be larger than minimal" : null;
+            }
+                
+            default:
+                return null;
+        }
+    }
+}

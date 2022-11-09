@@ -8,6 +8,7 @@
 @using _Imports = OzricUI._Imports
 @using ValueType = OzricEngine.Values.ValueType
 @using Edge = OzricEngine.Nodes.Edge
+@using System.Reflection
 @implements IDisposable
 
 <div class="diagram-container">
@@ -28,6 +29,7 @@
     public GraphEditState GraphEditState { get; set; }
 
     public Diagram diagram { get; private set; }
+    private List<Type> nodeModelTypes;
 
     private bool IsChanged => !IsNotChanged;
     private bool IsNotChanged => GetHistory().IsAtCheckpoint();
@@ -65,10 +67,12 @@
         };
         
         diagram = new Diagram(options);
-
-        foreach (var modelType in AppDomain.CurrentDomain.GetAssemblies()
+        nodeModelTypes = AppDomain.CurrentDomain.GetAssemblies()
             .SelectMany(s => s.GetTypes())
-            .Where(t => typeof(GraphNodeModel).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract))
+            .Where(t => typeof(GraphNodeModel).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+            .ToList();
+        
+        foreach (var modelType in nodeModelTypes)
         {
             diagram.RegisterModelComponent(modelType, typeof(GraphNodeComponent));
         }
@@ -327,43 +331,12 @@
         return model;
     }
 
-    private static GraphNodeModel CreateModelForNode(Node node, Point? point)
+    private GraphNodeModel CreateModelForNode(Node node, Point? point)
     {
         switch (node)
         {
-            case Light l:
-                return new LightModel(l, point);
-
-            case BinarySensor s:
-                return new SensorModel(s, point);
-
-            case ModeSensor m:
-                return new ModeSensorModel(m, point);
-
-            case Switch sw:
-                return new SwitchModel(sw, point);
-                
-            case MediaPlayer mp:
-                return new MediaPlayerModel(mp, point);
-
-            case BinaryChoice s:
-                return new BinaryChoiceModel(s, point);
-
-            case ModeSwitch ms:
-                return new ModeSwitchModel(ms, point);
-
-            case ModeMatch mm:
-                return new ModeMatchModel(mm, point);
-
-            case IfAny ia:
-                return new IfAnyModel(ia, point);
-
-            case DayPhases dp:
-                return new DayPhasesModel(dp, point);
-
-            case SkyBrightness sb:
-                return new SkyBrightnessModel(sb, point);
-
+            // Special case for constants, as we want a specific UI for each type
+        
             case Constant c:
             {
                 switch (c.value.ValueType)
@@ -379,11 +352,16 @@
                 }
             }
 
-            case Tween t:
-                return new TweenModel(t, point);
-
-            case BinarySustain bs:
-                return new BinarySustainModel(bs, point);
+            default:
+            {
+                var constructors = nodeModelTypes.SelectMany(t => t.GetConstructors());
+                var applicable = constructors.First(c =>
+                {
+                    var p = c.GetParameters();
+                    return (p.Length == 2 && p[0].ParameterType == node.GetType() && p[1].ParameterType == typeof(Point));
+                });
+                return (GraphNodeModel) applicable.Invoke(new object?[] {node, point});
+            }
         }
 
         throw new Exception($"Unhandled type {node.GetType()}");

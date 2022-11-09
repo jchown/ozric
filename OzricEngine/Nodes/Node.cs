@@ -143,7 +143,7 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
     
     public PropertyInfo GetProperty(string name)
     {
-        return GetType().GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new Exception($"Property {name} not found");
+        return GetType().GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new Exception($"Property {name} not found in {id} ({GetType().Name})");
     }
 
     #region Comparison

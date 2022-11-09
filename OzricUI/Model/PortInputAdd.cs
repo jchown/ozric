@@ -8,6 +8,7 @@ namespace OzricUI.Model;
 /// </summary>
 public class PortInputAdd : PortModel, IPort
 {
+    public string Name => "+";
     public bool HiddenIfLocked => true;
     public bool IsInput => true;
     public string CssClass => "input-port";

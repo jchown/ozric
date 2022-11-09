@@ -6,6 +6,8 @@ public interface IPort
 {
     public ValueType valueType { get; }
     
+    public string Name { get; }
+    
     public string CssClass { get; }
 
     public bool IsInput { get; }
