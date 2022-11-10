@@ -59,7 +59,7 @@ public class AddNodeChoice
             category: Category.Logic,
             name: "If All - AND",
             icon: IfAllModel.ICON,
-            create: () => new IfAny(graph.CreateNodeID("ifall"))));
+            create: () => new IfAll(graph.CreateNodeID("ifall"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Constant,

@@ -237,8 +237,16 @@
 
         diagram.SetPan(-(minX - 10), -(minY - 10));
 
-        foreach (var edge in Graph.edges.Values)
+        foreach (var edgeKV in Graph.edges.ToList())
         {
+            var edge = edgeKV.Value;
+
+            if (!nodeMappings.HasGraphID(edge.from.nodeID) || !nodeMappings.HasGraphID(edge.to.nodeID))
+            {
+                Graph.edges.Remove(edgeKV.Key);
+                continue;
+            }
+            
             var fromD = nodeMappings.GetDiagram(edge.from.nodeID);
             var fromPortID = $"{edge.from.nodeID}.{edge.from.outputName}"; 
             

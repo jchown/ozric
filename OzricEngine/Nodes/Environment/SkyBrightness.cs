@@ -42,7 +42,7 @@ public class SkyBrightness: Node
 
         SetOutputValue(Sun, new Number(sunLevel), context);
         SetOutputValue(Clouds, new Number(cloudLevel), context);
-        SetOutputValue(Brightness, new Number(sunLevel - (cloudLevel * 0.8f)), context);
+        SetOutputValue(Brightness, new Number(sunLevel - (sunLevel * cloudLevel * 0.75f)), context);
     }
 
     private float GetSunLevel(Home home)

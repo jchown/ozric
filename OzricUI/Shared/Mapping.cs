@@ -65,4 +65,9 @@ public class Mapping<GType, DType> where GType: IGraphObject where DType: Blazor
     {
         return idToDType.ContainsKey(g.id);
     }
+
+    public bool HasGraphID(string graphID)
+    {
+        return idToDType.ContainsKey(graphID);
+    }
 }

@@ -1,7 +1,6 @@
 @using OzricUI.Model
 @using OzricEngine.Nodes
 @using OzricEngine.Values
-@using OzricService
 
 <MudDialog>
     <DialogContent>
@@ -12,7 +11,7 @@
 
             <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
 
-            <ColorValuePicker Value="@(Node.value as ColorValue)" Ozric="Ozric" />
+            <ColorValuePicker Value="@(Node.value as ColorValue)" Picked="OnPickedColor" />
 
         </MudContainer>
 
@@ -35,9 +34,6 @@
 
     [Parameter]
     public Constant Node { get; set; }
-
-    [Parameter]
-    public IOzricService Ozric { get; set; }
 
     private string _id;
     private ColorValue _color;
@@ -63,6 +59,11 @@
             changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), _color));
 
         return changes;
+    }
+
+    private void OnPickedColor(ColorValue value)
+    {
+        _color = value;
     }
 
 }

@@ -6,6 +6,17 @@
 @using System.Timers
 @inject IOzricService Ozric
 
+<MudSelect Value="_colorMode" Style="z-index:9999;" ValueChanged="OnColorModeChanged" HelperText="Matching colorspace modes with your lights can ensure accurate color reproduction" T="ColorMode" Label="Color Mode" Variant="Variant.Text">
+    @foreach (var e in Enum.GetValues(typeof(ColorMode)))
+    {
+        var colorMode = (ColorMode)e;
+        if (colorMode == ColorMode.Unknown)
+            continue;
+        
+        <MudSelectItem Value="@(colorMode)">@ColorValue.DescribeColorMode(colorMode)</MudSelectItem>
+    }
+</MudSelect>
+
 <MudGrid>
     <MudItem xs="6">
         @switch (_colorMode)

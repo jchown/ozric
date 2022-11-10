@@ -13,5 +13,5 @@ public class NumberCompareModel: GraphNodeModel
     
     public override string Icon => ICON;
 
-    public const string ICON = "icon-park-solid:checklist";
+    public const string ICON = "tabler:ruler-measure";
 }

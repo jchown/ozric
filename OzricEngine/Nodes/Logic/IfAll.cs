@@ -13,6 +13,10 @@ public class IfAll: VariableInputs
         
     public override NodeType nodeType => NodeType.IfAll;
 
+    public IfAll(): this("")
+    {
+    }
+
     public IfAll(string id): base(id, ValueType.Binary, new List<Pin> { new(OUTPUT_NAME, ValueType.Binary) })
     {
     }

@@ -27,6 +27,9 @@ public abstract class GraphNodeModel: NodeModel
         foreach (var output in node.outputs)
             AddOutput(output);
 
+        _inputLabels = node.inputs.Count > 1;
+        _outputLabels = node.outputs.Count > 1;
+
         Load();
     }
 
