@@ -51,10 +51,10 @@ public class NumberCompare: Node
 
     private void UpdateValue(Context context)
     {
-        var value = GetInputValue<Number>(InputName).value;
-        if (value == null)
+        if (!HasInputValue(InputName))
             return;
-
+        
+        var value = GetInputValue<Number>(InputName).value;
         bool result;
 
         switch (comparator)

@@ -156,7 +156,10 @@ public class EngineService: IEngineService, ICommandSender
 
         await Stop(cancellationToken);
 
-        await SaveGraph(graph);
+        if (!graph.Equals(Graph))
+        {
+            await SaveGraph(graph);
+        }
 
         await Start(cancellationToken);
     }

@@ -248,7 +248,6 @@ namespace OzricEngine
         {
             //  TODO: Remove post v0.8
 
-            Graph graph;
             json = json.Replace("OnOff", "binary");
             json = json.Replace("boolean", "binary");
             json = json.Replace("Boolean", "Binary");

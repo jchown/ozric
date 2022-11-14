@@ -36,8 +36,9 @@
         
         &nbsp; &nbsp;
         
-        <MudIconButton Icon="@Icons.Material.Filled.PauseCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickPause" Disabled="@(IsEditing || OzricService.Status.paused)" />
-        <MudIconButton Icon="@Icons.Material.Filled.PlayCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickContinue" Disabled="@(IsEditing || !OzricService.Status.paused)" />
+        <MudIconButton Title="Pause Engine" Icon="@Icons.Material.Filled.PauseCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickPause" Disabled="@(IsEditing || OzricService.Status.paused)" />
+        <MudIconButton Title="Continue Engine" Icon="@Icons.Material.Filled.PlayCircle" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickContinue" Disabled="@(IsEditing || !OzricService.Status.paused)" />
+        <MudIconButton Title="Restart Engine" Icon="@Icons.Material.Filled.RestartAlt" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickRestart" Disabled="@(IsEditing)" />
  
         <MudSpacer />
 
@@ -310,6 +311,11 @@
     private void OnClickContinue()
     {
         OzricService.SetPaused(false);
+    }
+
+    private void OnClickRestart()
+    {
+        OzricService.Restart(OzricService.Graph);
     }
 
     private async Task OnClickAdd()
