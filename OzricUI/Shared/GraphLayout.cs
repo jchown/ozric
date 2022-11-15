@@ -1,3 +1,4 @@
+using Blazor.Diagrams.Core.Models;
 using OzricEngine;
 
 namespace OzricUI;
@@ -5,6 +6,7 @@ namespace OzricUI;
 public class GraphLayout: IEquatable<GraphLayout>
 {
     public Dictionary<string, LayoutPoint> nodeLayout { get; set; } = new();
+    public Dictionary<string, Zone> zones { get; set; } = new();
 
     #region Comparison
     public bool Equals(GraphLayout? other)
@@ -32,5 +34,19 @@ public class GraphLayout: IEquatable<GraphLayout>
     public override string ToString()
     {
         return Json.Serialize(this);
+    }
+
+    public Zone AddZone(List<string> nodeIDs)
+    {
+        int i = zones.Count;
+        string zoneID;
+        do
+        {
+            zoneID = $"zone-{i++}";
+        } while (zones.ContainsKey(zoneID));
+
+        var zone = new Zone(zoneID, nodeIDs);
+        zones[zoneID] = zone;
+        return zone;
     }
 }

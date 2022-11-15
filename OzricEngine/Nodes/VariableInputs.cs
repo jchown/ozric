@@ -6,6 +6,9 @@ using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine.Nodes;
 
+/// <summary>
+/// TODO: Remove and replace with a multi-value input type.
+/// </summary>
 public abstract class VariableInputs: Node
 {
     public readonly ValueType valueType;

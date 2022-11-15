@@ -175,5 +175,24 @@ public interface GraphEditAction
         }
     }
 
+    record Group(List<String> nodeIDs): GraphEditAction
+    {
+        private string groupID;
+        
+        public void Do(GraphEditor editor)
+        {
+            var zone = editor.GraphLayout.AddZone(nodeIDs);
+            groupID = editor.AddZone(zone);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            var group = editor.diagram.Groups.First(g => g.Id == groupID);
+            foreach (var child in group.Children.ToArray())
+                group.RemoveChild(child);
+            editor.diagram.RemoveGroup(group);
+        }
+    }
+
     public static readonly ReadOnlyCollection<GraphEditAction> NoChanges = new (new List<GraphEditAction>());
 }

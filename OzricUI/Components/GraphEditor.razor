@@ -41,6 +41,7 @@
 
     private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
     private readonly Mapping<Edge, LinkModel> edgeMappings = new();
+    private readonly Mapping<Zone, GroupModel> zoneMappings = new();
 
     protected override void OnInitialized()
     {
@@ -436,6 +437,9 @@
         if (selectableModel is LinkModel lm)
             return edgeMappings.GetGraph(lm);
                 
+        if (selectableModel is GroupModel gm)
+            return zoneMappings.GetGraph(gm);
+                
         throw new InvalidOperationException();
     }
 
@@ -595,5 +599,14 @@
         var input = variableInputs.RemoveInput(inputName);
         var model = (VariableInputsModel) nodeMappings.GetDiagram(variableInputs);
         model.RemoveInput(input);
+    }
+
+    public string AddZone(Zone zone)
+    {
+        var nodes = diagram.Nodes.Where(n => zone.nodeIDs.Contains(n.Id)).ToList();
+        var group = new ZoneModel(nodes);
+        diagram.AddGroup(group);
+        zoneMappings.Add(zone, group);
+        return group.Id;
     }
 }

@@ -55,6 +55,16 @@
         </MudButton>
 
         <MudSpacer />
+
+        <MudButton StartIcon="@Icons.Material.Filled.Group" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickGroup" Disabled="@(!IsEditing || !HasSelection)" hidden="@(!IsEditing)">
+            Group
+        </MudButton>
+
+        <MudButton StartIcon="@Icons.Material.Filled.GroupOff" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickUngroup" Disabled="@(!HasSelection && !SelectionGrouped)" hidden="@(!IsEditing)">
+            Ungroup
+        </MudButton>
+
+        <MudSpacer />
         
         <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickEdit" Disabled="@IsEditing" hidden="@IsEditing">
             Edit
@@ -123,14 +133,14 @@
     
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
     private bool HasSelection => (SelectedItems.Count > 0);
+    private bool SelectionGrouped => (SelectedItems.Any(i => i.Key is GroupModel gm && gm.Group != null));
     private bool CanGetInfo => SelectedItems.Count == 1 && SelectedItems[0].Key is GraphNodeModel;
-    private List<String> log = new();
+    private List<string> log = new();
 
     public bool IsEditing => GraphEditState.IsEditing;
     public bool IsChanged => GraphEditState.IsChanged;
     public bool CanUndo => GraphEditState.CanUndo && !Saving;
     public bool CanRedo => GraphEditState.CanRedo && !Saving;
-    
     
 
     void DrawerToggle()
@@ -320,11 +330,12 @@
 
     private async Task OnClickAdd()
     {
-        Action<Node> adder = AddNode;
+        Action<Node> addNode = AddNode;
+        
         var parameters = new DialogParameters
         {
             { "Choices", AddNodeChoice.GetChoices(OzricService.Home, Graph) },
-            { "OnAdd", adder }
+            { "OnAdd", addNode }
         };
 
         await DialogService.Show<AddNodesDialog>("Add Nodes", parameters, GetDialogOptions()).Result;
@@ -420,6 +431,15 @@
         return Task.CompletedTask;
     }
 
+    private void OnClickGroup()
+    {
+        GraphEditState.DoAction(new GraphEditAction.Group(SelectedItems.Where(kv => kv.Value is Node).Select(kv => kv.Value.id).ToList()));
+    }
+
+    private void OnClickUngroup()
+    {
+    }
+
     private void OnDiagramKeyDown(KeyboardEventArgs e)
     {
         if (e.CtrlKey && e.Key.Equals("z"))
@@ -435,4 +455,5 @@
             GraphEditState.DoCommand(GraphEditState.Command.Delete);
         }
     }
+
 }
