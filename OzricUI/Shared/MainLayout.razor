@@ -56,11 +56,11 @@
 
         <MudSpacer />
 
-        <MudButton StartIcon="@Icons.Material.Filled.Group" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickGroup" Disabled="@(!IsEditing || !HasSelection)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.Group" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickGroup" Disabled="@(!CanGroupSelection())" hidden="@(!IsEditing)">
             Group
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.GroupOff" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickUngroup" Disabled="@(!HasSelection && !SelectionGrouped)" hidden="@(!IsEditing)">
+        <MudButton StartIcon="@Icons.Material.Filled.GroupOff" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickUngroup" Disabled="@(!CanUngroupSelection())" hidden="@(!IsEditing)">
             Ungroup
         </MudButton>
 
@@ -455,5 +455,33 @@
             GraphEditState.DoCommand(GraphEditState.Command.Delete);
         }
     }
+    
+    private bool CanGroupSelection()
+    {
+        // Can group 2+ ungrouped items, or 1+ ungrouped items with 1+ items in a single other group 
 
+        if (SelectedItems.Count < 2)
+            return false;
+
+        var groups = SelectedItems
+            .Where(i => i.Key is GraphNodeModel)
+            .GroupBy(i => ((GraphNodeModel)i.Key).Group?.Id)
+            .ToList();
+
+        if (groups.Count > 2)
+            return false;
+
+        var ungrouped = groups.FirstOrDefault(g => g.Key == null);
+        if (ungrouped == null)
+            return false;
+
+        var grouped = groups.FirstOrDefault(g => g.Key != null);
+
+        return (grouped != null) || (ungrouped.Count() > 1);
+    }
+
+    private bool CanUngroupSelection()
+    {
+        return SelectedItems.Any(i => i.Key is GraphNodeModel gm && gm.Group != null);
+    }
 }

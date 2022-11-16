@@ -1,6 +1,4 @@
 using Blazor.Diagrams.Core.Models;
-using OzricUI;
-using OzricUI.Model;
 
 public class ZoneModel : GroupModel
 {
