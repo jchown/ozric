@@ -15,184 +15,292 @@ public interface GraphEditAction
     void Undo(GraphEditor editor);
     void Do(GraphEditor editor);
 
-    record AddNode(Node node): GraphEditAction
+    public static readonly ReadOnlyCollection<GraphEditAction> NoChanges = new (new List<GraphEditAction>());
+
+    /// <summary>
+    /// Generator interface for building composite actions
+    /// </summary>
+    public static GraphEditAction Build(IEnumerable<GraphEditAction> actionsGenerator)
     {
-        public void Do(GraphEditor editor)
-        {
-            editor.Graph.AddNode(node);
-            var pos = editor.diagram.GetScreenPoint(0.3, 0.2);
-            editor.GraphLayout.nodeLayout[node.id] = LayoutPoint.FromPoint(pos);
-            editor.AddNode(node, pos);
-        }
+        var actions = new List<GraphEditAction>();
         
-        public void Undo(GraphEditor editor)
-        {
-            editor.RemoveNode(node);
-            editor.GraphLayout.nodeLayout.Remove(node.id);
-            editor.Graph.RemoveNode(node);
-        }
+        var enumerator = actionsGenerator.GetEnumerator();
+        while (enumerator.MoveNext())
+            actions.Add(enumerator.Current);
+
+        return new EditActions(actions);
     }
 
-    record RenameNode(Node node, string newID): GraphEditAction
-    {
-        private string oldID = node.id;
-        
-        public void Do(GraphEditor editor)
-        {
-            editor.RenameNode(oldID, newID);
-        }
-
-        public void Undo(GraphEditor editor)
-        {
-            editor.RenameNode(newID, oldID);
-        }
-    }
-
-    record EditNode(Node node, PropertyInfo property, object? newValue): GraphEditAction
-    {
-        private object? oldValue = property.GetValue(node);
-        
-        public void Do(GraphEditor editor)
-        {
-            property.SetValue(node, newValue);
-            editor.Reload(node);
-        }
-
-        public void Undo(GraphEditor editor)
-        {
-            property.SetValue(node, oldValue);
-            editor.Reload(node);
-        }
-    }
-    
-    record AddInput(VariableInputs node, string inputName): GraphEditAction
+    /// <summary>
+    /// Composite actions
+    /// </summary>
+    /// <param name="Actions"></param>
+    record EditActions(List<GraphEditAction> Actions): GraphEditAction
     {
         public void Do(GraphEditor editor)
         {
-            editor.AddNodeInput(node, inputName);
-            editor.Reload(node);
-        }
-
-        public void Undo(GraphEditor editor)
-        {
-            editor.RemoveNodeInput(node, inputName);
-            editor.Reload(node);
-        }
-    }
-
-    record RemoveInput(VariableInputs node, string inputName): GraphEditAction
-    {
-        public void Do(GraphEditor editor)
-        {
-            editor.RemoveNodeInput(node, inputName);
-            editor.Reload(node);
-        }
-        
-        public void Undo(GraphEditor editor)
-        {
-            editor.AddNodeInput(node, inputName);
-            editor.Reload(node);
-        }
-    }
-
-    record MoveNode(NodeModel node, Point @from, Point to): GraphEditAction
-    {
-        public void Do(GraphEditor editor)
-        {
-            node.SetPosition(to.X, to.Y);
-        }
-
-        public void Undo(GraphEditor editor)
-        {
-            node.SetPosition(from.X, from.Y);
-        }
-        
-        public GraphEditAction WithTo(Point to)
-        {
-            return this with { to = to };
-        }
-    }
-
-    record RemoveNode(Node node): GraphEditAction
-    {
-        private Point position = Point.Zero;
-
-        public void Do(GraphEditor editor)
-        {
-            position = editor.GetPosition(node);
-            editor.RemoveNode(node);
-        }
-
-        public void Undo(GraphEditor editor)
-        {
-            editor.Graph.AddNode(node);
-            editor.AddNode(node, position);
-        }
-    }
-    
-    record AddEdge(Edge edge): GraphEditAction
-    {
-        public void Do(GraphEditor editor)
-        {
-            editor.Graph.edges.Add(edge.id, edge);
-            editor.AddEdge(edge);
-        }
-
-        public void Undo(GraphEditor editor)
-        {
-            editor.RemoveEdge(edge);
-            editor.Graph.edges.Remove(edge.id);
-        }
-    }
-    
-    record RemoveEdge(Edge edge): GraphEditAction
-    {
-        public void Do(GraphEditor editor)
-        {
-            editor.RemoveEdge(edge);
-            editor.Graph.edges.Remove(edge.id);
-        }
-
-        public void Undo(GraphEditor editor)
-        {
-            editor.Graph.edges.Add(edge.id, edge);
-            editor.AddEdge(edge);
-        }
-    }
-            
-    record EditActions(List<GraphEditAction> actions): GraphEditAction
-    {
-        public void Do(GraphEditor editor)
-        {
-            foreach (var action in actions)
+            foreach (var action in Actions)
                 action.Do(editor);
         }
 
         public void Undo(GraphEditor editor)
         {
-            for (int i = actions.Count; --i >= 0;)
-                actions[i].Undo(editor);
+            for (int i = Actions.Count; --i >= 0;)
+                Actions[i].Undo(editor);
         }
     }
 
-    record Group(List<String> nodeIDs): GraphEditAction
+    record AddNode(Node Node): GraphEditAction
     {
-        private string groupID;
+        public void Do(GraphEditor editor)
+        {
+            editor.Graph.AddNode(Node);
+            var pos = editor.diagram.GetScreenPoint(0.3, 0.2);
+            editor.GraphLayout.nodeLayout[Node.id] = LayoutPoint.FromPoint(pos);
+            editor.AddNode(Node, pos);
+        }
+        
+        public void Undo(GraphEditor editor)
+        {
+            editor.RemoveNode(Node);
+            editor.GraphLayout.nodeLayout.Remove(Node.id);
+        }
+    }
+
+    record RenameNode(Node Node, string NewId): GraphEditAction
+    {
+        private readonly string _oldID = Node.id;
         
         public void Do(GraphEditor editor)
         {
-            var zone = editor.GraphLayout.AddZone(nodeIDs);
-            groupID = editor.AddZone(zone);
+            editor.RenameNode(_oldID, NewId);
         }
 
         public void Undo(GraphEditor editor)
         {
-            var group = editor.diagram.Groups.First(g => g.Id == groupID);
-            foreach (var child in group.Children.ToArray())
-                group.RemoveChild(child);
-            editor.diagram.RemoveGroup(group);
+            editor.RenameNode(NewId, _oldID);
         }
     }
 
-    public static readonly ReadOnlyCollection<GraphEditAction> NoChanges = new (new List<GraphEditAction>());
+    record EditNode(Node Node, PropertyInfo Property, object? NewValue): GraphEditAction
+    {
+        private readonly object? _oldValue = Property.GetValue(Node);
+        
+        public void Do(GraphEditor editor)
+        {
+            Property.SetValue(Node, NewValue);
+            editor.Reload(Node);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            Property.SetValue(Node, _oldValue);
+            editor.Reload(Node);
+        }
+    }
+    
+    record AddInput(VariableInputs Node, string InputName): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            editor.AddNodeInput(Node, InputName);
+            editor.Reload(Node);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            editor.RemoveNodeInput(Node, InputName);
+            editor.Reload(Node);
+        }
+    }
+
+    record RemoveInput(VariableInputs Node, string InputName): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            editor.RemoveNodeInput(Node, InputName);
+            editor.Reload(Node);
+        }
+        
+        public void Undo(GraphEditor editor)
+        {
+            editor.AddNodeInput(Node, InputName);
+            editor.Reload(Node);
+        }
+    }
+
+    record MoveNode(NodeModel Node, Point From, Point To): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            Node.SetPosition(To.X, To.Y);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            Node.SetPosition(From.X, From.Y);
+        }
+        
+        public GraphEditAction WithTo(Point to)
+        {
+            return this with { To = to };
+        }
+    }
+
+    record RemoveNode(Node Node): GraphEditAction
+    {
+        private Point _position = Point.Zero;
+
+        public void Do(GraphEditor editor)
+        {
+            _position = editor.GetPosition(Node);
+            editor.RemoveNode(Node);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            editor.Graph.AddNode(Node);
+            editor.AddNode(Node, _position);
+        }
+    }
+    
+    record AddEdge(Edge Edge): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            editor.Graph.edges.Add(Edge.id, Edge);
+            editor.AddEdge(Edge);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            editor.RemoveEdge(Edge);
+            editor.Graph.edges.Remove(Edge.id);
+        }
+    }
+    
+    record RemoveEdge(Edge Edge): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            editor.RemoveEdge(Edge);
+            editor.Graph.edges.Remove(Edge.id);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            editor.Graph.edges.Add(Edge.id, Edge);
+            editor.AddEdge(Edge);
+        }
+    }
+            
+    record AddGroup(string ZoneId): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            var zone = editor.GraphLayout.AddZone(ZoneId);
+            editor.AddZone(zone);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            var zone = editor.GetZone(ZoneId);
+            editor.RemoveZone(zone);
+            editor.GraphLayout.RemoveZone(ZoneId);
+        }
+    }
+
+    record RemoveGroup(string ZoneId): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            var zone = editor.GetZone(ZoneId);
+            editor.RemoveZone(zone);
+            editor.GraphLayout.RemoveZone(ZoneId);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            var zone = editor.GraphLayout.AddZone(ZoneId);
+            editor.AddZone(zone);
+        }
+    }
+    
+    record AddNodesToGroup(string ZoneId, List<String> NodeIDs): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            var group = editor.GetDiagramGroup(ZoneId);
+            
+            for (int i = 0; i < NodeIDs.Count; i++)
+            {
+                var nodeID = NodeIDs[i];
+                var node = editor.GetDiagramNode(nodeID);
+                if (node.Group != null)
+                    throw new Exception($"Node {nodeID} is already in group {node.Group.Id}");
+                
+                group.AddChild(node);
+                editor.GraphLayout.zones[ZoneId].nodeIDs.Add(nodeID);
+            }
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            var group = editor.GetDiagramGroup(ZoneId);
+            
+            for (int i = 0; i < NodeIDs.Count; i++)
+            {
+                var nodeID = NodeIDs[i];
+                var node = editor.GetDiagramNode(nodeID);
+                
+                editor.GraphLayout.zones[ZoneId].nodeIDs.Remove(nodeID);
+                group.RemoveChild(node);
+            }
+        }
+    }
+
+    record RemoveNodesFromGroups(List<String> NodeIDs): GraphEditAction
+    {
+        private List<String?> _groupIDs;
+        
+        public void Do(GraphEditor editor)
+        {
+            _groupIDs = NodeIDs.Select(nodeID => editor.GetDiagramNode(nodeID).Group?.Id).ToList();
+            
+            for (int i = 0; i < NodeIDs.Count; i++)
+            {
+                var groupID = _groupIDs[i];
+                if (groupID == null)
+                    continue;
+
+                var nodeID = NodeIDs[i];
+                var node = editor.GetDiagramNode(nodeID);
+                
+                if (node.Group is ZoneModel group)
+                {
+                    var zoneID = group.zoneID;
+                    editor.GraphLayout.zones[zoneID].nodeIDs.Remove(nodeID);
+                    group.RemoveChild(node);
+                }
+            }
+            
+            editor.diagram.Refresh();
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            for (int i = 0; i < _groupIDs.Count; i++)
+            {
+                var groupID = _groupIDs[i];
+                if (groupID == null)
+                    continue;
+
+                var nodeID = NodeIDs[i];
+                var node = editor.GetDiagramNode(nodeID);
+                
+                editor.diagram.Groups.First(g => g.Id == groupID).AddChild(node);
+                editor.GraphLayout.zones[groupID].nodeIDs.Add(nodeID);
+            }
+        }
+    }
 }

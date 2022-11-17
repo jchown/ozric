@@ -2,7 +2,10 @@ using Blazor.Diagrams.Core.Models;
 
 public class ZoneModel : GroupModel
 {
-    public ZoneModel(List<NodeModel> nodeModels): base(nodeModels)
+    public readonly string zoneID;
+
+    public ZoneModel(string zoneID): base(new List<NodeModel>())
     {
+        this.zoneID = zoneID;
     }
 }

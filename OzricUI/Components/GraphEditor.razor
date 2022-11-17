@@ -41,7 +41,7 @@
 
     private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
     private readonly Mapping<Edge, LinkModel> edgeMappings = new();
-    private readonly Mapping<Zone, GroupModel> zoneMappings = new();
+    private readonly Mapping<Zone, ZoneModel> zoneMappings = new();
 
     protected override void OnInitialized()
     {
@@ -213,6 +213,7 @@
     {
         nodeMappings.Clear();
         edgeMappings.Clear();
+        zoneMappings.Clear();
 
         double minX = 0, minY = 0;
         int x = 0, y = 0, w = 160, h = 120, cols = 6; 
@@ -261,6 +262,16 @@
 
             edgeMappings.Add(edge, link);
             diagram.Links.Add(link);
+        }
+
+        foreach (var zone in GraphLayout.zones.Values)
+        {
+            var group = AddZone(zone);
+
+            foreach (var nodeID in zone.nodeIDs)
+            {
+                group.AddChild(nodeMappings.GetDiagram(nodeID));
+            }
         }
     }
     
@@ -437,8 +448,8 @@
         if (selectableModel is LinkModel lm)
             return edgeMappings.GetGraph(lm);
                 
-        if (selectableModel is GroupModel gm)
-            return zoneMappings.GetGraph(gm);
+        if (selectableModel is ZoneModel zm)
+            return zoneMappings.GetGraph(zm);
                 
         throw new InvalidOperationException();
     }
@@ -600,13 +611,36 @@
         var model = (VariableInputsModel) nodeMappings.GetDiagram(variableInputs);
         model.RemoveInput(input);
     }
+    
+    /// Add an existing Zone to the diagram
 
-    public string AddZone(Zone zone)
+    public ZoneModel AddZone(Zone zone)
     {
-        var nodes = diagram.Nodes.Where(n => zone.nodeIDs.Contains(n.Id)).ToList();
-        var group = new ZoneModel(nodes);
+        var group = new ZoneModel(zone.id);
         diagram.AddGroup(group);
         zoneMappings.Add(zone, group);
-        return group.Id;
+        return group;
     }
+
+    public Zone GetZone(string zoneId)
+    {
+        return zoneMappings.GetGraph(zoneId);
+    }
+
+    public void RemoveZone(Zone zone)
+    {
+        var group = zoneMappings.Remove(zone);
+        diagram.RemoveGroup(group);
+    }
+
+    public GraphNodeModel GetDiagramNode(string nodeID)
+    {
+        return nodeMappings.GetDiagram(Graph.nodes[nodeID]);
+    }
+
+    public ZoneModel GetDiagramGroup(string zoneID)
+    {
+        return zoneMappings.GetDiagram(zoneID);
+    }
+
 }

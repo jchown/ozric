@@ -36,7 +36,7 @@ public class GraphLayout: IEquatable<GraphLayout>
         return Json.Serialize(this);
     }
 
-    public Zone AddZone(List<string> nodeIDs)
+    public string NewZoneID()
     {
         int i = zones.Count;
         string zoneID;
@@ -45,8 +45,22 @@ public class GraphLayout: IEquatable<GraphLayout>
             zoneID = $"zone-{i++}";
         } while (zones.ContainsKey(zoneID));
 
-        var zone = new Zone(zoneID, nodeIDs);
+        return zoneID;
+    }
+
+    public Zone AddZone(string zoneID)
+    {
+        var zone = new Zone(zoneID);
         zones[zoneID] = zone;
         return zone;
+    }
+
+    public void RemoveZone(string zoneID)
+    {
+        var zone = zones[zoneID];
+        if (zone.nodeIDs.Count > 0)
+            throw new Exception("ZOne contains nodes");
+
+        zones.Remove(zoneID);
     }
 }

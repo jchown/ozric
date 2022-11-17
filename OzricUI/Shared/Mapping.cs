@@ -1,4 +1,3 @@
-using Blazor.Diagrams.Core.Models;
 using OzricEngine.Nodes;
 
 namespace OzricUI.Shared;
@@ -63,7 +62,7 @@ public class Mapping<GType, DType> where GType: IGraphObject where DType: Blazor
 
     public bool HasGraph(GType g)
     {
-        return idToDType.ContainsKey(g.id);
+        return HasGraphID(g.id);
     }
 
     public bool HasGraphID(string graphID)

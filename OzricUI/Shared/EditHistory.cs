@@ -117,7 +117,7 @@ public class EditHistory
 
             if (undoActionList.Last() is GraphEditAction.MoveNode lastMove)
             {
-                if (lastMove.node == node)
+                if (lastMove.Node == node)
                 {
                     undoActionList[^1] = lastMove.WithTo(to);
                     return;

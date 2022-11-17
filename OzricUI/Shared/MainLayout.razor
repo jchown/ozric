@@ -130,10 +130,9 @@
     private GraphEditState GraphEditState { get; set; } = new();
     private List<KeyValuePair<SelectableModel, IGraphObject>> SelectedItems { get; set; } = new();
     private HubConnection? hubConnection;
-    
+
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
     private bool HasSelection => (SelectedItems.Count > 0);
-    private bool SelectionGrouped => (SelectedItems.Any(i => i.Key is GroupModel gm && gm.Group != null));
     private bool CanGetInfo => SelectedItems.Count == 1 && SelectedItems[0].Key is GraphNodeModel;
     private List<string> log = new();
 
@@ -141,7 +140,7 @@
     public bool IsChanged => GraphEditState.IsChanged;
     public bool CanUndo => GraphEditState.CanUndo && !Saving;
     public bool CanRedo => GraphEditState.CanRedo && !Saving;
-    
+
 
     void DrawerToggle()
     {
@@ -157,7 +156,7 @@
             _isDarkMode = false && dark;
             StateHasChanged();
         }
-        
+
         if (log.Count == 0)
             return;
 
@@ -226,13 +225,13 @@
     private async Task LoadGraph()
     {
         log.Add("Loading graph");
-        Graph = Json.Clone(OzricService.Graph);    // Don't edit the live graph!
+        Graph = Json.Clone(OzricService.Graph); // Don't edit the live graph!
         log.Add($"Loaded {Graph.nodes.Count} nodes");
- 
+
         log.Add("Loading graph layout");
         GraphLayout = await Data.GetGraphLayoutAsync();
         log.Add($"Loaded {GraphLayout.nodeLayout.Count} node positions");
-        
+
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnSelectionChanged += GraphSelectionChanged;
         GraphEditState.OnKeyDown += OnDiagramKeyDown;
@@ -250,7 +249,7 @@
     {
         if (GraphEditState.IsEditing && !OzricService.Status.paused)
             OzricService.SetPaused(true);
-            
+
         if (!GraphEditState.IsEditing && OzricService.Status.paused)
             OzricService.SetPaused(false);
 
@@ -331,7 +330,7 @@
     private async Task OnClickAdd()
     {
         Action<Node> addNode = AddNode;
-        
+
         var parameters = new DialogParameters
         {
             { "Choices", AddNodeChoice.GetChoices(OzricService.Home, Graph) },
@@ -360,7 +359,7 @@
         var (model, node) = SelectedItems[0];
         if (model is not GraphNodeModel gm)
             return;
-        
+
         var editDialog = model.GetType().GetCustomAttribute<EditDialogAttribute>()!;
         await ShowNodeDialog(model, node, editDialog.type, editDialog.title);
     }
@@ -389,7 +388,7 @@
         GraphEditState.DoAction(new GraphEditAction.EditActions(changes));
         StateHasChanged();
     }
-    
+
     private async Task OnClickData()
     {
         var parameters = new DialogParameters
@@ -404,11 +403,11 @@
         if (result.Cancelled)
             return;
 
-        var json = (DataDialog.Result) result.Data;
+        var json = (DataDialog.Result)result.Data;
 
         Graph = Json.Deserialize<Graph>(json.graph);
         GraphLayout = Json.Deserialize<GraphLayout>(json.graphLayout);
-        
+
         await OnClickSave();
     }
 
@@ -427,32 +426,59 @@
 
     private Task OnClickDelete()
     {
-        GraphEditState.DoCommand(GraphEditState.Command.Delete);        
+        GraphEditState.DoCommand(GraphEditState.Command.Delete);
         return Task.CompletedTask;
     }
 
     private void OnClickGroup()
     {
-        GraphEditState.DoAction(new GraphEditAction.Group(SelectedItems.Where(kv => kv.Value is Node).Select(kv => kv.Value.id).ToList()));
+        GraphEditState.DoAction(GraphEditAction.Build(GroupActions()));
     }
+    
+    private IEnumerable<GraphEditAction> GroupActions()
+    {
+        //  Either all nodes are in no group, or there is at least one in an existing group.
+        
+        var nodeInGroup = SelectedItems.FirstOrDefault(kv => (kv.Key as GraphNodeModel)?.Group != null);
+        var group = (nodeInGroup.Key as GraphNodeModel)?.Group as ZoneModel;
 
+        if (group == null)
+        {
+            //  Not joining an existing group
+            
+            var zoneID = GraphLayout.NewZoneID();
+            yield return new GraphEditAction.AddGroup(zoneID);
+            
+            var nodeIDs = SelectedItems.Where(kv => kv.Value is Node).Select(kv => kv.Value.id).ToList();
+            yield return new GraphEditAction.AddNodesToGroup(zoneID, nodeIDs);
+        }
+        else
+        {
+            var zoneID = group.zoneID;
+            var nodeIDs = SelectedItems.Where(kv => (kv.Key as GraphNodeModel)?.Group == null).Select(kv => kv.Value.id).ToList();
+            yield return new GraphEditAction.AddNodesToGroup(zoneID, nodeIDs);
+        }
+    }
+    
     private void OnClickUngroup()
     {
+        GraphEditState.DoAction(GraphEditAction.Build(UngroupActions()));
     }
 
-    private void OnDiagramKeyDown(KeyboardEventArgs e)
+    private IEnumerable<GraphEditAction> UngroupActions()
     {
-        if (e.CtrlKey && e.Key.Equals("z"))
+        var nodesByGroup = SelectedItems.GroupBy(kv => (kv.Key as GraphNodeModel)?.Group).Where(g => g.Key != null);
+
+        yield return new GraphEditAction.RemoveNodesFromGroups(SelectedItems.Where(kv => kv.Value is Node).Select(kv => kv.Value.id).ToList());
+
+        foreach (var nodeGroup in nodesByGroup)
         {
-            GraphEditState.DoCommand(GraphEditState.Command.Undo);
-        }
-        else if (e.CtrlKey && e.Key.Equals("y"))
-        {
-            GraphEditState.DoCommand(GraphEditState.Command.Redo);
-        }
-        else if (e.Key == "Delete")
-        {
-            GraphEditState.DoCommand(GraphEditState.Command.Delete);
+            var group = (ZoneModel) nodeGroup.Key!;
+            var zoneID = group.zoneID;
+            if (GraphLayout.zones[zoneID].nodeIDs.Count == nodeGroup.Count())
+            {
+                yield return new GraphEditAction.RemoveGroup(zoneID);
+            }
         }
     }
     
@@ -483,5 +509,21 @@
     private bool CanUngroupSelection()
     {
         return SelectedItems.Any(i => i.Key is GraphNodeModel gm && gm.Group != null);
+    }
+    
+    private void OnDiagramKeyDown(KeyboardEventArgs e)
+    {
+        if (e.CtrlKey && e.Key.Equals("z"))
+        {
+            GraphEditState.DoCommand(GraphEditState.Command.Undo);
+        }
+        else if (e.CtrlKey && e.Key.Equals("y"))
+        {
+            GraphEditState.DoCommand(GraphEditState.Command.Redo);
+        }
+        else if (e.Key == "Delete")
+        {
+            GraphEditState.DoCommand(GraphEditState.Command.Delete);
+        }
     }
 }

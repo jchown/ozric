@@ -42,7 +42,7 @@ public class DataService
     {
         ShowDebug("Save", graphLayout);
 
-        var json = Json.Serialize(graphLayout);
+        var json = Json.Prettify(Json.Serialize(graphLayout));
         await File.WriteAllTextAsync("/data/graph_layout.json", json);
     }
 
