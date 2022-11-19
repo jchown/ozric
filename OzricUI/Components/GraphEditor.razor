@@ -29,7 +29,6 @@
     public GraphEditState GraphEditState { get; set; }
 
     public Diagram diagram { get; private set; }
-    private List<Type> nodeModelTypes;
 
     private bool IsChanged => !IsNotChanged;
     private bool IsNotChanged => GetHistory().IsAtCheckpoint();
@@ -68,12 +67,8 @@
         };
         
         diagram = new Diagram(options);
-        nodeModelTypes = AppDomain.CurrentDomain.GetAssemblies()
-            .SelectMany(s => s.GetTypes())
-            .Where(t => typeof(GraphNodeModel).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
-            .ToList();
         
-        foreach (var modelType in nodeModelTypes)
+        foreach (var modelType in GraphNodeModel.GetDerivatives())
         {
             diagram.RegisterModelComponent(modelType, typeof(GraphNodeComponent));
         }
@@ -364,8 +359,10 @@
                     case ValueType.Color:
                         return new ConstantColorModel(c, point);
 
-                    case ValueType.Binary:
                     case ValueType.Number:
+                        return new ConstantNumberModel(c, point);
+
+                    case ValueType.Binary:
                     case ValueType.Mode:
                     default:
                         throw new ArgumentOutOfRangeException();
@@ -374,7 +371,7 @@
 
             default:
             {
-                var constructors = nodeModelTypes.SelectMany(t => t.GetConstructors());
+                var constructors = GraphNodeModel.GetDerivatives().SelectMany(t => t.GetConstructors());
                 var applicable = constructors.First(c =>
                 {
                     var p = c.GetParameters();
@@ -433,6 +430,18 @@
             .ToList();
         
         GraphEditState.SetSelected(selected);
+    }
+
+    public void Select(params Node[] nodes)
+    {
+        if (nodes.Length == 0)
+        {
+            diagram.UnselectAll();
+            return;
+        }
+
+        for (int i = 0; i < nodes.Length; i++)
+            diagram.SelectModel(nodeMappings.GetDiagram(nodes[i]), i == 0);
     }
 
     public Point GetPosition(Node node)
@@ -563,39 +572,63 @@
 
     private void DoDelete()
     {
-        var SelectedItems = diagram.GetSelectedModels().ToList();
-        if (SelectedItems.Count > 0)
+        var selectedItems = diagram.GetSelectedModels().ToList();
+        if (selectedItems.Count > 0)
         {
-            var actions = SelectedItems.Select<SelectableModel, GraphEditAction>(selected =>
-            {
-                switch (selected)
-                {
-                    case GraphNodeModel gnm:
-                        return new GraphEditAction.RemoveNode(nodeMappings.GetGraph(gnm));
+            var actions = GraphEditAction.Build(GetDeleteActions(selectedItems));
+            GraphEditState.DoAction(actions);
 
-                    case LinkModel lm:
-
-                        var edge = edgeMappings.GetGraph(lm);
-                        
-                        if (lm.TargetNode is VariableInputsModel vim)
-                        {
-                            var inputNode = (VariableInputs) vim.node;
-                            var removePort = new GraphEditAction.RemoveInput(inputNode, edge.to.inputName);
-                            var removeEdge = new GraphEditAction.RemoveEdge(edge);
-
-                            return new GraphEditAction.EditActions(new List<GraphEditAction>{ removeEdge, removePort });
-                        }
-                        
-                        return new GraphEditAction.RemoveEdge(edge);
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }).ToList();
-
-            GraphEditState.DoAction(new GraphEditAction.EditActions(actions));
+            OnHistoryChanged();
         }
-        OnHistoryChanged();
+    }
+
+    private IEnumerable<GraphEditAction> GetDeleteActions(List<SelectableModel> selectableModels)
+    {
+        foreach (var selected in selectableModels)
+        {
+            switch (selected)
+            {
+                case GraphNodeModel gnm:
+                {
+                    foreach (var link in gnm.Links)
+                    {
+                        if (selectableModels.Contains(link))
+                            continue;
+                        
+                        foreach (var deleteAction in GetDeleteActions((LinkModel) link))
+                            yield return deleteAction;
+                    }
+
+                    yield return new GraphEditAction.RemoveNode(nodeMappings.GetGraph(gnm));
+                    break;
+                }
+
+                case LinkModel lm:
+                {
+                    foreach (var deleteAction in GetDeleteActions(lm))
+                        yield return deleteAction;
+                    
+                    break;
+                }
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+    }
+
+    private IEnumerable<GraphEditAction> GetDeleteActions(LinkModel lm)
+    {
+        var edge = edgeMappings.GetGraph(lm);
+        if (lm.TargetNode is VariableInputsModel vim)
+        {
+            var inputNode = (VariableInputs)vim.node;
+            yield return new GraphEditAction.RemoveInput(inputNode, edge.to.inputName);
+            yield return new GraphEditAction.RemoveEdge(edge);
+            yield break;
+        }
+
+        yield return new GraphEditAction.RemoveEdge(edge);
     }
 
     public void AddNodeInput(VariableInputs variableInputs, string inputName)
@@ -642,5 +675,4 @@
     {
         return zoneMappings.GetDiagram(zoneID);
     }
-
 }

@@ -54,6 +54,9 @@ public interface GraphEditAction
     {
         public void Do(GraphEditor editor)
         {
+            if (editor.Graph.HasNode(Node.id))
+                throw new Exception($"Node with ID {Node.id} already exists");
+
             editor.Graph.AddNode(Node);
             var pos = editor.diagram.GetScreenPoint(0.3, 0.2);
             editor.GraphLayout.nodeLayout[Node.id] = LayoutPoint.FromPoint(pos);
@@ -168,6 +171,12 @@ public interface GraphEditAction
     {
         public void Do(GraphEditor editor)
         {
+            if (!editor.Graph.HasOutput(Edge.from))
+                throw new Exception();
+            
+            if (!editor.Graph.HasInput(Edge.to))
+                throw new Exception();
+            
             editor.Graph.edges.Add(Edge.id, Edge);
             editor.AddEdge(Edge);
         }

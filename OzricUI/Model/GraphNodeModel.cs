@@ -15,6 +15,10 @@ public abstract class GraphNodeModel: NodeModel
     protected bool _outputLabels;
     
     private readonly Mapping<Pin, PortModel> _portMappings;
+    
+    private static List<Type> nodeModelTypes = typeof(GraphNodeModel).Assembly.ExportedTypes
+        .Where(t => typeof(GraphNodeModel).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
+        .ToList();
 
     public GraphNodeModel(Node node, Point? point = null) : base(node.id, point)
     {
@@ -112,5 +116,10 @@ public abstract class GraphNodeModel: NodeModel
     public bool ShowLabel(IPort port)
     {
         return port.IsInput ? _inputLabels : _outputLabels;
+    }
+
+    public static List<Type> GetDerivatives()
+    {
+        return nodeModelTypes;
     }
 }

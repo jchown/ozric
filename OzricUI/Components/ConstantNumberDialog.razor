@@ -11,7 +11,7 @@
 
             <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
 
-            <ColorValuePicker Value="_color" Picked="OnPickedColor" />
+            <MudNumericField Value="@_number" />
 
         </MudContainer>
 
@@ -35,8 +35,8 @@
     [Parameter]
     public Constant Node { get; set; }
 
-    private string _id { get; set; }
-    private ColorValue _color { get; set; }
+    private string _id;
+    private float _number;
 
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
@@ -46,7 +46,7 @@
     protected override void OnInitialized()
     {
         _id = Node.id;
-        _color = (ColorValue) Node.value;
+        _number = ((Number) Node.value).value;
     }
     
     private List<GraphEditAction> GetChanges()
@@ -55,15 +55,10 @@
         if (_id != Node.id)
             changes.Add(new GraphEditAction.RenameNode(Node, _id));
 
-        if (_color != Node.value)
-            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), _color));
+        if (_number != ((Number) Node.value).value)
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), new Number(_number)));
 
         return changes;
-    }
-
-    private void OnPickedColor(ColorValue value)
-    {
-        _color = value;
     }
 
 }

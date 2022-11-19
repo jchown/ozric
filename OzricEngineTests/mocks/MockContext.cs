@@ -9,6 +9,10 @@ namespace OzricEngine.Nodes
         {
         }
 
+        public MockContext(Home home): base(home, new MockCommandBatcher(), OnPinChanged)
+        {
+        }
+
         private static void OnPinChanged(string nodeid, string pinname, Value value)
         {
         }

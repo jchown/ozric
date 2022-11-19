@@ -1,97 +1,105 @@
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
+using OzricEngine.Nodes;
 using OzricUI.Components;
+using LogLevel = OzricEngine.LogLevel;
 
 namespace OzricUI.Shared;
 
-public class EditHistory
+public class EditHistory: OzricObject
 {
-    private readonly GraphEditor editor;
-    private readonly List<GraphEditAction> undoActionList;
-    private readonly List<GraphEditAction> redoActionList;
-    private int actionHistoryMaxSize = 200;
-    private bool isTrackingHistory, isDoing;
-    private int checkpoint = 0;
+    public override string Name => "History";
+    
+    private readonly GraphEditor _editor;
+    private readonly List<GraphEditAction> _undoActionList;
+    private readonly List<GraphEditAction> _redoActionList;
+    private readonly bool _isTrackingHistory;
+
+    private const int ActionHistoryMaxSize = 200;
+    private bool _isDoing;
+    private int _checkpoint = 0;
 
     public EditHistory(GraphEditor editor)
     {
-        this.editor = editor;
-
-        undoActionList = new();
-        redoActionList = new();
-        isTrackingHistory = true;
+        _editor = editor;
+        _undoActionList = new();
+        _redoActionList = new();
+        _isTrackingHistory = true;
     }
     
     public bool CanUndo()
     {
-        return undoActionList.Any();
+        return _undoActionList.Any();
     }
     
     public bool CanRedo()
     {
-        return redoActionList.Any();
+        return _redoActionList.Any();
     }
 
     public void UndoLastAction()
     {
-        if (!undoActionList.Any())
+        if (!_undoActionList.Any())
             return;
-
-        isDoing = true;
-        undoActionList[^1].Undo(editor);
+        
+        Log(LogLevel.Debug, "Undo {0}", _undoActionList[^1]);
+        _isDoing = true;
+        _undoActionList[^1].Undo(_editor);
         RemoveLastUndoAction();
-        editor.diagram.UnselectAll();
-        isDoing = false;
+        _editor.diagram.UnselectAll();
+        _isDoing = false;
     }
 
     public void RedoLastAction()
     {
-        if (!redoActionList.Any())
+        if (!_redoActionList.Any())
             return;
 
-        isDoing = true;
-        redoActionList[^1].Do(editor);
+        Log(LogLevel.Debug, "Redo {0}", _redoActionList[^1]);
+        _isDoing = true;
+        _redoActionList[^1].Do(_editor);
         RemoveLastRedoAction();
-        editor.diagram.UnselectAll();
-        isDoing = false;
+        _editor.diagram.UnselectAll();
+        _isDoing = false;
     }
 
     private void RemoveLastUndoAction()
     {
-        if (!undoActionList.Any())
+        if (!_undoActionList.Any())
             return;
         
-        var action = undoActionList.Last();
-        undoActionList.RemoveAt(undoActionList.Count - 1);
-        redoActionList.Add(action);
+        var action = _undoActionList.Last();
+        _undoActionList.RemoveAt(_undoActionList.Count - 1);
+        _redoActionList.Add(action);
     }
     
     private void RemoveLastRedoAction()
     {
-        if (!redoActionList.Any())
+        if (!_redoActionList.Any())
             return;
         
-        var action = redoActionList.Last();
-        redoActionList.RemoveAt(redoActionList.Count - 1);
-        undoActionList.Add(action);
+        var action = _redoActionList.Last();
+        _redoActionList.RemoveAt(_redoActionList.Count - 1);
+        _undoActionList.Add(action);
     }
 
-    private void ClearRedoList() => redoActionList.Clear();
+    private void ClearRedoList() => _redoActionList.Clear();
 
     private void RegisterUndoHistoryAction(GraphEditAction editAction)
     {
-        if (!isTrackingHistory)
+        if (!_isTrackingHistory)
             return;
 
         ClearRedoList();
 
-        if (undoActionList.Count > actionHistoryMaxSize)
+        if (_undoActionList.Count > ActionHistoryMaxSize)
         {
-            undoActionList.RemoveAt(0);
-            checkpoint--;
+            _undoActionList.RemoveAt(0);
+            _checkpoint--;
         }
 
-        undoActionList.Add(editAction);
+        Log(LogLevel.Debug, "Did {0}", editAction);
+        _undoActionList.Add(editAction);
     }
 
     /*
@@ -108,18 +116,18 @@ public class EditHistory
     
     public void Node_Moved(NodeModel node, Point from, Point to)
     {
-        if (isDoing)
+        if (_isDoing)
             return;
         
-        if (undoActionList.Any())
+        if (_undoActionList.Any())
         {
             //  Compress moves of the same object
 
-            if (undoActionList.Last() is GraphEditAction.MoveNode lastMove)
+            if (_undoActionList.Last() is GraphEditAction.MoveNode lastMove)
             {
                 if (lastMove.Node == node)
                 {
-                    undoActionList[^1] = lastMove.WithTo(to);
+                    _undoActionList[^1] = lastMove.WithTo(to);
                     return;
                 }
             }
@@ -130,20 +138,20 @@ public class EditHistory
 
     public void SetCheckpoint()
     {
-        checkpoint = undoActionList.Count;
+        _checkpoint = _undoActionList.Count;
     }
 
     public bool IsAtCheckpoint()
     {
-        return checkpoint == undoActionList.Count;
+        return _checkpoint == _undoActionList.Count;
     }
 
     public void Record(Func<GraphEditAction> action)
     {
-        if (isDoing)
+        if (_isDoing)
             throw new Exception("Cannot nest history recording");
         
-        isDoing = true;
+        _isDoing = true;
         try
         {
             var undo = action();
@@ -151,24 +159,24 @@ public class EditHistory
         }
         finally
         {
-            isDoing = false;
+            _isDoing = false;
         }
     }
     
     public void Do(GraphEditAction editAction)
     {
-        if (isDoing)
+        if (_isDoing)
             throw new Exception("Cannot nest history recording");
         
-        isDoing = true;
+        _isDoing = true;
         try
         {
-            editAction.Do(editor);
+            editAction.Do(_editor);
             RegisterUndoHistoryAction(editAction);
         }
         finally
         {
-            isDoing = false;
+            _isDoing = false;
         }
     }
 }

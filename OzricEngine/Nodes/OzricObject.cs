@@ -10,6 +10,8 @@ public abstract class OzricObject
 {
     [JsonIgnore]
     public abstract string Name { get; }
+    
+    public static Action<string> LogOutput = (line) => Console.WriteLine(line);
         
     protected LogLevel minLogLevel = LogLevel.Info;
         
@@ -55,7 +57,7 @@ public abstract class OzricObject
 
     private void _Log(LogLevel level, string message)
     {
-        Console.WriteLine($"{colours[(int)level]}{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {Name.Truncate(32, Name, TruncateFrom.Left).PadRight(32)} | {message}\u001b[0m");
+        LogOutput($"{colours[(int)level]}{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {Name.Truncate(32, Name, TruncateFrom.Left).PadRight(32)} | {message}\u001b[0m");
     }
 
     private void _Log(LogLevel level, string format, params object?[] args)

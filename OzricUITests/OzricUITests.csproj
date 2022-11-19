@@ -18,6 +18,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <ProjectReference Include="..\OzricEngineTests\OzricEngineTests.csproj" />
       <ProjectReference Include="..\OzricUI\OzricUI.csproj" />
     </ItemGroup>
 

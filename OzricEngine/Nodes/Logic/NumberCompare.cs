@@ -37,6 +37,15 @@ public class NumberCompare: Node
     {
     }
 
+    public static NumberCompare Of(string id, Comparator comparator, float a)
+    {
+        return new NumberCompare(id)
+        {
+            comparator = comparator,
+            a = a
+        };
+    }
+
     public override Task OnInit(Context context)
     {
         UpdateValue(context);

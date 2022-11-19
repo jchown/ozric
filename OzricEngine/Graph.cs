@@ -246,7 +246,7 @@ namespace OzricEngine
 
         public static Graph Deserialize(string json)
         {
-            //  TODO: Remove post v0.8
+            //  TODO: Have schema version
 
             json = json.Replace("OnOff", "binary");
             json = json.Replace("boolean", "binary");
@@ -255,6 +255,33 @@ namespace OzricEngine
             json = json.Replace("Scalar", "Number");
 
             return Json.Deserialize<Graph>(json);
+        }
+
+        public bool HasOutput(OutputSelector output)
+        {
+            if (!nodes.ContainsKey(output.nodeID))
+                return false;
+            
+            if (!nodes[output.nodeID].HasOutput(output.outputName))
+                return false;
+
+            return true;
+        }
+
+        public bool HasInput(InputSelector output)
+        {
+            if (!nodes.ContainsKey(output.nodeID))
+                return false;
+            
+            if (!nodes[output.nodeID].HasInput(output.inputName))
+                return false;
+
+            return true;
+        }
+
+        public bool HasNode(string nodeId)
+        {
+            return nodes.ContainsKey(nodeId);
         }
     }
 }

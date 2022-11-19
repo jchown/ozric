@@ -18,7 +18,7 @@ public class ModelTests
 
         var graph2 = Json.Clone(graph1);
         Assert.AreEqual(2, graph2.nodes.Count);
-        Assert.AreEqual(ColorRGB.GREEN, graph2.nodes["constant-1"].GetOutputValue<ColorValue>(Constant.OUTPUT_NAME));
+        Assert.AreEqual(ColorRGB.GREEN, graph2.nodes["constant-1"].GetOutputValue<ColorValue>(Constant.OutputName));
 
         Assert.AreEqual(graph1, graph2);
     }
