@@ -20,7 +20,6 @@ public class GraphEditorTests
         OzricObject.LogOutput = (line) => testOutputHelper.WriteLine(line);
     }
     
-    /*
     [Fact]
     public void CanInitialiseEmptyEditor()
     {
@@ -28,7 +27,6 @@ public class GraphEditorTests
 
         CreateEditor(ctx);
     }
-    */
 
     [Fact]
     public async Task CanAddNodeWithHistory()

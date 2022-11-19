@@ -590,7 +590,7 @@
             {
                 case GraphNodeModel gnm:
                 {
-                    foreach (var link in gnm.Links)
+                    foreach (var link in gnm.Ports.SelectMany(p => p.Links))
                     {
                         if (selectableModels.Contains(link))
                             continue;
