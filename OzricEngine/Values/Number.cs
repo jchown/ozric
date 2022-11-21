@@ -5,6 +5,8 @@ namespace OzricEngine.Values
 {
     public sealed class Number: Value, IEquatable<Number>
     {
+        public static readonly Number ZERO = new(0f);
+        
         public override ValueType ValueType => ValueType.Number;
 
         public float value { get; }

@@ -121,6 +121,12 @@ public class AddNodeChoice
             icon: SkyBrightnessModel.ICON,
             create: () => new SkyBrightness(graph.CreateNodeID("sky-brightness"))));
 
+        choices.Add(new AddNodeChoice(
+            category: Category.Environment,
+            name: "Weather",
+            icon: WeatherModel.ICON,
+            create: () => new Weather(graph.CreateNodeID("weather"))));
+
         return choices;
     }
 

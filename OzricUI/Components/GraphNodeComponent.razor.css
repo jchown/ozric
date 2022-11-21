@@ -25,6 +25,12 @@
 .ozric-height-5 {
     height: 128px;
 }
+.ozric-height-6 {
+    height: 148px;
+}
+.ozric-height-7 {
+    height: 168px;
+}
 
 .ozric-node-icon {
     display: flex;
@@ -81,6 +87,12 @@
 }
 .port-5 {
     top: 124px;
+}
+.port-6 {
+    top: 144px;
+}
+.port-7 {
+    top: 164px;
 }
 
 span.number-value {

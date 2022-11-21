@@ -12,8 +12,9 @@ using OzricUI.Components;
 
 public interface GraphEditAction
 {
-    void Undo(GraphEditor editor);
     void Do(GraphEditor editor);
+
+    void Undo(GraphEditor editor);
 
     public static readonly ReadOnlyCollection<GraphEditAction> NoChanges = new (new List<GraphEditAction>());
 
@@ -22,13 +23,7 @@ public interface GraphEditAction
     /// </summary>
     public static GraphEditAction Build(IEnumerable<GraphEditAction> actionsGenerator)
     {
-        var actions = new List<GraphEditAction>();
-        
-        var enumerator = actionsGenerator.GetEnumerator();
-        while (enumerator.MoveNext())
-            actions.Add(enumerator.Current);
-
-        return new EditActions(actions);
+        return new EditActions(actionsGenerator.ToList());
     }
 
     /// <summary>

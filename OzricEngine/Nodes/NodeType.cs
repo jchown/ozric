@@ -16,10 +16,11 @@ public enum NodeType
     ModeSensor,
     ModeMatch,
     ModeSwitch, 
+    NumberCompare,
     Person,
     Sensor, 
     SkyBrightness,
     Switch,
     Tween,
-    NumberCompare
+    Weather
 }
