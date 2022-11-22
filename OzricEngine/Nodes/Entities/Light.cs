@@ -416,7 +416,7 @@ public class Light: EntityNode
         int g = (int)(rgb.g * 255);
         int b = (int)(rgb.b * 255);
 
-        if (attributes.color_mode != "rgb")
+        if (attributes.color_mode != "rgb" || attributes.rgb_color == null)
         {
             if (!attributes.supported_color_modes.Contains("rgb"))
             {
@@ -429,11 +429,12 @@ public class Light: EntityNode
         }
         else
         {
-            Log(LogLevel.Debug, "color#rgb = {0},{1},{2}", attributes.rgb_color[0], attributes.rgb_color[1], attributes.rgb_color[2]);
+            var currentRgb = attributes.rgb_color!;
+            Log(LogLevel.Debug, "color#rgb = {0},{1},{2}", currentRgb[0], currentRgb[1], currentRgb[2]);
 
-            update.Check(attributes.rgb_color[0] != r);
-            update.Check(attributes.rgb_color[1] != g);
-            update.Check(attributes.rgb_color[2] != b);
+            update.Check(currentRgb[0] != r);
+            update.Check(currentRgb[1] != g);
+            update.Check(currentRgb[2] != b);
         }
 
         colorValue = new List<int> { r, g, b };

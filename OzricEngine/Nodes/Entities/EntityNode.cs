@@ -12,8 +12,8 @@ public abstract class EntityNode: Node
 {
     public string entityID { get; }
 
-    [JsonIgnore]
-    private DateTime? lastTimeRecordedEntity;
+//    [JsonIgnore]
+//    private DateTime? lastTimeRecordedEntity;
 
     protected EntityNode(string id, string entityID, List<Pin>? inputs, List<Pin>? outputs): base(id, inputs, outputs)
     {
