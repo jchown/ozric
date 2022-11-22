@@ -15,12 +15,12 @@
                     <MudSelect @bind-Value="@comparator" Label="Input is">
                         <MudSelectItem Value="NumberCompare.Comparator.EqualTo">Equal To (= x)</MudSelectItem>
                         <MudSelectItem Value="NumberCompare.Comparator.EqualToApprox">Approximately Equal To (≈ x)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.BetweenExclusive">Between (exclusive - <span class="roman">&gt; x &lt;</span>)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.BetweenInclusive">Between (inclusive - ≥ x ≤)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.LessThan">Less Than (&lt;)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.LessThanOrEqualTo">Less Than, or Equal To (≤ x)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.GreaterThan">Greater Than (&gt; x)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.GreaterThanOrEqualTo">Greater Than, or Equal To (≥ x)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.BetweenExclusive">Between, Exclusive (<span class="roman">&gt; x &lt;</span>)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.BetweenInclusive">Between, Inclusive (<span class="roman">≥ x ≤</span>)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.LessThan">Less Than (<span class="roman">&lt;</span>)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.LessThanOrEqualTo">Less Than, or Equal To (<span class="roman">≤ x</span>)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.GreaterThan">Greater Than (<span class="roman">&gt; x</span>)</MudSelectItem>
+                        <MudSelectItem Value="NumberCompare.Comparator.GreaterThanOrEqualTo">Greater Than, or Equal To (<span class="roman">≥ x</span>)</MudSelectItem>
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="3">
@@ -175,3 +175,9 @@
         }
     }
 }
+
+<style>
+.roman {
+    font-family: "Times New Roman", serif;
+}
+</style>

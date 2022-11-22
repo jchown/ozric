@@ -69,9 +69,9 @@
         diagram = new Diagram(options);
         
         foreach (var modelType in GraphNodeModel.GetDerivatives())
-        {
             diagram.RegisterModelComponent(modelType, typeof(GraphNodeComponent));
-        }
+
+        diagram.RegisterModelComponent(typeof(ZoneModel), typeof(ZoneComponent));
         
         diagram.SelectionChanged += OnSelectionChanged;
         // diagram.Nodes.Removed += OnNodeRemoved;

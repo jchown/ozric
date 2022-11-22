@@ -1,0 +1,35 @@
+@using Blazor.Diagrams.Components.Groups
+@using Blazor.Diagrams.Components.Renderers;
+
+<GroupContainer Group="Group" Class="zone">
+    <span class="title">Title @Group.Title</span>
+    <GroupLinks />
+    <GroupNodes />
+
+    @foreach (var port in Group.Ports)
+    {
+        <PortRenderer Port="@port" />
+    }
+</GroupContainer>
+
+@code {
+    [Parameter]
+    public ZoneModel Group { get; set; }
+}
+
+<style>
+
+.title {
+    position: absolute;
+    left: 10px;
+    top: 6px;
+}
+
+.zone {
+    border: solid 2px;
+    border-radius: 15px;
+    background: #cacaca;
+    opacity: 75%;
+}
+
+</style>
