@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Reflection;
+using System.Linq;
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
+using OzricEngine.ext;
 using OzricEngine.Nodes;
 using OzricUI;
 using OzricUI.Components;
@@ -139,9 +141,29 @@ public interface GraphEditAction
             Node.SetPosition(From.X, From.Y);
         }
         
-        public GraphEditAction WithTo(Point to)
+        public MoveNode WithTo(Point to)
         {
             return this with { To = to };
+        }
+    }
+
+    record MoveNodes(List<MoveNode> Moves): GraphEditAction
+    {
+        public void Do(GraphEditor editor)
+        {
+            foreach (var action in Moves)
+                action.Do(editor);
+        }
+
+        public void Undo(GraphEditor editor)
+        {
+            for (int i = Moves.Count; --i >= 0;)
+                Moves[i].Undo(editor);
+        }
+        
+        public GraphEditAction WithTo(List<MoveNode> moves)
+        {
+            return this with { Moves = Moves.Zip(moves, (a,b) => a.WithTo(b.To)).ToList() };
         }
     }
 

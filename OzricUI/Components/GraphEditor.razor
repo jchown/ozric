@@ -386,17 +386,36 @@
 
     private void OnNodeModelMoving(NodeModel nodeModel)
     {
+        GetNodeMove(nodeModel, out var from, out var to);
+        GetHistory().Node_Moved(nodeModel, from, to);
+
+        OnHistoryChanged();
+    }
+    
+    private void OnGroupMoving(NodeModel nodeModel)
+    {
+        var zoneModel = (nodeModel as ZoneModel) ?? throw new Exception();
+        
+        var moves = zoneModel.Children.Select(child =>
+        {
+            GetNodeMove(child, out var from, out var to);
+            return new GraphEditAction.MoveNode(child, from, to);
+        }).ToList();
+
+        GetHistory().Nodes_Moved(moves);
+
+        OnHistoryChanged();
+    }
+
+    private void GetNodeMove(NodeModel nodeModel, out Point from, out Point to)
+    {
         var nodeID = nodeMappings.GetGraph(nodeModel.Id).id;
         if (nodeID == null)
             throw new Exception("Node not found");
 
-        var from = GraphLayout.nodeLayout[nodeID].ToPoint();
-        var to = nodeModel.Position;
-        
+        from = GraphLayout.nodeLayout[nodeID].ToPoint();
+        to = nodeModel.Position;
         GraphLayout.nodeLayout[nodeID] = LayoutPoint.FromPoint(to);
-        GetHistory().Node_Moved(nodeModel, from, to);
-
-        OnHistoryChanged();
     }
 
     private void OnHistoryChanged()
@@ -584,36 +603,58 @@
 
     private IEnumerable<GraphEditAction> GetDeleteActions(List<SelectableModel> selectableModels)
     {
+        HashSet<SelectableModel> deleting = new(); 
+            
         foreach (var selected in selectableModels)
         {
-            switch (selected)
+            foreach (var action in GetDeleteActions(deleting, selected))
             {
-                case GraphNodeModel gnm:
-                {
-                    foreach (var link in gnm.Ports.SelectMany(p => p.Links))
-                    {
-                        if (selectableModels.Contains(link))
-                            continue;
-                        
-                        foreach (var deleteAction in GetDeleteActions((LinkModel) link))
-                            yield return deleteAction;
-                    }
-
-                    yield return new GraphEditAction.RemoveNode(nodeMappings.GetGraph(gnm));
-                    break;
-                }
-
-                case LinkModel lm:
-                {
-                    foreach (var deleteAction in GetDeleteActions(lm))
-                        yield return deleteAction;
-                    
-                    break;
-                }
-
-                default:
-                    throw new ArgumentOutOfRangeException();
+                yield return action;
             }
+        }
+    }
+
+    private IEnumerable<GraphEditAction> GetDeleteActions(HashSet<SelectableModel> deleting, SelectableModel selectableModel)
+    {
+        if (!deleting.Add(selectableModel))
+            yield break;
+        
+        switch (selectableModel)
+        {
+            case GraphNodeModel gnm:
+            {
+                foreach (var link in gnm.Ports.SelectMany(p => p.Links))
+                {
+                    foreach (var deleteAction in GetDeleteActions(deleting, link))
+                        yield return deleteAction;
+                }
+
+                yield return new GraphEditAction.RemoveNode(nodeMappings.GetGraph(gnm));
+                break;
+            }
+
+            case LinkModel lm:
+            {
+                foreach (var deleteAction in GetDeleteActions(lm))
+                    yield return deleteAction;
+                    
+                break;
+            }
+                    
+            case ZoneModel zm:
+            {
+                yield return new GraphEditAction.RemoveGroup(zm.zoneID);
+
+                foreach (var child in zm.Children)
+                {
+                    foreach (var deleteAction in GetDeleteActions(deleting, child))
+                        yield return deleteAction;
+                }
+                break;
+            }
+
+            default:
+                throw new ArgumentOutOfRangeException();
         }
     }
 
@@ -652,6 +693,7 @@
         var group = new ZoneModel(zone.id);
         diagram.AddGroup(group);
         zoneMappings.Add(zone, group);
+        group.Moving += OnGroupMoving;
         return group;
     }
 

@@ -101,18 +101,6 @@ public class EditHistory: OzricObject
         Log(LogLevel.Debug, "Did {0}", editAction);
         _undoActionList.Add(editAction);
     }
-
-    /*
-    private void Nodes_Added(NodeModel node)
-    {
-        RegisterUndoHistoryAction(new GraphAction.AddNode(node));
-    }
-
-    private void Nodes_Removed(NodeModel node)
-    {
-        RegisterUndoHistoryAction(new GraphAction.RemoveNode(node));
-    }
-    */
     
     public void Node_Moved(NodeModel node, Point from, Point to)
     {
@@ -134,6 +122,28 @@ public class EditHistory: OzricObject
         }
         
         RegisterUndoHistoryAction(new GraphEditAction.MoveNode(node, from, to));
+    }
+    
+    public void Nodes_Moved(List<GraphEditAction.MoveNode> nodeMoves)
+    {
+        if (_isDoing)
+            return;
+        
+        if (_undoActionList.Any())
+        {
+            //  Compress moves of the same objects
+
+            if (_undoActionList.Last() is GraphEditAction.MoveNodes lastMove)
+            {
+                if (Enumerable.SequenceEqual(lastMove.Moves.Select(m => m.Node), nodeMoves.Select(m => m.Node)))
+                {
+                    _undoActionList[^1] = lastMove.WithTo(nodeMoves);
+                    return;
+                }
+            }
+        }
+        
+        RegisterUndoHistoryAction(new GraphEditAction.MoveNodes(nodeMoves));
     }
 
     public void SetCheckpoint()
