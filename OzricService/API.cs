@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Http.Headers;
 using OzricEngine;
 using OzricEngine.engine;
 using OzricService.Model;
@@ -16,5 +17,6 @@ public class API
         app.MapGet("/api/graph", () => engineService.Graph);
         app.MapPut("/api/graph", async (Graph graph) => await engineService.Restart(graph));
         app.MapGet("/api/home", () => engineService.Home);
+        app.MapGet("/api/headers", (HttpRequest request) => request.Headers);
     }
 }
