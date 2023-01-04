@@ -53,7 +53,7 @@ namespace OzricEngine
 
                 var value = typeProperty.GetString()!;
                 if (!ResultTypes.ContainsKey(value))
-                    OnUnrecognisedType(value);
+                    return OnUnrecognisedType(jsonDocument, value);
                     
                 var type = ResultTypes[value];
                 var jsonObject = jsonDocument.RootElement.GetRawText();
@@ -61,7 +61,7 @@ namespace OzricEngine
             }
         }
 
-        protected virtual T OnUnrecognisedType(string name)
+        protected virtual T OnUnrecognisedType(JsonDocument doc, string name)
         {
             throw new JsonException($"Unknown class for \"{name}\" of {typeof(T)}");
         }

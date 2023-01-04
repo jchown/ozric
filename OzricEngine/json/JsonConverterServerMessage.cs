@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json;
 
 namespace OzricEngine
 {
@@ -11,7 +12,7 @@ namespace OzricEngine
         {
         }
 
-        protected override ServerMessage? OnUnrecognisedType(string name)
+        protected override ServerMessage? OnUnrecognisedType(JsonDocument doc, string name)
         {
             Console.WriteLine($"Ignoring unrecognised message {name}");
             return null;

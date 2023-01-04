@@ -38,7 +38,7 @@ else
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(homeAssistantOtherPort));
+builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(homeAssistantIngressPort));
 
 // Add services to the container.
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
