@@ -1,10 +1,10 @@
 ﻿@using OzricUI.Data
+@using OzricUI.Components
+@using OzricUI.Model
 @using OzricEngine
 @using OzricEngine.Nodes
 @using OzricEngine.Values
 @using OzricService
-@using OzricUI.Components
-@using OzricUI.Model
 @using Size = MudBlazor.Size
 @using Edge = MudBlazor.Edge
 @using Blazor.Diagrams.Core.Models.Base
@@ -17,11 +17,23 @@
 @inject IOzricService OzricService
 @inject NavigationManager Navigation
 @inject IJSRuntime JS
+@inject IHttpContextAccessor httpContextAccessor;
 
 @* Why is this needed? If I remove it, we get no HHC events *@
 @inject HomeHubController HHC
 
 <PageTitle>Ozric - Graph</PageTitle>
+<HeadContent>
+    @{var headers = httpContextAccessor.HttpContext.Request.Headers;}
+    @if (headers.ContainsKey("X-Ingress-Path"))
+    {
+        <base href="@(headers["X-Ingress-Path"])/" />    
+    }
+    else
+    {
+        <base href="/" />
+    }
+</HeadContent>
 
 <MudDialogProvider/>
 <MudSnackbarProvider/>

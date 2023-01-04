@@ -55,6 +55,7 @@ IEngineService ozricEngine = (Environment.GetEnvironmentVariable("OZRIC_MOCK") !
 await ozricEngine.Start(CancellationToken.None);
 builder.Services.AddSingleton<IEngineService>(_ => ozricEngine);
 builder.Services.AddSingleton<IOzricService>(_ => ozricEngine);
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 app.UseResponseCompression();
