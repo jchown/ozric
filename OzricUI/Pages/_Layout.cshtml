@@ -16,6 +16,17 @@
     <link href="_content/Z.Blazor.Diagrams/style.min.css" rel="stylesheet" />
     <link href="_content/Z.Blazor.Diagrams/default.styles.min.css" rel="stylesheet" />
     <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
+    <script>
+        window.triggerFileDownload = (fileName, path) => {
+            const url = window.location.protocol + "//" + window.location.hostname + ":" + window.location.port + path;
+            console.log("url = " + url);
+            const anchorElement = document.createElement('a');
+            anchorElement.href = url;
+            anchorElement.download = fileName ?? '';
+            anchorElement.click();
+            anchorElement.remove();
+       }
+    </script>
 </head>
 <body>
     @RenderBody()

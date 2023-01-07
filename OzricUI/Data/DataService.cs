@@ -1,12 +1,39 @@
 using System.Text;
+using System.Text.Json;
+using System.Xml;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using OzricEngine;
+using OzricService;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace OzricUI.Data;
 
 public class DataService
 {
+    public class DownloadData
+    {
+        public Graph graph;
+        public GraphLayout layout;
+    };
+    
+    public static void Map(WebApplication app)
+    {
+        var dataService = app.Services.GetService<DataService>()!;
+        var engineService = app.Services.GetService<IEngineService>()!;
+        
+        app.MapGet("/api/download", async () =>
+        {
+            var data = new DownloadData
+            {
+                graph = engineService.Graph,
+                layout = await dataService.GetGraphLayoutAsync(),
+            };
+            //return Results.Json(data, new JsonSerializerOptions { WriteIndented = true } );
+            return data;
+        });
+    }
+
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<DataService> _logger;
     

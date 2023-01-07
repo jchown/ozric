@@ -11,6 +11,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using OzricUI.Hubs
 @using System.Reflection
+@using System.Text
 @inject IDialogService DialogService
 @inherits LayoutComponentBase
 @inject DataService Data
@@ -24,15 +25,8 @@
 
 <PageTitle>Ozric - Graph</PageTitle>
 <HeadContent>
-    @{var headers = httpContextAccessor.HttpContext.Request.Headers;}
-    @if (headers.ContainsKey("X-Ingress-Path"))
-    {
-        <base href="@(headers["X-Ingress-Path"])/" />    
-    }
-    else
-    {
-        <base href="/" />
-    }
+    <base href="@GetBaseURL()" />
+    
 </HeadContent>
 
 <MudDialogProvider/>
@@ -84,6 +78,10 @@
         
         <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDone" Disabled="@(Saving || !IsEditing)" hidden="@(!IsEditing)"> 
             Done
+        </MudButton>
+                
+        <MudButton StartIcon="@Icons.Material.Filled.Download" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDownload" Disabled="@(IsEditing)" hidden="@IsEditing"> 
+            Download
         </MudButton>
                 
         <MudButton Color="Color.Tertiary" Variant="Variant.Filled"  @onclick="OnClickSave" Disabled="@(Saving || !IsChanged)" hidden="@(!IsEditing)">
@@ -153,6 +151,14 @@
     public bool CanUndo => GraphEditState.CanUndo && !Saving;
     public bool CanRedo => GraphEditState.CanRedo && !Saving;
 
+    string GetBaseURL()
+    {
+        var headers = httpContextAccessor.HttpContext.Request.Headers;
+        if (headers.ContainsKey("X-Ingress-Path"))
+            return headers["X-Ingress-Path"];
+
+        return "/";
+    }
 
     void DrawerToggle()
     {
@@ -538,4 +544,21 @@
             GraphEditState.DoCommand(GraphEditState.Command.Delete);
         }
     }
+
+    private void OnClickDownload()
+    {
+        /*
+        var data = new DownloadData {graph = Graph, layout = GraphLayout };
+        var json = Json.Prettify(Json.Serialize(data));
+        var fileStream = new MemoryStream(Encoding.UTF8.GetBytes(json));
+        var fileName = "spike.json";
+
+        using var streamRef = new DotNetStreamReference(stream: fileStream);
+
+        _ = Task.Run(() => JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef));
+        */
+        
+        _ = Task.Run(() => JS.InvokeVoidAsync("triggerFileDownload", "spike.json", $"{GetBaseURL()}api/download"));
+    }
+
 }

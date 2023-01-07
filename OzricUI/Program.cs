@@ -9,7 +9,6 @@ using OzricUI.Hubs;
 using OzricUI.Mock;
 
 const int homeAssistantIngressPort = 8099;
-const int homeAssistantOtherPort = 9098;
 
 const string dockerWwwRoot = "/ozric/wwwroot";
 StaticFileOptions? staticFileOptions;
@@ -76,5 +75,6 @@ app.Services.GetService<IHomeHubController>();
 app.MapFallbackToPage("/_Host");
 
 API.Map(app);
+DataService.Map(app);
 
 app.Run();
