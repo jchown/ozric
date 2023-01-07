@@ -5,10 +5,8 @@
 @using Blazor.Diagrams.Core.Models.Base
 @using OzricEngine
 @using OzricEngine.Values
-@using _Imports = OzricUI._Imports
 @using ValueType = OzricEngine.Values.ValueType
 @using Edge = OzricEngine.Nodes.Edge
-@using System.Reflection
 @implements IDisposable
 
 <div class="diagram-container">
@@ -152,6 +150,13 @@
                 port.Locked = locked;
 
             node.RefreshAll();
+        }
+
+        foreach (var group in diagram.Groups)
+        {
+            group.Locked = locked;
+
+            group.Refresh();
         }
 
         foreach (var link in diagram.Links)
