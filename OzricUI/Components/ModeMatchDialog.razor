@@ -31,10 +31,12 @@
                         <MudTh>Pattern</MudTh>
                         <MudTh>Type</MudTh>
                         <MudTh></MudTh>
+                        <MudTh></MudTh>
                     </HeaderContent>
                     <RowTemplate>
                         <MudTd DataLabel="Pattern">@context.pattern</MudTd>
                         <MudTd DataLabel="Type">@context.type</MudTd>
+                        <MudTd DataLabel="Remove"><MudIconButton Icon="@Icons.Material.Outlined.RemoveCircle" OnClick="() => OnRemove(context)"></MudIconButton></MudTd>
                     </RowTemplate>
                     <RowEditingTemplate>
                         <MudTd DataLabel="Pattern">
@@ -168,5 +170,10 @@
         var pattern = (ModeMatch.Pattern) element;
         pattern.type = elementBeforeEdit.type;
         pattern.pattern = elementBeforeEdit.pattern;
+    }
+
+    private void OnRemove(ModeMatch.Pattern context)
+    {
+        _patterns.Remove(context);
     }
 }

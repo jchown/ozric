@@ -37,7 +37,7 @@ public class DataService
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<DataService> _logger;
     
-    private const string CLIENT_USER_AGENT = "OzricUI";
+    private const string CLIENT_USER_AGENT = "Spike";
 
     public DataService(IHttpClientFactory httpClientFactory, ILogger<DataService> logger)
     {

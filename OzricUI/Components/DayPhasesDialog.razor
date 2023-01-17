@@ -42,6 +42,7 @@
                         <MudTd DataLabel="Mode">@context.mode</MudTd>
                         <MudTd DataLabel="Start">@DescribeSeconds(context.startOffsetSeconds) @DescribePhaseStart(context.start)</MudTd>
                         <MudTd>@context.GetStartTime(DateTime.Now, Sun).ToShortTimeString()</MudTd>
+                        <MudTd DataLabel="Remove"><MudIconButton Icon="@Icons.Material.Outlined.RemoveCircle" OnClick="() => OnRemove(context)"></MudIconButton></MudTd>
                     </RowTemplate>
                     <RowEditingTemplate>
                         <MudTd DataLabel="Mode">
@@ -241,5 +242,10 @@
             default:
                 throw new ArgumentOutOfRangeException(nameof(contextStart), contextStart, null);
         }
+    }
+    
+    private void OnRemove(DayPhases.PhaseStart context)
+    {
+        phases.Remove(context);
     }
 }
