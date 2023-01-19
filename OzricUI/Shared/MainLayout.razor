@@ -155,7 +155,7 @@
     {
         var headers = httpContextAccessor.HttpContext.Request.Headers;
         if (headers.ContainsKey("X-Ingress-Path"))
-            return headers["X-Ingress-Path"];
+            return $"{headers["X-Ingress-Path"]}/";
 
         return "/";
     }
