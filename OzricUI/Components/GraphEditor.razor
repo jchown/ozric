@@ -368,6 +368,8 @@
                         return new ConstantNumberModel(c, point);
 
                     case ValueType.Binary:
+                        return new ConstantBinaryModel(c, point);
+                        
                     case ValueType.Mode:
                     default:
                         throw new ArgumentOutOfRangeException();

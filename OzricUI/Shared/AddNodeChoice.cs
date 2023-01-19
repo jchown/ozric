@@ -68,6 +68,18 @@ public class AddNodeChoice
             create: () => new Constant(graph.CreateNodeID("colour"), ColorRGB.WHITE)));
 
         choices.Add(new AddNodeChoice(
+            category: Category.Constant,
+            name: "Number",
+            icon: ConstantNumberModel.ICON,
+            create: () => new Constant(graph.CreateNodeID("number"), new Number(0))));
+
+        choices.Add(new AddNodeChoice(
+            category: Category.Constant,
+            name: "Binary",
+            icon: ConstantBinaryModel.ICON,
+            create: () => new Constant(graph.CreateNodeID("binary"), new Binary(false))));
+
+        choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Compare Number",
             icon: NumberCompareModel.ICON,

@@ -11,7 +11,7 @@
 
             <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
 
-            <MudNumericField @bind-Value="@_number" />
+            <span>Value</span><span>&NonBreakingSpace;</span> <MudSwitch @bind-Checked="@_value" Color="Color.Primary" /><span>@(_value ? "On/1" : "Off/0")</span>
 
         </MudContainer>
 
@@ -30,13 +30,13 @@
     MudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public ConstantNumberModel Model { get; set; }
+    public ConstantBinaryModel Model { get; set; }
 
     [Parameter]
     public Constant Node { get; set; }
 
-    private string _id;
-    private float _number;
+    private string _id { get; set; }
+    private bool _value { get; set; }
 
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
@@ -46,7 +46,7 @@
     protected override void OnInitialized()
     {
         _id = Node.id;
-        _number = ((Number) Node.value).value;
+        _value = ((Binary) Node.value).value;
     }
     
     private List<GraphEditAction> GetChanges()
@@ -55,10 +55,9 @@
         if (_id != Node.id)
             changes.Add(new GraphEditAction.RenameNode(Node, _id));
 
-        if (_number != ((Number) Node.value).value)
-            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), new Number(_number)));
+        if (_value != ((Binary) Node.value).value)
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), new Binary(_value)));
 
         return changes;
     }
-
 }
