@@ -120,7 +120,7 @@
         };
 
         var result = await DialogService.Show(typeof(ColorPickerDialog), "Choose Color", parameters, options).Result;
-        if (result.Cancelled)
+        if (result.Canceled)
             return;
 
         color = (ColorValue) result.Data;

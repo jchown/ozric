@@ -1,0 +1,41 @@
+@implements IDisposable
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer >
+            <MudAlert Severity="Severity.Error">@(Message)</MudAlert>
+        </MudContainer>
+    
+    </DialogContent>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public string Message { get; set; }
+
+    [Parameter]
+    public int TimeoutMillis { get; set; } = 3000;
+
+    void Cancel() => MudDialog.Cancel();
+
+    Timer timer;
+    
+    protected override void OnInitialized()
+    {
+        timer = new Timer(async _ =>  // async void
+        {
+            await InvokeAsync(Cancel);
+        }, null, 0, TimeoutMillis);
+    }
+    
+    public void Dispose()
+    {
+        timer?.Dispose();
+    }
+}
+

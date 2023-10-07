@@ -26,7 +26,6 @@
 <PageTitle>Ozric - Graph</PageTitle>
 <HeadContent>
     <base href="@GetBaseURL()" />
-    
 </HeadContent>
 
 <MudDialogProvider/>
@@ -36,9 +35,27 @@
 <CascadingValue Value="@OzricService">
 <MudLayout>
     <MudAppBar>
-        <MudIconButton Icon="@Icons.Material.Filled.Menu" Color="Color.Inherit" Edge="Edge.Start" OnClick="@((_) => DrawerToggle())" />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(async _ => await JS.InvokeAsync<object>("open", new []{"https://github.com/jchown/ozric-addon/", "_blank"}))" />
         
         <MudText>Ozric</MudText>
+        
+        <MudSpacer />
+        
+        <MudMenu StartIcon="@Icons.Material.Filled.StickyNote2" Label="Data" Color="Color.Primary" Variant="Variant.Filled"  Disabled="@IsEditing" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" >
+            <MudButton @onclick="OnClickDownload" StartIcon="@Icons.Material.Filled.Download">Download</MudButton>
+            <MudFileUpload T="IBrowserFile" Accept=".json" FilesChanged="OnUploadFile">
+                <ButtonTemplate>
+                    <MudButton HtmlTag="label"
+                               StartIcon="@Icons.Material.Filled.Upload"
+                               for="@context">
+                        Upload
+                    </MudButton>
+                </ButtonTemplate>
+            </MudFileUpload>
+        </MudMenu>
+
+        <MudSpacer />
+        
         
         &nbsp; &nbsp;
         
@@ -72,16 +89,12 @@
 
         <MudSpacer />
         
-        <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickEdit" Disabled="@IsEditing" hidden="@IsEditing">
+        <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnClickEdit" Disabled="@IsEditing" hidden="@IsEditing">
             Edit
         </MudButton>
         
         <MudButton StartIcon="@Icons.Material.Filled.Cancel" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDone" Disabled="@(Saving || !IsEditing)" hidden="@(!IsEditing)"> 
             Done
-        </MudButton>
-                
-        <MudButton StartIcon="@Icons.Material.Filled.Download" Variant="Variant.Filled" Color="Color.Primary" @onclick="OnClickDownload" Disabled="@(IsEditing)" hidden="@IsEditing"> 
-            Download
         </MudButton>
                 
         <MudButton Color="Color.Tertiary" Variant="Variant.Filled"  @onclick="OnClickSave" Disabled="@(Saving || !IsChanged)" hidden="@(!IsEditing)">
@@ -107,10 +120,6 @@
         
     </MudAppBar>
     
-    <MudDrawer @bind-Open="@_settingsDrawerOpen">
-        <NavMenu/>
-    </MudDrawer>
-    
     <MudMainContent>
         
         <div style="height: 100%">
@@ -131,7 +140,6 @@
 </CascadingValue>
 
 @code {
-    bool _settingsDrawerOpen = false;
     private bool _isDarkMode;
     private MudThemeProvider? _mudThemeProvider;
 
@@ -153,16 +161,11 @@
 
     string GetBaseURL()
     {
-        var headers = httpContextAccessor.HttpContext.Request.Headers;
-        if (headers.ContainsKey("X-Ingress-Path"))
-            return $"{headers["X-Ingress-Path"]}/";
+        var headers = httpContextAccessor.HttpContext!.Request.Headers;
+        if (headers.TryGetValue("X-Ingress-Path", out var header))
+            return $"{header}/";
 
         return "/";
-    }
-
-    void DrawerToggle()
-    {
-        _settingsDrawerOpen = !_settingsDrawerOpen;
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -393,7 +396,7 @@
         var options = GetDialogOptions();
 
         var result = await DialogService.Show(type, title, parameters, options).Result;
-        if (result.Cancelled)
+        if (result.Canceled)
             return;
 
         var changes = (List<GraphEditAction>)result.Data;
@@ -418,7 +421,7 @@
         var options = GetDialogOptions();
 
         var result = await DialogService.Show(typeof(DataDialog), "Raw Data", parameters, options).Result;
-        if (result.Cancelled)
+        if (result.Canceled)
             return;
 
         var json = (DataDialog.Result)result.Data;
@@ -547,18 +550,51 @@
 
     private void OnClickDownload()
     {
-        /*
-        var data = new DownloadData {graph = Graph, layout = GraphLayout };
-        var json = Json.Prettify(Json.Serialize(data));
-        var fileStream = new MemoryStream(Encoding.UTF8.GetBytes(json));
-        var fileName = "spike.json";
-
-        using var streamRef = new DotNetStreamReference(stream: fileStream);
-
-        _ = Task.Run(() => JS.InvokeVoidAsync("downloadFileFromStream", fileName, streamRef));
-        */
-        
         _ = Task.Run(() => JS.InvokeVoidAsync("triggerFileDownload", "spike.json", $"{GetBaseURL()}api/download"));
     }
 
+    private void OnUploadFile(IBrowserFile file)
+    {
+        _ = Task.Run(async () =>
+        {
+            GraphEditState.OnSaving();
+
+            try
+            {
+                using (var stream = file.OpenReadStream())
+                {
+                    DataService.DownloadData? data;
+                    
+                    try
+                    {
+                        var json = await new StreamReader(stream).ReadToEndAsync();
+                        data = Json.Deserialize<DataService.DownloadData>(json);
+                    }
+                    catch (Exception e)
+                    {
+                        var parameters = new DialogParameters
+                        {
+                            { "Message", $"An error occured reading the data: {e}" }
+                        };
+
+                        await DialogService.Show<ErrorDialog>("Upload Failed", parameters, GetDialogOptions()).Result;
+                        return;
+                    }
+
+                    await OzricService.Restart(data.graph);
+                    await Data.SetGraphLayoutAsync(data.layout);
+                    await InvokeAsync(() => GraphEditState.DoCommand(GraphEditState.Command.SetCheckpoint));
+                    await LoadGraph();
+                }
+            }
+            catch (Exception e)
+            {
+                Console.Error.WriteLine(e.ToString());
+            }
+            finally
+            {
+                await InvokeAsync(() => GraphEditState.OnEdit());
+            }
+        });
+    }
 }
