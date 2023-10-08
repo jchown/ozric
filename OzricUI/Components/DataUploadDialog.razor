@@ -1,0 +1,84 @@
+@using OzricUI.Data
+@using OzricEngine
+
+@inject IDialogService DialogService
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer>
+            
+            <MudText>
+                This will replace the current graph and layout with the contents of the JSON file you upload.
+                
+                No validation is performed, please use this functionality with care.
+
+                <MudAlert Severity="Severity.Warning">This cannot be undone.</MudAlert>
+            </MudText>
+
+            <MudFileUpload T="IBrowserFile" Context="fileInput" Accept=".json" FilesChanged="OnUploadFile">
+                <ButtonTemplate>
+                    <MudButton HtmlTag="label"
+                               StartIcon="@Icons.Material.Filled.Upload"
+                               for="@fileInput">
+                        Upload & Save Data
+                    </MudButton>
+                </ButtonTemplate>
+            </MudFileUpload>
+
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    void Cancel() => MudDialog.Cancel();
+    
+    public record Result(DataService.DownloadData Data);
+
+    private async Task OnUploadFile(IBrowserFile file)
+    {
+        using (var stream = file.OpenReadStream())
+        {
+            DataService.DownloadData? data;
+                
+            try
+            {
+                var json = await new StreamReader(stream).ReadToEndAsync();
+                data = Json.Deserialize<DataService.DownloadData>(json);
+            }
+            catch (Exception e)
+            {
+                var parameters = new DialogParameters
+                {
+                    { "Message", $"An error occured reading the data: {e}" }
+                };
+
+                var options = new DialogOptions
+                {
+                    CloseOnEscapeKey = true,
+                    CloseButton = true,
+                    Position = DialogPosition.TopCenter,
+                    MaxWidth = MaxWidth.Medium,
+                    FullWidth = true
+                };
+
+                await DialogService.Show<ErrorDialog>("Upload Failed", parameters, options).Result;
+                Cancel();
+                return;
+            }
+
+            MudDialog.Close(DialogResult.Ok(new Result(data)));
+        }
+    }
+
+}

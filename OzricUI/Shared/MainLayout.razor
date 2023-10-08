@@ -11,7 +11,6 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using OzricUI.Hubs
 @using System.Reflection
-@using System.Text
 @inject IDialogService DialogService
 @inherits LayoutComponentBase
 @inject DataService Data
@@ -41,17 +40,9 @@
         
         <MudSpacer />
         
-        <MudMenu StartIcon="@Icons.Material.Filled.StickyNote2" Label="Data" Color="Color.Primary" Variant="Variant.Filled"  Disabled="@IsEditing" EndIcon="@Icons.Material.Filled.KeyboardArrowDown" >
-            <MudButton @onclick="OnClickDownload" StartIcon="@Icons.Material.Filled.Download">Download</MudButton>
-            <MudFileUpload T="IBrowserFile" Accept=".json" FilesChanged="OnUploadFile">
-                <ButtonTemplate>
-                    <MudButton HtmlTag="label"
-                               StartIcon="@Icons.Material.Filled.Upload"
-                               for="@context">
-                        Upload
-                    </MudButton>
-                </ButtonTemplate>
-            </MudFileUpload>
+        <MudMenu StartIcon="@Icons.Material.Filled.StickyNote2" Label="Data" Color="Color.Primary" Variant="Variant.Filled" Disabled="@IsEditing" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+            <MudMenuItem @onclick="OnClickDownload" Icon="@Icons.Material.Filled.Download">Download</MudMenuItem>
+            <MudMenuItem @onclick="OnClickUpload" Icon="@Icons.Material.Filled.Upload">Upload</MudMenuItem>
         </MudMenu>
 
         <MudSpacer />
@@ -88,7 +79,7 @@
         </MudButton>
 
         <MudSpacer />
-        
+
         <MudButton StartIcon="@Icons.Material.Filled.Edit" Variant="Variant.Filled" Color="Color.Secondary" OnClick="@OnClickEdit" Disabled="@IsEditing" hidden="@IsEditing">
             Edit
         </MudButton>
@@ -410,28 +401,6 @@
         StateHasChanged();
     }
 
-    private async Task OnClickData()
-    {
-        var parameters = new DialogParameters
-        {
-            { "Graph", Json.Prettify(Json.Serialize(Graph)) },
-            { "GraphLayout", Json.Prettify(Json.Serialize(GraphLayout)) }
-        };
-
-        var options = GetDialogOptions();
-
-        var result = await DialogService.Show(typeof(DataDialog), "Raw Data", parameters, options).Result;
-        if (result.Canceled)
-            return;
-
-        var json = (DataDialog.Result)result.Data;
-
-        Graph = Json.Deserialize<Graph>(json.graph);
-        GraphLayout = Json.Deserialize<GraphLayout>(json.graphLayout);
-
-        await OnClickSave();
-    }
-
     private static DialogOptions GetDialogOptions()
     {
         var options = new DialogOptions
@@ -553,48 +522,36 @@
         _ = Task.Run(() => JS.InvokeVoidAsync("triggerFileDownload", "spike.json", $"{GetBaseURL()}api/download"));
     }
 
-    private void OnUploadFile(IBrowserFile file)
+    private async Task OnClickUpload()
     {
-        _ = Task.Run(async () =>
+        var result = await DialogService.Show<DataUploadDialog>("Upload Data File", new DialogParameters(), GetDialogOptions()).Result;
+        if (result?.Data == null)
+            return;
+
+        var data = ((DataUploadDialog.Result) result.Data).Data;
+        
+        try
         {
             GraphEditState.OnSaving();
-
-            try
+            UnloadGraph();
+            await OzricService.Restart(data.graph);
+            await Data.SetGraphLayoutAsync(data.layout);
+            await LoadGraph();
+            await InvokeAsync(() =>
             {
-                using (var stream = file.OpenReadStream())
-                {
-                    DataService.DownloadData? data;
-                    
-                    try
-                    {
-                        var json = await new StreamReader(stream).ReadToEndAsync();
-                        data = Json.Deserialize<DataService.DownloadData>(json);
-                    }
-                    catch (Exception e)
-                    {
-                        var parameters = new DialogParameters
-                        {
-                            { "Message", $"An error occured reading the data: {e}" }
-                        };
-
-                        await DialogService.Show<ErrorDialog>("Upload Failed", parameters, GetDialogOptions()).Result;
-                        return;
-                    }
-
-                    await OzricService.Restart(data.graph);
-                    await Data.SetGraphLayoutAsync(data.layout);
-                    await InvokeAsync(() => GraphEditState.DoCommand(GraphEditState.Command.SetCheckpoint));
-                    await LoadGraph();
-                }
-            }
-            catch (Exception e)
-            {
-                Console.Error.WriteLine(e.ToString());
-            }
-            finally
-            {
-                await InvokeAsync(() => GraphEditState.OnEdit());
-            }
-        });
+                //  TODO: These commands don't get through, so a manual refresh is needed.
+                GraphEditState.DoCommand(GraphEditState.Command.SetCheckpoint);
+                GraphEditState.DoCommand(GraphEditState.Command.Rebuild);
+            });
+            await InvokeAsync(StateHasChanged);
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine(e.ToString());
+        }
+        finally
+        {
+            await InvokeAsync(() => GraphEditState.OnCancel());
+        }
     }
 }

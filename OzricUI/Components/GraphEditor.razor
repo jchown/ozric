@@ -105,6 +105,10 @@
                 DoDelete();
                 break;
                 
+            case GraphEditState.Command.Rebuild:
+                PopulateDiagram();
+                break;
+                
             default:
                 throw new ArgumentOutOfRangeException(nameof(command), command, null);
         }
