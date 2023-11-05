@@ -112,7 +112,7 @@ namespace OzricEngine
     /// </summary>
     public class LightAttributes
     {
-        public int brightness;
+        public int? brightness;
         
         public string color_mode;
         public string[] supported_color_modes;

@@ -49,6 +49,16 @@ builder.Services.AddSingleton<DataService>();
 builder.Services.AddSingleton<HomeHubController>();
 builder.Services.AddMudServices();
 builder.Services.AddResponseCompression(opts => opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" }));
+builder.WebHost.UseSentry(options =>
+{
+    if (builder.Environment.IsDevelopment())
+        return;
+    
+    options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
+    options.Debug = true;
+    options.TracesSampleRate = 1.0;
+    options.AutoSessionTracking = true;
+});
 
 IEngineService ozricEngine = (Environment.GetEnvironmentVariable("OZRIC_MOCK") != null) ? new MockOzricService() : new EngineService();
 await ozricEngine.Start(CancellationToken.None);
@@ -78,3 +88,4 @@ API.Map(app);
 DataService.Map(app);
 
 app.Run();
+

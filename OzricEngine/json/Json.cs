@@ -78,12 +78,12 @@ namespace OzricEngine
             options.IncludeFields = true;
             options.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
             options.Converters.Add(new JsonConverterAttributes());
-//              new JsonConverterEntityID(),     - Only use explicitly
             options.Converters.Add(new JsonConverterEvent()); 
             options.Converters.Add(new JsonConverterNode());
             options.Converters.Add(new JsonConverterClientCommand());
             options.Converters.Add(new JsonConverterServerMessage());
             options.Converters.Add(new JsonConverterValue());
+//              new JsonConverterEntityID(),     - Only use explicitly
         }
 
         public class PropertyNamer : JsonNamingPolicy

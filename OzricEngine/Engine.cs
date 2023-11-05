@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using OzricEngine.engine;
 using OzricEngine.Nodes;
 using OzricEngine.Values;
+using Sentry;
 
 namespace OzricEngine
 {
@@ -106,6 +107,7 @@ namespace OzricEngine
             catch (Exception e)
             {
                 Log(LogLevel.Error, "Main loop threw exception: {0}", e);
+                SentrySdk.CaptureException(e);
             }
             finally
             {
@@ -158,6 +160,7 @@ namespace OzricEngine
                 catch (Exception e)
                 {
                     Log(LogLevel.Error, "Failed to process event: {0}\nEvent: {1}", e, ev);
+                    SentrySdk.CaptureException(e);
                 }
             }
             
@@ -331,8 +334,9 @@ namespace OzricEngine
                 }
                 catch (Exception e)
                 {
-                    Console.Write(e);
+                    await nodeProcessor(node, context);
                     Log(LogLevel.Error, "Failed to process node {0}: {1}", node.Name, e.Message);
+                    SentrySdk.CaptureException(e);
                 }
             }
 

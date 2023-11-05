@@ -11,6 +11,7 @@
 @using Microsoft.AspNetCore.SignalR.Client
 @using OzricUI.Hubs
 @using System.Reflection
+@using Sentry
 @inject IDialogService DialogService
 @inherits LayoutComponentBase
 @inject DataService Data
@@ -231,6 +232,7 @@
         catch (Exception e)
         {
             log.Add($"Hub init failed: {e.Message}");
+            SentrySdk.CaptureException(e);
         }
     }
 
@@ -306,7 +308,8 @@
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine(e.ToString());
+            Console.Error.WriteLine($"Error: {e.Message}");
+            SentrySdk.CaptureException(e);
         }
         finally
         {
@@ -547,7 +550,8 @@
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine(e.ToString());
+            Console.Error.WriteLine(e);
+            SentrySdk.CaptureException(e);
         }
         finally
         {

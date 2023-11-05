@@ -4,6 +4,7 @@ using System.Text.Json;
 using OzricEngine;
 using OzricEngine.engine;
 using OzricEngine.Nodes;
+using Sentry;
 using Graph = OzricEngine.Graph;
 
 namespace OzricService;
@@ -48,27 +49,31 @@ public class EngineService: IEngineService, ICommandSender
     {
         Graph graph = new Graph();
 
-        try
+        if (File.Exists(GraphFilename))
         {
-            var json = await File.ReadAllTextAsync(GraphFilename);
             try
             {
-                graph = Graph.Deserialize(json);
+                var json = await File.ReadAllTextAsync(GraphFilename);
+                try
+                {
+                    graph = Graph.Deserialize(json);
 
-                Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count} edges");
+                    Console.WriteLine($"Loaded graph with {graph.nodes.Count} nodes and {graph.edges.Count} edges");
 
-                return graph;
+                    return graph;
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Failed to load graph: {e.Message}");
+                    SentrySdk.CaptureException(e);
+
+                    ExamineGraph(json);
+                }
             }
             catch (Exception e)
             {
                 Console.WriteLine($"Failed to load graph: {e.Message}");
-
-                ExamineGraph(json);
             }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Failed to load graph: {e.Message}");
         }
 
         Console.WriteLine($"Starting with empty graph");
@@ -94,6 +99,7 @@ public class EngineService: IEngineService, ICommandSender
                 catch (Exception e)
                 {
                     Console.WriteLine($"Failed to load node {node.Name}: {e.Message}\nValue was {node.Value}");
+                    SentrySdk.CaptureMessage($"Failed to load node {node.Name}: {e.Message}\nValue was {node.Value}");
                 }
             }
         }

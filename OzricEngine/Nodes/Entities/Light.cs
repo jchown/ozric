@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using OzricEngine.ext;
 using OzricEngine.Values;
@@ -220,11 +219,12 @@ public class Light: EntityNode
         out object? colorValue)
     {
         var attributes = entityState.LightAttributes;
-
-        on = (entityState.state == "on") && attributes.brightness > 0;
+        var currentBrightness = attributes.brightness ?? 0;
+        
+        on = (entityState.state == "on") && currentBrightness > 0;
         Log(LogLevel.Debug, "{0}.on = {1}", entityID, on);
         if (on)
-            Log(LogLevel.Debug, "brightness = {0}", attributes.brightness);
+            Log(LogLevel.Debug, "brightness = {0}", currentBrightness);
 
         brightness = (int)(desired.brightness * 255 + 0.5f);
         desiredOn = brightness > 0;
@@ -233,10 +233,10 @@ public class Light: EntityNode
         update.CheckEquals(desiredOn, on);
         if (on)
         {
-            if (brightness == 0 || attributes.brightness == 0)
-                update.CheckEquals(brightness, attributes.brightness);
+            if (brightness == 0 || currentBrightness == 0)
+                update.CheckEquals(brightness, currentBrightness);
             else
-                update.CheckApprox(brightness, attributes.brightness, 3);
+                update.CheckApprox(brightness, currentBrightness, 3);
         }
 
         bool needsConversion = false;

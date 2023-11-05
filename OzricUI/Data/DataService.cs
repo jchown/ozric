@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using OzricEngine;
 using OzricService;
+using Sentry;
 using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace OzricUI.Data;
@@ -55,6 +56,8 @@ public class DataService
             var graphLayout = Json.Deserialize<GraphLayout>(json);
 
             ShowDebug("Load", graphLayout);
+            
+            SentrySdk.CaptureMessage("Graph loaded");
             
             return graphLayout;
         }
