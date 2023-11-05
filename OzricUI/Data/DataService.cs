@@ -57,8 +57,6 @@ public class DataService
 
             ShowDebug("Load", graphLayout);
             
-            SentrySdk.CaptureMessage("Graph loaded");
-            
             return graphLayout;
         }
         catch (Exception e)
