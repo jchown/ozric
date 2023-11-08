@@ -7,6 +7,7 @@ using OzricEngine;
 using OzricService;
 using OzricUI.Hubs;
 using OzricUI.Mock;
+using Sentry;
 
 const int homeAssistantIngressPort = 8099;
 
@@ -87,5 +88,16 @@ app.MapFallbackToPage("/_Host");
 API.Map(app);
 DataService.Map(app);
 
-app.Run();
+try
+{
+    var json = await Supervisor.GetConfig();
+    Console.WriteLine($"Supervisor config: {json}");
+    SentrySdk.CaptureMessage(json);
+}
+catch (Exception e)
+{
+    Console.WriteLine($"Failed to get Supervisor config: {e.Message}");
+    SentrySdk.CaptureException(e);
+}
 
+app.Run();
