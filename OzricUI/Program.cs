@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.FileProviders;
@@ -7,9 +8,25 @@ using OzricEngine;
 using OzricService;
 using OzricUI.Hubs;
 using OzricUI.Mock;
-using Sentry;
 
-const int homeAssistantIngressPort = 8099;
+int port = 8099;
+string url = "/";
+
+try
+{
+    JsonDocument supervisorConfig = await Supervisor.GetConfig();
+    Console.WriteLine($"Supervisor config:\n{Json.Prettify(supervisorConfig)}");
+    
+    if (supervisorConfig.RootElement.TryGetProperty("ingress_port", out var portProperty))
+        port = portProperty.GetInt32();
+    
+    if (supervisorConfig.RootElement.TryGetProperty("ingress_url", out var urlProperty))
+        url = urlProperty.GetString() ?? "/";
+}
+catch (Exception e)
+{
+    Console.WriteLine($"Failed to get Supervisor config: {e.Message}");
+}
 
 const string dockerWwwRoot = "/ozric/wwwroot";
 StaticFileOptions? staticFileOptions;
@@ -38,7 +55,7 @@ else
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(homeAssistantIngressPort));
+builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(port));
 
 // Add services to the container.
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
@@ -55,7 +72,7 @@ builder.WebHost.UseSentry(options =>
     if (builder.Environment.IsDevelopment())
         return;
     
-    options.Release = "ozric@0.10.5";
+    options.Release = "ozric@0.10.6";
     options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
     options.Debug = true;
     options.TracesSampleRate = 1.0;
@@ -81,48 +98,12 @@ app.UseStaticFiles(staticFileOptions);
 app.UseStaticFiles();  // https://stackoverflow.com/questions/58088302/blazor-server-js-file-not-found
 app.UseRouting();
 
-app.MapBlazorHub();
+app.MapBlazorHub($"{url}_blazor");
 app.MapHub<HomeHub>(HomeHub.ENDPOINT);
 app.Services.GetService<IHomeHubController>();
 app.MapFallbackToPage("/_Host");
 
 API.Map(app);
 DataService.Map(app);
-
-try
-{
-    var json = await Supervisor.GetInfo();
-    Console.WriteLine($"Supervisor info: {json}");
-    SentrySdk.CaptureMessage(json, SentryLevel.Warning);
-}
-catch (Exception e)
-{
-    Console.WriteLine($"Failed to get Supervisor info: {e.Message}");
-    SentrySdk.CaptureException(e);
-}
-
-try
-{
-    var json = await Supervisor.GetConfig();
-    Console.WriteLine($"Supervisor config: {json}");
-    SentrySdk.CaptureMessage(json, SentryLevel.Warning);
-}
-catch (Exception e)
-{
-    Console.WriteLine($"Failed to get Supervisor config: {e.Message}");
-    SentrySdk.CaptureException(e);
-}
-
-try
-{
-    var json = await Supervisor.GetAddons();
-    Console.WriteLine($"Supervisor addons: {json}");
-    SentrySdk.CaptureMessage(json, SentryLevel.Warning);
-}
-catch (Exception e)
-{
-    Console.WriteLine($"Failed to get Supervisor addons: {e.Message}");
-    SentrySdk.CaptureException(e);
-}
 
 app.Run();

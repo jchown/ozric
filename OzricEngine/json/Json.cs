@@ -60,7 +60,11 @@ namespace OzricEngine
         
         public static string Prettify(string json)
         {
-            var jDoc = JsonDocument.Parse(json);
+            return Prettify(JsonDocument.Parse(json));
+        }
+
+        public static string Prettify(JsonDocument jDoc)
+        {
             return JsonSerializer.Serialize(jDoc, new JsonSerializerOptions { WriteIndented = true });
         }
 
