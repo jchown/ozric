@@ -8,9 +8,9 @@ using OzricEngine;
 using OzricService;
 using OzricUI.Hubs;
 using OzricUI.Mock;
+using OzricUI.Shared;
 
-int port = 8099;
-string url = "/";
+OzricConfig ozricConfig = new();
 
 try
 {
@@ -18,15 +18,17 @@ try
     Console.WriteLine($"Supervisor config:\n{Json.Prettify(supervisorConfig)}");
     
     if (supervisorConfig.RootElement.TryGetProperty("ingress_port", out var portProperty))
-        port = portProperty.GetInt32();
+        ozricConfig.port = portProperty.GetInt32();
     
     if (supervisorConfig.RootElement.TryGetProperty("ingress_url", out var urlProperty))
-        url = urlProperty.GetString() ?? "/";
+        ozricConfig.url = urlProperty.GetString() ?? "/";
 }
 catch (Exception e)
 {
     Console.WriteLine($"Failed to get Supervisor config: {e.Message}");
 }
+
+Console.WriteLine($"Config\n  URL = {ozricConfig.url}\n  Port = {ozricConfig.port}");
 
 const string dockerWwwRoot = "/ozric/wwwroot";
 StaticFileOptions? staticFileOptions;
@@ -55,7 +57,7 @@ else
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(port));
+builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(ozricConfig.port));
 
 // Add services to the container.
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
@@ -63,6 +65,7 @@ builder.Services.AddSignalR().AddJsonProtocol(options => Json.Configure(options.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
+builder.Services.AddSingleton<IOzricConfig>(ozricConfig);
 builder.Services.AddSingleton<DataService>();
 builder.Services.AddSingleton<HomeHubController>();
 builder.Services.AddMudServices();
@@ -72,7 +75,7 @@ builder.WebHost.UseSentry(options =>
     if (builder.Environment.IsDevelopment())
         return;
     
-    options.Release = "ozric@0.10.6";
+    options.Release = "ozric@0.10.7";
     options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
     options.Debug = true;
     options.TracesSampleRate = 1.0;
@@ -98,7 +101,7 @@ app.UseStaticFiles(staticFileOptions);
 app.UseStaticFiles();  // https://stackoverflow.com/questions/58088302/blazor-server-js-file-not-found
 app.UseRouting();
 
-app.MapBlazorHub($"{url}_blazor");
+app.MapBlazorHub($"{ozricConfig.url}_blazor");
 app.MapHub<HomeHub>(HomeHub.ENDPOINT);
 app.Services.GetService<IHomeHubController>();
 app.MapFallbackToPage("/_Host");

@@ -12,20 +12,20 @@
 @using OzricUI.Hubs
 @using System.Reflection
 @using Sentry
-@inject IDialogService DialogService
 @inherits LayoutComponentBase
+@inject IDialogService DialogService
 @inject DataService Data
 @inject IOzricService OzricService
 @inject NavigationManager Navigation
-@inject IJSRuntime JS
-@inject IHttpContextAccessor httpContextAccessor;
+@inject IJSRuntime Javascript
+@inject OzricConfig Config
 
 @* Why is this needed? If I remove it, we get no HHC events *@
 @inject HomeHubController HHC
 
 <PageTitle>Ozric - Graph</PageTitle>
 <HeadContent>
-    <base href="@GetBaseURL()" />
+    <base href="@Config.GetBaseUrl()" />
 </HeadContent>
 
 <MudDialogProvider/>
@@ -35,10 +35,14 @@
 <CascadingValue Value="@OzricService">
 <MudLayout>
     <MudAppBar>
-        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(async _ => await JS.InvokeAsync<object>("open", new []{"https://github.com/jchown/ozric-addon/", "_blank"}))" />
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(async _ => await Javascript.InvokeAsync<object>("open", new []{"https://github.com/jchown/ozric-addon/", "_blank"}))" />
         
         <MudText>Ozric</MudText>
         
+        &nbsp;
+
+        <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Inherit" OnClick="@ShowConfig" />
+
         <MudSpacer />
         
         <MudMenu StartIcon="@Icons.Material.Filled.StickyNote2" Label="Data" Color="Color.Primary" Variant="Variant.Filled" Disabled="@IsEditing" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
@@ -65,8 +69,8 @@
             Delete
         </MudButton>
 
-        <MudButton StartIcon="@Icons.Material.Filled.Info" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickInfo" Disabled="@(!CanGetInfo)">
-            Info
+        <MudButton StartIcon="@Icons.Material.Filled.Settings" Variant="Variant.Filled" Color="Color.Primary" OnClick="@OnClickInfo" Disabled="@(!CanGetInfo)">
+            Settings
         </MudButton>
 
         <MudSpacer />
@@ -151,15 +155,6 @@
     public bool CanUndo => GraphEditState.CanUndo && !Saving;
     public bool CanRedo => GraphEditState.CanRedo && !Saving;
 
-    string GetBaseURL()
-    {
-        var headers = httpContextAccessor.HttpContext!.Request.Headers;
-        if (headers.TryGetValue("X-Ingress-Path", out var header))
-            return $"{header}/";
-
-        return "/";
-    }
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
@@ -177,7 +172,7 @@
         log = new();
 
         foreach (var log in toLog)
-            await JS.InvokeVoidAsync("console.log", log);
+            await Javascript.InvokeVoidAsync("console.log", log);
     }
 
     protected override async Task OnInitializedAsync()
@@ -352,7 +347,7 @@
             { "OnAdd", addNode }
         };
 
-        await DialogService.Show<AddNodesDialog>("Add Nodes", parameters, GetDialogOptions()).Result;
+        await DialogService.ShowAsync<AddNodesDialog>("Add Nodes", parameters, GetDialogOptions());
     }
 
     private void AddNode(Node node)
@@ -522,16 +517,16 @@
 
     private void OnClickDownload()
     {
-        _ = Task.Run(() => JS.InvokeVoidAsync("triggerFileDownload", "spike.json", $"{GetBaseURL()}api/download"));
+        _ = Task.Run(() => Javascript.InvokeVoidAsync("triggerFileDownload", "spike.json", $"{Config.GetBaseUrl()}api/download"));
     }
 
     private async Task OnClickUpload()
     {
-        var result = await DialogService.Show<DataUploadDialog>("Upload Data File", new DialogParameters(), GetDialogOptions()).Result;
-        if (result?.Data == null)
+        var result = await DialogService.ShowAsync<DataUploadDialog>("Upload Data File", new DialogParameters(), GetDialogOptions());
+        if (result == null)
             return;
 
-        var data = ((DataUploadDialog.Result) result.Data).Data;
+        var data = ((DataUploadDialog.Result) result).Data;
         
         try
         {
@@ -558,4 +553,10 @@
             await InvokeAsync(() => GraphEditState.OnCancel());
         }
     }
+
+    private void ShowConfig()
+    {
+        DialogService.Show<ConfigDialog>("Ozric Configuration", new DialogParameters(), GetDialogOptions());
+    }
+
 }

@@ -1,0 +1,21 @@
+@inject OzricConfig Config
+
+<MudDialog>
+        <DialogContent>
+            <MudTextField Value="@Config.GetBaseUrl()" Label="Base URL" ReadOnly="true"/>
+            <MudTextField Value="@Config.GetPort()" Label="Port" ReadOnly="true"/>
+        </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Close">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; } = new();
+
+    void Close() => MudDialog.Cancel();
+}
