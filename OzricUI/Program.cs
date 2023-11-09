@@ -90,6 +90,18 @@ DataService.Map(app);
 
 try
 {
+    var json = await Supervisor.GetInfo();
+    Console.WriteLine($"Supervisor info: {json}");
+    SentrySdk.CaptureMessage(json);
+}
+catch (Exception e)
+{
+    Console.WriteLine($"Failed to get Supervisor info: {e.Message}");
+    SentrySdk.CaptureException(e);
+}
+
+try
+{
     var json = await Supervisor.GetConfig();
     Console.WriteLine($"Supervisor config: {json}");
     SentrySdk.CaptureMessage(json);
@@ -97,6 +109,18 @@ try
 catch (Exception e)
 {
     Console.WriteLine($"Failed to get Supervisor config: {e.Message}");
+    SentrySdk.CaptureException(e);
+}
+
+try
+{
+    var json = await Supervisor.GetAddons();
+    Console.WriteLine($"Supervisor addons: {json}");
+    SentrySdk.CaptureMessage(json);
+}
+catch (Exception e)
+{
+    Console.WriteLine($"Failed to get Supervisor addons: {e.Message}");
     SentrySdk.CaptureException(e);
 }
 
