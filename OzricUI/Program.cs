@@ -55,6 +55,7 @@ builder.WebHost.UseSentry(options =>
     if (builder.Environment.IsDevelopment())
         return;
     
+    options.Release = "ozric@0.10.5";
     options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
     options.Debug = true;
     options.TracesSampleRate = 1.0;
@@ -92,7 +93,7 @@ try
 {
     var json = await Supervisor.GetInfo();
     Console.WriteLine($"Supervisor info: {json}");
-    SentrySdk.CaptureMessage(json);
+    SentrySdk.CaptureMessage(json, SentryLevel.Warning);
 }
 catch (Exception e)
 {
@@ -104,7 +105,7 @@ try
 {
     var json = await Supervisor.GetConfig();
     Console.WriteLine($"Supervisor config: {json}");
-    SentrySdk.CaptureMessage(json);
+    SentrySdk.CaptureMessage(json, SentryLevel.Warning);
 }
 catch (Exception e)
 {
@@ -116,7 +117,7 @@ try
 {
     var json = await Supervisor.GetAddons();
     Console.WriteLine($"Supervisor addons: {json}");
-    SentrySdk.CaptureMessage(json);
+    SentrySdk.CaptureMessage(json, SentryLevel.Warning);
 }
 catch (Exception e)
 {

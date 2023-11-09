@@ -1,41 +1,49 @@
 using System;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace OzricEngine;
 
 public static class Supervisor
 {
+    private static string? _token;
+
     public static async Task<string> GetAddons()
     {
-        var token = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN") ?? throw new Exception("SUPERVISOR_TOKEN not set");
-        using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-        var response = await httpClient.GetAsync("http://supervisor/addons");
-        var json = await response.Content.ReadAsStringAsync();
-        //var data = Json.Deserialize<DownloadData>(json);
-        return json;
+        return await SupervisorGetAPI("http://supervisor/addons");
     }
 
     public static async Task<string> GetInfo()
     {
-        var token = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN") ?? throw new Exception("SUPERVISOR_TOKEN not set");
+        return await SupervisorGetAPI("http://supervisor/addons/self/info");
+    }
+
+    public static async Task<string> GetConfig()
+    {
+        return await SupervisorGetAPI("http://supervisor/addons/self/config");
+    }
+    
+    private static async Task<string> SupervisorGetAPI(string endpointURL)
+    {
+        var token = GetSupervisorToken();
         using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-        var response = await httpClient.GetAsync("http://supervisor/addons/ozric/info");
+        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Authorization", $"Bearer {token}");
+        var response = await httpClient.GetAsync(endpointURL);
         var json = await response.Content.ReadAsStringAsync();
         //var data = Json.Deserialize<DownloadData>(json);
         return json;
     }
 
-    public static async Task<string> GetConfig()
+    private static string GetSupervisorToken()
     {
-        var token = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN") ?? throw new Exception("SUPERVISOR_TOKEN not set");
-        using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {token}");
-        var response = await httpClient.GetAsync("http://supervisor/addons/self/config");
-        var json = await response.Content.ReadAsStringAsync();
-        //var data = Json.Deserialize<DownloadData>(json);
-        return json;
+        if (_token != null)
+            return _token;
+
+        _token = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN");
+        if (_token != null)
+            return _token;
+        
+        throw new Exception("SUPERVISOR_TOKEN not set");
     }
 }
