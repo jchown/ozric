@@ -47,7 +47,7 @@ if (Directory.Exists(dockerWwwRoot))
     staticFileOptions = new StaticFileOptions
     {
         FileProvider = new PhysicalFileProvider(dockerWwwRoot),
-        RequestPath = ""
+        RequestPath = ozricConfig.url.Substring(0, ozricConfig.url.Length - 1)  // Remove trailing slash
     };
 }
 else
@@ -100,7 +100,6 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles(staticFileOptions);
-app.UseStaticFiles();  // https://stackoverflow.com/questions/58088302/blazor-server-js-file-not-found
 app.UseRouting();
 
 app.MapBlazorHub($"{ozricConfig.url}_blazor");
