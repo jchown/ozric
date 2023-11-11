@@ -13,13 +13,13 @@ OzricConfig ozricConfig = new();
 
 try
 {
-    JsonDocument supervisorConfig = await Supervisor.GetConfig();
-    Console.WriteLine($"Supervisor config:\n{Json.Prettify(supervisorConfig)}");
+    JsonDocument addonInfo = await Supervisor.GetAddonInfo();
+    Console.WriteLine($"Addon Info:\n{Json.Prettify(addonInfo)}");
     
-    if (supervisorConfig.RootElement.TryGetProperty("ingress_port", out var portProperty))
+    if (addonInfo.RootElement.TryGetProperty("ingress_port", out var portProperty))
         ozricConfig.port = portProperty.GetInt32();
     
-    if (supervisorConfig.RootElement.TryGetProperty("ingress_url", out var urlProperty))
+    if (addonInfo.RootElement.TryGetProperty("ingress_url", out var urlProperty))
         ozricConfig.url = urlProperty.GetString() ?? "/";
 }
 catch (Exception e)
@@ -74,7 +74,7 @@ builder.WebHost.UseSentry(options =>
     if (builder.Environment.IsDevelopment())
         return;
     
-    options.Release = "ozric@0.10.9";
+    options.Release = "ozric@0.10.10";
     options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
     options.Debug = true;
     options.TracesSampleRate = 1.0;

@@ -10,9 +10,9 @@ public static class Supervisor
 {
     private static string? _token;
 
-    public static async Task<JsonDocument> GetConfig()
+    public static async Task<JsonDocument> GetAddonInfo()
     {
-        return await SupervisorGetAPI("http://supervisor/addons/self/config");
+        return await SupervisorGetAPI("http://supervisor/addons/self/info");
     }
     
     private static async Task<JsonDocument> SupervisorGetAPI(string endpointUrl)
