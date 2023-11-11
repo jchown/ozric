@@ -20,11 +20,20 @@ public static class Supervisor
         try
         {
             var token = GetSupervisorToken();
+            
             using var httpClient = new HttpClient();
             httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Authorization", $"Bearer {token}");
             var response = await httpClient.GetAsync(endpointUrl);
             var json = await response.Content.ReadAsStringAsync();
-            return JsonDocument.Parse(json);
+
+            try
+            {
+                return JsonDocument.Parse(json);
+            }
+            catch (Exception e)
+            {
+                throw new RethrownException(e, $"while parsing JSON: {json}");
+            }
         }
         catch (Exception e)
         {
