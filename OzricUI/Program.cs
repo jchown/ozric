@@ -8,7 +8,6 @@ using OzricEngine;
 using OzricService;
 using OzricUI.Hubs;
 using OzricUI.Mock;
-using OzricUI.Shared;
 
 OzricConfig ozricConfig = new();
 
@@ -75,7 +74,7 @@ builder.WebHost.UseSentry(options =>
     if (builder.Environment.IsDevelopment())
         return;
     
-    options.Release = "ozric@0.10.7";
+    options.Release = "ozric@0.10.8";
     options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
     options.Debug = true;
     options.TracesSampleRate = 1.0;

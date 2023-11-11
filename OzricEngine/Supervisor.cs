@@ -8,31 +8,38 @@ namespace OzricEngine;
 
 public static class Supervisor
 {
-    private static string? token;
+    private static string? _token;
 
     public static async Task<JsonDocument> GetConfig()
     {
         return await SupervisorGetAPI("http://supervisor/addons/self/config");
     }
     
-    private static async Task<JsonDocument> SupervisorGetAPI(string endpointURL)
+    private static async Task<JsonDocument> SupervisorGetAPI(string endpointUrl)
     {
-        var token = GetSupervisorToken();
-        using var httpClient = new HttpClient();
-        httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Authorization", $"Bearer {token}");
-        var response = await httpClient.GetAsync(endpointURL);
-        var json = await response.Content.ReadAsStringAsync();
-        return JsonDocument.Parse(json);
+        try
+        {
+            var token = GetSupervisorToken();
+            using var httpClient = new HttpClient();
+            httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Authorization", $"Bearer {token}");
+            var response = await httpClient.GetAsync(endpointUrl);
+            var json = await response.Content.ReadAsStringAsync();
+            return JsonDocument.Parse(json);
+        }
+        catch (Exception e)
+        {
+            throw new RethrownException(e, $"while fetching {endpointUrl}");
+        }
     }
 
     private static string GetSupervisorToken()
     {
-        if (token != null)
-            return token;
+        if (_token != null)
+            return _token;
 
-        token = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN");
-        if (token != null)
-            return token;
+        _token = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN");
+        if (_token != null)
+            return _token;
         
         throw new Exception("SUPERVISOR_TOKEN not set");
     }
