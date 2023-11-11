@@ -65,7 +65,7 @@ builder.Services.AddSignalR().AddJsonProtocol(options => Json.Configure(options.
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
-builder.Services.AddSingleton<IOzricConfig>(ozricConfig);
+builder.Services.AddSingleton(ozricConfig);
 builder.Services.AddSingleton<DataService>();
 builder.Services.AddSingleton<HomeHubController>();
 builder.Services.AddMudServices();
