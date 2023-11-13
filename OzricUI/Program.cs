@@ -20,17 +20,17 @@ try
         throw new Exception("Expected 'data' property in Supervisor info");
 
     if (data.TryGetProperty("ingress_port", out var portProperty))
-        ozricConfig.port = portProperty.GetInt32();
+        ozricConfig.Port = portProperty.GetInt32();
     
     if (data.TryGetProperty("ingress_url", out var urlProperty))
-        ozricConfig.url = urlProperty.GetString() ?? "/";
+        ozricConfig.Url = urlProperty.GetString() ?? "/";
 }
 catch (Exception e)
 {
     Console.WriteLine($"Failed to get Supervisor config: {e.Message}");
 }
 
-Console.WriteLine($"Config\n  URL = {ozricConfig.url}\n  Port = {ozricConfig.port}");
+Console.WriteLine($"Config\n  URL = {ozricConfig.Url}\n  Port = {ozricConfig.Port}");
 
 const string dockerWwwRoot = "/ozric/wwwroot";
 StaticFileOptions? staticFileOptions;
@@ -47,7 +47,7 @@ if (Directory.Exists(dockerWwwRoot))
     staticFileOptions = new StaticFileOptions
     {
         FileProvider = new PhysicalFileProvider(dockerWwwRoot),
-        RequestPath = ozricConfig.url.Substring(0, ozricConfig.url.Length - 1)  // Remove trailing slash
+        RequestPath = ""
     };
 }
 else
@@ -59,7 +59,7 @@ else
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(ozricConfig.port));
+builder.WebHost.ConfigureKestrel(kestrelOptions => kestrelOptions.ListenAnyIP(ozricConfig.Port));
 
 // Add services to the container.
 builder.Services.Configure<JsonOptions>(options => Json.Configure(options.SerializerOptions));
@@ -77,7 +77,7 @@ builder.WebHost.UseSentry(options =>
     if (builder.Environment.IsDevelopment())
         return;
     
-    options.Release = "ozric@0.10.12";
+    options.Release = "ozric@0.10.13";
     options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
     options.Debug = true;
     options.TracesSampleRate = 1.0;
@@ -100,9 +100,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseStaticFiles(staticFileOptions);
+app.UseStaticFiles();
 app.UseRouting();
-
-app.MapBlazorHub($"{ozricConfig.url}_blazor");
+app.MapBlazorHub($"{ozricConfig.Url}_blazor");
 app.MapHub<HomeHub>(HomeHub.ENDPOINT);
 app.Services.GetService<IHomeHubController>();
 app.MapFallbackToPage("/_Host");

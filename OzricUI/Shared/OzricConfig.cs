@@ -1,15 +1,15 @@
 public class OzricConfig
 {
-    public int port = 8099;
-    public string url = "/";
+    public int Port = 8099;
+    public string Url = "/";
 
     public string GetBaseUrl()
     {
-        return url;
+        return Url;
     }
 
     public int GetPort()
     {
-        return port;
+        return Port;
     }
 };
