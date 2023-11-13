@@ -77,7 +77,7 @@ builder.WebHost.UseSentry(options =>
     if (builder.Environment.IsDevelopment())
         return;
     
-    options.Release = "ozric@0.10.13";
+    options.Release = "ozric@0.10.14";
     options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
     options.Debug = true;
     options.TracesSampleRate = 1.0;
@@ -102,7 +102,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles(staticFileOptions);
 app.UseStaticFiles();
 app.UseRouting();
-app.MapBlazorHub($"{ozricConfig.Url}_blazor");
+app.MapBlazorHub();
 app.MapHub<HomeHub>(HomeHub.ENDPOINT);
 app.Services.GetService<IHomeHubController>();
 app.MapFallbackToPage("/_Host");
