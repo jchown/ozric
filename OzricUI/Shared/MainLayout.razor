@@ -164,82 +164,60 @@
             _isDarkMode = false && dark;
             StateHasChanged();
         }
-
-        if (log.Count == 0)
-            return;
-
-        var toLog = log;
-        log = new();
-
-        foreach (var log in toLog)
-            await Javascript.InvokeVoidAsync("console.log", log);
     }
 
     protected override async Task OnInitializedAsync()
     {
         await LoadGraph();
 
-        try
+        hubConnection = new HubConnectionBuilder()
+            .WithAutomaticReconnect()
+            .WithUrl(Navigation.ToAbsoluteUri(HomeHub.ENDPOINT))
+            .AddJsonProtocol(json => Json.Configure(json.PayloadSerializerOptions))
+// .ConfigureLogging(logging =>
+// {
+//     logging.AddConsole();
+//     logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+// })
+            .Build();
+
+        hubConnection.On<Value>(HomeHub.TEST_MESSAGE, (v) =>
         {
-            hubConnection = new HubConnectionBuilder()
-                .WithAutomaticReconnect()
-                .WithUrl(Navigation.ToAbsoluteUri(HomeHub.ENDPOINT))
-                .AddJsonProtocol(json => Json.Configure(json.PayloadSerializerOptions))
-    // .ConfigureLogging(logging =>
-    // {
-    //     logging.AddConsole();
-    //     logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-    // })
-                .Build();
+            Console.WriteLine("Value: {0}", v);
+        });
 
-            hubConnection.On<Value>(HomeHub.TEST_MESSAGE, (v) =>
-            {
-                Console.WriteLine("Value: {0}", v);
-            });
-
-            hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (m) =>
-            {
-            });
-
-            hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, (esc) =>
-            {
-                InvokeAsync(() =>
-                {
-                    OzricService.Home.OnEventStateChanged(esc);
-                    if (GraphEditState.IsLocked())
-                        GraphEditState.RefreshEntity(esc.data.new_state.entity_id);
-
-                    StateHasChanged();
-                });
-            });
-
-            hubConnection.On<string, string, string>(HomeHub.PIN_CHANGED_MESSAGE, (nodeID, pinName, value) =>
-            {
-                InvokeAsync(() =>
-                {
-                    GraphEditState.PinChanged(nodeID, pinName, Json.Deserialize<Value>(value));
-                    StateHasChanged();
-                });
-            });
-
-            await hubConnection.StartAsync();
-        }
-        catch (Exception e)
+        hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (m) =>
         {
-            log.Add($"Hub init failed: {e.Message}");
-            SentrySdk.CaptureException(e);
-        }
+        });
+
+        hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, (esc) =>
+        {
+            InvokeAsync(() =>
+            {
+                OzricService.Home.OnEventStateChanged(esc);
+                if (GraphEditState.IsLocked())
+                    GraphEditState.RefreshEntity(esc.data.new_state.entity_id);
+
+                StateHasChanged();
+            });
+        });
+
+        hubConnection.On<string, string, string>(HomeHub.PIN_CHANGED_MESSAGE, (nodeID, pinName, value) =>
+        {
+            InvokeAsync(() =>
+            {
+                GraphEditState.PinChanged(nodeID, pinName, Json.Deserialize<Value>(value));
+                StateHasChanged();
+            });
+        });
+
+        await hubConnection.StartAsync();
     }
 
     private async Task LoadGraph()
     {
-        log.Add("Loading graph");
         Graph = Json.Clone(OzricService.Graph); // Don't edit the live graph!
-        log.Add($"Loaded {Graph.nodes.Count} nodes");
-
-        log.Add("Loading graph layout");
         GraphLayout = await Data.GetGraphLayoutAsync();
-        log.Add($"Loaded {GraphLayout.nodeLayout.Count} node positions");
 
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnSelectionChanged += GraphSelectionChanged;
@@ -522,11 +500,12 @@
 
     private async Task OnClickUpload()
     {
-        var result = await DialogService.ShowAsync<DataUploadDialog>("Upload Data File", new DialogParameters(), GetDialogOptions());
+        var dialog = await DialogService.ShowAsync<DataUploadDialog>("Upload Data File", new DialogParameters(), GetDialogOptions());
+        var result = await dialog.Result;
         if (result == null)
             return;
 
-        var data = ((DataUploadDialog.Result) result).Data;
+        var data = ((DataUploadDialog.Result) result.Data).Data;
         
         try
         {
