@@ -23,14 +23,14 @@ try
         ozricConfig.Port = portProperty.GetInt32();
     
     if (data.TryGetProperty("ingress_url", out var urlProperty))
-        ozricConfig.Url = urlProperty.GetString() ?? "/";
+        ozricConfig.Path = urlProperty.GetString() ?? "/";
 }
 catch (Exception e)
 {
     Console.WriteLine($"Failed to get Supervisor config: {e.Message}");
 }
 
-Console.WriteLine($"Config\n  URL = {ozricConfig.Url}\n  Port = {ozricConfig.Port}");
+Console.WriteLine($"Config\n  URL = {ozricConfig.Path}\n  Port = {ozricConfig.Port}");
 
 const string dockerWwwRoot = "/ozric/wwwroot";
 StaticFileOptions? staticFileOptions;
@@ -77,7 +77,7 @@ builder.WebHost.UseSentry(options =>
     if (builder.Environment.IsDevelopment())
         return;
     
-    options.Release = "ozric@0.10.16";
+    options.Release = "ozric@0.10.17";
     options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
     options.Debug = true;
     options.TracesSampleRate = 1.0;

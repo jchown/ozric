@@ -25,7 +25,7 @@
 
 <PageTitle>Ozric - Graph</PageTitle>
 <HeadContent>
-    <base href="@Config.GetBaseUrl()" />
+    <base href="@Config.Path" />
 </HeadContent>
 
 <MudDialogProvider/>
@@ -170,7 +170,7 @@
     {
         await LoadGraph();
 
-        var absoluteUri = Navigation.ToAbsoluteUri(HomeHub.ENDPOINT);
+        var absoluteUri = Navigation.ToAbsoluteUri(HomeHub.ENDPOINT.Substring(1));
         Console.Error.WriteLine($"Connecting hub to {absoluteUri}");
         SentrySdk.CaptureMessage($"Connecting hub to {absoluteUri}");
 
@@ -507,7 +507,7 @@
 
     private void OnClickDownload()
     {
-        _ = Task.Run(() => Javascript.InvokeVoidAsync("triggerFileDownload", "spike.json", $"{Config.GetBaseUrl()}api/download"));
+        _ = Task.Run(() => Javascript.InvokeVoidAsync("triggerFileDownload", "spike.json", $"{Config.Path}api/download"));
     }
 
     private async Task OnClickUpload()
