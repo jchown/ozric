@@ -138,6 +138,7 @@
 @code {
     private bool _isDarkMode;
     private MudThemeProvider? _mudThemeProvider;
+    private Health Health { get; set; } = new();
 
     private Graph Graph { get; set; }
     private GraphLayout GraphLayout { get; set; }
@@ -148,7 +149,6 @@
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
     private bool HasSelection => (SelectedItems.Count > 0);
     private bool CanGetInfo => SelectedItems.Count == 1 && SelectedItems[0].Key is GraphNodeModel;
-    private List<string> log = new();
 
     public bool IsEditing => GraphEditState.IsEditing;
     public bool IsChanged => GraphEditState.IsChanged;
@@ -189,11 +189,11 @@
 
             hubConnection.On<Value>(HomeHub.TEST_MESSAGE, (v) =>
             {
-                Console.WriteLine("Value: {0}", v);
             });
 
             hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (m) =>
             {
+                Health.LastHubPing = DateTime.Now;
             });
 
             hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, (esc) =>
@@ -357,7 +357,7 @@
             return;
 
         var (model, node) = SelectedItems[0];
-        if (model is not GraphNodeModel gm)
+        if (model is not GraphNodeModel)
             return;
 
         var editDialog = model.GetType().GetCustomAttribute<EditDialogAttribute>()!;
@@ -547,7 +547,12 @@
 
     private void ShowConfig()
     {
-        DialogService.Show<ConfigDialog>("Ozric Configuration", new DialogParameters(), GetDialogOptions());
+        var parameters = new DialogParameters()
+        {
+            { "Health", Health }
+        };
+            
+        DialogService.Show<InfoDialog>("App Information", parameters, GetDialogOptions());
     }
 
 }

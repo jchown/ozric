@@ -77,7 +77,7 @@ builder.WebHost.UseSentry(options =>
     if (builder.Environment.IsDevelopment())
         return;
     
-    options.Release = "ozric@0.10.17";
+    options.Release = "ozric@0.10.18";
     options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
     options.Debug = true;
     options.TracesSampleRate = 1.0;
