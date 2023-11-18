@@ -108,7 +108,7 @@ if (!app.Environment.IsDevelopment())
 app.UseStaticFiles(staticFileOptions);
 app.UseStaticFiles();
 app.UseRouting();
-app.MapBlazorHub(ozricConfig.Path + "_blazor");
+app.MapBlazorHub();
 app.MapHub<HomeHub>(HomeHub.ENDPOINT);
 app.Services.GetService<IHomeHubController>();
 app.MapFallbackToPage("/_Host");
