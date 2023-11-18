@@ -170,48 +170,60 @@
     {
         await LoadGraph();
 
-        hubConnection = new HubConnectionBuilder()
-            .WithAutomaticReconnect()
-            .WithUrl(Navigation.ToAbsoluteUri(HomeHub.ENDPOINT))
-            .AddJsonProtocol(json => Json.Configure(json.PayloadSerializerOptions))
-// .ConfigureLogging(logging =>
-// {
-//     logging.AddConsole();
-//     logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-// })
-            .Build();
+        var absoluteUri = Navigation.ToAbsoluteUri(HomeHub.ENDPOINT);
+        Console.Error.WriteLine($"Connecting hub to {absoluteUri}");
+        SentrySdk.CaptureMessage($"Connecting hub to {absoluteUri}");
 
-        hubConnection.On<Value>(HomeHub.TEST_MESSAGE, (v) =>
+        try
         {
-            Console.WriteLine("Value: {0}", v);
-        });
+            hubConnection = new HubConnectionBuilder()
+                .WithAutomaticReconnect()
+                .WithUrl(absoluteUri)
+                .AddJsonProtocol(json => Json.Configure(json.PayloadSerializerOptions))
+    // .ConfigureLogging(logging =>
+    // {
+    //     logging.AddConsole();
+    //     logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
+    // })
+                .Build();
 
-        hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (m) =>
-        {
-        });
-
-        hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, (esc) =>
-        {
-            InvokeAsync(() =>
+            hubConnection.On<Value>(HomeHub.TEST_MESSAGE, (v) =>
             {
-                OzricService.Home.OnEventStateChanged(esc);
-                if (GraphEditState.IsLocked())
-                    GraphEditState.RefreshEntity(esc.data.new_state.entity_id);
-
-                StateHasChanged();
+                Console.WriteLine("Value: {0}", v);
             });
-        });
 
-        hubConnection.On<string, string, string>(HomeHub.PIN_CHANGED_MESSAGE, (nodeID, pinName, value) =>
-        {
-            InvokeAsync(() =>
+            hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (m) =>
             {
-                GraphEditState.PinChanged(nodeID, pinName, Json.Deserialize<Value>(value));
-                StateHasChanged();
             });
-        });
 
-        await hubConnection.StartAsync();
+            hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, (esc) =>
+            {
+                InvokeAsync(() =>
+                {
+                    OzricService.Home.OnEventStateChanged(esc);
+                    if (GraphEditState.IsLocked())
+                        GraphEditState.RefreshEntity(esc.data.new_state.entity_id);
+
+                    StateHasChanged();
+                });
+            });
+
+            hubConnection.On<string, string, string>(HomeHub.PIN_CHANGED_MESSAGE, (nodeID, pinName, value) =>
+            {
+                InvokeAsync(() =>
+                {
+                    GraphEditState.PinChanged(nodeID, pinName, Json.Deserialize<Value>(value));
+                    StateHasChanged();
+                });
+            });
+
+            await hubConnection.StartAsync();
+        }
+        catch (Exception e)
+        {
+            Console.Error.WriteLine($"Error: {e}");
+            SentrySdk.CaptureException(e);
+        }
     }
 
     private async Task LoadGraph()
