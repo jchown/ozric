@@ -188,16 +188,16 @@
     // })
                 .Build();
 
-            hubConnection.On<Value>(HomeHub.TEST_MESSAGE, (v) =>
+            hubConnection.On<Value>(HomeHub.TEST_MESSAGE, _ =>
             {
             });
 
-            hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, (m) =>
+            hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, _ =>
             {
                 Health.LastHubPing = DateTime.Now;
             });
 
-            hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, (esc) =>
+            hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, esc =>
             {
                 InvokeAsync(() =>
                 {
@@ -222,7 +222,7 @@
         }
         catch (Exception e)
         {
-            Console.Error.WriteLine($"Error: {e}");
+            SentrySdk.CaptureMessage($"Hub connection failed: {e.Message}");
             SentrySdk.CaptureException(e);
         }
     }
