@@ -179,7 +179,7 @@
         {
             hubConnection = new HubConnectionBuilder()
                 .WithAutomaticReconnect()
-                .WithUrl(absoluteUri)
+                .WithUrl(absoluteUri, options => options.UseDefaultCredentials = true)
                 .AddJsonProtocol(json => Json.Configure(json.PayloadSerializerOptions))
     // .ConfigureLogging(logging =>
     // {
