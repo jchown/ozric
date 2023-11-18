@@ -10,3 +10,15 @@
         </LayoutView>
     </NotFound>
 </Router>
+
+@code
+{
+    [Parameter]
+    public string Cookie { get; set; }
+    protected override Task OnInitializedAsync()
+    {
+        CookieProviderService.Cookie = Cookie;
+
+        return base.OnInitializedAsync();
+    }
+}

@@ -3,6 +3,8 @@
 @addTagHelper *, Microsoft.AspNetCore.Mvc.TagHelpers
 @{
     Layout = "_Layout";
+    
+    var cookie = HttpContext.Request.Cookies[".AspNetCore.Identity.Application"];
 }
 
-<component type="typeof(App)" render-mode="ServerPrerendered" />
+<component type="typeof(App)" param-Cookie="@cookie" render-mode="ServerPrerendered" />

@@ -9,6 +9,7 @@ using OzricEngine;
 using OzricService;
 using OzricUI.Hubs;
 using OzricUI.Mock;
+using OzricUI.Shared;
 
 OzricConfig ozricConfig = new()
 {
@@ -75,6 +76,7 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton(ozricConfig);
 builder.Services.AddSingleton<DataService>();
+builder.Services.AddScoped<CookieProvider>();
 builder.Services.AddSingleton<HomeHubController>();
 builder.Services.AddMudServices();
 builder.Services.AddResponseCompression(opts => opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" }));

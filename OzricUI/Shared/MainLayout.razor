@@ -12,6 +12,7 @@
 @using OzricUI.Hubs
 @using System.Reflection
 @using Sentry
+@using System.Net
 @inherits LayoutComponentBase
 @inject IDialogService DialogService
 @inject DataService Data
@@ -172,14 +173,30 @@
 
         var absoluteUri = Navigation.ToAbsoluteUri(HomeHub.ENDPOINT.Substring(1));
         Config.HubURL = absoluteUri.ToString();
-        Console.Error.WriteLine($"Connecting hub to {absoluteUri}");
-        SentrySdk.CaptureMessage($"Connecting hub to {absoluteUri}");
+        var domain = new Uri(Config.HubURL).Host;
+        
+        SentrySdk.CaptureMessage($"Connecting hub to {absoluteUri} (domain = {domain})");
 
         try
         {
+            var container = new CookieContainer();
+            var cookie = new Cookie
+            {
+                Name = ".AspNetCore.Identity.Application",
+                Domain = domain,
+                Value = CookieProviderService.Cookie
+            };
+            container.Add(cookie);
+            
             hubConnection = new HubConnectionBuilder()
                 .WithAutomaticReconnect()
-                .WithUrl(absoluteUri, options => options.UseDefaultCredentials = true)
+                .WithUrl(absoluteUri, options =>
+                {
+                    options.Cookies = container;
+//                    options.SkipNegotiation = true;
+//                    options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
+//                    options.UseDefaultCredentials = true;
+                })
                 .AddJsonProtocol(json => Json.Configure(json.PayloadSerializerOptions))
     // .ConfigureLogging(logging =>
     // {
