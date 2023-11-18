@@ -171,6 +171,7 @@
         await LoadGraph();
 
         var absoluteUri = Navigation.ToAbsoluteUri(HomeHub.ENDPOINT.Substring(1));
+        Config.HubURL = absoluteUri.ToString();
         Console.Error.WriteLine($"Connecting hub to {absoluteUri}");
         SentrySdk.CaptureMessage($"Connecting hub to {absoluteUri}");
 

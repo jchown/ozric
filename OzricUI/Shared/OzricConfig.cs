@@ -1,5 +1,7 @@
 public class OzricConfig
 {
-    public int Port { get; set; }  = 8099;
+    public string Version { get; set; } = "Unknown";
+    public int Port { get; set; } = 8099;
     public string Path { get; set; } = "/";
+    public string HubURL { get; set; } = "Unknown";
 };

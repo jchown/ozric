@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Text.Json;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -9,7 +10,12 @@ using OzricService;
 using OzricUI.Hubs;
 using OzricUI.Mock;
 
-OzricConfig ozricConfig = new();
+OzricConfig ozricConfig = new()
+{
+    Version = Assembly.GetAssembly(typeof(OzricConfig))?.GetName().Version?.ToString() ?? "Unknown"
+};
+
+Console.WriteLine($"Version:\n  {ozricConfig.Version}");
 
 try
 {
@@ -30,7 +36,7 @@ catch (Exception e)
     Console.WriteLine($"Failed to get Supervisor config: {e.Message}");
 }
 
-Console.WriteLine($"Config\n  URL = {ozricConfig.Path}\n  Port = {ozricConfig.Port}");
+Console.WriteLine($"Config:\n  URL = {ozricConfig.Path}\n  Port = {ozricConfig.Port}");
 
 const string dockerWwwRoot = "/ozric/wwwroot";
 StaticFileOptions? staticFileOptions;
@@ -77,7 +83,7 @@ builder.WebHost.UseSentry(options =>
     if (builder.Environment.IsDevelopment())
         return;
     
-    options.Release = "ozric@0.10.18";
+    options.Release = $"ozric@{ozricConfig.Version}";
     options.Dsn = "https://349904e9528eefef3e076a1a8c329987@o4506172979806208.ingest.sentry.io/4506172982755328";
     options.Debug = true;
     options.TracesSampleRate = 1.0;

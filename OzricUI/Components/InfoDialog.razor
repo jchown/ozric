@@ -3,12 +3,15 @@
 <MudDialog>
     <DialogContent>
         <MudGrid Spacing="6">
-            <MudItem>
-                <MudText Typo="Typo.h6">Configuration</MudText>
-                <MudTextField Value="@Config.Path" Label="Base URL" ReadOnly="true" Variant="Variant.Outlined"/>
-                <MudTextField Value="@Config.Port" Label="Port" ReadOnly="true" Variant="Variant.Outlined"/>
+            <MudItem xs="12">
+                <MudTextField Value="@Config.Version" Label="Version" ReadOnly="true" Variant="Variant.Outlined"/>
             </MudItem>
-            <MudItem>
+            <MudItem xs="12">
+                <MudText Typo="Typo.h6">Configuration</MudText>
+                <MudTextField Value="@Config.Port" Label="Port" ReadOnly="true" Variant="Variant.Outlined"/>
+                <MudTextField Value="@Config.HubURL" Label="Hub URL" ReadOnly="true" Variant="Variant.Outlined"/>
+            </MudItem>
+            <MudItem xs="12">
                 <MudText Typo="Typo.h6">Status</MudText>
                 <MudTextField Value="@GetHubHealth()" Label="Hub Health" ReadOnly="true" Variant="Variant.Outlined"/>
             </MudItem>
@@ -38,7 +41,7 @@
         if (lastPing == null)
             return "Unconnected";
         
-        if (lastPing.Value.AddSeconds(10) > DateTime.Now)
+        if (lastPing > DateTime.Now.AddSeconds(-10))
             return "OK";
 
         return "Stale";
