@@ -1,4 +1,5 @@
-﻿@using OzricUI.Data
+﻿@implements IDisposable
+@using OzricUI.Data
 @using OzricUI.Components
 @using OzricUI.Model
 @using OzricEngine
@@ -9,10 +10,8 @@
 @using Edge = MudBlazor.Edge
 @using Blazor.Diagrams.Core.Models.Base
 @using Microsoft.AspNetCore.SignalR.Client
-@using OzricUI.Hubs
 @using System.Reflection
 @using Sentry
-@using System.Net
 @inherits LayoutComponentBase
 @inject IDialogService DialogService
 @inject DataService Data
@@ -20,9 +19,7 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime Javascript
 @inject OzricConfig Config
-
-@* Why is this needed? If I remove it, we get no HHC events *@
-@inject HomeHubController HHC
+@inject IEngineService EngineService
 
 <PageTitle>Ozric - Graph</PageTitle>
 <HeadContent>
@@ -139,13 +136,11 @@
 @code {
     private bool _isDarkMode;
     private MudThemeProvider? _mudThemeProvider;
-    private Health Health { get; set; } = new();
 
     private Graph Graph { get; set; }
     private GraphLayout GraphLayout { get; set; }
     private GraphEditState GraphEditState { get; set; } = new();
     private List<KeyValuePair<SelectableModel, IGraphObject>> SelectedItems { get; set; } = new();
-    private HubConnection? hubConnection;
 
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
     private bool HasSelection => (SelectedItems.Count > 0);
@@ -171,77 +166,21 @@
     {
         await LoadGraph();
 
-        var absoluteUri = Navigation.ToAbsoluteUri(HomeHub.ENDPOINT.Substring(1));
-        Config.HubURL = absoluteUri.ToString();
-        var domain = new Uri(Config.HubURL).Host;
-        
-        SentrySdk.CaptureMessage($"Connecting hub to {absoluteUri} (domain = {domain})");
+        EngineService.Subscribe(OnPinChanged);
+    }
+    
+    void IDisposable.Dispose()
+    {
+        EngineService.Unsubscribe(OnPinChanged);
+    }
 
-        try
+    private void OnPinChanged(string nodeID, string pinName, Value value)
+    {
+        InvokeAsync(() =>
         {
-            var container = new CookieContainer();
-            var cookie = new Cookie
-            {
-                Name = ".AspNetCore.Identity.Application",
-                Domain = domain,
-                Value = CookieProviderService.Cookie
-            };
-            container.Add(cookie);
-            
-            hubConnection = new HubConnectionBuilder()
-                .WithAutomaticReconnect()
-                .WithUrl(absoluteUri, options =>
-                {
-                    options.Cookies = container;
-//                    options.SkipNegotiation = true;
-//                    options.Transports = Microsoft.AspNetCore.Http.Connections.HttpTransportType.WebSockets;
-//                    options.UseDefaultCredentials = true;
-                })
-                .AddJsonProtocol(json => Json.Configure(json.PayloadSerializerOptions))
-    // .ConfigureLogging(logging =>
-    // {
-    //     logging.AddConsole();
-    //     logging.SetMinimumLevel(Microsoft.Extensions.Logging.LogLevel.Trace);
-    // })
-                .Build();
-
-            hubConnection.On<Value>(HomeHub.TEST_MESSAGE, _ =>
-            {
-            });
-
-            hubConnection.On<string>(HomeHub.HEARTBEAT_MESSAGE, _ =>
-            {
-                Health.LastHubPing = DateTime.Now;
-            });
-
-            hubConnection.On<EventStateChanged>(HomeHub.ENTITY_STATE_CHANGED_MESSAGE, esc =>
-            {
-                InvokeAsync(() =>
-                {
-                    OzricService.Home.OnEventStateChanged(esc);
-                    if (GraphEditState.IsLocked())
-                        GraphEditState.RefreshEntity(esc.data.new_state.entity_id);
-
-                    StateHasChanged();
-                });
-            });
-
-            hubConnection.On<string, string, string>(HomeHub.PIN_CHANGED_MESSAGE, (nodeID, pinName, value) =>
-            {
-                InvokeAsync(() =>
-                {
-                    GraphEditState.PinChanged(nodeID, pinName, Json.Deserialize<Value>(value));
-                    StateHasChanged();
-                });
-            });
-
-            await hubConnection.StartAsync();
-        }
-        catch (Exception e)
-        {
-            SentrySdk.CaptureMessage($"Hub connection failed: {e.Message}");
-            SentrySdk.CaptureException(e);
-        }
+            GraphEditState.PinChanged(nodeID, pinName, value);
+            StateHasChanged();
+        });
     }
 
     private async Task LoadGraph()
@@ -567,10 +506,8 @@
     {
         var parameters = new DialogParameters()
         {
-            { "Health", Health }
         };
             
         DialogService.Show<InfoDialog>("App Information", parameters, GetDialogOptions());
     }
-
 }

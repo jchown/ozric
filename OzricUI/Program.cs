@@ -7,7 +7,6 @@ using OzricUI.Data;
 using MudBlazor.Services;
 using OzricEngine;
 using OzricService;
-using OzricUI.Hubs;
 using OzricUI.Mock;
 using OzricUI.Shared;
 
@@ -77,7 +76,6 @@ builder.Services.AddHttpClient();
 builder.Services.AddSingleton(ozricConfig);
 builder.Services.AddSingleton<DataService>();
 builder.Services.AddScoped<CookieProvider>();
-builder.Services.AddSingleton<HomeHubController>();
 builder.Services.AddMudServices();
 builder.Services.AddResponseCompression(opts => opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" }));
 builder.WebHost.UseSentry(options =>
@@ -111,8 +109,6 @@ app.UseStaticFiles(staticFileOptions);
 app.UseStaticFiles();
 app.UseRouting();
 app.MapBlazorHub();
-app.MapHub<HomeHub>(HomeHub.ENDPOINT);
-app.Services.GetService<IHomeHubController>();
 app.MapFallbackToPage("/_Host");
 
 API.Map(app);

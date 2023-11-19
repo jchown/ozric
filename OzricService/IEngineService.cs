@@ -1,5 +1,6 @@
 using OzricEngine;
 using OzricEngine.Nodes;
+using OzricEngine.Values;
 
 namespace OzricService;
 
@@ -8,5 +9,7 @@ namespace OzricService;
 /// </summary>
 public interface IEngineService: IOzricService
 {
-    public void Subscribe(Pin.Changed? pinChanged);
+    void Subscribe(Pin.Changed pinChanged);
+    
+    void Unsubscribe(Pin.Changed pinChanged);
 }

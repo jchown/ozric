@@ -9,11 +9,7 @@
             <MudItem xs="12">
                 <MudText Typo="Typo.h6">Configuration</MudText>
                 <MudTextField Value="@Config.Port" Label="Port" ReadOnly="true" Variant="Variant.Outlined"/>
-                <MudTextField Value="@Config.HubURL" Label="Hub URL" ReadOnly="true" Variant="Variant.Outlined"/>
-            </MudItem>
-            <MudItem xs="12">
-                <MudText Typo="Typo.h6">Status</MudText>
-                <MudTextField Value="@GetHubHealth()" Label="Hub Health" ReadOnly="true" Variant="Variant.Outlined"/>
+                <MudTextField Value="@Config.Path" Label="Path" ReadOnly="true" Variant="Variant.Outlined"/>
             </MudItem>
         </MudGrid>
     </DialogContent>
@@ -29,21 +25,5 @@
     [CascadingParameter]
     MudDialogInstance MudDialog { get; set; }
     
-    [Parameter]
-    public Health Health { get; set; }
-
     void Close() => MudDialog.Cancel();
-
-    private string GetHubHealth()
-    {
-        var lastPing = Health.LastHubPing;
-        
-        if (lastPing == null)
-            return "Unconnected";
-        
-        if (lastPing > DateTime.Now.AddSeconds(-10))
-            return "OK";
-
-        return "Stale";
-    }
 }
