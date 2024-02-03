@@ -33,7 +33,7 @@ public class BinarySensor : EntityNode
         var device = context.home.GetEntityState(entityID);
         if (device == null)
         {
-            Log(LogLevel.Warning, $"Unknown device {entityID}");
+            SetAlert($"Unknown entity {entityID}");
             return;
         }
 

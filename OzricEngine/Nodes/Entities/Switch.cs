@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using OzricEngine.Values;
 using ValueType = OzricEngine.Values.ValueType;
@@ -44,7 +43,13 @@ public class Switch: EntityNode
             return;
         }
 
-        var entityState = context.home.GetEntityState(entityID)!;
+        var entityState = context.home.GetEntityState(entityID);
+        if (entityState == null)
+        {
+            SetAlert($"Unknown entity {entityID}");
+            return;
+        }
+        
         if (!context.home.CanUpdateEntity(entityState))
             return;
             

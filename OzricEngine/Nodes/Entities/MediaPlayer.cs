@@ -32,7 +32,13 @@ public class MediaPlayer : EntityNode
 
     private void UpdateState(Context context)
     {
-        var device = context.home.GetEntityState(entityID) ?? throw new Exception($"Unknown device {entityID}");
+        var device = context.home.GetEntityState(entityID);
+        if (device == null)
+        {
+            SetAlert($"Unknown entity {entityID}");
+            return;
+        }
+        
         var state = device.state;
         var on = new Binary(state != "unavailable" && state != "off");
 

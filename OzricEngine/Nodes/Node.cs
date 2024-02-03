@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using OzricEngine.engine;
 using OzricEngine.ext;
 using OzricEngine.Values;
+using Sentry;
 using ValueType = OzricEngine.Values.ValueType;
 
 namespace OzricEngine.Nodes;
@@ -13,6 +16,8 @@ namespace OzricEngine.Nodes;
 public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
 {
     [JsonIgnore] public override string Name => $"{GetType().Name}.{id}";
+    
+    [JsonIgnore] public readonly List<Alert> Alerts = new();
 
     public abstract NodeType nodeType { get; }
 
@@ -145,6 +150,22 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
     {
         return GetType().GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new Exception($"Property {name} not found in {id} ({GetType().Name})");
     }
+
+    protected void SetAlert(string message, LogLevel level = LogLevel.Warning)
+    {
+        var existing = Alerts.FirstOrDefault(a => a.Message == message && a.Level == level);
+        if (existing != null)
+        {
+            existing.Latest = DateTime.Now;
+            return;
+        }
+
+        SentrySdk.CaptureMessage(message, level == LogLevel.Fatal ? SentryLevel.Fatal : (level == LogLevel.Error ? SentryLevel.Error : SentryLevel.Warning));
+        
+        Log(level, message);
+        Alerts.Add(new Alert(level, message));
+    }
+
 
     #region Comparison
     public bool Equals(Node? other)

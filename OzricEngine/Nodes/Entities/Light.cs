@@ -103,8 +103,13 @@ public class Light: EntityNode
 
     public ClientCallService? GetCommand(ColorValue desired, Home home)
     {
-        var entityState = home.GetEntityState(entityID)!;
-            
+        var entityState = home.GetEntityState(entityID);
+        if (entityState == null)
+        {
+            SetAlert($"Unknown entity {entityID}");
+            return null;
+        }
+
         if (!home.CanUpdateEntity(entityState))
             return null;
         
