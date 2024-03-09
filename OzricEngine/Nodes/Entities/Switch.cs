@@ -46,7 +46,7 @@ public class Switch: EntityNode
         var entityState = context.home.GetEntityState(entityID);
         if (entityState == null)
         {
-            SetAlert($"Unknown entity {entityID}");
+            SetAlert(context, $"Unknown entity {entityID}");
             return;
         }
         

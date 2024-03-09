@@ -47,6 +47,7 @@
         GraphEditState.OnDoAction += DoAction;
         GraphEditState.OnEntityRefresh += DoEntityRefresh;
         GraphEditState.OnPinChanged += DoPinChanged;
+        GraphEditState.OnAlertChanged += DoAlertChanged;
         
         var options = new DiagramOptions
         {
@@ -211,6 +212,16 @@
         var dnode = nodeMappings.GetDiagram(node);
         var pinID = $"{node.id}.{pinName}";
         dnode.GetPort(pinID).RefreshAll();
+    }
+
+    private void DoAlertChanged(string nodeID)
+    {
+        var node = Graph.nodes.Get(nodeID);
+        if (node == null)
+            return;
+
+        var dnode = nodeMappings.GetDiagram(node);
+        dnode.UpdateAlerts();
     }
 
     private void PopulateDiagram()

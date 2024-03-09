@@ -110,8 +110,8 @@ public class Pin : IGraphObject
                 SetValue(number);
                 return;
 
-            case ColorValue Color:
-                SetValue(Color);
+            case ColorValue color:
+                SetValue(color);
                 return;
 
             case Binary binary:

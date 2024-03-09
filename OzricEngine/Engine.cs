@@ -23,6 +23,7 @@ namespace OzricEngine
         public event StateChangedHandler? entityStateChanged;
         
         public event Pin.Changed? pinChanged;
+        public event Alert.Changed? alertChanged;
 
         private bool _paused;
         private bool _serial = true;
@@ -185,29 +186,36 @@ namespace OzricEngine
 
         private void ProcessEventCallService(EventCallService callService)
         {
-            var now = home.GetTime();
-
-            for (int i = 0; i < sentCommands.Count;)
+            if (IGNORE_OWN_STATE_CHANGES)
             {
-                if (IGNORE_OWN_STATE_CHANGES && sentCommands[i].command is ClientCallService ccs)
-                {
-                    if (callService.data.OriginatedBy(ccs))
-                    {
-                        //  This is a call service that we made. Record the context ID
-                        
-                        sentCommands.RemoveAt(i);
-                        originatedContexts.Add(new OriginatedContext(now, callService));
-                        continue;
-                    }
-                }
+                var now = home.GetTime();
 
-                i++;
+                for (int i = 0; i < sentCommands.Count;)
+                {
+                    if (sentCommands[i].command is ClientCallService ccs)
+                    {
+                        if (callService.data.OriginatedBy(ccs))
+                        {
+                            //  This is a call service that we made. Record the context ID
+                            
+                            sentCommands.RemoveAt(i);
+                            originatedContexts.Add(new OriginatedContext(now, callService));
+                            continue;
+                        }
+                    }
+
+                    i++;
+                }
             }
             
             //  Not one of ours
+
+            object source = "<unknown entity>";
             
-            var entityId = callService.data.service_data["entity_id"];
-            var source = entityId != null ? entityId/*.Join(",")*/ : "<unknown entity>";
+            if (callService.data.service_data.TryGetValue("entity_id", out var value))
+            {
+                source = value;
+            }
 
             Log(LogLevel.Debug, "Event {1}: {2} {3}", callService.data.domain, source, callService.data.service);
         }
@@ -250,7 +258,7 @@ namespace OzricEngine
         /// <param name="nodeProcessor"></param>
         private async Task ProcessNodesParallel(Func<Node, Context, Task> nodeProcessor)
         {
-            var context = new Context(home, commandBatcher, pinChanged);
+            var context = new Context(home, commandBatcher, pinChanged, alertChanged);
             var dependencies = graph.GetNodeDependencies();
             var readiness = new Dictionary<string, SemaphoreSlim>();
             var tasks = new List<Task>();
@@ -316,7 +324,7 @@ namespace OzricEngine
         /// <param name="nodeProcessor"></param>
         public async Task ProcessNodesSerial(Func<Node, Context, Task> nodeProcessor)
         {
-            var context = new Context(home, commandBatcher, pinChanged);
+            var context = new Context(home, commandBatcher, pinChanged, alertChanged);
 
             foreach (var nodeID in graph.GetNodesInOrder())
             {

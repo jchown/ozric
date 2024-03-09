@@ -42,11 +42,11 @@ public class MockOzricService: IEngineService
         Graph = graph;
     }
 
-    public void Subscribe(Pin.Changed pinChanged)
+    public void Subscribe(Pin.Changed pinChanged, Alert.Changed alertChanged)
     {
     }
 
-    public void Unsubscribe(Pin.Changed pinChanged)
+    public void Unsubscribe(Pin.Changed pinChanged, Alert.Changed alertChanged)
     {
     }
 }

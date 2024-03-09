@@ -10,7 +10,7 @@ using Graph = OzricEngine.Graph;
 namespace OzricService;
 
 public class EngineService: IEngineService, ICommandSender
-{
+ {
     const string GraphFilename = "/data/graph.json";
 
     private Engine? engine;
@@ -185,14 +185,16 @@ public class EngineService: IEngineService, ICommandSender
         
         return await comms.SendCommand(command, 1000);
     }
-    
-    public void Subscribe(Pin.Changed pinChanged)
+
+    public void Subscribe(Pin.Changed pinChanged, Alert.Changed alertChanged)
     {
         Engine.pinChanged += pinChanged;
+        Engine.alertChanged += alertChanged;
     }
     
-    public void Unsubscribe(Pin.Changed pinChanged)
+    public void Unsubscribe(Pin.Changed pinChanged, Alert.Changed alertChanged)
     {
         Engine.pinChanged -= pinChanged;
+        Engine.alertChanged -= alertChanged;
     }
-}
+ }

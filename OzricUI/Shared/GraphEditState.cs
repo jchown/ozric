@@ -31,6 +31,7 @@ public class GraphEditState
     public event Action<GraphEditAction>? OnDoAction;
     public event Action<string>? OnEntityRefresh;
     public event Action<string, string, Value>? OnPinChanged;
+    public event Action<string>? OnAlertChanged;
 
     /// <summary>
     /// Events sent by GraphEditor
@@ -101,6 +102,11 @@ public class GraphEditState
     public void PinChanged(string nodeID, string pinName, Value value)
     {
         OnPinChanged?.Invoke(nodeID, pinName, value);
+    }
+    
+    public void AlertChanged(string nodeID)
+    {
+        OnAlertChanged?.Invoke(nodeID);
     }
     
     public bool IsLocked()

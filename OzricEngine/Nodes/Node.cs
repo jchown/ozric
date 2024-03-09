@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Reflection;
 using System.Text.Json.Serialization;
@@ -151,7 +150,7 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
         return GetType().GetProperty(name, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance) ?? throw new Exception($"Property {name} not found in {id} ({GetType().Name})");
     }
 
-    protected void SetAlert(string message, LogLevel level = LogLevel.Warning)
+    protected void SetAlert(Context context, string message, LogLevel level = LogLevel.Warning)
     {
         var existing = Alerts.FirstOrDefault(a => a.Message == message && a.Level == level);
         if (existing != null)
@@ -164,6 +163,7 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
         
         Log(level, message);
         Alerts.Add(new Alert(level, message));
+        context.alertChanged?.Invoke(id);
     }
 
 

@@ -165,12 +165,12 @@
     {
         await LoadGraph();
 
-        EngineService.Subscribe(OnPinChanged);
+        EngineService.Subscribe(OnPinChanged, OnAlertChanged);
     }
     
     void IDisposable.Dispose()
     {
-        EngineService.Unsubscribe(OnPinChanged);
+        EngineService.Unsubscribe(OnPinChanged, OnAlertChanged);
     }
 
     private void OnPinChanged(string nodeID, string pinName, Value value)
@@ -182,9 +182,18 @@
         });
     }
 
+    private void OnAlertChanged(string nodeID)
+    {
+        InvokeAsync(() =>
+        {
+            GraphEditState.AlertChanged(nodeID);
+            StateHasChanged();
+        });
+    }
+
     private async Task LoadGraph()
     {
-        Graph = Json.Clone(OzricService.Graph); // Don't edit the live graph!
+        Graph = OzricService.Graph;//Json.Clone(OzricService.Graph); // Don't edit the live graph!
         GraphLayout = await Data.GetGraphLayoutAsync();
 
         GraphEditState.OnChanged += OnGraphEditStateChanged;

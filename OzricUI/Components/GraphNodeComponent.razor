@@ -4,8 +4,17 @@
 @using ValueType = OzricEngine.Values.ValueType
 
 <div class="ozric-node @(Node.Selected ? " selected" : "") ozric-height-@(Node.PortHeight())">
-    <div class="ozric-node-icon"><span class="iconify" data-icon="@(Node.Icon)"></span></div>
+    
+    @if (Node.HasAlert)
+    {
+        <MudBadge Elevation="99" Origin="Origin.TopRight" Color="Node.AlertColor" Icon="@Icons.Material.Filled.Warning" Variant="Variant.Filled" Pill="true" Margin="Margin.Dense"/>
+    }
+    
+    <div class="ozric-node-icon">
+        <span class="iconify" data-icon="@(Node.Icon)"></span>
+    </div>
     <div class="ozric-node-title">@(Node.Title)</div>
+
     @foreach (var port in Node.Ports.Select(p => p as IPort).Where(p => p != null))
     {
         <div class="@(port!.CssClass) port-@(Node.GetPortPosition(port))" hidden="@(port.HiddenIfLocked && Node.Locked)">
@@ -23,13 +32,13 @@
                         switch (port.valueType)
                         {
                             case ValueType.Number:
-                                var number = ((Number?) pin.value)?.value ?? 0f;
+                                var number = ((Number?)pin.value)?.value ?? 0f;
                                 <span class="number-value">@(number.ToString("F"))</span>
                                 <img src="icons/@(port.valueType).png" width="16" height="16" alt="@(pin.value)"/>
                                 break;
 
                             case ValueType.Binary:
-                                var pinValue = ((Binary?) pin.value)?.value ?? false;
+                                var pinValue = ((Binary?)pin.value)?.value ?? false;
                                 if (pinValue)
                                 {
                                     <img src="icons/Binary-true.png" width="16" height="16" alt="on"/>
@@ -38,10 +47,11 @@
                                 {
                                     <img src="icons/Binary-false.png" width="16" height="16" alt="off"/>
                                 }
+
                                 break;
 
                             case ValueType.Color:
-                                var color = (ColorValue?) pin.value ?? ColorValue.OFF;
+                                var color = (ColorValue?)pin.value ?? ColorValue.OFF;
                                 if (color.brightness == 0)
                                 {
                                     <img src="icons/Color-off.png" width="16" height="16" alt="off"/>
@@ -50,6 +60,7 @@
                                 {
                                     <div style="background: #@(color.ToHexString()); width:16px; height:16px; border-radius: 50%">&nbsp;</div>
                                 }
+
                                 break;
 
                             case ValueType.Mode:
@@ -75,12 +86,11 @@
                     <img src="icons/@(port.valueType).png" width="16" height="16" alt="@(port.valueType)"/>
                 </PortRenderer>
             }
-
         </div>
     }
+
 </div>
 
 @code {
-    [Parameter]
-    public GraphNodeModel Node { get; set; }
+    [Parameter] public GraphNodeModel Node { get; set; }
 }

@@ -86,7 +86,13 @@ public class Light: EntityNode
     {
         if (!HasInputValue(INPUT_NAME))
             return;
-        
+
+        if (context.home.GetEntityState(entityID) == null)
+        {
+            SetAlert(context, $"Unknown entity {entityID}");
+            return;
+        }
+
         var desired = GetInputValue<ColorValue>(INPUT_NAME);
         var command = GetCommand(desired, context.home);
         if (command == null)
@@ -103,12 +109,7 @@ public class Light: EntityNode
 
     public ClientCallService? GetCommand(ColorValue desired, Home home)
     {
-        var entityState = home.GetEntityState(entityID);
-        if (entityState == null)
-        {
-            SetAlert($"Unknown entity {entityID}");
-            return null;
-        }
+        var entityState = home.GetEntityState(entityID) ?? throw new Exception($"Unknown entity {entityID}");
 
         if (!home.CanUpdateEntity(entityState))
             return null;

@@ -1,9 +1,11 @@
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
+using MudBlazor;
 using OzricEngine.ext;
 using OzricEngine.Nodes;
 using OzricUI.Components;
 using OzricUI.Shared;
+using LogLevel = OzricEngine.LogLevel;
 
 namespace OzricUI.Model;
 
@@ -15,6 +17,10 @@ public abstract class GraphNodeModel: NodeModel
     protected bool _outputLabels;
     
     private readonly Mapping<Pin, PortModel> _portMappings;
+    
+    public bool HasAlert { get; private set; }
+
+    public Color AlertColor { get; private set; }
     
     private static List<Type> nodeModelTypes = typeof(GraphNodeModel).Assembly.ExportedTypes
         .Where(t => typeof(GraphNodeModel).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract)
@@ -35,6 +41,7 @@ public abstract class GraphNodeModel: NodeModel
         _outputLabels = node.outputs.Count > 1;
 
         Load();
+        UpdateAlerts();
     }
 
     public abstract string Icon { get; }
@@ -121,5 +128,36 @@ public abstract class GraphNodeModel: NodeModel
     public static List<Type> GetDerivatives()
     {
         return nodeModelTypes;
+    }
+
+    public void UpdateAlerts()
+    {
+        HasAlert = node.Alerts.Count > 0;
+        if (!HasAlert)
+        {
+            AlertColor = Color.Transparent;
+            return;
+        }
+        
+        switch (node.Alerts.Select(a => a.Level).Max())
+        {
+            case LogLevel.Trace:
+            case LogLevel.Debug:
+            case LogLevel.Info:
+                AlertColor = Color.Info;
+                return;
+            
+            case LogLevel.Warning:
+                AlertColor = Color.Warning;
+                return;
+            
+            case LogLevel.Error:
+            case LogLevel.Fatal:
+                AlertColor = Color.Error;
+                return;
+            
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
     }
 }
