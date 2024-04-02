@@ -9,7 +9,7 @@ namespace OzricEngine.Nodes
     public class ModeSwitchTests
     {
         [Fact]
-        public void canSwitchColorsByMode()
+        public void CanSwitchColorsByMode()
         {
             var homePM = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_morning");
             var engine = new MockEngine(homePM);
