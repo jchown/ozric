@@ -1,4 +1,5 @@
 using System.Buffers;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using OzricEngine;
@@ -10,8 +11,11 @@ using Graph = OzricEngine.Graph;
 namespace OzricService;
 
 public class EngineService: IEngineService, ICommandSender
- {
-    const string GraphFilename = "/data/graph.json";
+{
+    //  Inside the container store everything in /data, outside use ~/.ozric/data
+    public static readonly string RootPath = !RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.ozric/data" : "/data";
+
+    public static readonly string GraphFilename = RootPath + "/graph.json";
 
     private Engine? engine;
     private Task? mainLoop;
@@ -118,15 +122,13 @@ public class EngineService: IEngineService, ICommandSender
         var supervisor = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN");
         if (supervisor != null)
         {
-            var connection = new Comms(Comms.INGRESS_API, supervisor);
-            return connection;
+            return new Comms(Comms.INGRESS_API, supervisor);
         }
         
         var core = Environment.GetEnvironmentVariable("CORE_TOKEN");
         if (core != null)
         {
-            var connection = new Comms(Comms.CORE_API, core);
-            return connection;
+            return new Comms(Comms.CORE_API, core);
         }
         
         throw new Exception("No tokens");

@@ -18,7 +18,7 @@ namespace OzricEngine
         public override string Name => "Comms";
 
         public static readonly Uri INGRESS_API = new("ws://supervisor/core/websocket");
-        public static readonly Uri CORE_API = new("ws://homeassistant:8123/api/websocket");
+        public static readonly Uri CORE_API = new("ws://homeassistant.local:8123/api/websocket");
 
         public CommsStatus Status => new() { messagePump = messagePumpRunning };
 
