@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
@@ -165,8 +166,18 @@ public class DayPhases: Node
         {
             return HashCode.Combine((int)start, startOffsetSeconds, mode);
         }
-    }
 
+        public bool IsFirst(IList<PhaseStart> phases)
+        {
+            return phases.Count > 0 && phases.First().Equals(this);
+        }
+
+        public bool IsLast(IList<PhaseStart> phases)
+        {
+            return phases.Count > 0 && phases.Last().Equals(this);
+        }
+    }   
+    
     public override Task OnInit(Context context)
     {
         CalculateValues(context);            

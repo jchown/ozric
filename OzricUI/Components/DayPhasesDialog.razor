@@ -43,6 +43,10 @@
                         <MudTd DataLabel="Start">@DescribeSeconds(context.startOffsetSeconds) @DescribePhaseStart(context.start)</MudTd>
                         <MudTd>@context.GetStartTime(DateTime.Now, Sun).ToShortTimeString()</MudTd>
                         <MudTd DataLabel="Remove"><MudIconButton Icon="@Icons.Material.Outlined.RemoveCircle" OnClick="() => OnRemove(context)"></MudIconButton></MudTd>
+                        <MudTd DataLabel="UpDown">
+                            <MudIconButton Icon="@Icons.Material.Outlined.ArrowUpward" OnClick="() => OnUp(context)" Disabled="@context.IsFirst(phases)" ></MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Outlined.ArrowDownward" OnClick="() => OnDown(context)" Disabled="@context.IsLast(phases)"></MudIconButton>
+                        </MudTd>
                     </RowTemplate>
                     <RowEditingTemplate>
                         <MudTd DataLabel="Mode">
@@ -244,8 +248,28 @@
         }
     }
     
-    private void OnRemove(DayPhases.PhaseStart context)
+    private void OnRemove(DayPhases.PhaseStart phase)
     {
-        phases.Remove(context);
+        phases.Remove(phase);
+    }
+    
+    private void OnUp(DayPhases.PhaseStart phase)
+    {
+        var index = phases.IndexOf(phase);
+        if (index > 0)
+        {
+            phases.Remove(phase);
+            phases.Insert(index - 1, phase);
+        }
+    }
+    
+    private void OnDown(DayPhases.PhaseStart phase)
+    {
+        var index = phases.IndexOf(phase);
+        if (index < phases.Count - 1)
+        {
+            phases.Remove(phase);
+            phases.Insert(index + 1, phase);
+        }
     }
 }
