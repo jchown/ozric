@@ -123,7 +123,7 @@
 
     private void Add()
     {
-        modeValues.Add(new ModeSwitch.ModeValues(new Mode(addMode), new Values()));
+        modeValues.Add(new ModeSwitch.ModeValues(new Mode(addMode), modeValues.Last().values.Clone()));
         addMode = "";
     }
     
