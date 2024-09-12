@@ -46,7 +46,7 @@
                     </RowTemplate>
                     <RowEditingTemplate>
                         <MudTd DataLabel="Mode">
-                            <MudTextField @bind-Value="@context.mode" Required />
+                            <ValueEditorComponent Value="@context.mode" OnEdited="v => context.mode = (Mode) v"/>
                         </MudTd>
                         @foreach (var key in Node.GetKeys())
                         {
