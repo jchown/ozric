@@ -25,4 +25,9 @@ public class Values: Dictionary<string, Value>
     {
         return new Values(this);
     }
+    
+    public Value? GetOrNull(string key)
+    {
+        return TryGetValue(key, out var value) ? value : null;
+    }
 }

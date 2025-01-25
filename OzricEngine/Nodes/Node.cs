@@ -110,6 +110,9 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
 
     public void SetOutputValue(string name, Value value, Context context)
     {
+        if (!HasOutput(name))
+            return;
+        
         var output = GetOutput(name);
         if (output.value != value)
         {
