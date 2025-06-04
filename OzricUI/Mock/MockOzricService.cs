@@ -15,7 +15,7 @@ public class MockOzricService: IEngineService
     
     public Graph Graph { get; private set; }
     
-    public Home Home { get; }
+    public IHome Home { get; }
 
     public ICommandSender CommandSender => throw new InvalidOperationException();
         

@@ -13,7 +13,7 @@ public interface IOzricService
     
     Graph Graph { get; }
     
-    Home Home { get; }
+    IHome Home { get; }
     
     ICommandSender CommandSender { get; }
 

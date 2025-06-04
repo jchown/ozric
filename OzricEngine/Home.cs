@@ -6,7 +6,7 @@ using OzricEngine.Nodes;
 
 namespace OzricEngine;
 
-public class Home
+public class Home: IHome
 {
     public Dictionary<string, EntityState> states { get; set; } = new();
 
@@ -54,6 +54,11 @@ public class Home
     public virtual DateTime GetTime()
     {
         return DateTime.Now;
+    }
+
+    public List<EntityState> GetEntityStates()
+    {
+        return states.Values.ToList();
     }
 
     public List<EntityState> GetEntityStates(List<string> entityIDs)

@@ -62,5 +62,7 @@ namespace OzricEngine.Values
         {
             return value.GetHashCode();
         }
+        
+        public static implicit operator bool(Binary b) => b.value;
     }
 }

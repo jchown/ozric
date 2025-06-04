@@ -8,25 +8,27 @@ namespace OzricEngineTests
 {
     public class MockHome: Home
     {
-        private DateTime time;
+        private DateTime _time;
+        private readonly Dictionary<string, EntityState> _states;
 
-        public MockHome(List<EntityState> stateList) : base(stateList)
+        public MockHome(List<EntityState> stateList): base(stateList)
         {
+            _time = new DateTime();
         }
 
-        public MockHome(DateTime time, params string[] testEntities) : base(testEntities.Select(MockStates.Load).ToList())
+        public MockHome(DateTime time, params string[] testEntities) : this(testEntities.Select(MockStates.Load).ToList())
         {
-            this.time = time;
+            _time = time;
         }
 
-        public override DateTime GetTime()
+        public DateTime GetTime()
         {
-            return time;
+            return _time;
         }
 
         public void SetTime(DateTime time)
         {
-            this.time = time;
+            _time = time;
         }
     }
 }

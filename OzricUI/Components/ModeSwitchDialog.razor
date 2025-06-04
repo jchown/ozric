@@ -5,28 +5,28 @@
 <MudDialog>
     <DialogContent>
 
-        <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
-            
-            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true" />
-            
-            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;">
+
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="ID" For="@(() => ID)" Immediate="true"/>
+
+            <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
 
             @if (modeValues.Count > 0)
             {
-                <MudTable Items="@modeValues" T="ModeSwitch.ModeValues" 
-                          @bind-SelectedItem="selected"  
+                <MudTable Items="@modeValues" T="ModeSwitch.ModeValues"
+                          @bind-SelectedItem="selected"
                           CanCancelEdit="true"
                           CommitEditTooltip="Apply"
                           CancelEditTooltip="Revert"
-                          RowEditPreview="BackupItem" 
+                          RowEditPreview="BackupItem"
                           RowEditCancel="ResetItem"
                           ApplyButtonPosition="TableApplyButtonPosition.End"
                           Dense="true" Class="border-none" Elevation="0">
                     <ColGroup>
-                        <col style="width:150px;" />
-            		    <col />
-                        <col style="width:150px;" />
-                     </ColGroup>
+                        <col style="width:150px;"/>
+                        <col/>
+                        <col style="width:150px;"/>
+                    </ColGroup>
                     <HeaderContent>
                         <MudTh>Mode</MudTh>
                         @foreach (var key in Node.GetKeys())
@@ -40,7 +40,7 @@
                         @foreach (var key in Node.GetKeys())
                         {
                             <MudTd DataLabel="@key">
-                                <ValueComponent Value="context.values[key]" />
+                                <ValueComponent Value="context.values[key]"/>
                             </MudTd>
                         }
                     </RowTemplate>
@@ -51,25 +51,25 @@
                         @foreach (var key in Node.GetKeys())
                         {
                             <MudTd DataLabel="@key">
-                                <ValueEditorComponent Value="context.values[key]" OnEdited="v => context.values[key] = v" />
+                                <ValueEditorComponent Value="context.values[key]" OnEdited="v => context.values[key] = v"/>
                             </MudTd>
                         }
                     </RowEditingTemplate>
-                    
+
                 </MudTable>
-                    
-                <MudDivider DividerType="DividerType.Middle" Class="my-2" />
+
+                <MudDivider DividerType="DividerType.Middle" Class="my-2"/>
             }
 
             <MudGrid>
                 <MudItem xs="9">
-                    <MudTextField Label="Add Mode" HelperText="The mode" @bind-Value="addMode" />
+                    <MudTextField Label="Add Mode" HelperText="The mode" @bind-Value="addMode"/>
                 </MudItem>
                 <MudItem xs="3" Class="align-self-center">
                     <MudButton OnClick="Add">Add</MudButton>
                 </MudItem>
             </MudGrid>
-            
+
         </MudContainer>
 
     </DialogContent>
@@ -97,7 +97,7 @@
     private List<ModeSwitch.ModeValues> modeValues = new();
     private ModeSwitch.ModeValues preEdit;
     private string addMode { get; set; } = "";
-    
+
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
 
@@ -114,7 +114,7 @@
         var changes = new List<GraphEditAction>();
         if (ID != Node.id)
             changes.Add(new GraphEditAction.RenameNode(Node, ID));
-        
+
         if (!modeValues.SequenceEqual(Node.modeValues))
             changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.modeValues)), modeValues));
 
@@ -126,7 +126,7 @@
         modeValues.Add(new ModeSwitch.ModeValues(new Mode(addMode), modeValues.Last().values.Clone()));
         addMode = "";
     }
-    
+
     private void BackupItem(object element)
     {
         preEdit = new ModeSwitch.ModeValues(((ModeSwitch.ModeValues)element).mode, ((ModeSwitch.ModeValues)element).values);
@@ -134,8 +134,11 @@
 
     private void ResetItem(object element)
     {
-        var pattern = (ModeSwitch.ModeValues) element;
+        var pattern = (ModeSwitch.ModeValues)element;
         pattern.mode = preEdit.mode;
         pattern.values = preEdit.values;
     }
+
+}
+
 }

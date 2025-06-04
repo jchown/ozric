@@ -13,12 +13,13 @@ using WatsonWebsocket;
 
 namespace OzricEngine
 {
-    public class Comms : OzricObject, IDisposable
+    public class Comms : OzricObject, IComms, IDisposable
     {
         public override string Name => "Comms";
 
         public static readonly Uri INGRESS_API = new("ws://supervisor/core/websocket");
-        public static readonly Uri CORE_API = new("ws://homeassistant.local:8123/api/websocket");
+        //public static readonly Uri CORE_API = new("ws://homeassistant.local:8123/api/websocket");
+        public static readonly Uri CORE_API = new("ws://192.168.2.48:8123/api/websocket");
 
         public CommsStatus Status => new() { messagePump = messagePumpRunning };
 
@@ -42,12 +43,9 @@ namespace OzricEngine
         /// </summary>
         private readonly string llat;
 
-        public delegate void MessageHandler(object o);
-        public delegate void JsonHandler(string message);
-
-        private event MessageHandler? sentMessageHandler;
-        private event JsonHandler? sentJsonHandler;
-        private event JsonHandler? receivedJsonHandler;
+        private event IComms.MessageHandler? sentMessageHandler;
+        private event IComms.JsonHandler? sentJsonHandler;
+        private event IComms.JsonHandler? receivedJsonHandler;
 
         public Comms(string llat): this(CORE_API, llat)
         {
@@ -66,7 +64,9 @@ namespace OzricEngine
         private void CreateClient()
         {
             client = new WatsonWsClient(uri);
-            client.ConfigureOptions(options => options.SetRequestHeader("User-Agent", "OzricEngine/0.8"));
+            /*
+            client.ConfigureOptions(options =>options.SetRequestHeader("User-Agent", "OzricEngine/0.8"));
+            */
             client.MessageReceived += OnMessageReceived;
         }
 
@@ -402,17 +402,17 @@ namespace OzricEngine
             return taken;
         }
 
-        public void OnSentMessage(MessageHandler action)
+        public void OnSentMessage(IComms.MessageHandler action)
         {
             sentMessageHandler += action;
         }
 
-        public void OnSentJson(JsonHandler action)
+        public void OnSentJson(IComms.JsonHandler action)
         {
             sentJsonHandler += action;
         }
 
-        public void OnReceivedJson(JsonHandler action)
+        public void OnReceivedJson(IComms.JsonHandler action)
         {
             receivedJsonHandler += action;
         }

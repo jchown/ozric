@@ -23,14 +23,14 @@ public class AddNodeChoice
         Once = once;
     }
 
-    public static List<AddNodeChoice> GetChoices(Home home, Graph graph)
+    public static List<AddNodeChoice> GetChoices(IHome home, Graph graph)
     {
-        var choices = home.states
-            .Where(device => !graph.HasDevicesNode(device.Key) && CategoryModelMappings.Exists(device.Value.GetCategory()))
+        var choices = home.GetEntityStates()
+            .Where(device => !graph.HasDevicesNode(device.entity_id) && CategoryModelMappings.Exists(device.GetCategory()))
             .Select(device =>
             {
-                var entityID = device.Key;
-                var category = device.Value.GetCategory();
+                var entityID = device.entity_id;
+                var category = device.GetCategory();
                 var type = CategoryModelMappings.Get(category);
                 var icon = GetEntityIcon(type) ?? "icon-park-outline:chip";
                 var id = entityID.Substring(entityID.IndexOf('.') + 1);

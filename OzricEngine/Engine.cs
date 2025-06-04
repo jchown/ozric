@@ -14,7 +14,7 @@ namespace OzricEngine
     /// </summary>
     public class Engine : OzricObject
     {
-        public readonly Home home;
+        public readonly IHome home;
         public readonly Graph graph;
         public readonly Comms comms;
         public readonly CommandBatcher commandBatcher;

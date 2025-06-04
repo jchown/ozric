@@ -111,8 +111,11 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
     public void SetOutputValue(string name, Value value, Context context)
     {
         if (!HasOutput(name))
+        {
+            Log(LogLevel.Warning, "No output named {0} in {1}", name, id);
             return;
-        
+        }
+
         var output = GetOutput(name);
         if (output.value != value)
         {

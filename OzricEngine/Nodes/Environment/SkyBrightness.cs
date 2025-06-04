@@ -45,7 +45,7 @@ public class SkyBrightness: Node
         SetOutputValue(Brightness, new Number(Math.Clamp(sunLevel - cloudLevel, 0, 1)), context);
     }
 
-    private float GetSunLevel(Home home)
+    private float GetSunLevel(IHome home)
     {
         //  {"next_dawn": "2021-11-30T07:21:25.459551+00:00", "next_dusk": "2021-11-30T16:39:36.918701+00:00", "next_midnight": "2021-11-30T00:00:43+00:00", "next_noon": "2021-11-30T12:00:31+00:00", "next_rising": "2021-11-30T08:03:33.515882+00:00", "next_setting": "2021-11-30T15:57:30.359979+00:00", "elevation": -26.88, "azimuth": 269.45, "rising": false, "friendly_name": "Sun"}
             
@@ -94,7 +94,7 @@ public class SkyBrightness: Node
     /// <param name="from"></param>
     /// <returns></returns>
 
-    private float TimeBetween(Home home, DateTime to, DateTime from)
+    private float TimeBetween(IHome home, DateTime to, DateTime from)
     {
         var now = home.GetTime();
             
@@ -109,7 +109,7 @@ public class SkyBrightness: Node
         return (float) (timeBefore / (timeBefore + timeAfter));
     }
 
-    private float GetCloudLevel(Home home)
+    private float GetCloudLevel(IHome home)
     {
         var weather = home.GetEntityState("weather.home");
         if (weather == null)

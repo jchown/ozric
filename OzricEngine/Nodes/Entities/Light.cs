@@ -107,7 +107,7 @@ public class Light: EntityNode
         });
     }
 
-    public ClientCallService? GetCommand(ColorValue desired, Home home)
+    public ClientCallService? GetCommand(ColorValue desired, IHome home)
     {
         var entityState = home.GetEntityState(entityID) ?? throw new Exception($"Unknown entity {entityID}");
 
@@ -507,7 +507,7 @@ public class Light: EntityNode
 
     public static readonly string[] ATTRIBUTE_KEYS = { "brightness", "color_mode", "xy_color", "hs_color", "rgb_color" };
     
-    public List<ColorMode> GetSupportedColorModes(Home home)
+    public List<ColorMode> GetSupportedColorModes(IHome home)
     {
         var entityState = home.GetEntityState(entityID)!;
         var attributes = entityState.LightAttributes;

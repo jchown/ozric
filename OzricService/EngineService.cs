@@ -27,7 +27,7 @@ public class EngineService: IEngineService, ICommandSender
     //  Client API
     public EngineStatus Status => engine?.Status ?? new EngineStatus();
     public Graph Graph => Engine.graph ?? throw new InvalidOperationException();
-    public Home Home => Engine.home ?? throw new InvalidOperationException();
+    public IHome Home => Engine.home ?? throw new InvalidOperationException();
     public ICommandSender CommandSender => this;
 
     public async Task Start(CancellationToken cancellationToken)

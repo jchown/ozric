@@ -7,12 +7,6 @@ namespace OzricEngine.ext
 {
     public static class EnumerableExt
     {
-        public static void ForEach<T>(this IEnumerable<T> source, Action<T> action)
-        {
-            foreach (var item in source)
-                action(item);
-        }
-        
         public static string Join(this IEnumerable<string> enumerable, string joiner)
         {
             var list = enumerable.ToList();

@@ -47,7 +47,7 @@ namespace OzricEngine.Values
 
         public bool Equals(Number? other)
         {
-            return (other != null) && (value == other.value);
+            return (other != null) && (Math.Abs(value - other.value) < 0.0001f);
         }
 
         public override bool Equals(object? obj)
