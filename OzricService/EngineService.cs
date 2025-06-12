@@ -19,7 +19,7 @@ public class EngineService: IEngineService, ICommandSender
 
     private Engine? engine;
     private Task? mainLoop;
-    private Comms? comms;
+    private IComms? comms;
 
     //  Server API
     public Engine Engine => engine ?? throw new InvalidOperationException();
@@ -34,15 +34,9 @@ public class EngineService: IEngineService, ICommandSender
     {
         var graph = await LoadGraph();
 
-        comms = Connect();
+        comms = await Connect();
 
-        await comms.Authenticate();
-
-        await comms.Send(new ClientGetStates());
-
-        var states = await comms.Receive<ServerGetStates>() ?? throw new InvalidOperationException();
-
-        var home = new Home(states.result);
+        var home = new Home(comms);
 
         engine = new Engine(home, graph, comms);
 
@@ -117,7 +111,14 @@ public class EngineService: IEngineService, ICommandSender
         await File.WriteAllTextAsync(GraphFilename, json);
     }
 
-    private static Comms Connect()
+    private static async Task<IComms> Connect()
+    {
+        var comms = CreateComms();
+        await comms.Connect();
+        return comms;
+    }
+
+    private static Comms CreateComms()
     {
         var supervisor = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN");
         if (supervisor != null)
@@ -185,7 +186,7 @@ public class EngineService: IEngineService, ICommandSender
         if (comms == null)
             throw new Exception("Not connected");
         
-        return await comms.SendCommand(command, 1000);
+        return await comms.SendCommand<ServerResult>(command, 1000);
     }
 
     public void Subscribe(Pin.Changed pinChanged, Alert.Changed alertChanged)

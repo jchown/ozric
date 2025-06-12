@@ -9,9 +9,12 @@ namespace OzricEngineTests
         {
         }
 
-        public override Task<ServerResult> SendCommand<T>(T command, int millisecondsTimeout)
+        public override async Task<TServerResult> SendCommand<TServerResult>(ClientCommand command, int millisecondsTimeout)
         {
-            return Task.FromResult(ServerResult.Succeeded(command.id));
+            var result = new TServerResult();
+            result.success = true;
+            result.id = command.id;
+            return await Task.FromResult(result);
         }
     }
 }

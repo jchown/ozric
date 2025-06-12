@@ -1,12 +1,11 @@
 namespace OzricEngine
 {
+    /// <summary>
+    /// A generic untyped result message from the server. 
+    /// </summary>
     [TypeKey("result")]
-    public class ServerResult: ServerMessage
+    public class ServerResult: ServerResponse
     {
-        public int? id { get; set; }
-        public bool success { get; set; }
-        public ServerResultError error { get; set; }
-
         public static ServerResult Succeeded(int id)
         {
             return new ServerResult
@@ -15,11 +14,5 @@ namespace OzricEngine
                 success = true
             };
         }
-    }
-
-    public class ServerResultError
-    {
-        public string code;
-        public string message;
     }
 }

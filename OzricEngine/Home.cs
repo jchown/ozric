@@ -2,16 +2,23 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
+using OzricEngine.messages;
 using OzricEngine.Nodes;
 
 namespace OzricEngine;
 
-public class Home: IHome
+public class Home: OzricObject, IHome
 {
-    public Dictionary<string, EntityState> states { get; set; } = new();
+    public override string Name => "Home";
+    
+    public Dictionary<string, EntityState> entityStates { get; set; } = new();
 
     [JsonIgnore]
     public LinkedList<EntityUpdate> entityUpdateHistory = new();
+
+    private readonly HomeStatePoll _poll;
 
     //  How recent an event must be to be assumed a response so an update 
         
@@ -34,12 +41,108 @@ public class Home: IHome
     {
     }
 
+    
+    public Home(IComms comms)
+    {
+        entityStates = new Dictionary<string, EntityState>();
+        //areas = new Dictionary<string, Area>();
+        //devices = new Dictionary<string, Device>();
+        
+        _poll = new HomeStatePoll(comms, OnStatesReceived, OnConfigsReceived);
+    }
+    
+    void OnStatesReceived(ServerGetStates states)
+    {
+        if (states.success && states.result != null)
+        {
+            foreach (var state in states.result)
+            {
+                if (entityStates.ContainsKey(state.entity_id))
+                {
+                    entityStates[state.entity_id] = state;
+                }
+                else
+                {
+                    entityStates.Add(state.entity_id, state);
+                }
+
+                if (state.entity_id.StartsWith("light."))
+                    state.LogLightState();
+            }
+        }
+    }
+
+    void OnConfigsReceived(ServerConfigEntityList entityList, ServerConfigAreaList areaList, ServerConfigDeviceList deviceList)
+    {
+        if (entityList.success && areaList.success && deviceList.success)
+        {
+            
+        }
+    }
+
+    private class HomeStatePoll: CancellableTask
+    {
+        public override string Name => "HomeStatePoll";
+
+        private readonly IComms _comms;
+        private readonly Action<ServerGetStates> _onStatesReceived;
+        private readonly Action<ServerConfigEntityList, ServerConfigAreaList, ServerConfigDeviceList> _onConfigsReceived;
+
+        public HomeStatePoll(IComms comms)
+        {
+            _comms = comms;
+        }
+
+        public HomeStatePoll(IComms comms, Action<ServerGetStates> onStatesReceived, Action<ServerConfigEntityList, ServerConfigAreaList, ServerConfigDeviceList> onConfigsReceived)
+        {
+            _comms = comms;
+            _onStatesReceived = onStatesReceived;
+            _onConfigsReceived = onConfigsReceived;
+        }
+
+        protected override async Task Run(CancellationToken token)
+        {
+            var messageTimeout = 5000;
+            
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    //  Attempt to get the state of pretty much everything at the same time
+                    
+                    var entityListResult = await _comms.SendCommand<ServerConfigEntityList>(new ClientConfigEntityList(), messageTimeout);
+                    var areaListResult = await _comms.SendCommand<ServerConfigAreaList>(new ClientConfigAreaList(), messageTimeout);
+                    var deviceListResult = await _comms.SendCommand<ServerConfigDeviceList>(new ClientConfigDeviceList(), messageTimeout);
+
+                    _onConfigsReceived(entityListResult, areaListResult, deviceListResult);
+                }
+                catch (Exception e)
+                {
+                    Log(LogLevel.Error, e.Message);
+                }
+
+                try
+                {
+                    var entityStateResult = await _comms.SendCommand<ServerGetStates>(new ClientGetStates(), messageTimeout);
+                    
+                    _onStatesReceived(entityStateResult);
+                }
+                catch (Exception e)
+                {
+                    Log(LogLevel.Error, e.Message);
+                }
+                
+                await Task.Delay(30000, token);
+            }
+        }
+    }
+
     public Home(List<EntityState> stateList)
     {
-        states = new Dictionary<string, EntityState>();
+        entityStates = new Dictionary<string, EntityState>();
         foreach (var state in stateList)
         {
-            states.Add(state.entity_id, state);
+            entityStates.Add(state.entity_id, state);
 
             if (state.entity_id.StartsWith("light."))
                 state.LogLightState();
@@ -48,7 +151,7 @@ public class Home: IHome
 
     public EntityState? GetEntityState(string entityID)
     {
-        return states.GetValueOrDefault(entityID);
+        return entityStates.GetValueOrDefault(entityID);
     }
 
     public virtual DateTime GetTime()
@@ -58,12 +161,12 @@ public class Home: IHome
 
     public List<EntityState> GetEntityStates()
     {
-        return states.Values.ToList();
+        return entityStates.Values.ToList();
     }
 
     public List<EntityState> GetEntityStates(List<string> entityIDs)
     {
-        var selected = states.Values.Where(es => entityIDs.Contains(es.entity_id)).ToList();
+        var selected = entityStates.Values.Where(es => entityIDs.Contains(es.entity_id)).ToList();
         selected.Sort((e1, e2) => string.CompareOrdinal(e1.entity_id, e2.entity_id));
         return selected;
     }
@@ -196,6 +299,7 @@ public class Home: IHome
             return !expected;
         }
     }
+
 }
 
 public record EntityUpdate(string entityID, DateTime when);

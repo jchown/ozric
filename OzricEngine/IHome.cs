@@ -3,6 +3,10 @@ using System.Collections.Generic;
 
 namespace OzricEngine;
 
+/// <summary>
+/// The current state of the home.
+/// </summary>
+
 public interface IHome
 {
     DateTime GetTime();
@@ -15,7 +19,7 @@ public interface IHome
     
     List<EntityState> GetEntityStates(List<string> getInterestedEntityIDs);
 
-    EntityState GetEntityState(string entityId);
+    EntityState? GetEntityState(string entityId);
     
     bool CanUpdateEntity(EntityState entityState);
 }

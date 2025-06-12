@@ -4,7 +4,7 @@ using System.Text.Json.Serialization;
 namespace OzricEngine
 {
     [TypeKey("pong")]
-    public class ServerPong: ServerMessage
+    public class ServerPong: ServerResponse
     {
     }
 }

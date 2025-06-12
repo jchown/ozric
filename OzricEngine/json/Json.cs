@@ -90,11 +90,11 @@ namespace OzricEngine
 //              new JsonConverterEntityID(),     - Only use explicitly
         }
 
-        public class PropertyNamer : JsonNamingPolicy
+        private class PropertyNamer : JsonNamingPolicy
         {
             public override string ConvertName(string name)
             {
-                StringBuilder sb = new StringBuilder();
+                var sb = new StringBuilder();
                 foreach (var ch in name)
                 {
                     if (Char.IsUpper(ch) && sb.Length > 0)

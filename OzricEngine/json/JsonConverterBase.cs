@@ -25,6 +25,10 @@ namespace OzricEngine
                 .SelectMany(s => s.GetTypes())
                 .Where(t => typeof(T).IsAssignableFrom(t) && t.IsClass && !t.IsAbstract))
             {
+                var manual = type.GetCustomAttribute<ManualSubTypeAttribute>();
+                if (manual != null)
+                    return;
+
                 var attr = type.GetCustomAttribute<TypeKeyAttribute>();
                 if (attr == null)
                     throw new Exception($"No {typeof(TypeKeyAttribute)} attribute on {type}");
@@ -32,8 +36,8 @@ namespace OzricEngine
                 if (attr.value == null)
                     throw new Exception($"Null value for {typeof(TypeKeyAttribute)} attribute on {type}");
 
-                if (ResultTypes.ContainsKey(attr.value))
-                    throw new Exception($"Duplicate value {attr.value} for {typeof(TypeKeyAttribute)} attribute on {type}, previously {ResultTypes[attr.value]}");
+                if (ResultTypes.TryGetValue(attr.value, out var resultType))
+                    throw new Exception($"Duplicate value {attr.value} for {typeof(TypeKeyAttribute)} attribute on {type}, previously {resultType}");
 
                 ResultTypes[attr.value] = type;
             }

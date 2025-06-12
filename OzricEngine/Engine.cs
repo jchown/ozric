@@ -16,7 +16,7 @@ namespace OzricEngine
     {
         public readonly IHome home;
         public readonly Graph graph;
-        public readonly Comms comms;
+        public readonly IComms comms;
         public readonly CommandBatcher commandBatcher;
 
         public delegate void StateChangedHandler(EventStateChanged o);
@@ -40,7 +40,7 @@ namespace OzricEngine
             }
         }
         
-        public Engine(Home home, Graph graph, Comms comms)
+        public Engine(Home home, Graph graph, IComms comms)
         {
             this.home = home;
             this.graph = graph;
@@ -73,8 +73,6 @@ namespace OzricEngine
         {
             try
             {
-                await comms.StartMessagePump(this);
-
                 await InitNodes();
 
                 while (!(cancellationToken?.IsCancellationRequested ?? false))

@@ -21,19 +21,21 @@ namespace OzricEngine
         //public static readonly Uri CORE_API = new("ws://homeassistant.local:8123/api/websocket");
         public static readonly Uri CORE_API = new("ws://192.168.2.48:8123/api/websocket");
 
-        public CommsStatus Status => new() { messagePump = messagePumpRunning };
+        private const int PingTimeoutMilliseconds = 3000;
 
-        private readonly Uri uri;
-        private WatsonWsClient? client;
+        public CommsStatus Status => new() { messagePump = _messagePumpRunning };
 
-        private bool messagePumpRunning;
+        private readonly Uri _uri;
+        private WatsonWsClient? _client;
+
+        private bool _messagePumpRunning;
         
         /// <summary>
         /// All incoming messages that need to be processed 
         /// </summary>
         private readonly BufferBlock<string> receivedMessages;
         private readonly BlockingCollection<ServerEvent> pendingEvents;
-        private readonly ConcurrentDictionary<int, TaskCompletionSource<ServerResult>> asyncResults;
+        private readonly ConcurrentDictionary<int, TaskCompletionSource<string>> asyncResults;
 
         private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(60);
         private static readonly TimeSpan SendTimeout = TimeSpan.FromSeconds(10);
@@ -53,29 +55,29 @@ namespace OzricEngine
 
         public Comms(Uri uri, string llat)
         {
-            this.uri = uri;
+            this._uri = uri;
             this.llat = llat;
 
             receivedMessages = new BufferBlock<string>();
             pendingEvents = new BlockingCollection<ServerEvent>(new ConcurrentQueue<ServerEvent>());
-            asyncResults = new ConcurrentDictionary<int, TaskCompletionSource<ServerResult>>();
+            asyncResults = new ConcurrentDictionary<int, TaskCompletionSource<string>>();
         }
 
         private void CreateClient()
         {
-            client = new WatsonWsClient(uri);
-            /*
-            client.ConfigureOptions(options =>options.SetRequestHeader("User-Agent", "OzricEngine/0.8"));
-            */
-            client.MessageReceived += OnMessageReceived;
+            _client = new WatsonWsClient(_uri);
+            _client.ConfigureOptions(options =>options.SetRequestHeader("User-Agent", "OzricEngine/0.8"));
+            _client.MessageReceived += OnMessageReceived;
         }
 
-        private async Task Connect()
+        public async Task Connect()
         {
-            if (client == null)
+            if (_client == null)
                 CreateClient();
 
-            await client!.StartWithTimeoutAsync((int)ReceiveTimeout.TotalSeconds);
+            await _client!.StartWithTimeoutAsync((int)ReceiveTimeout.TotalSeconds);
+            await Authenticate();
+            await Subscribe();
         }
 
         private void OnMessageReceived(object? sender, MessageReceivedEventArgs args)
@@ -85,14 +87,14 @@ namespace OzricEngine
 
         private void Disconnect()
         {
-            if (client == null)
+            if (_client == null)
                 return;
             
             try
             {
-                client.MessageReceived -= OnMessageReceived;
-                client.Stop();
-                client.Dispose();
+                _client.MessageReceived -= OnMessageReceived;
+                _client.Stop();
+                _client.Dispose();
             }
             catch
             {
@@ -100,17 +102,15 @@ namespace OzricEngine
             }
             finally
             {
-                client = null;
+                _client = null;
             }
         }
 
-        public async Task<T?> Receive<T>()
+        private async Task<T?> Receive<T>()
         {
             try
             {
-                string json = await receivedMessages.ReceiveAsync(ReceiveTimeout);
-
-                Log(LogLevel.Debug, "<< {0}", json);
+                var json = await ReceiveJson();
 
                 try
                 {
@@ -129,12 +129,20 @@ namespace OzricEngine
             }
         }
 
+        private async Task<string> ReceiveJson()
+        {
+            var json = await receivedMessages.ReceiveAsync(ReceiveTimeout);
+
+            Log(LogLevel.Debug, "<< {0}", json);
+            return json;
+        }
+
         public async Task Send<T>(T t)
         {
             if (t == null)
                 throw new ArgumentNullException(nameof(t) + " is null");
 
-            if (client == null)
+            if (_client == null)
                 throw new IOException("Not connected");
 
             sentMessageHandler?.Invoke(t);
@@ -147,7 +155,7 @@ namespace OzricEngine
                 }
             }
 
-            CancellationTokenSource cancellation = new CancellationTokenSource();
+            var cancellation = new CancellationTokenSource();
             cancellation.CancelAfter(SendTimeout);
 
             var json = Json.Serialize(t, t.GetType());
@@ -155,21 +163,23 @@ namespace OzricEngine
             Log(LogLevel.Debug, ">> {0}", json);
             sentJsonHandler?.Invoke(json);
 
-            await client.SendAsync(json, WebSocketMessageType.Text, cancellation.Token);
+            await _client.SendAsync(json, WebSocketMessageType.Text, cancellation.Token);
         }
 
         public void Dispose()
         {
-            if (client != null)
+            if (_client != null)
             {
                 Disconnect();
             }
         }
 
+        /// <summary>
+        /// Initial handshake with the Home Assistant server.
+        /// </summary>
+        
         public async Task Authenticate()
         {
-            await Connect();
-
             var authReq = await Receive<ServerAuthRequired>() ?? throw new Exception("No authentication challenge");
             Log(LogLevel.Info, "Auth requested by HA {0}", authReq.ha_version);
 
@@ -194,13 +204,12 @@ namespace OzricEngine
         private static int nextCommandID = 1;
         private static readonly object sendCommandLock = new();
 
-        public virtual async Task<ServerResult> SendCommand<T>(T command, int millisecondsTimeout) where T : ClientCommand
+        public virtual async Task<TResponse> SendCommand<TResponse>(ClientCommand command, int millisecondsTimeout = IComms.DefaultCommandTimeoutMilliseconds) where TResponse: ServerResponse, new()
         {
-            if (!messagePumpRunning)
+            if (!_messagePumpRunning)
                 throw new Exception("Message pump not running");
 
-            TaskCompletionSource<ServerResult> result = new TaskCompletionSource<ServerResult>();
-
+            var result = new TaskCompletionSource<string>();
             Task send;
 
             lock (sendCommandLock)
@@ -216,25 +225,31 @@ namespace OzricEngine
 
             await send;
 
-            return await result.Task;
+            var response = await result.Task;
+            return Json.Deserialize<TResponse>(response);
         }
 
         /// <summary>
         /// Start the message pump which will continuously receive messages from HA and dispatch to thread-safe queues. 
         /// </summary>
-        /// <param name="engine"></param>
-        public async Task StartMessagePump(Engine engine)
+        private async Task Subscribe()
         {
-            await Send(new ClientEventSubscribe());
+            await SendSubscribe();
 
-            await Receive<ServerEventSubscribed>();
+            _messagePumpRunning = true;
 
-            messagePumpRunning = true;
-
-            _ = Task.Run(() => MessagePump(engine));
+            _ = Task.Run(MessagePump);
         }
 
-        private async Task MessagePump(Engine engine)
+        private async Task SendSubscribe()
+        {
+            await Send(new ClientEventSubscribe());
+            var result = await Receive<ServerResult>() ?? throw new Exception("No result for subscribe command");
+            if (!result.success)
+                throw new Exception($"Failed to subscribe to events: {result.DescribeError()}");
+        }
+
+        private async Task MessagePump()
         {
             try
             {
@@ -244,7 +259,7 @@ namespace OzricEngine
                     {
                         Log(LogLevel.Trace, "... waiting for messages ...");
 
-                        var message = await Receive<ServerMessage>();
+                        var message = await ReceiveJson();
 
                         if (message == null)
                         {
@@ -274,9 +289,8 @@ namespace OzricEngine
                                 Disconnect();
 
                                 await Authenticate();
-                                await Send(new ClientEventSubscribe());
-                                await Receive<ServerEventSubscribed>();
-
+                                await SendSubscribe();
+                                
                                 Log(LogLevel.Info, "Reconnected");
                                 break;
                             }
@@ -294,7 +308,7 @@ namespace OzricEngine
             }
             finally
             {
-                messagePumpRunning = false;
+                _messagePumpRunning = false;
             }
         }
         
@@ -309,12 +323,11 @@ namespace OzricEngine
             }
         }
 
-        private void HandleMessage(ServerMessage message)
+        private void HandleMessage(string json)
         {
-            Log(LogLevel.Trace, "... checking {0} ...", message.type);
-
             try
             {
+                var message = Json.Deserialize<ServerMessage>(json);
                 switch (message)
                 {
                     case ServerEvent ev:
@@ -329,14 +342,12 @@ namespace OzricEngine
                         {
                             Log(LogLevel.Trace, "Got result for command {0}", result.id);
 
-                            _ = Task.Run(() => obj.SetResult(result));
+                            _ = Task.Run(() => obj.SetResult(json));
                         }
                         else
                         {
                             Log(LogLevel.Warning, "No task waiting for result of client message ID {0}, ignored", result.id);
                         }
-
-
                         break;
                     }
 
@@ -363,20 +374,7 @@ namespace OzricEngine
 
         protected virtual async Task CheckConnected()
         {
-            await Send(new ClientPing());
-            while (true)
-            {
-                var response = await Receive<ServerMessage>();
-                if (response == null)
-                    throw new Exception("No reply from ping");
-
-                if (response is ServerPong)
-                    break;
-
-                //  Oops, this wasn't the reply
-
-                HandleMessage(response);
-            }
+            await SendCommand<ServerPong>(new ClientPing(), PingTimeoutMilliseconds);
         }
 
         /// <summary>
@@ -386,7 +384,7 @@ namespace OzricEngine
         /// <returns></returns>
         public List<ServerEvent> TakePendingEvents(int millisecondsTimeout)
         {
-            if (!messagePumpRunning)
+            if (!_messagePumpRunning)
                 throw new Exception("Message pump not running");
 
             var taken = new List<ServerEvent>();
