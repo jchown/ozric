@@ -16,6 +16,6 @@ class SentCommand
 
     public bool Expired(DateTime now)
     {
-        return (now - sent).TotalSeconds > Home.SELF_EVENT_SECS;
+        return (now - sent).TotalSeconds > Home.SelfEventSecs;
     }
 }

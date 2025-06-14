@@ -10,10 +10,10 @@ namespace OzricEngine
         
         public ServerErrorResponse? error { get; set; }
         
-        public string DescribeError()
+        public string Describe()
         {
             if (success)
-                return "No error";
+                return "Success";
             
             if (error == null)
                 return "Unknown error";

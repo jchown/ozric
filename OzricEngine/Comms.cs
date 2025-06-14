@@ -260,24 +260,32 @@ namespace OzricEngine
             if (!_messagePumpRunning)
                 throw new Exception("Message pump not running");
 
-            var result = new TaskCompletionSource<string>();
+            var completionSource = new TaskCompletionSource<string>();
             Task send;
 
             lock (_sendCommandLock)
             {
                 command.id = _nextCommandId++;
 
-                if (!asyncResults.TryAdd(command.id, result))
+                if (!asyncResults.TryAdd(command.id, completionSource))
                     Log(LogLevel.Error, "Failed to register result handler for command {0}", command.id);
 
-                Log(LogLevel.Info, "Sending command: {0}", command);
+                Log(LogLevel.Info, "Sending command: ID {0}, Type \"{1}\"", command.id, command.type);
                 send = SendAsync(command);
             }
 
             await send;
 
-            var response = await result.Task;
-            return Json.Deserialize<TResponse>(response);
+            var response = await completionSource.Task;
+            var result = Json.Deserialize<TResponse>(response);
+            
+            if (command.id != result.id)
+            {
+                throw new Exception($"Command ID mismatch: sent {command.id}, received {result.id}");
+            }
+            
+            Log(LogLevel.Info, "Received response: ID {0}, {1}", result.id, result.Describe());
+            return result;
         }
 
         /// <summary>
@@ -297,7 +305,7 @@ namespace OzricEngine
             await SendAsync(new ClientEventSubscribe());
             var result = await Receive<ServerResult>() ?? throw new Exception("No result for subscribe command");
             if (!result.success)
-                throw new Exception($"Failed to subscribe to events: {result.DescribeError()}");
+                throw new Exception($"Failed to subscribe to events: {result.Describe()}");
         }
 
         private async void MessagePump()

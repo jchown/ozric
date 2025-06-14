@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Globalization;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
 using Humanizer;
 
 namespace OzricEngine.Nodes;
@@ -45,19 +46,19 @@ public abstract class OzricObject
             _Log(level, message, arg0, arg1, arg2, arg3);
     }
 
-    private static readonly string[] colours =
+    private static readonly string[] colors =
     {
-        "\u001b[90m",   // Trace
-        "\u001b[37m",   // Debug
-        "\u001b[97m",   // Info
-        "\u001b[93m",   // Warning
-        "\u001b[91m",   // Error
+        "\u001b[90m",   // Trace (dark grey)
+        "\u001b[37m",   // Debug (light grey)
+        "\u001b[97m",   // Info (black)
+        "\u001b[93m",   // Warning (orange)
+        "\u001b[91m",   // Error (red)
         "\u001b[93m\u001b[101m",   // Fatal
     };
 
     private void _Log(LogLevel level, string message)
     {
-        LogOutput($"{colours[(int)level]}{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {Name.Truncate(32, Name, TruncateFrom.Left).PadRight(32)} | {message}\u001b[0m");
+        LogOutput($"{colors[(int)level]}{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {Name.Truncate(32, Name, TruncateFrom.Left).PadRight(32)} | {message}\u001b[0m");
     }
 
     private void _Log(LogLevel level, string format, params object?[] args)

@@ -207,40 +207,47 @@ public class DayPhases: Node
 
         //  Figure out what phase are we in
 
-        var sun = context.home.GetEntityState(SUN_ENTITY_ID)!;
-        var now = context.home.GetTime();
-
-        int i = 1;
-        var startTime = phases[0].GetStartTime(now, sun.attributes);
-        do
+        try
         {
-            var endTime = phases[i % phases.Count].GetStartTime(now, sun.attributes);
+            var sun = context.home.GetEntityState(SUN_ENTITY_ID) ?? throw new Exception($"No sun entity found with ID {SUN_ENTITY_ID}");
+            var now = context.home.GetTime();
 
-            if (startTime > endTime)    // Watch for wrap-around to start of day
+            int i = 1;
+            var startTime = phases[0].GetStartTime(now, sun.attributes);
+            do
             {
-                if (now >= startTime && now < endTime.AddDays(1))
-                    break;
-                    
-                if (now >= startTime.AddDays(-1) && now < endTime)
-                    break;
-            }
-            else
-            {
-                if (now >= startTime && now < endTime)
-                    break;
-            }
+                var endTime = phases[i % phases.Count].GetStartTime(now, sun.attributes);
 
-            startTime = endTime;
-            i++;
+                if (startTime > endTime) // Watch for wrap-around to start of day
+                {
+                    if (now >= startTime && now < endTime.AddDays(1))
+                        break;
 
-        } while (i < phases.Count);
+                    if (now >= startTime.AddDays(-1) && now < endTime)
+                        break;
+                }
+                else
+                {
+                    if (now >= startTime && now < endTime)
+                        break;
+                }
 
-        var currentPhase = phases[i - 1];
-        var nextPhase = phases[i % phases.Count];
-            
-        Log(LogLevel.Debug, "phase is between {0} and {1}", currentPhase, nextPhase);
+                startTime = endTime;
+                i++;
 
-        SetOutputValue(OUTPUT_NAME, currentPhase.mode, context);
+            } while (i < phases.Count);
+
+            var currentPhase = phases[i - 1];
+            var nextPhase = phases[i % phases.Count];
+
+            Log(LogLevel.Debug, "phase is between {0} and {1}", currentPhase, nextPhase);
+
+            SetOutputValue(OUTPUT_NAME, currentPhase.mode, context);
+        }
+        catch (Exception ex)
+        {
+            throw ex.Rethrown($"calculating phase of {id}");
+        }
     }
 
     public void AddPhase(PhaseStart phaseStart)

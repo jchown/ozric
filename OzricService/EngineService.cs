@@ -38,9 +38,11 @@ public class EngineService: IEngineService, ICommandSender
 
         var home = new Home(comms);
 
+        await home.WaitForEntities();
+        
         engine = new Engine(home, graph, comms);
 
-        mainLoop = Task.Run(() => engine.MainLoop());
+        mainLoop = Task.Run(() => engine.MainLoop(cancellationToken), cancellationToken);
     }
 
     public static async Task<Graph> LoadGraph()

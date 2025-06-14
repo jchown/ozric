@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace OzricEngine;
 
@@ -17,7 +18,7 @@ public interface IHome
 
     List<EntityState> GetEntityStates();
     
-    List<EntityState> GetEntityStates(List<string> getInterestedEntityIDs);
+    List<EntityState> GetEntityStates(List<string> entityIDs);
 
     EntityState? GetEntityState(string entityId);
     
