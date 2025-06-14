@@ -9,9 +9,15 @@ namespace OzricEngine
 {
     public class Json
     {
-        public static string Serialize<T>(T t) where T: class
+        public static string Serialize<T>(T t, bool pretty = false) where T: class
         {
-            return Serialize(t, typeof(T));
+            var json = Serialize(t, typeof(T));
+            if (pretty)
+            {
+                json = Prettify(json);
+            }
+            
+            return json;
         }
         
         public static string Serialize(object o, Type t)

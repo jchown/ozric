@@ -18,7 +18,13 @@ public class Home: OzricObject, IHome
     [JsonIgnore]
     public LinkedList<EntityUpdate> entityUpdateHistory = new();
 
-    private readonly HomeStatePoll _poll;
+    private CancellationToken _cancelToken;
+    
+    private readonly IComms _comms;
+    
+    private List<EntityConfig> _entityConfigs;
+    private List<AreaConfig> _areaConfigs;
+    private List<DeviceConfig> _deviceConfigs;
 
     //  How recent an event must be to be assumed a response so an update 
         
@@ -47,8 +53,9 @@ public class Home: OzricObject, IHome
         entityStates = new Dictionary<string, EntityState>();
         //areas = new Dictionary<string, Area>();
         //devices = new Dictionary<string, Device>();
-        
-        _poll = new HomeStatePoll(comms, OnStatesReceived, OnConfigsReceived);
+
+        _comms = comms;
+        _ = Task.Run(Listen);
     }
     
     void OnStatesReceived(ServerGetStates states)
@@ -72,71 +79,6 @@ public class Home: OzricObject, IHome
         }
     }
 
-    void OnConfigsReceived(ServerConfigEntityList entityList, ServerConfigAreaList areaList, ServerConfigDeviceList deviceList)
-    {
-        if (entityList.success && areaList.success && deviceList.success)
-        {
-            
-        }
-    }
-
-    private class HomeStatePoll: CancellableTask
-    {
-        public override string Name => "HomeStatePoll";
-
-        private readonly IComms _comms;
-        private readonly Action<ServerGetStates> _onStatesReceived;
-        private readonly Action<ServerConfigEntityList, ServerConfigAreaList, ServerConfigDeviceList> _onConfigsReceived;
-
-        public HomeStatePoll(IComms comms)
-        {
-            _comms = comms;
-        }
-
-        public HomeStatePoll(IComms comms, Action<ServerGetStates> onStatesReceived, Action<ServerConfigEntityList, ServerConfigAreaList, ServerConfigDeviceList> onConfigsReceived)
-        {
-            _comms = comms;
-            _onStatesReceived = onStatesReceived;
-            _onConfigsReceived = onConfigsReceived;
-        }
-
-        protected override async Task Run(CancellationToken token)
-        {
-            var messageTimeout = 5000;
-            
-            while (!token.IsCancellationRequested)
-            {
-                try
-                {
-                    //  Attempt to get the state of pretty much everything at the same time
-                    
-                    var entityListResult = await _comms.SendCommand<ServerConfigEntityList>(new ClientConfigEntityList(), messageTimeout);
-                    var areaListResult = await _comms.SendCommand<ServerConfigAreaList>(new ClientConfigAreaList(), messageTimeout);
-                    var deviceListResult = await _comms.SendCommand<ServerConfigDeviceList>(new ClientConfigDeviceList(), messageTimeout);
-
-                    _onConfigsReceived(entityListResult, areaListResult, deviceListResult);
-                }
-                catch (Exception e)
-                {
-                    Log(LogLevel.Error, e.Message);
-                }
-
-                try
-                {
-                    var entityStateResult = await _comms.SendCommand<ServerGetStates>(new ClientGetStates(), messageTimeout);
-                    
-                    _onStatesReceived(entityStateResult);
-                }
-                catch (Exception e)
-                {
-                    Log(LogLevel.Error, e.Message);
-                }
-                
-                await Task.Delay(30000, token);
-            }
-        }
-    }
-
     public Home(List<EntityState> stateList)
     {
         entityStates = new Dictionary<string, EntityState>();
@@ -146,6 +88,60 @@ public class Home: OzricObject, IHome
 
             if (state.entity_id.StartsWith("light."))
                 state.LogLightState();
+        }
+    }
+
+    private async Task Listen()
+    {
+        var messageTimeout = 5000;
+        
+        while (!_cancelToken.IsCancellationRequested)
+        {
+            try
+            {
+                //  Attempt to get the state of pretty much everything at the same time
+                
+                var entityListResult = await _comms.SendCommand<ServerConfigEntityList>(new ClientConfigEntityList(), messageTimeout);
+                var areaListResult = await _comms.SendCommand<ServerConfigAreaList>(new ClientConfigAreaList(), messageTimeout);
+                var deviceListResult = await _comms.SendCommand<ServerConfigDeviceList>(new ClientConfigDeviceList(), messageTimeout);
+
+                OnConfigsReceived(entityListResult, areaListResult, deviceListResult);
+            }
+            catch (Exception e)
+            {
+                Log(LogLevel.Error, e.Message);
+            }
+
+            try
+            {
+                var entityStateResult = await _comms.SendCommand<ServerGetStates>(new ClientGetStates(), messageTimeout);
+                
+                OnStatesReceived(entityStateResult);
+            }
+            catch (Exception e)
+            {
+                Log(LogLevel.Error, e.Message);
+            }
+            
+            await Task.Delay(30000, _cancelToken);
+        }
+    }
+
+    private void OnConfigsReceived(ServerConfigEntityList entityListResult, ServerConfigAreaList areaListResult, ServerConfigDeviceList deviceListResult)
+    {
+        if (entityListResult.success)
+        {
+            _entityConfigs = entityListResult.result;
+        }
+        
+        if (areaListResult.success)
+        {
+            _areaConfigs = areaListResult.result;
+        }
+        
+        if (deviceListResult.success)
+        {
+            _deviceConfigs = deviceListResult.result;
         }
     }
 

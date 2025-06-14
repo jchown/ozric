@@ -49,6 +49,11 @@ namespace OzricEngine
         private event IComms.JsonHandler? sentJsonHandler;
         private event IComms.JsonHandler? receivedJsonHandler;
 
+        private int _nextCommandId = 1;
+        private readonly object _sendLock = new();
+        private readonly object _sendCommandLock = new();
+
+
         public Comms(string llat): this(CORE_API, llat)
         {
         }
@@ -82,7 +87,8 @@ namespace OzricEngine
 
         private void OnMessageReceived(object? sender, MessageReceivedEventArgs args)
         {
-            receivedMessages.Post(Encoding.UTF8.GetString(args.Data));
+            var message = Encoding.UTF8.GetString(args.Data);
+            receivedMessages.Post(message);
         }
 
         private void Disconnect()
@@ -110,7 +116,7 @@ namespace OzricEngine
         {
             try
             {
-                var json = await ReceiveJson();
+                var json = await ReceiveJsonAsync();
 
                 try
                 {
@@ -129,7 +135,7 @@ namespace OzricEngine
             }
         }
 
-        private async Task<string> ReceiveJson()
+        private async Task<string> ReceiveJsonAsync()
         {
             var json = await receivedMessages.ReceiveAsync(ReceiveTimeout);
 
@@ -137,7 +143,15 @@ namespace OzricEngine
             return json;
         }
 
-        public async Task Send<T>(T t)
+        private string ReceiveJson()
+        {
+            var json = receivedMessages.Receive(ReceiveTimeout);
+
+            Log(LogLevel.Debug, "<< {0}", json);
+            return json;
+        }
+
+        private async Task SendAsync<T>(T t)
         {
             if (t == null)
                 throw new ArgumentNullException(nameof(t) + " is null");
@@ -149,9 +163,9 @@ namespace OzricEngine
 
             if (t is ClientCommand cc && cc.id == 0)
             {
-                lock (sendCommandLock)
+                lock (_sendCommandLock)
                 {
-                    cc.id = nextCommandID++;
+                    cc.id = _nextCommandId++;
                 }
             }
 
@@ -163,7 +177,47 @@ namespace OzricEngine
             Log(LogLevel.Debug, ">> {0}", json);
             sentJsonHandler?.Invoke(json);
 
-            await _client.SendAsync(json, WebSocketMessageType.Text, cancellation.Token);
+            Task sendTask;
+            
+            lock (_sendLock)
+            {
+                sendTask = _client.SendAsync(json, WebSocketMessageType.Text, cancellation.Token);
+            }
+
+            await sendTask;
+        }
+
+        private void Send<TMessage>(TMessage t)
+        {
+            if (t == null)
+                throw new ArgumentNullException(nameof(t));
+
+            if (_client == null)
+                throw new IOException("Not connected");
+
+            sentMessageHandler?.Invoke(t);
+
+            if (t is ClientCommand cc && cc.id == 0)
+            {
+                lock (_sendCommandLock)
+                {
+                    cc.id = _nextCommandId++;
+                }
+            }
+
+            var cancellation = new CancellationTokenSource();
+            cancellation.CancelAfter(SendTimeout);
+
+            var json = Json.Serialize(t, t.GetType());
+
+            Log(LogLevel.Debug, ">> {0}", json);
+            sentJsonHandler?.Invoke(json);
+
+            lock (_sendLock)
+            {
+                var token = cancellation.Token;
+                _ = Task.Run(() => _client.SendAsync(json, WebSocketMessageType.Text, token), token);
+            }
         }
 
         public void Dispose()
@@ -184,7 +238,7 @@ namespace OzricEngine
             Log(LogLevel.Info, "Auth requested by HA {0}", authReq.ha_version);
 
             var auth = new ClientAuth(accessToken: llat);
-            await Send(auth);
+            await SendAsync(auth);
 
             var authResult = await Receive<ServerMessage>();
             switch (authResult)
@@ -201,9 +255,6 @@ namespace OzricEngine
             }
         }
 
-        private static int nextCommandID = 1;
-        private static readonly object sendCommandLock = new();
-
         public virtual async Task<TResponse> SendCommand<TResponse>(ClientCommand command, int millisecondsTimeout = IComms.DefaultCommandTimeoutMilliseconds) where TResponse: ServerResponse, new()
         {
             if (!_messagePumpRunning)
@@ -212,15 +263,15 @@ namespace OzricEngine
             var result = new TaskCompletionSource<string>();
             Task send;
 
-            lock (sendCommandLock)
+            lock (_sendCommandLock)
             {
-                command.id = nextCommandID++;
+                command.id = _nextCommandId++;
 
                 if (!asyncResults.TryAdd(command.id, result))
                     Log(LogLevel.Error, "Failed to register result handler for command {0}", command.id);
 
                 Log(LogLevel.Info, "Sending command: {0}", command);
-                send = Send(command);
+                send = SendAsync(command);
             }
 
             await send;
@@ -243,13 +294,13 @@ namespace OzricEngine
 
         private async Task SendSubscribe()
         {
-            await Send(new ClientEventSubscribe());
+            await SendAsync(new ClientEventSubscribe());
             var result = await Receive<ServerResult>() ?? throw new Exception("No result for subscribe command");
             if (!result.success)
                 throw new Exception($"Failed to subscribe to events: {result.DescribeError()}");
         }
 
-        private async Task MessagePump()
+        private async void MessagePump()
         {
             try
             {
@@ -259,17 +310,22 @@ namespace OzricEngine
                     {
                         Log(LogLevel.Trace, "... waiting for messages ...");
 
-                        var message = await ReceiveJson();
-
-                        if (message == null)
+                        try
                         {
-                            //  No messages? Check server is still reachable
-
-                            await CheckConnected();
-                        }
-                        else
-                        {
+                            var message = await ReceiveJsonAsync();
                             HandleMessage(message);
+                        }
+                        catch (TimeoutException)
+                        {
+                            lock (_sendLock)
+                            {
+                                Send(new ClientPing());
+                                var receive = Receive<ServerPong>();
+                                if (receive == null)
+                                {
+                                    throw new TimeoutException("No pong received from server");
+                                }
+                            }
                         }
                     }
                     catch (Exception e)
@@ -282,7 +338,7 @@ namespace OzricEngine
                             
                             try
                             {
-                                FlushPendingMessages();
+                                DiscardPendingMessages();
 
                                 Log(LogLevel.Info, "Reconnecting...");
 
@@ -316,7 +372,7 @@ namespace OzricEngine
         /// Throw away all buffered messages
         /// </summary>
 
-        private void FlushPendingMessages()
+        private void DiscardPendingMessages()
         {
             while (receivedMessages.TryReceive(out _))
             {
@@ -370,11 +426,6 @@ namespace OzricEngine
             {
                 Log(LogLevel.Error, "Error handling message: {0}", e);
             }
-        }
-
-        protected virtual async Task CheckConnected()
-        {
-            await SendCommand<ServerPong>(new ClientPing(), PingTimeoutMilliseconds);
         }
 
         /// <summary>
