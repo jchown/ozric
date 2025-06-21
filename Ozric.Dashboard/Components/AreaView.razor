@@ -254,8 +254,6 @@
         nodeMappings.Clear();
         edgeMappings.Clear();
 
-        var entitiesInArea = EngineService.Home.GetEntitiesInArea(areaId);
-
         /*
         foreach (var entity in )
         {
@@ -272,14 +270,8 @@
         double minX = 0, minY = 0;
         int x = 0, y = 0, w = 160, h = 120, cols = 6; 
         
-        foreach (var node in Graph.nodes.Values)
+        foreach (var node in Graph.nodes.Values.Where(node => node.area_id == areaId))
         {
-            if (node is EntityNode en && !entitiesInArea.Any(inArea => inArea.entity_id == en.entityID))
-            {
-                //  This node is not in the area, so skip it
-                continue;
-            }
-            
             var position = GraphLayout.nodeLayout.GetOrSet(node.id, () =>
             {
                 var point = new LayoutPoint(x * w, y * h);
