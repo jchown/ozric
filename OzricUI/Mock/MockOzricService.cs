@@ -31,7 +31,7 @@ public class MockOzricService: IEngineService
 
     public async Task Start(CancellationToken _)
     {
-        Graph = await EngineService.LoadGraph();
+        Graph = await OzricService.OzricService.LoadGraph();
     }
     
     public void SetPaused(bool statusPaused)
@@ -41,7 +41,7 @@ public class MockOzricService: IEngineService
 
     public async Task Restart(Graph graph)
     {
-        await EngineService.SaveGraph(graph);
+        await OzricService.OzricService.SaveGraph(graph);
         Graph = graph;
     }
 

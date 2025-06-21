@@ -15,7 +15,7 @@ namespace Ozric.Engine.Graph;
 /// The nodes &amp; edges (connections between nodes) that make up the logical flow of our system.
 /// More strictly a Directed Acyclic Graph (DAG).  
 /// </summary>
-public class Graph: OzricObject, IEquatable<Graph>
+public class Graph: OzricObject, IEquatable<Graph>, IGraph
 {
     [JsonIgnore]
     public override string Name => "Graph";
@@ -222,6 +222,19 @@ public class Graph: OzricObject, IEquatable<Graph>
     {
         return HashCode.Combine(nodes, edges);
     }
+
+    public IList<Node> GetConnectedNodes(string nodeId)
+    {
+        if (!nodes.ContainsKey(nodeId))
+            throw new Exception($"No node found with ID {nodeId}");
+
+        return edges.Values
+            .Where(edge => edge.from.nodeID == nodeId || edge.to.nodeID == nodeId)
+            .Select(edge => nodes[edge.from.nodeID == nodeId ? edge.to.nodeID : edge.from.nodeID])
+            .Distinct()
+            .ToList();
+    }
+
     #endregion
 
     public string CreateNodeID(string prefix)

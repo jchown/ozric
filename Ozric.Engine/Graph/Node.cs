@@ -23,7 +23,7 @@ public abstract class Node : OzricObject, IGraphObject, IEquatable<Node>
     public abstract NodeType nodeType { get; }
 
     public string id { get; set; }
-    public string area_id { get; set; }
+    public string? area_id { get; set; }
     
     public List<Pin> inputs;
     public List<Pin> outputs;

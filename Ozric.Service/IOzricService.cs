@@ -1,5 +1,4 @@
 using Ozric.Engine.Graph;
-using Ozric.Engine.Nodes;
 using OzricEngine;
 using OzricEngine.engine;
 using OzricEngine.Nodes;
@@ -7,7 +6,7 @@ using OzricEngine.Nodes;
 namespace OzricService;
 
 /// <summary>
-/// Client/server agnostic interface to the engine
+/// Interface to the engine
 /// </summary>
 public interface IOzricService
 {
@@ -24,4 +23,8 @@ public interface IOzricService
     void SetPaused(bool statusPaused);
     
     Task Restart(Graph graph);
+    
+    void Subscribe(Pin.Changed pinChanged, Alert.Changed alertChanged);
+    
+    void Unsubscribe(Pin.Changed pinChanged, Alert.Changed alertChanged);
 }

@@ -5,6 +5,7 @@ using System.Text.Json;
 using Ozric.Engine;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Live;
+using Ozric.Engine.Nodes.Entities;
 using Ozric.Engine.Utils;
 using OzricEngine;
 using OzricEngine.engine;
@@ -14,20 +15,12 @@ using Graph = Ozric.Engine.Graph.Graph;
 
 namespace OzricService;
 
-public class EngineService: IEngineService, ICommandSender
+public class OzricService: IOzricService, ICommandSender
 {
-    //  Inside the container store everything in /data, outside use ~/.ozric/data
-    public static readonly string RootPath = !RuntimeInformation.IsOSPlatform(OSPlatform.Linux) ? Environment.GetFolderPath(Environment.SpecialFolder.UserProfile) + "/.ozric/data" : "/data";
-
-    public static readonly string GraphFilename = RootPath + "/graph.json";
-
     private Engine? _engine;
     private IComms? _comms;
 
-    //  Server API
     public Engine Engine => _engine ?? throw new InvalidOperationException();
-
-    //  Client API
     public EngineStatus Status => _engine?.Status ?? new EngineStatus();
     public Graph Graph => Engine.graph ?? throw new InvalidOperationException();
     public IHome Home => Engine.home ?? throw new InvalidOperationException();
@@ -44,6 +37,8 @@ public class EngineService: IEngineService, ICommandSender
         var home = new Home(_comms);
 
         await home.WaitForEntities();
+
+        CheckAreas(home, graph);
         
         _engine = new Engine(home, graph, _comms);
 
@@ -51,15 +46,15 @@ public class EngineService: IEngineService, ICommandSender
         Tasks.Run(() => _engine.MainLoop(token), token);
     }
 
-    public static async Task<Graph> LoadGraph()
+    private static async Task<Graph> LoadGraph()
     {
         Graph graph = new Graph();
 
-        if (File.Exists(GraphFilename))
+        if (File.Exists(Storage.GraphFilename))
         {
             try
             {
-                var json = await File.ReadAllTextAsync(GraphFilename);
+                var json = await File.ReadAllTextAsync(Storage.GraphFilename);
                 try
                 {
                     graph = Graph.Deserialize(json);
@@ -118,7 +113,7 @@ public class EngineService: IEngineService, ICommandSender
     {
         var json = Json.Prettify(Json.Serialize(graph));
         Console.WriteLine(json);
-        await File.WriteAllTextAsync(GraphFilename, json);
+        await File.WriteAllTextAsync(Storage.GraphFilename, json);
     }
 
     private static async Task<IComms> Connect()
@@ -205,5 +200,79 @@ public class EngineService: IEngineService, ICommandSender
     {
         Engine.pinChanged -= pinChanged;
         Engine.alertChanged -= alertChanged;
+    }
+    
+    private void CheckAreas(IHome home, Graph graph)
+    {
+        var entities = home.GetEntityConfigs();
+        var devices = home.GetDeviceConfigs();
+        
+        var toGuess = new List<string>();
+        
+        foreach (var node in graph.nodes.Values)
+        {
+            if (string.IsNullOrEmpty(node.area_id))
+            {
+                if (node is EntityNode entityNode)
+                {
+                    var entity = entities.FirstOrDefault(e => e.entity_id == entityNode.entityID);
+                    if (entity == null)
+                    {
+                        Console.WriteLine($"Entity {entityNode.entityID} not found for {node.id}");
+                        continue;
+                    }
+                    
+                    var areaId = entity.area_id;
+                    if (string.IsNullOrEmpty(areaId))
+                    {
+                        if (!string.IsNullOrEmpty(entity.device_id))
+                        {
+                            var device = devices.First(d => d.id == entity.device_id);
+                            areaId = device.area_id;
+                        }
+
+                        if (string.IsNullOrEmpty(areaId))
+                        {
+                            Console.WriteLine($"Area of {entity.entity_id} ({entity.id}) not found");
+                            areaId = IHome.GlobalAreaId;
+                        }
+                    }
+
+                    node.area_id = areaId;
+                }
+                else
+                {
+                    toGuess.Add(node.id);
+                }
+            }
+        }
+
+        while (toGuess.Count > 0)
+        {
+            foreach (var node in toGuess)
+            {
+                var connections = graph.GetConnectedNodes(node);
+                var areas = connections.Select(n => n.area_id).Where(id => !string.IsNullOrEmpty(id)).Distinct().ToList();
+
+                if (areas.Count == 0)
+                {
+                    continue;
+                }
+                
+                if (areas.Count == 1)
+                {
+                    var areaId = areas.First();
+                    graph.nodes[node].area_id = areaId;
+                    toGuess.Remove(node);
+                    Console.WriteLine($"Guessing area of {node} is {areaId}");
+                    break;
+                }
+                
+                graph.nodes[node].area_id = IHome.GlobalAreaId;
+                toGuess.Remove(node);
+                Console.WriteLine($"Guessing area of {node} is {IHome.GlobalAreaId}");
+                break;
+            }
+        }
     }
  }

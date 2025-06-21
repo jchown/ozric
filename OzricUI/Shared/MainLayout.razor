@@ -195,7 +195,7 @@
 
     private async Task LoadGraph()
     {
-        Graph = OzricService.Graph;//Json.Clone(OzricService.Graph); // Don't edit the live graph!
+        Graph = OzricService.Graph;//Json.Clone(Ozric.Service.Graph); // Don't edit the live graph!
         GraphLayout = await Data.GetGraphLayoutAsync();
 
         GraphEditState.OnChanged += OnGraphEditStateChanged;

@@ -42,18 +42,18 @@
 
     void Cancel() => MudDialog.Cancel();
     
-    public record Result(DataService.DownloadData Data);
+    public record Result(DownloadData Data);
 
     private async Task OnUploadFile(IBrowserFile file)
     {
         using (var stream = file.OpenReadStream())
         {
-            DataService.DownloadData? data;
+            DownloadData? data;
                 
             try
             {
                 var json = await new StreamReader(stream).ReadToEndAsync();
-                data = Json.Deserialize<DataService.DownloadData>(json);
+                data = Json.Deserialize<DownloadData>(json);
             }
             catch (Exception e)
             {

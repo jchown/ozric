@@ -91,7 +91,7 @@ builder.WebHost.UseSentry(options =>
     options.AutoSessionTracking = true;
 });
 
-IEngineService ozricEngine = (Environment.GetEnvironmentVariable("OZRIC_MOCK") != null) ? new MockOzricService() : new EngineService();
+IEngineService ozricEngine = (Environment.GetEnvironmentVariable("OZRIC_MOCK") != null) ? new MockOzricService() : new OzricService.OzricService();
 await ozricEngine.Start(CancellationToken.None);
 builder.Services.AddSingleton<IEngineService>(_ => ozricEngine);
 builder.Services.AddSingleton<IOzricService>(_ => ozricEngine);

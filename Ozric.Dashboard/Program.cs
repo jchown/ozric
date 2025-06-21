@@ -79,6 +79,7 @@ builder.Services.AddSingleton<DataService>();
 builder.Services.AddScoped<CookieProvider>();
 builder.Services.AddMudServices();
 builder.Services.AddResponseCompression(opts => opts.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(["application/octet-stream"]));
+
 builder.WebHost.UseSentry(options =>
 {
     if (builder.Environment.IsDevelopment())
@@ -94,9 +95,8 @@ builder.WebHost.UseSentry(options =>
     options.AutoSessionTracking = true;
 });
 
-IEngineService ozricEngine = new EngineService();
+IOzricService ozricEngine = new OzricService.OzricService();
 await ozricEngine.Start(CancellationToken.None);
-builder.Services.AddSingleton<IEngineService>(_ => ozricEngine);
 builder.Services.AddSingleton<IOzricService>(_ => ozricEngine);
 builder.Services.AddHttpContextAccessor();
 
@@ -115,7 +115,6 @@ app.UseRouting();
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
 
-API.Map(app);
 DataService.Map(app);
 
 app.Run();

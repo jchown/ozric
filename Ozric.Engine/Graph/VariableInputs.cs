@@ -35,13 +35,13 @@ public abstract class VariableInputs: Node
 
     public string NextPinName()
     {
-        string expected = $"input-{inputs.Count + 1}";
+        var expected = $"input-{inputs.Count + 1}";
         if (!HasInput(expected))
             return expected;
 
-        for (int i = 1; i <= inputs.Count; i++)
+        for (var i = 1; i <= inputs.Count; i++)
         {
-            string mid = $"input-{i}";
+            var mid = $"input-{i}";
             if (!HasInput(mid))
                 return mid;
         }
@@ -61,7 +61,7 @@ public abstract class VariableInputs: Node
     #region Comparison
     public override bool Equals(object? obj)
     {
-        if (!(obj is VariableInputs vi))
+        if (obj is not VariableInputs vi)
             return false;
         
         return base.Equals(obj) && valueType == vi.valueType;
@@ -69,7 +69,7 @@ public abstract class VariableInputs: Node
 
     public override int GetHashCode()
     {
-        return HashCode.Combine(GetHashCode(), valueType);
+        return HashCode.Combine(base.GetHashCode(), valueType);
     }
     #endregion
 

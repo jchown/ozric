@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -384,6 +385,15 @@ public class Home: OzricObject, IHome
         }
     }
 
+    public ReadOnlyCollection<EntityConfig> GetEntityConfigs()
+    {
+        return _entityConfigs.AsReadOnly();
+    }
+    
+    public ReadOnlyCollection<DeviceConfig> GetDeviceConfigs()
+    {
+        return _deviceConfigs.AsReadOnly();
+    }
 }
 
 public record EntityUpdate(string entityID, DateTime when);

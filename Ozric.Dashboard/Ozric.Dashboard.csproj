@@ -16,7 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Ozric.Engine\Ozric.Engine.csproj" />
-    <ProjectReference Include="..\OzricService\OzricService.csproj" />
+    <ProjectReference Include="..\Ozric.Service\Ozric.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -28,7 +28,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ext" />
     <Folder Include="wwwroot\icons" />
   </ItemGroup>
 

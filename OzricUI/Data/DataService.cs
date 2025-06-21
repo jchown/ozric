@@ -54,7 +54,7 @@ public class DataService
     {
         try
         {
-            var json = await File.ReadAllTextAsync(EngineService.RootPath + "/graph_layout.json");
+            var json = await File.ReadAllTextAsync(OzricService.OzricService.RootPath + "/graph_layout.json");
             var graphLayout = Json.Deserialize<GraphLayout>(json);
 
             ShowDebug("Load", graphLayout);
@@ -73,7 +73,7 @@ public class DataService
         ShowDebug("Save", graphLayout);
 
         var json = Json.Prettify(Json.Serialize(graphLayout));
-        await File.WriteAllTextAsync(EngineService.RootPath + "/graph_layout.json", json);
+        await File.WriteAllTextAsync(OzricService.OzricService.RootPath + "/graph_layout.json", json);
     }
 
     private void ShowDebug(string save, GraphLayout graphLayout)

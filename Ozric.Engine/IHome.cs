@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading.Tasks;
 using Ozric.Engine.Model;
 using OzricEngine.messages;
@@ -36,4 +37,8 @@ public interface IHome
     List<DeviceConfig> GetDevicesInArea(string areaId);
     
     List<EntityConfig> GetEntitiesInArea(string areaId);
+    
+    ReadOnlyCollection<EntityConfig> GetEntityConfigs();
+    
+    ReadOnlyCollection<DeviceConfig> GetDeviceConfigs();
 }
