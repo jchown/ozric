@@ -1,8 +1,11 @@
+using Ozric.Engine.Graph;
+using Ozric.Engine.Graph.Logic;
+using Ozric.Engine.Nodes;
 using OzricEngine;
 using OzricEngine.Nodes;
 using OzricEngine.Values;
 using OzricUI.Model;
-using ValueType = OzricEngine.Values.ValueType;
+using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace OzricUI.Shared;
 

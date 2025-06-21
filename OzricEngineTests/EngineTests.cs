@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Ozric.Engine.Extensions;
+using Ozric.Engine.Graph;
+using Ozric.Engine.Graph.Logic;
+using Ozric.Engine.Nodes;
+using Ozric.Engine.Utils;
 using OzricEngine;
-using OzricEngine.ext;
 using OzricEngine.Nodes;
 using Xunit;
 using OzricEngine.Values;
-using ValueType = OzricEngine.Values.ValueType;
+using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace OzricEngineTests
 {

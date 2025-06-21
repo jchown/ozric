@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Ozric.Engine;
+using Ozric.Engine.Model;
 using OzricEngine;
 using OzricEngine.Nodes;
 

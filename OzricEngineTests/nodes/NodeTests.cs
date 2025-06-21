@@ -1,11 +1,13 @@
 ﻿using OzricEngine;
 using System.Collections.Generic;
 using System.Text.Json;
+using Ozric.Engine.Graph;
+using Ozric.Engine.Graph.Logic;
 using OzricEngine.Nodes;
 using OzricEngine.Values;
 using Xunit;
 using Xunit.Abstractions;
-using ValueType = OzricEngine.Values.ValueType;
+using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace OzricEngineTests
 {

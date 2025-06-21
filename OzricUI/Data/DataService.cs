@@ -3,6 +3,8 @@ using System.Text.Json;
 using System.Xml;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
+using Ozric.Engine.Graph;
+using Ozric.Engine.Nodes;
 using OzricEngine;
 using OzricService;
 using Sentry;

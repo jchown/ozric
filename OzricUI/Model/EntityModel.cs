@@ -1,4 +1,5 @@
 using Blazor.Diagrams.Core.Geometry;
+using Ozric.Engine.Nodes.Entities;
 using OzricEngine.Nodes;
 using OzricUI.Components;
 

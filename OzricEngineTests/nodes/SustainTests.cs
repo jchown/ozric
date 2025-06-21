@@ -1,4 +1,5 @@
 using System;
+using Ozric.Engine.Graph.Logic;
 using OzricEngine.Values;
 using OzricEngineTests;
 using Xunit;

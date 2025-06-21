@@ -1,11 +1,12 @@
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using MudBlazor;
-using OzricEngine.ext;
+using Ozric.Engine.Extensions;
+using Ozric.Engine.Graph;
 using OzricEngine.Nodes;
 using OzricUI.Components;
 using OzricUI.Shared;
-using LogLevel = OzricEngine.LogLevel;
+using LogLevel = Ozric.Engine.Utils.LogLevel;
 
 namespace OzricUI.Model;
 

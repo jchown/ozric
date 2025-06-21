@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
+using Ozric.Engine.Messages;
 using Xunit;
 
 namespace OzricEngineTests

@@ -2,6 +2,10 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Ozric.Engine.Graph;
+using Ozric.Engine.Graph.Logic;
+using Ozric.Engine.Nodes;
+using Ozric.Engine.Values;
 using OzricEngine.Nodes;
 using OzricEngine.Values;
 using Xunit;
@@ -25,14 +29,14 @@ namespace OzricEngineTests
 
             var nodeEdgesMap = graph.GetNodeDependencies();
             
-            AssertDependencies(nodeEdgesMap["a"].inputNodeIDs);
-            AssertDependencies(nodeEdgesMap["a"].outputNodeIDs, "b", "c");
+            AssertDependencies(nodeEdgesMap["a"].InputNodeIDs);
+            AssertDependencies(nodeEdgesMap["a"].OutputNodeIDs, "b", "c");
             
-            AssertDependencies(nodeEdgesMap["b"].inputNodeIDs, "a");
-            AssertDependencies(nodeEdgesMap["b"].outputNodeIDs, "c");
+            AssertDependencies(nodeEdgesMap["b"].InputNodeIDs, "a");
+            AssertDependencies(nodeEdgesMap["b"].OutputNodeIDs, "c");
             
-            AssertDependencies(nodeEdgesMap["c"].inputNodeIDs, "a", "b");
-            AssertDependencies(nodeEdgesMap["c"].outputNodeIDs);
+            AssertDependencies(nodeEdgesMap["c"].InputNodeIDs, "a", "b");
+            AssertDependencies(nodeEdgesMap["c"].OutputNodeIDs);
         }
 
         [Fact]

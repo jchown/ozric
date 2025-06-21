@@ -6,6 +6,7 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
+using Ozric.Engine.Messages;
 using Xunit;
 
 namespace OzricEngineTests

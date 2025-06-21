@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.FileProviders;
 using OzricUI.Data;
 using MudBlazor.Services;
+using Ozric.Engine;
 using OzricEngine;
 using OzricService;
 using OzricUI.Mock;

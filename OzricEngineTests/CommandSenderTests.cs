@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using OzricEngine.Nodes;
 using Xunit;
 using System;
+using Ozric.Engine.Messages;
 
 namespace OzricEngineTests
 {

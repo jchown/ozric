@@ -1,3 +1,4 @@
+using Ozric.Engine;
 using OzricEngine.Values;
 using OzricEngineTests;
 

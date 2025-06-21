@@ -2,7 +2,7 @@ using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using OzricEngine.Nodes;
 using OzricUI.Components;
-using LogLevel = OzricEngine.LogLevel;
+using LogLevel = Ozric.Engine.Utils.LogLevel;
 
 namespace OzricUI.Shared;
 

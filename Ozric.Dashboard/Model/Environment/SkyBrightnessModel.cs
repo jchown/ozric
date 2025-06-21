@@ -1,0 +1,16 @@
+using Blazor.Diagrams.Core.Geometry;
+using OzricEngine.Nodes;
+
+namespace Ozric.Dashboard.Model;
+
+public class SkyBrightnessModel: GraphNodeModel
+{
+    public static string ICON = "ph:cloud-sun-bold";
+
+    public SkyBrightnessModel(SkyBrightness skyBrightness, Point? point = null): base(skyBrightness, point)
+    {
+        _outputLabels = true;
+    }
+
+    public override string Icon => ICON;
+}

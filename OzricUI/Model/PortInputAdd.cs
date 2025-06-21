@@ -1,5 +1,5 @@
 using Blazor.Diagrams.Core.Models;
-using ValueType = OzricEngine.Values.ValueType;
+using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace OzricUI.Model;
 

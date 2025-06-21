@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <NoWarn>1701;1702;8618</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <NoWarn>1701;1702;8618</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Ozric.Engine\Ozric.Engine.csproj" />
+    <ProjectReference Include="..\OzricService\OzricService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.5" />
+    <PackageReference Include="MudBlazor" Version="8.7.0" />
+    <PackageReference Include="Sentry.AspNetCore" Version="5.9.0" />
+    <PackageReference Include="System.Memory" Version="4.6.3" />
+    <PackageReference Include="Z.Blazor.Diagrams" Version="3.0.3" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="ext" />
+    <Folder Include="wwwroot\icons" />
+  </ItemGroup>
+
+</Project>

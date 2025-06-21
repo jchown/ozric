@@ -1,8 +1,9 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using Ozric.Engine.Extensions;
+using Ozric.Engine.Model;
 using OzricEngine;
-using OzricEngine.ext;
 
 namespace OzricEngineTests
 {

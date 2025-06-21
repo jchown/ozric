@@ -1,4 +1,4 @@
-using ValueType = OzricEngine.Values.ValueType;
+using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace OzricUI.Model;
 

@@ -3,7 +3,7 @@ using System.Reflection;
 using System.Linq;
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
-using OzricEngine.ext;
+using Ozric.Engine.Graph;
 using OzricEngine.Nodes;
 using OzricUI;
 using OzricUI.Components;

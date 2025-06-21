@@ -1,0 +1,69 @@
+@using Ozric.Dashboard.Model
+@using OzricEngine.Nodes
+@using OzricEngine.Values
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;">
+
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="_id" For="@(() => _id)" Immediate="true"/>
+
+            <MudDivider DividerType="DividerType.Middle" Class="my-4"/>
+
+            <ColorValuePicker Value="_color" Picked="OnPickedColor" />
+
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public ConstantColorModel Model { get; set; }
+
+    [Parameter]
+    public Constant Node { get; set; }
+
+    private string _id { get; set; }
+    private ColorValue _color { get; set; }
+
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+
+    protected override void OnInitialized()
+    {
+        _id = Node.id;
+        _color = (ColorValue) Node.value;
+    }
+    
+    private List<GraphEditAction> GetChanges()
+    {
+        var changes = new List<GraphEditAction>();
+        if (_id != Node.id)
+            changes.Add(new GraphEditAction.RenameNode(Node, _id));
+
+        if (_color != Node.value)
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.value)), _color));
+
+        return changes;
+    }
+
+    private void OnPickedColor(ColorValue value)
+    {
+        _color = value;
+    }
+
+}

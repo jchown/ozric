@@ -24,7 +24,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\OzricEngine\OzricEngine.csproj" />
+      <ProjectReference Include="..\Ozric.Engine\Ozric.Engine.csproj" />
     </ItemGroup>
 
 </Project>

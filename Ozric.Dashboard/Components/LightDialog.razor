@@ -1,0 +1,92 @@
+@using Ozric.Dashboard.Model
+@using OzricEngine.Nodes
+@using OzricService
+@using OzricEngine.Values
+@using Humanizer
+@using Ozric.Engine.Extensions
+@inject IOzricService OzricService
+
+<MudDialog>
+    <DialogContent>
+
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;" >
+            
+            <MudTextField Label="Title" HelperText="The unique name for this node" @bind-Value="_id" For="@(() => _id)" Immediate="true" />
+            
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            <MudTextField Label="Entity ID" HelperText="The ID used by Home Assistant" @bind-Value="_entityId" Disabled="true"/>
+
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+            
+            <MudTextField Label="Color Modes" HelperText="The color modes supported" @bind-Value="_colorModes" Disabled="true"/>
+
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            <MudSelect @bind-Value="ColourSwitchMode" Style="z-index:9999;" HelperText="@CSMHelperText" T="Light.ColourSwitchMode" Label="Colour Switch Mode" Variant="Variant.Text">
+                <MudSelectItem Value="@(Light.ColourSwitchMode.Automatic)">Automatic (Use Default)</MudSelectItem>
+                <MudSelectItem Value="@(Light.ColourSwitchMode.Fast)">Fast</MudSelectItem>
+                <MudSelectItem Value="@(Light.ColourSwitchMode.TwoPhase)">Two Phase</MudSelectItem>
+            </MudSelect>
+
+        </MudContainer>
+
+    </DialogContent>
+
+    <DialogActions>
+        <MudButton OnClick="Save" Disabled="!HasChanges">Save</MudButton>
+        <MudButton OnClick="Cancel">Close</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public LightModel Model { get; set; }
+
+    [Parameter]
+    public Light Node { get; set; }
+
+    private string _id;
+    private string _entityId;
+    private string _colorModes;
+    private Light.ColourSwitchMode ColourSwitchMode { get; set; }
+
+    private string CSMHelperText => $"Default for this light: {Node.GetColourSwitchModeAuto().ToString().Humanize(LetterCasing.Sentence)}";
+
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+
+    protected override void OnInitialized()
+    {
+        _id = Node.id;
+        _entityId = Node.entityID;
+        ColourSwitchMode = Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic;
+        _colorModes = Node.GetSupportedColorModes(OzricService.Home).Select(ColorValue.DescribeColorMode).Join(", ");
+    }
+
+    private List<GraphEditAction> GetChanges()
+    {
+        var changes = new List<GraphEditAction>();
+        if (_id != Node.id)
+            changes.Add(new GraphEditAction.RenameNode(Node, _id));
+        if (ColourSwitchMode != (Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic))
+        {
+            var csm = ColourSwitchMode != Light.ColourSwitchMode.Automatic ? ColourSwitchMode : ((Light.ColourSwitchMode?) null);
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.colourSwitchMode)), csm));
+        }
+        return changes;
+    }
+
+    private void OnCSMChanged(Light.ColourSwitchMode csm)
+    {
+        
+    }
+
+}

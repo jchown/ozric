@@ -2,11 +2,15 @@ using System.Buffers;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
+using Ozric.Engine;
+using Ozric.Engine.Graph;
+using Ozric.Engine.Live;
+using Ozric.Engine.Utils;
 using OzricEngine;
 using OzricEngine.engine;
 using OzricEngine.Nodes;
 using Sentry;
-using Graph = OzricEngine.Graph;
+using Graph = Ozric.Engine.Graph.Graph;
 
 namespace OzricService;
 
@@ -17,32 +21,34 @@ public class EngineService: IEngineService, ICommandSender
 
     public static readonly string GraphFilename = RootPath + "/graph.json";
 
-    private Engine? engine;
-    private Task? mainLoop;
-    private IComms? comms;
+    private Engine? _engine;
+    private IComms? _comms;
 
     //  Server API
-    public Engine Engine => engine ?? throw new InvalidOperationException();
+    public Engine Engine => _engine ?? throw new InvalidOperationException();
 
     //  Client API
-    public EngineStatus Status => engine?.Status ?? new EngineStatus();
+    public EngineStatus Status => _engine?.Status ?? new EngineStatus();
     public Graph Graph => Engine.graph ?? throw new InvalidOperationException();
     public IHome Home => Engine.home ?? throw new InvalidOperationException();
     public ICommandSender CommandSender => this;
+
+    private readonly CancellationTokenSource _mainLoopCancel = new();
 
     public async Task Start(CancellationToken cancellationToken)
     {
         var graph = await LoadGraph();
 
-        comms = await Connect();
+        _comms = await Connect();
 
-        var home = new Home(comms);
+        var home = new Home(_comms);
 
         await home.WaitForEntities();
         
-        engine = new Engine(home, graph, comms);
+        _engine = new Engine(home, graph, _comms);
 
-        mainLoop = Task.Run(() => engine.MainLoop(cancellationToken), cancellationToken);
+        var token = _mainLoopCancel.Token;
+        Tasks.Run(() => _engine.MainLoop(token), token);
     }
 
     public static async Task<Graph> LoadGraph()
@@ -83,9 +89,11 @@ public class EngineService: IEngineService, ICommandSender
     private static void ExamineGraph(string json)
     {
         Console.WriteLine("Checking nodes");
+        
         var bytes = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(json));
         var options = new JsonReaderOptions();
         var reader = new Utf8JsonReader(bytes, options);
+        
         using (var jsonDocument = JsonDocument.ParseValue(ref reader))
         {
             var nodes = jsonDocument.RootElement.GetProperty("nodes");
@@ -141,16 +149,12 @@ public class EngineService: IEngineService, ICommandSender
     {
         try
         {
-            if (mainLoop != null)
+            _mainLoopCancel.Cancel();
+            
+            if (_engine != null)
             {
-                mainLoop.Dispose();
-                mainLoop = null;
-            }
-
-            if (engine != null)
-            {
-                engine.Dispose();
-                engine = null;
+                _engine.Dispose();
+                _engine = null;
             }
         }
         catch (Exception e)
@@ -177,18 +181,18 @@ public class EngineService: IEngineService, ICommandSender
 
     public void SetPaused(bool paused)
     {
-        if (engine != null && engine.paused != paused)
+        if (_engine != null && _engine.paused != paused)
         {
-            engine.paused = paused;
+            _engine.paused = paused;
         }
     }
 
     public async Task<ServerResult> Send(ClientCommand command)
     {
-        if (comms == null)
+        if (_comms == null)
             throw new Exception("Not connected");
         
-        return await comms.SendCommand<ServerResult>(command, 1000);
+        return await _comms.SendCommand<ServerResult>(command, 1000);
     }
 
     public void Subscribe(Pin.Changed pinChanged, Alert.Changed alertChanged)

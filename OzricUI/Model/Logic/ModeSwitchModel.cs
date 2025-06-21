@@ -1,7 +1,8 @@
 using Blazor.Diagrams.Core.Geometry;
+using Ozric.Engine.Graph.Logic;
 using OzricEngine.Nodes;
 using OzricUI.Components;
-using ValueType = OzricEngine.Values.ValueType;
+using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace OzricUI.Model;
 
