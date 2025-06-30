@@ -4,11 +4,10 @@
 @using Blazor.Diagrams.Components
 @using Blazor.Diagrams.Core.Models.Base
 @using Blazor.Diagrams.Options
+@using Ozric.Dashboard.Diagram
 @using Ozric.Engine.Extensions
 @using Ozric.Engine.Graph
-@using Ozric.Engine.Nodes
 @using Ozric.Engine.Nodes.Entities
-@using OzricEngine
 @using OzricEngine.Values
 @using OzricService
 @using ValueType = Ozric.Engine.Values.ValueType
@@ -46,8 +45,8 @@
     private bool CanUndo => GraphEditState.IsEditing && GetHistory().CanUndo();
     private bool CanRedo => GraphEditState.IsEditing && GetHistory().CanRedo();
 
-    private EditHistory? history;
-    private EditHistory GetHistory() => history!;
+    private EditHistory? _history;
+    private EditHistory GetHistory() => _history!;
 
     private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
     private readonly Mapping<Edge, LinkModel> edgeMappings = new();
@@ -72,10 +71,12 @@
             DeleteKey = "",
             DefaultNodeComponent = null, // Default component for nodes
             */
+
+
             AllowMultiSelection = true, // Whether to allow multi selection using CTRL
         };
-        options.Zoom.Minimum = 0.5f;
-        options.Zoom.Inverse = false;
+        options.AllowPanning = false;
+        options.Zoom.Enabled = false;
         
         Diagram = new BlazorDiagram(options);
         
@@ -92,8 +93,10 @@
         diagram.KeyDown += GraphEditState.KeyDown;
         */
 
-        history = new EditHistory(this);
+        _history = new EditHistory(this);
         UpdateLockedState();
+
+        Diagram.AddConstraintBehaviour();
     }
 
     protected override void OnParametersSet()
@@ -253,23 +256,10 @@
         
         nodeMappings.Clear();
         edgeMappings.Clear();
-
-        /*
-        foreach (var entity in )
-        {
-            var category = entity.GetCategory();
-            if (category == Category.Unknown)
-                continue;
-            
-            var nodeType = CategoryModelMappings.Get(category);
-            var node = (Node) Activator.CreateInstance(nodeType, entity.id, entity.id);
-            Graph.AddNode(node);
-        }
-        */
         
         double minX = 0, minY = 0;
-        int x = 0, y = 0, w = 160, h = 120, cols = 6; 
-        
+        int x = 0, y = 0, w = 160, h = 120, cols = 6;
+
         foreach (var node in Graph.nodes.Values.Where(node => node.area_id == areaId))
         {
             var position = GraphLayout.nodeLayout.GetOrSet(node.id, () =>
@@ -280,6 +270,7 @@
                     x = 0;
                     ++y;
                 }
+
                 return point;
             }).ToPoint();
 
@@ -320,12 +311,15 @@
     /// Take an existing node in the Graph and add it as the equivalent model object in the Diagram.
     /// The caller is expected to have added it to the DiagramLayout
 
-    public void AddNode(Node node, Point position)
+    public GraphNodeModel AddNode(Node node, Point position)
     {
         var diagramNode = CreateModel(node, position);
 
         nodeMappings.Add(node, diagramNode);
         Diagram.Nodes.Add(diagramNode);
+
+        var (x, y) = ConstraintBehavior.ApplyConstraints(Diagram, diagramNode, position.X, position.Y);
+        diagramNode.SetPosition(x, y);
 
         /*
         var expectedPortCount = node.inputs.Count + node.outputs.Count;
@@ -346,8 +340,10 @@
             else
                 oy += dy;
         }
-    }
 
+        return diagramNode;
+    }
+    
     /// Remove the model object that represents the given node in the Graph from the Diagram
 
     public void RemoveNode(Node node)
@@ -426,11 +422,9 @@
                     var p = c.GetParameters();
                     return (p.Length == 2 && p[0].ParameterType == node.GetType() && p[1].ParameterType == typeof(Point));
                 });
-                return (GraphNodeModel) applicable.Invoke(new object?[] {node, point});
+                return (GraphNodeModel) applicable.Invoke([node, point]);
             }
         }
-
-        throw new Exception($"Unhandled type {node.GetType()}");
     }
 
     private void OnNodeModelMoving(NodeModel nodeModel)

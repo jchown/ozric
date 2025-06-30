@@ -110,7 +110,7 @@
     <MudMainContent>
         <MudCarousel ShowArrows="true" ShowBullets="false" AutoCycle="false" Transition="Transition.Slide"
                      @ref="_areasCarousel" ItemsSource="@Areas" @bind-SelectedIndex="SelectedAreaIndex"
-                     Class="mud-width-full" Style="height:200px;">
+                     Class="mud-width-full">
             <ItemTemplate>
                 <div class="d-flex flex-column flex-column justify-center" style="height: 100%">
                     <MudText Align="@Align.Center" Class="mx-auto">@context.name</MudText>
@@ -151,7 +151,9 @@
             }
             else
             {
-                <AreaView Graph="@Graph" GraphLayout="@GraphLayout" GraphEditState="@GraphEditState" AreaId="@Areas[SelectedAreaIndex].area_id" />
+                <div style="border-width: 1px; border-style: solid; border-color: black; margin: 2px">
+                    <AreaView Graph="@Graph" GraphLayout="@GraphLayout" GraphEditState="@GraphEditState" AreaId="@Areas[SelectedAreaIndex].area_id" />
+                </div>
             }
         </div>
     </MudMainContent>

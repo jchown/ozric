@@ -6,27 +6,18 @@ using LogLevel = Ozric.Engine.Utils.LogLevel;
 
 namespace Ozric.Dashboard.Shared;
 
-public class EditHistory: OzricObject
+public class EditHistory(AreaView areaView) : OzricObject
 {
     public override string Name => "History";
-    
-    private readonly AreaView _editor;
-    private readonly List<GraphEditAction> _undoActionList;
-    private readonly List<GraphEditAction> _redoActionList;
-    private readonly bool _isTrackingHistory;
+
+    private readonly List<GraphEditAction> _undoActionList = new();
+    private readonly List<GraphEditAction> _redoActionList = new();
+    private readonly bool _isTrackingHistory = true;
 
     private const int ActionHistoryMaxSize = 200;
     private bool _isDoing;
     private int _checkpoint = 0;
 
-    public EditHistory(AreaView editor)
-    {
-        _editor = editor;
-        _undoActionList = new();
-        _redoActionList = new();
-        _isTrackingHistory = true;
-    }
-    
     public bool CanUndo()
     {
         return _undoActionList.Any();
@@ -44,9 +35,9 @@ public class EditHistory: OzricObject
         
         Log(LogLevel.Debug, "Undo {0}", _undoActionList[^1]);
         _isDoing = true;
-        _undoActionList[^1].Undo(_editor);
+        _undoActionList[^1].Undo(areaView);
         RemoveLastUndoAction();
-        _editor.Diagram.UnselectAll();
+        areaView.Diagram.UnselectAll();
         _isDoing = false;
     }
 
@@ -57,9 +48,9 @@ public class EditHistory: OzricObject
 
         Log(LogLevel.Debug, "Redo {0}", _redoActionList[^1]);
         _isDoing = true;
-        _redoActionList[^1].Do(_editor);
+        _redoActionList[^1].Do(areaView);
         RemoveLastRedoAction();
-        _editor.Diagram.UnselectAll();
+        areaView.Diagram.UnselectAll();
         _isDoing = false;
     }
 
@@ -135,7 +126,7 @@ public class EditHistory: OzricObject
 
             if (_undoActionList.Last() is GraphEditAction.MoveNodes lastMove)
             {
-                if (Enumerable.SequenceEqual(lastMove.Moves.Select(m => m.Node), nodeMoves.Select(m => m.Node)))
+                if (lastMove.Moves.Select(m => m.Node).SequenceEqual(nodeMoves.Select(m => m.Node)))
                 {
                     _undoActionList[^1] = lastMove.WithTo(nodeMoves);
                     return;
@@ -181,7 +172,7 @@ public class EditHistory: OzricObject
         _isDoing = true;
         try
         {
-            editAction.Do(_editor);
+            editAction.Do(areaView);
             RegisterUndoHistoryAction(editAction);
         }
         finally

@@ -5,8 +5,9 @@ using Ozric.Dashboard.Components;
 namespace Ozric.Dashboard.Model;
 
 [EditDialog(typeof(LightDialog), "Light")]
-public class LightModel: EntityModel
+public class LightModel: EntityModel, IAreaSink
 {
+    
     public const string ICON = "mdi:lightbulb";
 
     public LightModel(Light light, Point? point = null): base(light, point)
