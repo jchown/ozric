@@ -27,7 +27,6 @@ public class ConstraintBehavior : Behavior
         diagram.PointerUp += OnPointerUp;
     }
 
-
     private void OnPointerDown(Blazor.Diagrams.Core.Models.Base.Model? model, PointerEventArgs e)
     {
         if (model is not MovableModel)
@@ -105,7 +104,6 @@ public class ConstraintBehavior : Behavior
         return (ndx, ndy);
     }
 
-
     private (double ndx, double ndy) ApplyConstraints(Blazor.Diagrams.Core.Models.Base.Model model, double x, double y)
     {
         return ApplyConstraints(Diagram, model, x, y);
@@ -117,18 +115,18 @@ public class ConstraintBehavior : Behavior
             return (x, y);
         
         var minX = diagram.Container.Left + 100;
-        var maxX = diagram.Container.Right - 200;
+        var maxX = diagram.Container.Right - 300;
         var minY = diagram.Container.Top ;
         var maxY = diagram.Container.Bottom - 300;
         
         if (model is IAreaSource)
         {
-            minX = maxX = 100;
+            maxX = minX;
         }
         
         if (model is IAreaSink)
         {
-            minX = maxX = diagram.Container.Right - 200;
+            minX = maxX;
         }
         
         return (Math.Clamp(x, minX, maxX), Math.Clamp(y, minY, maxY));

@@ -80,13 +80,9 @@
         
         Diagram = new BlazorDiagram(options);
         
-        /* 9.0
         foreach (var modelType in GraphNodeModel.GetDerivatives())
-            diagram.RegisterModelComponent(modelType, typeof(GraphNodeComponent));
+            Diagram.RegisterComponent(modelType, typeof(GraphNodeComponent));
 
-        diagram.RegisterModelComponent(typeof(ZoneModel), typeof(ZoneComponent));
-        */
-        
         Diagram.SelectionChanged += OnSelectionChanged;
         /* 9.0
         diagram.Links.Added += OnDiagramLinkAdded;
@@ -101,7 +97,28 @@
 
     protected override void OnParametersSet()
     {
-        PopulateDiagram(AreaId);
+        base.OnParametersSet();
+        
+        if (string.IsNullOrEmpty(AreaId))
+            return;
+
+        if (Diagram == null)
+            throw new InvalidOperationException("Diagram is not initialized");
+
+        if (_areaId == AreaId)
+            return;
+
+        if (Diagram.Container != null)
+        {
+            PopulateDiagram(AreaId);
+        }
+        else
+        {
+            Diagram.ContainerChanged += () =>
+            {
+                PopulateDiagram(AreaId);
+            };
+        }
     }
 
     private void DoCommand(GraphEditState.Command command)
