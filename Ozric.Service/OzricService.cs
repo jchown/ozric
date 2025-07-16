@@ -7,6 +7,7 @@ using Ozric.Engine.Graph;
 using Ozric.Engine.Live;
 using Ozric.Engine.Nodes.Entities;
 using Ozric.Engine.Utils;
+using Ozric.Service;
 using OzricEngine;
 using OzricEngine.engine;
 using OzricEngine.Nodes;
@@ -109,7 +110,7 @@ public class OzricService: IOzricService, ICommandSender
     }
 
 
-    public static async Task SaveGraph(Graph graph)
+    public async Task SaveGraph(Graph graph)
     {
         var json = Json.Prettify(Json.Serialize(graph));
         Console.WriteLine(json);

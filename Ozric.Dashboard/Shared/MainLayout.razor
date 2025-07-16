@@ -11,6 +11,7 @@
 @using System.Reflection
 @using Ozric.Engine.Graph
 @using Ozric.Engine.Model
+@using Ozric.Service
 @using Sentry
 @inherits LayoutComponentBase
 @inject IDialogService DialogService
@@ -287,8 +288,9 @@
         GraphEditState.OnSaving();
         try
         {
-            await OzricService.Restart(Graph);
+            await OzricService.SaveGraph(Graph);
             await Data.SetGraphLayoutAsync(GraphLayout);
+            Storage.Commit("Dashboard Save");
             await InvokeAsync(() => GraphEditState.DoCommand(GraphEditState.Command.SetCheckpoint));
         }
         catch (Exception e)

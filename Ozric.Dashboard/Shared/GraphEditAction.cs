@@ -56,29 +56,29 @@ public interface GraphEditAction
 
             editor.Graph.AddNode(Node);
             var pos = editor.Diagram.GetScreenPoint(0.3, 0.2);
-            editor.GraphLayout.nodeLayout[Node.id] = LayoutPoint.FromPoint(pos);
+            editor.GraphLayout.SetNodePosition(editor.AreaId, Node.id, LayoutPoint.FromPoint(pos));
             editor.AddNode(Node, pos);
         }
         
         public void Undo(AreaView editor)
         {
             editor.RemoveNode(Node);
-            editor.GraphLayout.nodeLayout.Remove(Node.id);
+            editor.GraphLayout.RemoveNode(editor.AreaId, Node.id);
         }
     }
 
     record RenameNode(Node Node, string NewId): GraphEditAction
     {
-        private readonly string _oldID = Node.id;
+        private readonly string _oldId = Node.id;
         
         public void Do(AreaView editor)
         {
-            editor.RenameNode(_oldID, NewId);
+            editor.RenameNode(_oldId, NewId);
         }
 
         public void Undo(AreaView editor)
         {
-            editor.RenameNode(NewId, _oldID);
+            editor.RenameNode(NewId, _oldId);
         }
     }
 

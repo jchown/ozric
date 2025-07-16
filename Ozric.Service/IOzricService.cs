@@ -21,6 +21,8 @@ public interface IOzricService
     Task Start(CancellationToken token);
     
     void SetPaused(bool statusPaused);
+
+    Task SaveGraph(Graph graph);
     
     Task Restart(Graph graph);
     

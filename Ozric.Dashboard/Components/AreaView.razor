@@ -8,6 +8,7 @@
 @using Ozric.Engine.Extensions
 @using Ozric.Engine.Graph
 @using Ozric.Engine.Nodes.Entities
+@using OzricEngine
 @using OzricEngine.Values
 @using OzricService
 @using ValueType = Ozric.Engine.Values.ValueType
@@ -277,19 +278,21 @@
         double minX = 0, minY = 0;
         int x = 0, y = 0, w = 160, h = 120, cols = 6;
 
-        foreach (var node in Graph.nodes.Values.Where(node => node.area_id == areaId))
+        foreach (var node in Graph.nodes.Values.Where(node => node.area_id == areaId || node.area_id == IHome.GlobalAreaId))
         {
-            var position = GraphLayout.nodeLayout.GetOrSet(node.id, () =>
+            var point = GraphLayout.GetNodePosition(AreaId, node.id);
+            if (point == null)
             {
-                var point = new LayoutPoint(x * w, y * h);
+                point = new LayoutPoint(x * w, y * h);
                 if (++x == cols)
                 {
                     x = 0;
                     ++y;
                 }
-
-                return point;
-            }).ToPoint();
+                GraphLayout.SetNodePosition(AreaId, node.id, point);
+            }
+            
+            var position = point.ToPoint();
 
             minX = Math.Min(minX, position.X);
             minY = Math.Min(minY, position.Y);
@@ -458,9 +461,9 @@
         if (nodeID == null)
             throw new Exception("Node not found");
 
-        from = GraphLayout.nodeLayout[nodeID].ToPoint();
+        from = GraphLayout.GetNodePosition(AreaId, nodeID)!.ToPoint();
         to = nodeModel.Position;
-        GraphLayout.nodeLayout[nodeID] = LayoutPoint.FromPoint(to);
+        GraphLayout.SetNodePosition(AreaId, nodeID, LayoutPoint.FromPoint(to));
     }
 
     private void OnHistoryChanged()
@@ -477,7 +480,7 @@
         {
             var node = nodeCreator();
             Graph.AddNode(node);
-            GraphLayout.nodeLayout[node.id] = LayoutPoint.FromPoint(pos);
+            GraphLayout.SetNodePosition(AreaId, node.id, LayoutPoint.FromPoint(pos));
             AddNode(node, pos);
             pos = pos.Add(20, 0);
             nodeIDs.Add(node.id);
@@ -510,7 +513,7 @@
 
     public Point GetPosition(Node node)
     {
-        return GraphLayout.nodeLayout[node.id].ToPoint();
+        return GraphLayout.GetNodePosition(AreaId, node.id)!.ToPoint();
     }
 
     private IGraphObject GetGraphObject(SelectableModel selectableModel)
@@ -546,8 +549,7 @@
         Graph.nodes.Remove(originalID);
         Graph.nodes[newID] = node;
 
-        GraphLayout.nodeLayout[newID] = GraphLayout.nodeLayout[originalID];
-        GraphLayout.nodeLayout.Remove(originalID);
+        GraphLayout.RemapNodeID(originalID, newID);
 
         Reload(node);
     }

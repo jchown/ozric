@@ -1,15 +1,7 @@
-using System.Text;
-using System.Text.Json;
-using System.Xml;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Net.Http.Headers;
 using Ozric.Dashboard.Shared;
-using Ozric.Engine.Graph;
-using Ozric.Engine.Nodes;
+using Ozric.Service;
 using OzricEngine;
 using OzricService;
-using Sentry;
-using LogLevel = Microsoft.Extensions.Logging.LogLevel;
 
 namespace Ozric.Dashboard.Data;
 
@@ -34,25 +26,23 @@ public class DataService
 
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<DataService> _logger;
-    
-    private const string CLIENT_USER_AGENT = "Spike";
+    private readonly string _filename;
+
+    private const string ClientUserAgent = "Spike";
 
     public DataService(IHttpClientFactory httpClientFactory, ILogger<DataService> logger)
     {
         _httpClientFactory = httpClientFactory;
         _logger = logger;
+        _filename = $"{Storage.RootPath}/graph_layout.json";
     }
-
-    public string? Debug { get; set; } = null;//"kitchen-light-2";
     
     public async Task<GraphLayout> GetGraphLayoutAsync()
     {
         try
         {
-            var json = await File.ReadAllTextAsync(Storage.RootPath + "/graph_layout.json");
+            var json = await File.ReadAllTextAsync(_filename);
             var graphLayout = Json.Deserialize<GraphLayout>(json);
-
-            ShowDebug("Load", graphLayout);
             
             return graphLayout;
         }
@@ -65,60 +55,7 @@ public class DataService
 
     public async Task SetGraphLayoutAsync(GraphLayout graphLayout)
     {
-        ShowDebug("Save", graphLayout);
-
         var json = Json.Prettify(Json.Serialize(graphLayout));
-        await File.WriteAllTextAsync(Storage.RootPath + "/graph_layout.json", json);
-    }
-
-    private void ShowDebug(string save, GraphLayout graphLayout)
-    {
-        if (Debug == null)
-            return;
-
-        if (!graphLayout.nodeLayout.ContainsKey(Debug))
-        {
-            _logger.Log(LogLevel.Information, "No key for {0} during graph {1}", Debug, save);
-            return;
-        }
-
-        var pos = graphLayout.nodeLayout[Debug];
-        _logger.Log(LogLevel.Information, "{0}.position = {1} during graph {1}", Debug, pos, save);
-    }
-
-    private async Task<TObject> Get<TObject>(string apiPath)
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"http://localhost:8099/{apiPath}")
-        {
-            Headers =
-            {
-                { HeaderNames.Accept, "application/json" },
-                { HeaderNames.UserAgent, CLIENT_USER_AGENT }
-            }
-        };
-
-        var client = _httpClientFactory.CreateClient();
-        var response = await client.SendAsync(request);
-        if (!response.IsSuccessStatusCode)
-            throw new Exception($"Get request to {apiPath} failed: {response.StatusCode}/{response.ReasonPhrase}");
-
-        return Json.Deserialize<TObject>(await response.Content.ReadAsStringAsync());
-    }
-    
-    private async Task Put<TObject>(string apiPath, TObject entity) where TObject: class
-    {
-        var request = new HttpRequestMessage(HttpMethod.Put, $"http://localhost:8099/{apiPath}")
-        {
-            Headers =
-            {
-                { HeaderNames.UserAgent, CLIENT_USER_AGENT }
-            },
-            Content = new StringContent(Json.Serialize(entity), Encoding.UTF8, "application/json")
-        };
-
-        var client = _httpClientFactory.CreateClient();
-        var response = await client.SendAsync(request);
-        if (!response.IsSuccessStatusCode)
-            throw new Exception($"Put request to {apiPath} failed: {response.StatusCode}/{response.ReasonPhrase}");
+        await File.WriteAllTextAsync(_filename, json);
     }
 }

@@ -1,10 +1,48 @@
+using Ozric.Engine.Extensions;
 using OzricEngine;
 
 namespace Ozric.Dashboard.Shared;
 
 public class GraphLayout: IEquatable<GraphLayout>
 {
-    public Dictionary<string, LayoutPoint> nodeLayout { get; set; } = new();
+    public Dictionary<string, Dictionary<string, LayoutPoint>> nodeLayoutsPerArea { get; set; } = new();
+    
+    public LayoutPoint? GetNodePosition(string areaId, string nodeId)
+    {
+        if (!nodeLayoutsPerArea.TryGetValue(areaId, out var areaLayouts))
+            return null;
+
+        if (!areaLayouts.TryGetValue(nodeId, out var layoutPoint))
+            return null;
+
+        return layoutPoint;
+    }
+
+    public void SetNodePosition(string areaId, string nodeId, LayoutPoint point)
+    {
+        var areaLayouts = nodeLayoutsPerArea.GetOrSet(areaId, () => new());
+        areaLayouts[nodeId] = point;
+    }
+
+    public void RemoveNode(string areaId, string nodeId)
+    {
+        if (nodeLayoutsPerArea.TryGetValue(areaId, out var areaLayouts))
+        {
+            areaLayouts.Remove(nodeId);
+        }
+    }
+
+    public void RemapNodeID(string originalId, string newId)
+    {
+        foreach (var areaLayouts in nodeLayoutsPerArea.Values)
+        {
+            if (areaLayouts.TryGetValue(originalId, out var layoutPoint))
+            {
+                areaLayouts.Remove(originalId);
+                areaLayouts[newId] = layoutPoint;
+            }
+        }
+    }
 
     #region Comparison
     public bool Equals(GraphLayout? other)
@@ -12,7 +50,7 @@ public class GraphLayout: IEquatable<GraphLayout>
         if (other == null)
             return false;
         
-        return nodeLayout.SequenceEqual(other.nodeLayout);
+        return nodeLayoutsPerArea.SequenceEqual(other.nodeLayoutsPerArea);
     }
     
     public override bool Equals(object? obj)
@@ -25,7 +63,7 @@ public class GraphLayout: IEquatable<GraphLayout>
 
     public override int GetHashCode()
     {
-        return nodeLayout.GetHashCode();
+        return nodeLayoutsPerArea.GetHashCode();
     }
     #endregion
 
@@ -33,5 +71,4 @@ public class GraphLayout: IEquatable<GraphLayout>
     {
         return Json.Serialize(this);
     }
-
 }
