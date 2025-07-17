@@ -299,4 +299,9 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
     {
         return nodes.ContainsKey(nodeId);
     }
+
+    public IEnumerable<Node> GetOutputs(Node node)
+    {
+        return edges.Values.Where(edge => edge.from.nodeID == node.id).Select(edge => nodes[edge.to.nodeID]);
+    }
 }

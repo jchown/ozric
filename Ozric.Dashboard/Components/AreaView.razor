@@ -278,7 +278,7 @@
         double minX = 0, minY = 0;
         int x = 0, y = 0, w = 160, h = 120, cols = 6;
 
-        foreach (var node in Graph.nodes.Values.Where(node => node.area_id == areaId || node.area_id == IHome.GlobalAreaId))
+        foreach (var node in Graph.nodes.Values.Where(node => IsActiveInArea(node)))
         {
             var point = GraphLayout.GetNodePosition(AreaId, node.id);
             if (point == null)
@@ -327,7 +327,20 @@
             Diagram.Links.Add(link);
         }
     }
-    
+
+    private bool IsActiveInArea(Node node)
+    {
+        if (node.area_id == AreaId)
+            return true;
+
+        if (node.area_id != IHome.GlobalAreaId)
+            return false;
+        
+        var outputs = Graph.GetOutputs(node);
+
+        return outputs.Any(n => n.area_id == AreaId);
+    }
+
     /// Take an existing node in the Graph and add it as the equivalent model object in the Diagram.
     /// The caller is expected to have added it to the DiagramLayout
 
