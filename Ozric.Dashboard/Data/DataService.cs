@@ -19,8 +19,8 @@ public class DataService
                 graph = engineService.Graph,
                 layout = await dataService.GetGraphLayoutAsync(),
             };
-            //return Results.Json(data, new JsonSerializerOptions { WriteIndented = true } );
-            return data;
+            
+            return Json.Serialize(data, pretty: true);
         });
     }
 

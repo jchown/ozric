@@ -43,6 +43,8 @@
 
         <MudIconButton Icon="@Icons.Material.Filled.Info" Color="Color.Inherit" OnClick="@ShowConfig" />
 
+        <MudIconButton Icon="@Icons.Material.Filled.Settings" Color="Color.Inherit" OnClick="@ShowSettings" />
+
         <MudSpacer />
         
         <MudMenu StartIcon="@Icons.Material.Filled.StickyNote2" Label="Data" Color="Color.Primary" Variant="Variant.Filled" Disabled="@IsEditing" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
@@ -473,5 +475,14 @@
         };
             
         DialogService.Show<InfoDialog>("App Information", parameters, GetDialogOptions());
+    }
+
+    private void ShowSettings()
+    {
+        var parameters = new DialogParameters()
+        {
+        };
+            
+        DialogService.Show<InfoDialog>("Settings", parameters, GetDialogOptions());
     }
 }
