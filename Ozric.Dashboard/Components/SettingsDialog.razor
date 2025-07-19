@@ -1,0 +1,75 @@
+@using Ozric.Dashboard.Data
+@using Ozric.Engine.Model
+@using OzricEngine
+@using OzricService
+@inject IOzricService OzricService
+@inject DataService DataService
+
+<MudDialog>
+    <DialogContent>
+        <MudContainer Style="max-height: 60vh; overflow-y: scroll;">
+            <MudText Typo="Typo.h6">Areas Shown In Dashboard</MudText>
+                @foreach (var area in _areas)
+                {
+                    <MudToggleIconButton Toggled="@(!_hiddenAreas.Contains(area.area_id))" 
+                                         ToggledChanged="@(OnToggledChanged(area.area_id))"
+                                         Icon="@Icons.Material.Filled.CheckBoxOutlineBlank" 
+                                         ToggledIcon="@Icons.Material.Filled.CheckBox" />
+                    
+                    <span>@area.name</span>
+                }
+        </MudContainer>
+    </DialogContent>
+ 
+     <DialogActions>
+         <MudButton OnClick="@Save" Disabled="!HasChanges">Save</MudButton>
+         <MudButton OnClick="@Cancel">@CancelButtonText</MudButton>
+    </DialogActions>
+
+</MudDialog>
+
+@code {
+    private Settings _currentSettings;
+    private List<string> _hiddenAreas;
+    private List<AreaConfig> _areas;
+
+    [CascadingParameter]
+    IMudDialogInstance MudDialog { get; set; }
+    
+    void Cancel() => MudDialog.Cancel();
+    void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
+
+    private bool HasChanges => GetChanges().Count > 0;
+    private string CancelButtonText => HasChanges ? "Cancel" : "Close";
+
+    protected override void OnInitialized()
+    {
+        _areas = OzricService.Home.GetAreas()
+            .Where(a => a.area_id != IHome.GlobalAreaId)
+            .ToList();
+        
+        _currentSettings = DataService.GetSettings();
+        _hiddenAreas = new List<string>(_currentSettings.HiddenAreas);
+    }
+    
+    private List<Action<Settings>> GetChanges()
+    {
+        var changes = new List<Action<Settings>>();
+
+        if (!_hiddenAreas.SequenceEqual(_currentSettings.HiddenAreas))
+            changes.Add(settings => settings.HiddenAreas = _hiddenAreas);
+
+        return changes;
+    }
+
+    private Action<bool> OnToggledChanged(string areaId)
+    {
+        return (toggled) =>
+        {
+            if (toggled)
+                _hiddenAreas.Remove(areaId);
+            else
+                _hiddenAreas.Add(areaId);
+        };
+    }
+}

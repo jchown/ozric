@@ -8,5 +8,6 @@ public class DownloadData
 {
     public Graph graph;
     public GraphLayout layout;
+    public Settings settings;
 };
 

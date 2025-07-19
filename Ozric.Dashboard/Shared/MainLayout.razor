@@ -20,7 +20,6 @@
 @inject NavigationManager Navigation
 @inject IJSRuntime Javascript
 @inject OzricConfig Config
-@inject IOzricService EngineService
 
 <PageTitle>Ozric - Graph</PageTitle>
 <HeadContent>
@@ -199,16 +198,22 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Areas = EngineService.Home.GetAreas();
+        Areas = ShownAreas();
         
         await LoadGraph();
 
-        EngineService.Subscribe(OnPinChanged, OnAlertChanged);
+        OzricService.Subscribe(OnPinChanged, OnAlertChanged);
     }
-    
+
+    private List<AreaConfig> ShownAreas()
+    {
+        var settings = Data.GetSettings();
+        return OzricService.Home.GetAreas().Where(a => !settings.HiddenAreas.Contains(a.area_id)).ToList();
+    }
+
     void IDisposable.Dispose()
     {
-        EngineService.Unsubscribe(OnPinChanged, OnAlertChanged);
+        OzricService.Unsubscribe(OnPinChanged, OnAlertChanged);
     }
 
     private void OnPinChanged(string nodeID, string pinName, Value value)
@@ -232,7 +237,7 @@
     private async Task LoadGraph()
     {
         Graph = OzricService.Graph;//Json.Clone(Ozric.Service.Graph); // Don't edit the live graph!
-        GraphLayout = await Data.GetGraphLayoutAsync();
+        GraphLayout = Data.GetGraphLayout();
 
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnSelectionChanged += GraphSelectionChanged;
@@ -477,12 +482,31 @@
         DialogService.Show<InfoDialog>("App Information", parameters, GetDialogOptions());
     }
 
-    private void ShowSettings()
+    private async Task ShowSettings()
     {
         var parameters = new DialogParameters()
         {
         };
             
-        DialogService.Show<InfoDialog>("Settings", parameters, GetDialogOptions());
+        var dialog = await DialogService.ShowAsync<SettingsDialog>("Dashboard Settings", parameters, GetDialogOptions());
+        var changes = await dialog.GetReturnValueAsync<List<Action<Settings>>>();
+        if (changes == null || changes.Count == 0)
+            return;
+        
+        //  Apply the changes to the settings.
+        
+        var settings = Data.GetSettings();
+        var selectedAreaId = Areas[SelectedAreaIndex].area_id;
+        
+        foreach (var change in changes)
+            change(settings);
+
+        await Data.SetSettingsAsync(settings);
+
+        //  Refresh properties that depend on settings.
+        
+        Areas = ShownAreas();
+        var areaIndex = Areas.FindIndex(a => a.area_id == selectedAreaId);
+        SelectedAreaIndex = areaIndex >= 0 ? areaIndex : 0; // They may have hidden the area we were showing.
     }
 }
