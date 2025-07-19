@@ -8,15 +8,17 @@
 <MudDialog>
     <DialogContent>
         <MudContainer Style="max-height: 60vh; overflow-y: scroll;">
-            <MudText Typo="Typo.h6">Areas Shown In Dashboard</MudText>
+            <MudText Typo="Typo.h6">Areas Shown</MudText>
                 @foreach (var area in _areas)
                 {
-                    <MudToggleIconButton Toggled="@(!_hiddenAreas.Contains(area.area_id))" 
-                                         ToggledChanged="@(OnToggledChanged(area.area_id))"
-                                         Icon="@Icons.Material.Filled.CheckBoxOutlineBlank" 
-                                         ToggledIcon="@Icons.Material.Filled.CheckBox" />
-                    
-                    <span>@area.name</span>
+                    <span style="display: inline-flex; align-items: center;">
+                        <MudToggleIconButton Toggled="@(!_hiddenAreas.Contains(area.area_id))"
+                                             ToggledChanged="@(OnToggledChanged(area.area_id))"
+                                             Icon="@Icons.Material.Filled.CheckBoxOutlineBlank"
+                                             ToggledIcon="@Icons.Material.Filled.CheckBox"/>
+
+                        <span style="white-space: nowrap">@area.name &nbsp; &nbsp; &nbsp; </span>
+                    </span>
                 }
         </MudContainer>
     </DialogContent>
