@@ -1,0 +1,73 @@
+@using System.Text
+@using Ozric.Dashboard.Data
+@using OzricEngine.Nodes
+@using OzricEngine.Values
+@using OzricService
+@using ValueType = Ozric.Engine.Values.ValueType
+@inject IOzricService OzricService
+@inject DataService DataService
+
+<MudContainer Style="height: 100%; overflow-y: scroll">
+    <MudText Typo="Typo.h6">Colors</MudText>
+    
+    <MudGrid>
+        @foreach (var area in _currentColors)
+        {
+            <MudItem xs="12" sm="6" md="4" lg="3">
+                <MudCard>
+                    <MudCardMedia Style="@GetMediaStyle(area)" Height="120" />
+                    <MudCardContent>
+                        <MudText Typo="Typo.h6">@area.Key</MudText>
+                        <MudText Typo="Typo.subtitle1">Used by @NumNodesUsing(area.Key) nodes.</MudText>
+                    </MudCardContent>
+                    <MudCardActions>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary">View</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" Disabled="@(GraphEditState.IsLocked())">Delete</MudButton>
+                    </MudCardActions>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+    
+</MudContainer>
+
+@code {
+    [Parameter]
+    public GraphEditState GraphEditState { get; set; }
+    
+    private Dictionary<string, ColorValue> _currentColors;
+    private Dictionary<string, ColorValue> _editedColors;
+    private bool _liveEdit;
+
+    private bool HasChanges => GetChanges().Count > 0;
+    private string CancelButtonText => HasChanges ? "Cancel" : "Close";
+
+    protected override void OnInitialized()
+    {
+        _currentColors = OzricService.Graph.nodes
+            .Where(n => n.Value is Constant c && c.ConstantType == ValueType.Color)
+            .ToDictionary(n => n.Key, n => (ColorValue) ((Constant) n.Value).ConstantValue!);
+
+        _editedColors = new Dictionary<string, ColorValue>(_currentColors);
+    }
+    
+    private List<Action<Settings>> GetChanges()
+    {
+        var changes = new List<Action<Settings>>();
+
+        return changes;
+    }
+
+    private int NumNodesUsing(string areaKey)
+    {
+        return 1; // Placeholder for actual logic to count nodes using the color
+    }
+
+    private string GetMediaStyle(KeyValuePair<string, ColorValue> area)
+    {
+        if (area.Value.brightness == 0)
+            return "background: linear-gradient(135deg, #333 0%, #000 50%, #333 100%)";
+        
+        return $"background-color: #{area.Value.ToHexString()}";
+    }
+}

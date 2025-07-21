@@ -1,5 +1,4 @@
 using System.Buffers;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.Json;
 using Ozric.Engine;
@@ -210,9 +209,15 @@ public class OzricService: IOzricService, ICommandSender
         
         var toGuess = new List<string>();
         
+        //  Nodes (usually entities) that have an obvious area
+        
         foreach (var node in graph.nodes.Values)
         {
-            if (string.IsNullOrEmpty(node.area_id))
+            if (node is Constant constantNode && constantNode.ConstantType == Ozric.Engine.Values.ValueType.Color)
+            {
+                node.area_id = IHome.PaletteId;
+            }
+            else if (string.IsNullOrEmpty(node.area_id))
             {
                 if (node is EntityNode entityNode)
                 {

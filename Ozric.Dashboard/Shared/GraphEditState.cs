@@ -19,8 +19,7 @@ public class GraphEditState
 
     public enum Command
     {
-        Undo, Redo, SetCheckpoint, Delete,
-        Rebuild
+        Undo, Redo, SetCheckpoint, Delete, Rebuild
     }
     
     /// <summary>

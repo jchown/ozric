@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Ozric.Engine.Graph;
+using Ozric.Engine.Values;
 using OzricEngine.Values;
 
 namespace OzricEngine.Nodes;
@@ -12,6 +13,10 @@ public class Constant: Node
     public const string OutputName = "value";
         
     public override NodeType nodeType => NodeType.Constant;
+
+    [JsonIgnore] public ValueType ConstantType => GetOutput(OutputName).type;
+
+    [JsonIgnore] public Value? ConstantValue => GetOutput(OutputName).value;
 
     public Value value { get; set; }
 

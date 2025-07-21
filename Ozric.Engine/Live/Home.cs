@@ -227,6 +227,19 @@ public class Home: OzricObject, IHome
             _areaConfigs.Insert(0, globalArea);
         }
         
+        var colorsArea = _areaConfigs.FirstOrDefault(a => a.area_id == IHome.PaletteId);
+        if (colorsArea == null)
+        {
+            colorsArea = new AreaConfig
+            {
+                area_id = IHome.PaletteId,
+                name = "Colors",
+                icon = "mdi:palette"
+            };
+            
+            _areaConfigs.Insert(1, colorsArea);
+        }
+        
         return _areaConfigs;
     }
 

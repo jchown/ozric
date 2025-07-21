@@ -12,6 +12,7 @@
 @using Ozric.Engine.Graph
 @using Ozric.Engine.Model
 @using Ozric.Service
+@using OzricEngine
 @using Sentry
 @inherits LayoutComponentBase
 @inject IDialogService DialogService
@@ -21,7 +22,7 @@
 @inject IJSRuntime Javascript
 @inject OzricConfig Config
 
-<PageTitle>Ozric - Graph</PageTitle>
+<PageTitle>Ozric - Dashboard</PageTitle>
 <HeadContent>
     <base href="@Config.Path" />
 </HeadContent>
@@ -154,7 +155,14 @@
             else
             {
                 <div style="border-width: 1px; border-style: solid; border-color: black; margin: 2px">
-                    <AreaView Graph="@Graph" GraphLayout="@GraphLayout" GraphEditState="@GraphEditState" AreaId="@Areas[SelectedAreaIndex].area_id" />
+                    @if (Areas[SelectedAreaIndex].area_id != IHome.PaletteId)
+                    {
+                        <AreaView Graph="@Graph" GraphLayout="@GraphLayout" GraphEditState="@GraphEditState" AreaId="@Areas[SelectedAreaIndex].area_id"/>
+                    }
+                    else
+                    {
+                        <PaletteView GraphEditState="@GraphEditState" />
+                    }
                 </div>
             }
         </div>
@@ -481,7 +489,7 @@
             
         DialogService.Show<InfoDialog>("App Information", parameters, GetDialogOptions());
     }
-
+    
     private async Task ShowSettings()
     {
         var parameters = new DialogParameters()

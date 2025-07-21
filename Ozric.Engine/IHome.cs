@@ -14,9 +14,14 @@ namespace OzricEngine;
 public interface IHome
 {
     /// <summary>
-    /// Area ID for nodes that are not in any specific area.
+    /// Area ID for logic nodes that are not in any specific area.
     /// </summary>
     public const string GlobalAreaId = "<home>";
+    
+    /// <summary>
+    /// Area ID for color nodes that are never in any specific area.
+    /// </summary>
+    public const string PaletteId = "<palette>";
         
     DateTime GetTime();
 

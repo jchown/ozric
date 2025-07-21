@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace OzricEngine.Values
@@ -60,9 +59,6 @@ namespace OzricEngine.Values
         /// <summary>
         /// Return this color in the nearest equivalent RGB value, in the range 0-1
         /// </summary>
-        /// <param name="r"></param>
-        /// <param name="g"></param>
-        /// <param name="b"></param>
         public abstract void GetRGB(out float r, out float g, out float b);
 
         public override void WriteAsJSON(Utf8JsonWriter writer)
@@ -74,9 +70,9 @@ namespace OzricEngine.Values
         public string ToHexString()
         {
             GetRGB(out var r, out var g, out var b);
-            int ri = (int)(r * 255f);
-            int gi = (int)(g * 255f);
-            int bi = (int)(b * 255f);
+            var ri = (int)(r * 255f);
+            var gi = (int)(g * 255f);
+            var bi = (int)(b * 255f);
             return $"{ri:X2}{gi:X2}{bi:X2}";
         }
         
