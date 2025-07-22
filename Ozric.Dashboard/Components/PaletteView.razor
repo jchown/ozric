@@ -1,11 +1,13 @@
 @using System.Text
 @using Ozric.Dashboard.Data
+@using Ozric.Engine.Graph
 @using OzricEngine.Nodes
 @using OzricEngine.Values
 @using OzricService
 @using ValueType = Ozric.Engine.Values.ValueType
 @inject IOzricService OzricService
 @inject DataService DataService
+@inject IDialogService DialogService
 
 <MudContainer Style="height: 100%; overflow-y: scroll">
     <MudText Typo="Typo.h6">Colors</MudText>
@@ -21,7 +23,7 @@
                         <MudText Typo="Typo.subtitle1">Used by @NumNodesUsing(area.Key) nodes.</MudText>
                     </MudCardContent>
                     <MudCardActions>
-                        <MudButton Variant="Variant.Text" Color="Color.Primary">View</MudButton>
+                        <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="@(() => OnClickedView(area.Key))">View</MudButton>
                         <MudButton Variant="Variant.Text" Color="Color.Primary" Disabled="@(GraphEditState.IsLocked())">Delete</MudButton>
                     </MudCardActions>
                 </MudCard>
@@ -34,6 +36,9 @@
 @code {
     [Parameter]
     public GraphEditState GraphEditState { get; set; }
+    
+    [Parameter]
+    public Graph Graph { get; set; }
     
     private Dictionary<string, ColorValue> _currentColors;
     private Dictionary<string, ColorValue> _editedColors;
@@ -69,5 +74,28 @@
             return "background: linear-gradient(135deg, #333 0%, #000 50%, #333 100%)";
         
         return $"background-color: #{area.Value.ToHexString()}";
+    }
+
+    private async Task OnClickedView(string id)
+    {
+        var parameters = new DialogParameters
+        {
+            { "Model", null },
+            { "Node", Graph.nodes[id] }
+        };
+
+        var options = Dialogs.StandardOptions();
+
+        var dialog = await DialogService.ShowAsync<ConstantColorDialog>(id, parameters, options);
+        var result = await dialog.Result;
+        var changes = result?.Data as List<GraphEditAction>;
+        if (changes == null || changes.Count == 0)
+            return;
+
+        if (GraphEditState.Mode == GraphEditState.EditMode.View)
+            GraphEditState.OnEdit();
+
+        GraphEditState.DoAction(new GraphEditAction.EditActions(changes));
+        StateHasChanged();
     }
 }

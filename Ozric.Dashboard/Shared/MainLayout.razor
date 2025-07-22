@@ -157,11 +157,13 @@
                 <div style="border-width: 1px; border-style: solid; border-color: black; margin: 2px">
                     @if (Areas[SelectedAreaIndex].area_id != IHome.PaletteId)
                     {
-                        <AreaView Graph="@Graph" GraphLayout="@GraphLayout" GraphEditState="@GraphEditState" AreaId="@Areas[SelectedAreaIndex].area_id"/>
+                        <AreaView Graph="@Graph" GraphEditState="@GraphEditState" GraphLayout="@GraphLayout" AreaId="@Areas[SelectedAreaIndex].area_id"/>
                     }
                     else
                     {
-                        <PaletteView GraphEditState="@GraphEditState" />
+                        <!-- Colors are presented in their own view -->
+                        
+                        <PaletteView Graph="@Graph" GraphEditState="@GraphEditState" />
                     }
                 </div>
             }
@@ -354,7 +356,7 @@
             { "OnAdd", addNode }
         };
 
-        await DialogService.ShowAsync<AddNodesDialog>("Add Nodes", parameters, GetDialogOptions());
+        await DialogService.ShowAsync<AddNodesDialog>("Add Nodes", parameters, Dialogs.StandardOptions());
     }
 
     private void AddNode(Node node)
@@ -389,7 +391,7 @@
             { "Node", node }
         };
 
-        var options = GetDialogOptions();
+        var options = Dialogs.StandardOptions();
 
         var result = await DialogService.Show(type, title, parameters, options).Result;
         if (result.Canceled)
@@ -404,19 +406,6 @@
 
         GraphEditState.DoAction(new GraphEditAction.EditActions(changes));
         StateHasChanged();
-    }
-
-    private static DialogOptions GetDialogOptions()
-    {
-        var options = new DialogOptions
-        {
-            CloseOnEscapeKey = true,
-            CloseButton = true,
-            Position = DialogPosition.TopCenter,
-            MaxWidth = MaxWidth.Medium,
-            FullWidth = true
-        };
-        return options;
     }
 
     private Task OnClickDelete()
@@ -448,7 +437,7 @@
 
     private async Task OnClickUpload()
     {
-        var dialog = await DialogService.ShowAsync<DataUploadDialog>("Upload Data File", new DialogParameters(), GetDialogOptions());
+        var dialog = await DialogService.ShowAsync<DataUploadDialog>("Upload Data File", new DialogParameters(), Dialogs.StandardOptions());
         var result = await dialog.Result;
         if (result == null)
             return;
@@ -487,7 +476,7 @@
         {
         };
             
-        DialogService.Show<InfoDialog>("App Information", parameters, GetDialogOptions());
+        DialogService.Show<InfoDialog>("App Information", parameters, Dialogs.StandardOptions());
     }
     
     private async Task ShowSettings()
@@ -496,7 +485,7 @@
         {
         };
             
-        var dialog = await DialogService.ShowAsync<SettingsDialog>("Dashboard Settings", parameters, GetDialogOptions());
+        var dialog = await DialogService.ShowAsync<SettingsDialog>("Dashboard Settings", parameters, Dialogs.StandardOptions());
         var changes = await dialog.GetReturnValueAsync<List<Action<Settings>>>();
         if (changes == null || changes.Count == 0)
             return;
