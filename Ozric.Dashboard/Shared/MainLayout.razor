@@ -157,7 +157,9 @@
                 <div style="border-width: 1px; border-style: solid; border-color: black; margin: 2px">
                     @if (Areas[SelectedAreaIndex].area_id != IHome.PaletteId)
                     {
-                        <AreaView Graph="@Graph" GraphEditState="@GraphEditState" GraphLayout="@GraphLayout" AreaId="@Areas[SelectedAreaIndex].area_id"/>
+                        <!-- Most areas are shown as a graph -->
+                        
+                        <AreaGraphView Graph="@Graph" GraphEditState="@GraphEditState" GraphLayout="@GraphLayout" AreaId="@Areas[SelectedAreaIndex].area_id"/>
                     }
                     else
                     {

@@ -6,7 +6,7 @@ using LogLevel = Ozric.Engine.Utils.LogLevel;
 
 namespace Ozric.Dashboard.Shared;
 
-public class EditHistory(AreaView areaView) : OzricObject
+public class EditHistory(AreaGraphView areaGraphView) : OzricObject
 {
     public override string Name => "History";
 
@@ -35,9 +35,9 @@ public class EditHistory(AreaView areaView) : OzricObject
         
         Log(LogLevel.Debug, "Undo {0}", _undoActionList[^1]);
         _isDoing = true;
-        _undoActionList[^1].Undo(areaView);
+        _undoActionList[^1].Undo(areaGraphView);
         RemoveLastUndoAction();
-        areaView.Diagram.UnselectAll();
+        areaGraphView.Diagram.UnselectAll();
         _isDoing = false;
     }
 
@@ -48,9 +48,9 @@ public class EditHistory(AreaView areaView) : OzricObject
 
         Log(LogLevel.Debug, "Redo {0}", _redoActionList[^1]);
         _isDoing = true;
-        _redoActionList[^1].Do(areaView);
+        _redoActionList[^1].Do(areaGraphView);
         RemoveLastRedoAction();
-        areaView.Diagram.UnselectAll();
+        areaGraphView.Diagram.UnselectAll();
         _isDoing = false;
     }
 
@@ -172,7 +172,7 @@ public class EditHistory(AreaView areaView) : OzricObject
         _isDoing = true;
         try
         {
-            editAction.Do(areaView);
+            editAction.Do(areaGraphView);
             RegisterUndoHistoryAction(editAction);
         }
         finally

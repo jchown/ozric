@@ -14,9 +14,9 @@ using Ozric.Engine.Graph;
 
 public interface GraphEditAction
 {
-    void Do(AreaView editor);
+    void Do(AreaGraphView editor);
 
-    void Undo(AreaView editor);
+    void Undo(AreaGraphView editor);
 
     public static readonly ReadOnlyCollection<GraphEditAction> NoChanges = new (new List<GraphEditAction>());
 
@@ -34,13 +34,13 @@ public interface GraphEditAction
     /// <param name="Actions"></param>
     record EditActions(List<GraphEditAction> Actions): GraphEditAction
     {
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             foreach (var action in Actions)
                 action.Do(editor);
         }
 
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             for (int i = Actions.Count; --i >= 0;)
                 Actions[i].Undo(editor);
@@ -49,7 +49,7 @@ public interface GraphEditAction
 
     record AddNode(Node Node): GraphEditAction
     {
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             if (editor.Graph.HasNode(Node.id))
                 throw new Exception($"Node with ID {Node.id} already exists");
@@ -60,7 +60,7 @@ public interface GraphEditAction
             editor.AddNode(Node, pos);
         }
         
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             editor.RemoveNode(Node);
             editor.GraphLayout.RemoveNode(editor.AreaId, Node.id);
@@ -71,12 +71,12 @@ public interface GraphEditAction
     {
         private readonly string _oldId = Node.id;
         
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             editor.RenameNode(_oldId, NewId);
         }
 
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             editor.RenameNode(NewId, _oldId);
         }
@@ -86,13 +86,13 @@ public interface GraphEditAction
     {
         private readonly object? _oldValue = Property.GetValue(Node);
         
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             Property.SetValue(Node, NewValue);
             editor.Reload(Node);
         }
 
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             Property.SetValue(Node, _oldValue);
             editor.Reload(Node);
@@ -101,13 +101,13 @@ public interface GraphEditAction
     
     record AddInput(VariableInputs Node, string InputName): GraphEditAction
     {
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             editor.AddNodeInput(Node, InputName);
             editor.Reload(Node);
         }
 
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             editor.RemoveNodeInput(Node, InputName);
             editor.Reload(Node);
@@ -116,13 +116,13 @@ public interface GraphEditAction
 
     record RemoveInput(VariableInputs Node, string InputName): GraphEditAction
     {
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             editor.RemoveNodeInput(Node, InputName);
             editor.Reload(Node);
         }
         
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             editor.AddNodeInput(Node, InputName);
             editor.Reload(Node);
@@ -131,12 +131,12 @@ public interface GraphEditAction
 
     record MoveNode(NodeModel Node, Point From, Point To): GraphEditAction
     {
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             Node.SetPosition(To.X, To.Y);
         }
 
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             Node.SetPosition(From.X, From.Y);
         }
@@ -149,13 +149,13 @@ public interface GraphEditAction
 
     record MoveNodes(List<MoveNode> Moves): GraphEditAction
     {
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             foreach (var action in Moves)
                 action.Do(editor);
         }
 
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             for (int i = Moves.Count; --i >= 0;)
                 Moves[i].Undo(editor);
@@ -171,13 +171,13 @@ public interface GraphEditAction
     {
         private Point _position = Point.Zero;
 
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             _position = editor.GetPosition(Node);
             editor.RemoveNode(Node);
         }
 
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             editor.Graph.AddNode(Node);
             editor.AddNode(Node, _position);
@@ -186,7 +186,7 @@ public interface GraphEditAction
     
     record AddEdge(Edge Edge): GraphEditAction
     {
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             if (!editor.Graph.HasOutput(Edge.from))
                 throw new Exception();
@@ -198,7 +198,7 @@ public interface GraphEditAction
             editor.AddEdge(Edge);
         }
 
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             editor.RemoveEdge(Edge);
             editor.Graph.edges.Remove(Edge.id);
@@ -207,13 +207,13 @@ public interface GraphEditAction
     
     record RemoveEdge(Edge Edge): GraphEditAction
     {
-        public void Do(AreaView editor)
+        public void Do(AreaGraphView editor)
         {
             editor.RemoveEdge(Edge);
             editor.Graph.edges.Remove(Edge.id);
         }
 
-        public void Undo(AreaView editor)
+        public void Undo(AreaGraphView editor)
         {
             editor.Graph.edges.Add(Edge.id, Edge);
             editor.AddEdge(Edge);
