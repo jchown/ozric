@@ -140,26 +140,20 @@ public abstract class GraphNodeModel: NodeModel
             AlertColor = Color.Transparent;
             return;
         }
-        
-        switch (node.Alerts.Select(a => a.Level).Max())
+
+
+        AlertColor = node.Alerts.Select(a => a.Level).Max() switch
         {
-            case LogLevel.Trace:
-            case LogLevel.Debug:
-            case LogLevel.Info:
-                AlertColor = Color.Info;
-                return;
+            LogLevel.Trace => Color.Info,
+            LogLevel.Debug => Color.Info,
+            LogLevel.Info => Color.Info,
+
+            LogLevel.Warning => Color.Warning,
+
+            LogLevel.Error => Color.Error,
+            LogLevel.Fatal => Color.Error,
             
-            case LogLevel.Warning:
-                AlertColor = Color.Warning;
-                return;
-            
-            case LogLevel.Error:
-            case LogLevel.Fatal:
-                AlertColor = Color.Error;
-                return;
-            
-            default:
-                throw new ArgumentOutOfRangeException();
-        }
+            _ => throw new ArgumentOutOfRangeException()
+        };
     }
 }
