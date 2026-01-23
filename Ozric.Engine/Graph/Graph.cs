@@ -245,12 +245,12 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
         return $"{prefix}-{i}";
     }
 
-    public bool HasDevicesNode(string entityID)
+    public bool HasEntityNode(string entityID)
     {
         return nodes.Values.Any(node => node is EntityNode en && en.entityID == entityID);
     }
 
-    public EntityNode GetDevicesNode(string entityID)
+    public EntityNode GetEntityNode(string entityID)
     {
         return (EntityNode) nodes.Values.First(node => node is EntityNode en && en.entityID == entityID);
     }

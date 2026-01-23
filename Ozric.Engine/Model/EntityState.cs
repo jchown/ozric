@@ -24,8 +24,7 @@ namespace Ozric.Engine.Model
 
         public Category GetCategory()
         {
-            var typeName = entity_id.Substring(0, entity_id.IndexOf('.'));
-            return CategoryModelMappings.FromEntityID(typeName);
+            return CategoryModelMappings.FromEntityID(entity_id);
         }
     
         [JsonIgnore]

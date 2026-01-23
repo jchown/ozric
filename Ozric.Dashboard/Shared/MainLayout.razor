@@ -350,11 +350,13 @@
 
     private async Task OnClickAdd()
     {
+        var areaID = Areas[SelectedAreaIndex].area_id;
+        
         Action<Node> addNode = AddNode;
 
         var parameters = new DialogParameters
         {
-            { "Choices", AddNodeChoice.GetChoices(OzricService.Home, Graph) },
+            { "Choices", AddNodeChoice.GetChoices(OzricService.Home, Graph, areaID) },
             { "OnAdd", addNode }
         };
 

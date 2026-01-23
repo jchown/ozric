@@ -26,10 +26,14 @@ public class AddNodeChoice
         Once = once;
     }
 
-    public static List<AddNodeChoice> GetChoices(IHome home, Graph graph)
+    public static List<AddNodeChoice> GetChoices(IHome home, Graph graph, string areaId)
     {
-        var choices = home.GetEntityStates()
-            .Where(device => !graph.HasDevicesNode(device.entity_id) && CategoryModelMappings.Exists(device.GetCategory()))
+        var entitiesInArea = home.GetEntitiesInArea(areaId);
+        var entityStates = home.GetEntityStates();
+        var usableDevices = entityStates.Where(device => CategoryModelMappings.Exists(device.GetCategory())).ToList();
+        var unusedDevices = usableDevices.Where(device => !graph.HasEntityNode(device.entity_id)).ToList();
+        var unusedDevicesInArea = unusedDevices.Where(device => entitiesInArea.Any(entity => entity.id == device.entity_id)).ToList();
+        var choices = unusedDevicesInArea
             .Select(device =>
             {
                 var entityID = device.entity_id;
@@ -37,7 +41,7 @@ public class AddNodeChoice
                 var type = CategoryModelMappings.Get(category);
                 var icon = GetEntityIcon(type) ?? "icon-park-outline:chip";
                 var id = entityID.Substring(entityID.IndexOf('.') + 1);
-                if (graph.HasDevicesNode(id))
+                if (graph.HasEntityNode(id))
                     id = graph.CreateNodeID(category.ToString().ToLowerInvariant());
                 
                 return new AddNodeChoice(

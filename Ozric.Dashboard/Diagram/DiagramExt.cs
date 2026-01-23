@@ -15,4 +15,15 @@ public static class DiagramExt
         
         diagram.RegisterBehavior(new ConstraintBehavior(diagram));
     }
+
+    public static void AddLinkDragBehavior(this BlazorDiagram diagram)
+    {
+        var existing = diagram.GetBehavior<DragNewLinkBehavior>();
+        if (existing != null)
+        {
+            diagram.UnregisterBehavior<DragNewLinkBehavior>();
+        }
+        
+        diagram.RegisterBehavior(new LinkDragBehavior(diagram));
+    }
 }

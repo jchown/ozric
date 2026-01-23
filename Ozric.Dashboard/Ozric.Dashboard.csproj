@@ -20,11 +20,11 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.5" />
-    <PackageReference Include="MudBlazor" Version="8.7.0" />
-    <PackageReference Include="Sentry.AspNetCore" Version="5.9.0" />
+    <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" Version="9.0.10" />
+    <PackageReference Include="MudBlazor" Version="8.14.0" />
+    <PackageReference Include="Sentry.AspNetCore" Version="5.16.2" />
     <PackageReference Include="System.Memory" Version="4.6.3" />
-    <PackageReference Include="Z.Blazor.Diagrams" Version="3.0.3" />
+    <PackageReference Include="Z.Blazor.Diagrams" Version="3.0.4" />
   </ItemGroup>
 
   <ItemGroup>

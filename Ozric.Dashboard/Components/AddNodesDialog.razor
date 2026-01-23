@@ -22,7 +22,7 @@
 
         <MudAutocomplete T="string" Label="Search" @bind-Value="Search" ResetValueOnEmptyText="true" CoerceText="true" CoerceValue="true"/>
 
-        <MudContainer Style="max-height: 60vh; overflow-y: scroll">
+        <MudContainer Style="max-height: 600vh; overflow-y: scroll">
 
             @foreach (var choice in Choices)
             {
@@ -61,6 +61,13 @@
 
     void Cancel() => MudDialog.Cancel();
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        
+        SelectedCategories = new(Enum.GetValues<Category>());
+    }
+
     private bool IsVisible(AddNodeChoice choice)
     {
         if (!string.IsNullOrWhiteSpace(Search))
@@ -97,9 +104,6 @@
 
     private object ChoiceStyle(AddNodeChoice choice)
     {
-        if (!IsVisible(choice))
-            return "display: none";
-
-        return "";
+        return IsVisible(choice) ? "" : "display: none";
     }
 }

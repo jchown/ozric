@@ -29,7 +29,7 @@ public static class CategoryModelMappings
     
     public static Category FromEntityID(string entityId)
     {
-        var typeName = entityId.Substring(0, entityId.IndexOf('.'));
+        var typeName = entityId.Contains('.') ? entityId.Substring(0, entityId.IndexOf('.')) :entityId;
 
         return typeName switch
         {
