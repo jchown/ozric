@@ -3,6 +3,7 @@ using OzricEngine.Nodes;
 using OzricEngine.Values;
 using Ozric.Dashboard.Model;
 using Ozric.Engine.Graph;
+using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Graph.Logic;
 using Ozric.Engine.Nodes;
 using ValueType = Ozric.Engine.Values.ValueType;

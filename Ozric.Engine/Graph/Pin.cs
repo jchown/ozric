@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using OzricEngine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Graph;
 
 /// <summary>
 /// A named input or output, with a current value.

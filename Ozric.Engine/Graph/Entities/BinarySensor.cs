@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Ozric.Engine.Nodes.Entities;
+using OzricEngine;
+using OzricEngine.Nodes;
 using OzricEngine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Graph.Entities;
 
 [TypeKey(NodeType.Sensor)]
 public class BinarySensor : EntityNode

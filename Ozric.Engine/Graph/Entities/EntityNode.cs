@@ -4,7 +4,7 @@ using Ozric.Engine.Graph;
 using OzricEngine;
 using OzricEngine.Nodes;
 
-namespace Ozric.Engine.Nodes.Entities;
+namespace Ozric.Engine.Graph.Entities;
 
 /// <summary>
 /// A node that maps to a HomeAssistant entity.

@@ -1,4 +1,4 @@
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Graph;
 
 public interface IGraphObject
 {

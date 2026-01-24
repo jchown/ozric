@@ -1,9 +1,7 @@
 using System.Reflection;
-using System.Text.Json;
 using Microsoft.AspNetCore.Http.Json;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.FileProviders;
-using Microsoft.Extensions.Options;
 using Ozric.Dashboard.Data;
 using MudBlazor.Services;
 using OzricEngine;

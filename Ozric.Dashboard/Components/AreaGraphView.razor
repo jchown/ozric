@@ -7,15 +7,13 @@
 @using Ozric.Dashboard.Diagram
 @using Ozric.Engine.Extensions
 @using Ozric.Engine.Graph
-@using Ozric.Engine.Nodes.Entities
+@using Ozric.Engine.Graph.Entities
 @using OzricEngine
 @using OzricEngine.Values
-@using OzricService
 @using Anchor = Blazor.Diagrams.Core.Anchors.Anchor
 @using ValueType = Ozric.Engine.Values.ValueType
-@using Edge = OzricEngine.Nodes.Edge
+@using Edge = Ozric.Engine.Graph.Edge
 @implements IDisposable
-@inject IOzricService EngineService
 
 @if (Diagram != null)
 {
@@ -604,10 +602,13 @@
 
     private void OnDiagramLinkTargetChanged(BaseLinkModel link, Anchor anchorFrom, Anchor anchorTo)
     {
-        var fromNodeModel = (GraphNodeModel)link.Source.Model;
-        var toNodeModel = (GraphNodeModel)link.Target.Model!;
+        var fromPort = (PinPort) link.Source.Model!;
+        var toPort = (PinPort) link.Target.Model!;
+
+        var fromNodeModel = (GraphNodeModel) fromPort.Parent;
+        var toNodeModel = (GraphNodeModel) toPort.Parent;
         
-        var createPin = link.TargetMarker is PortInputAdd;
+        var createPin = link.Target.Model is PortInputAdd;
 
         var fromNode = nodeMappings.GetGraph(fromNodeModel);
         var toNode = nodeMappings.GetGraph(toNodeModel);
@@ -616,7 +617,7 @@
 
         if (!createPin)
         {
-            var toPin = toNodeModel.GetPin((PortModel) to.Model);
+            var toPin = toNodeModel.GetPin((PortModel) anchorTo.Model);
             
             // Check the user hasn't just duplicated an existing link
 

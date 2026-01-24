@@ -5,12 +5,13 @@ using System.Threading.Tasks;
 using Ozric.Engine.Extensions;
 using Ozric.Engine.Messages;
 using Ozric.Engine.Model;
-using Ozric.Engine.Nodes.Entities;
 using Ozric.Engine.Utils;
+using OzricEngine;
+using OzricEngine.Nodes;
 using OzricEngine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Graph.Entities;
 
 [TypeKey(NodeType.Light)]
 public class Light: EntityNode

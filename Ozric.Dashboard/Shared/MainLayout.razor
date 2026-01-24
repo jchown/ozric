@@ -2,7 +2,6 @@
 @using Ozric.Dashboard.Data
 @using Ozric.Dashboard.Components
 @using Ozric.Dashboard.Model
-@using OzricEngine.Nodes
 @using OzricEngine.Values
 @using OzricService
 @using Size = MudBlazor.Size
@@ -212,6 +211,8 @@
     {
         Areas = ShownAreas();
         
+        ChooseInitialArea();
+
         await LoadGraph();
 
         OzricService.Subscribe(OnPinChanged, OnAlertChanged);
@@ -221,6 +222,17 @@
     {
         var settings = Data.GetSettings();
         return OzricService.Home.GetAreas().Where(a => !settings.HiddenAreas.Contains(a.area_id)).ToList();
+    }
+
+    private void ChooseInitialArea()
+    {
+        var uri = new Uri(Navigation.Uri);
+        var segments = uri.Segments;
+        var areaId = segments.Length > 1 ? segments[1].Trim('/') : null;
+        var selectedAreaIndex = Areas.FindIndex(a => a.area_id == areaId);
+        if (selectedAreaIndex < 0)
+            selectedAreaIndex = 0;
+        SelectedAreaIndex = selectedAreaIndex;
     }
 
     void IDisposable.Dispose()

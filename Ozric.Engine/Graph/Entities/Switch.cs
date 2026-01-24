@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Ozric.Engine.Graph;
+using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Messages;
-using Ozric.Engine.Nodes.Entities;
 using Ozric.Engine.Utils;
 using OzricEngine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;

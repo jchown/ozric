@@ -1,6 +1,5 @@
 using System.Collections.ObjectModel;
 using System.Reflection;
-using System.Linq;
 using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using OzricEngine.Nodes;

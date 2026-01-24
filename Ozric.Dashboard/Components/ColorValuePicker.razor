@@ -1,9 +1,8 @@
 @using OzricEngine.Values
-@using OzricEngine.Nodes
 @using OzricService
-@using MudBlazor
 @using MudBlazor.Utilities
 @using System.Timers
+@using Ozric.Engine.Graph.Entities
 @inject IOzricService Ozric
 
 <MudSelect Value="_colorMode" Style="z-index:9999;" ValueChanged="OnColorModeChanged" HelperText="Matching colorspace modes with your lights can ensure accurate color reproduction" T="ColorMode" Label="Color Mode" Variant="Variant.Text">

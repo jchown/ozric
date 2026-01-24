@@ -1,8 +1,3 @@
-@using OzricEngine.Values
-@using OzricService
-@using Boolean = OzricEngine.Values.Binary
-@using Size = MudBlazor.Size
-
 <MudGrid>
     <MudItem xs="3">
         <MudNumericField Value="@CurrentScaledValue" TextChanged="@(OnOffsetValueChanged)" Immediate="true" Label="@Label" Min="@Min" Max="@Max"/>

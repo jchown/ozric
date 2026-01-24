@@ -1,6 +1,6 @@
 using Blazor.Diagrams.Core.Models.Base;
 using Microsoft.AspNetCore.Components.Web;
-using OzricEngine.Nodes;
+using Ozric.Engine.Graph;
 using OzricEngine.Values;
 
 namespace Ozric.Dashboard.Shared;

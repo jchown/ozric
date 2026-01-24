@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace Ozric.Engine.Graph.Logic;
+namespace Ozric.Engine.Graph;
 
 public record InputSelector(string nodeID, string inputName)
 {

@@ -1,4 +1,4 @@
-using OzricEngine.Nodes;
+using Ozric.Engine.Graph;
 
 namespace Ozric.Dashboard.Shared;
 
