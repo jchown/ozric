@@ -14,6 +14,7 @@
 @using ValueType = Ozric.Engine.Values.ValueType
 @using Edge = Ozric.Engine.Graph.Edge
 @implements IDisposable
+@inject NavigationManager Navigation
 
 @if (Diagram != null)
 {
@@ -105,7 +106,7 @@
     protected override void OnParametersSet()
     {
         base.OnParametersSet();
-        
+
         if (string.IsNullOrEmpty(AreaId))
             return;
 
@@ -114,6 +115,16 @@
 
         if (_areaId == AreaId)
             return;
+        
+        //  Check the URI of the page is correct for this area - this only really
+        //  matters when testing in localhost, as the parent page masks the inner URI.
+
+        var currentUri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var expectedPath = $"/area/{Uri.EscapeDataString(AreaId)}";
+        if (!currentUri.AbsolutePath.EndsWith(expectedPath))
+        {
+            Navigation.NavigateTo($"{currentUri.GetLeftPart(UriPartial.Authority)}{expectedPath}", forceLoad: false);
+        }
 
         if (Diagram.Container != null)
         {
@@ -613,11 +624,11 @@
         var fromNode = nodeMappings.GetGraph(fromNodeModel);
         var toNode = nodeMappings.GetGraph(toNodeModel);
 
-        var fromPin = fromNodeModel.GetPin((PortModel) anchorFrom.Model);
+        var fromPin = fromNodeModel.GetPin(fromPort);
 
         if (!createPin)
         {
-            var toPin = toNodeModel.GetPin((PortModel) anchorTo.Model);
+            var toPin = toNodeModel.GetPin(toPort);
             
             // Check the user hasn't just duplicated an existing link
 
