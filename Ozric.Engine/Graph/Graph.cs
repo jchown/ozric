@@ -154,11 +154,12 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
 
         foreach (var dependency in dependencies)
         {
-            foreach (var nodeID in dependency.Value)
+            foreach (var nodeID in dependency.Value.ToArray())
             {
                 if (!dependencies.ContainsKey(nodeID))
                 {
-                    throw new Exception($"Node '{dependency.Key}' depends on '{nodeID}', but is not in graph");
+                    Log(LogLevel.Warning, $"Node '{dependency.Key}' depends on '{nodeID}', but is not in graph");
+                    dependency.Value.Remove(nodeID);
                 }
             }
         }
