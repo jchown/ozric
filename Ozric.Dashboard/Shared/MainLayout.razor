@@ -158,7 +158,7 @@
                     {
                         <!-- Most areas are shown as a graph -->
                         
-                        <AreaGraphView Graph="@Graph" GraphEditState="@GraphEditState" GraphLayout="@GraphLayout" AreaId="@Areas[SelectedAreaIndex].area_id"/>
+                        <AreaGraphView Graph="@Graph" GraphEditState="@GraphEditState" GraphLayout="@GraphLayout" AreaId="@Areas[SelectedAreaIndex].area_id" IsRunning="@(!OzricService.Status.paused && !IsEditing)"/>
                     }
                     else
                     {
