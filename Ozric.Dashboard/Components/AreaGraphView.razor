@@ -18,7 +18,7 @@
 
 @if (Diagram != null)
 {
-    <div class="diagram-container @(IsRunning ? "running" : "")">
+    <div class="diagram-container @(IsRunning ? "running" : "") @(GraphEditState.IsEditing ? "editable" : "")">
         <CascadingValue Value="Diagram">
             <DiagramCanvas></DiagramCanvas>
         </CascadingValue>
