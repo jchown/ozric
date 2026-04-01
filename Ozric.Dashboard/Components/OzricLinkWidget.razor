@@ -1,0 +1,121 @@
+@using Blazor.Diagrams
+@using Blazor.Diagrams.Components
+@using Blazor.Diagrams.Components.Renderers
+@using Blazor.Diagrams.Core.Behaviors
+@using Ozric.Dashboard.Model
+
+@{
+    var link = (OzricLinkModel)Link;
+    var baseColor = Link.Selected
+        ? Link.SelectedColor ?? BlazorDiagram.Options.Links.DefaultSelectedColor
+        : Link.Color ?? BlazorDiagram.Options.Links.DefaultColor;
+    var result = Link.PathGeneratorResult;
+    if (result == null)
+        return;
+
+    var dnlb = BlazorDiagram.GetBehavior<DragNewLinkBehavior>();
+    var d = result.FullPath.ToString();
+    var stripeColor = link.StripeColor;
+}
+
+@* Base path with solid stroke *@
+<path d="@d"
+      stroke-width="@(Link.Width + 1).5"
+      fill="none"
+      stroke="@baseColor" />
+
+@* Animated stripe path *@
+<path d="@d"
+      class="link-stripe"
+      stroke-width="@Link.Width.ToString(System.Globalization.CultureInfo.InvariantCulture)"
+      fill="none"
+      stroke="@stripeColor"
+      stroke-dasharray="5"
+      stroke-linecap="round" />
+
+@* Selection helpers *@
+@if (dnlb?.OngoingLink == null || dnlb.OngoingLink != Link)
+{
+    @if (Link.Vertices.Count == 0)
+    {
+        @GetSelectionHelperPath(baseColor, d, 0)
+    }
+    else
+    {
+        @for (var i = 0; i < result.Paths.Length; i++)
+        {
+            var segD = result.Paths[i].ToString();
+            var index = i;
+            @GetSelectionHelperPath(baseColor, segD, index)
+        }
+    }
+}
+
+@* Source marker *@
+@if (Link.SourceMarker != null && result.SourceMarkerAngle != null && result.SourceMarkerPosition != null)
+{
+    <g transform="@(FormattableString.Invariant($"translate({result.SourceMarkerPosition.X}, {result.SourceMarkerPosition.Y}) rotate({result.SourceMarkerAngle})"))">
+        <path d="@Link.SourceMarker.Path" fill="@baseColor"></path>
+    </g>
+}
+
+@* Target marker *@
+@if (Link.TargetMarker != null && result.TargetMarkerAngle != null && result.TargetMarkerPosition != null)
+{
+    <g transform="@(FormattableString.Invariant($"translate({result.TargetMarkerPosition.X}, {result.TargetMarkerPosition.Y}) rotate({result.TargetMarkerAngle})"))">
+        <path d="@Link.TargetMarker.Path" fill="@baseColor"></path>
+    </g>
+}
+
+@* Vertices *@
+@if (Link.Vertices.Count > 0)
+{
+    var selectedColor = Link.SelectedColor ?? BlazorDiagram.Options.Links.DefaultSelectedColor;
+    var normalColor = Link.Color ?? BlazorDiagram.Options.Links.DefaultColor;
+    @foreach (var vertex in Link.Vertices)
+    {
+        <LinkVertexRenderer @key="vertex.Id"
+                    Vertex="vertex"
+                    Color="@normalColor"
+                    SelectedColor="@selectedColor" />
+    }
+}
+
+@* Labels *@
+@foreach (var label in Link.Labels)
+{
+    <LinkLabelRenderer @key="label.Id" Label="@label" Path="@result.FullPath" />
+}
+
+@code {
+    [CascadingParameter] public BlazorDiagram BlazorDiagram { get; set; } = null!;
+    [Parameter] public LinkModel Link { get; set; } = null!;
+
+    private bool _hovered;
+
+    private RenderFragment GetSelectionHelperPath(string color, string d, int index)
+    {
+        return @<path d="@d"
+                      stroke="@(Link.Selected || _hovered ? color : "transparent")"
+                      stroke-width="@((Link.Width + 12).ToString(System.Globalization.CultureInfo.InvariantCulture))"
+                      fill="none"
+                      class="selection-helper"
+                      @onpointerdown="e => OnPointerDown(e)"
+                      @onpointerdown:stopPropagation
+                      @onmouseenter="OnMouseEnter"
+                      @onmouseleave="OnMouseLeave" />;
+    }
+
+    private void OnPointerDown(PointerEventArgs e)
+    {
+        if (e.Button == 2) return;
+
+        BlazorDiagram.TriggerPointerDown(Link,
+            new Blazor.Diagrams.Core.Events.PointerEventArgs(e.ClientX, e.ClientY, e.Button, e.PointerId,
+                e.ShiftKey, e.CtrlKey, e.AltKey, e.Detail, e.Width, e.Height, e.Pressure,
+                e.TiltX, e.TiltY, e.PointerType, e.IsPrimary));
+    }
+
+    private void OnMouseEnter(MouseEventArgs e) => _hovered = true;
+    private void OnMouseLeave(MouseEventArgs e) => _hovered = false;
+}

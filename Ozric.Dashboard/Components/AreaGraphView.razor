@@ -92,6 +92,8 @@
         foreach (var modelType in GraphNodeModel.GetDerivatives())
             Diagram.RegisterComponent(modelType, typeof(GraphNodeComponent));
 
+        Diagram.RegisterComponent<OzricLinkModel, OzricLinkWidget>();
+
         Diagram.SelectionChanged += OnSelectionChanged;
         Diagram.Links.Added += OnDiagramLinkAdded;
 
@@ -270,7 +272,22 @@
         node.SetPinValue(pinName, value);
         var dnode = nodeMappings.GetDiagram(node);
         var pinID = $"{node.id}.{pinName}";
-        dnode.GetPort(pinID).RefreshAll();
+        var port = dnode.GetPort(pinID);
+        port.RefreshAll();
+
+        // If this is an output pin, update the colors of all connected links
+        if (node.HasOutput(pinName))
+        {
+            var pin = node.GetOutput(pinName);
+            foreach (var link in port.Links)
+            {
+                if (link is OzricLinkModel ozricLink)
+                {
+                    ozricLink.UpdateColors(pin);
+                    ozricLink.Refresh();
+                }
+            }
+        }
     }
 
     private void DoAlertChanged(string nodeID)
@@ -338,10 +355,14 @@
             var toD = nodeMappings.GetDiagram(edge.to.nodeID);
             var toPortID = $"{edge.to.nodeID}.{edge.to.inputName}";
 
-            var link = new LinkModel(fromD.GetPort(fromPortID), toD.GetPort(toPortID))
+            var link = new OzricLinkModel(fromD.GetPort(fromPortID), toD.GetPort(toPortID))
             {
                 Locked = !GraphEditState.IsEditing
             };
+
+            var sourceNode = Graph.nodes[edge.from.nodeID];
+            var sourcePin = sourceNode.GetOutput(edge.from.outputName);
+            link.UpdateColors(sourcePin);
 
             edgeMappings.Add(edge, link);
             Diagram.Links.Add(link);
@@ -415,8 +436,12 @@
         var toNodeModel = nodeMappings.GetDiagram(edge.to.nodeID);
         var fromPort = fromNodeModel.GetPort(edge.from.id);
         var toPort = toNodeModel.GetPort(edge.to.id);
-        
-        var link = new LinkModel(fromPort, toPort);
+
+        var link = new OzricLinkModel(fromPort, toPort);
+
+        var sourceNode = Graph.nodes[edge.from.nodeID];
+        var sourcePin = sourceNode.GetOutput(edge.from.outputName);
+        link.UpdateColors(sourcePin);
 
         edgeMappings.Add(edge, link);
         Diagram.Links.Add(link);

@@ -64,9 +64,8 @@ a, .btn-link {
     content: "An error has occurred."
 }
 
-.running g.diagram-link path:not(.selection-helper) {
-    stroke-dasharray: 5px;
-    animation: dash 1s linear infinite;
+.running .link-stripe {
+    animation: dash 0.7s linear infinite;
 }
 
 @keyframes dash {
