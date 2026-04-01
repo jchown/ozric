@@ -3,8 +3,8 @@
 
 <MudDialog>
     <DialogContent>
-
-        <MudChipSet T="Category" Filter="true" SelectedChipsChanged="OnSelectionChanged" Mandatory="true" >
+        
+        <MudChipSet T="Category?" @bind-SelectedValue="SelectedCategory" >
                 
             <MudChip Text="All" Default="true"></MudChip>
             <MudChip Text="Environment" Value="Category.Environment" />
@@ -44,6 +44,16 @@
 </MudDialog>
 
 @code {
+    
+    /// <summary>
+    /// As the logic sees it
+    /// </summary>
+    private readonly List<Category> _selectedCategories = [..Enum.GetValues<Category>()];
+    
+    /// <summary>
+    /// As the UI sees it
+    /// </summary>
+    private Category? _selectedCategory = null;
 
     [CascadingParameter]
     IMudDialogInstance? MudDialog { get; set; } = null;
@@ -53,18 +63,33 @@
 
     [Parameter]
     public Action<Node> OnAdd { get; set; }
-    
-    private List<Category> SelectedCategories { get; set; } = new();
+
+    private Category? SelectedCategory
+    {
+        get => _selectedCategory;
+        set
+        {
+            _selectedCategory = value;
+            _selectedCategories.Clear();
+            
+            if (value == null)
+            {
+                _selectedCategories.AddRange(Enum.GetValues<Category>());
+            }
+            else
+            {
+                _selectedCategories.Add((Category) value);
+            }
+        }
+    }
 
     private string Search { get; set; } = "";
 
-    void Cancel() => MudDialog.Cancel();
+    void Cancel() => MudDialog?.Cancel();
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        
-        SelectedCategories = new(Enum.GetValues<Category>());
     }
 
     private bool IsVisible(AddNodeChoice choice)
@@ -76,23 +101,8 @@
                 return false;
         }
 
-        return SelectedCategories.Contains(choice.Category);
+        return _selectedCategories.Contains(choice.Category);
     }
-/*
-    private void OnSelectionChanged(MudChip[] selection)
-    {
-        if (selection[0].Value is MudChip)            //  "All" doesn't have a Category enum value 
-        {
-            SelectedCategories = new(Enum.GetValues<Category>());
-        }
-        else
-        {
-            SelectedCategories = new(){ (Category) selection[0].Value };
-        }
-        
-        StateHasChanged();
-    }
-    */
 
     private void OnChoiceSelected(AddNodeChoice choice)
     {
