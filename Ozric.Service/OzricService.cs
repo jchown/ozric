@@ -31,6 +31,8 @@ public class OzricService: IOzricService, ICommandSender
     {
         var graph = await LoadGraph();
 
+        ValidateAndFixGraph(graph);
+        
         _comms = await Connect();
 
         var home = new Home(_comms);
@@ -44,6 +46,7 @@ public class OzricService: IOzricService, ICommandSender
         var token = _mainLoopCancel.Token;
         Tasks.Run(() => _engine.MainLoop(token), token);
     }
+
 
     private static async Task<Graph> LoadGraph()
     {
@@ -107,6 +110,37 @@ public class OzricService: IOzricService, ICommandSender
         }
     }
 
+    private void ValidateAndFixGraph(Graph graph)
+    {
+        //  Check that all references are valid
+
+        var edgeChecks = new Func<Edge, string?>[]
+        {
+            edge => graph.nodes.ContainsKey(edge.from.nodeID) ? null : $"The from node '{edge.from.nodeID}' does not exist",
+            edge => graph.nodes.ContainsKey(edge.to.nodeID) ? null : $"The to node '{edge.to.nodeID}' does not exist",
+            edge => graph.nodes[edge.from.nodeID].HasOutput(edge.from.outputName) ? null : $"The from output '{edge.from.outputName}' does not exist on node '{edge.from.nodeID}'",
+            edge => graph.nodes[edge.to.nodeID].HasInput(edge.to.inputName) ? null : $"The to input '{edge.to.inputName}' does not exist on node '{edge.to.nodeID}'"
+        };
+        
+        var badEdges = new List<string>();
+
+        foreach (var edge in graph.edges.Values)
+        {
+            var error = edgeChecks.Select(c => c(edge)).FirstOrDefault();
+            if (error == null)
+            {
+                continue;
+            }
+
+            Console.WriteLine($"Removing edge '{edge}' - {error}");
+            badEdges.Add(edge.id);
+        }
+        
+        foreach (var edgeId in badEdges)
+        {
+            graph.edges.Remove(edgeId);
+        }
+    }
 
     public async Task SaveGraph(Graph graph)
     {
