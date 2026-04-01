@@ -142,14 +142,7 @@ public class Home: OzricObject, IHome
         {
             foreach (var state in states.result)
             {
-                if (_entityStates.ContainsKey(state.entity_id))
-                {
-                    _entityStates[state.entity_id] = state;
-                }
-                else
-                {
-                    _entityStates.Add(state.entity_id, state);
-                }
+                _entityStates[state.entity_id] = state;
 
                 if (state.entity_id.StartsWith("light."))
                     state.LogLightState();
