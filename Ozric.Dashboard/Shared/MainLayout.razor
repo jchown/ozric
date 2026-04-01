@@ -290,6 +290,9 @@
 
     //  Tear down and rebuild. It would be nice to do something less brutal.
 
+        if (OzricService.Status.paused)
+            OzricService.SetPaused(false);
+
         UnloadGraph();
 
         _ = Task.Run(async () =>
