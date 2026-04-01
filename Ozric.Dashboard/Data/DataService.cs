@@ -1,4 +1,5 @@
 using Ozric.Dashboard.Shared;
+using Ozric.Engine.Live;
 using Ozric.Service;
 using OzricEngine;
 using OzricService;
@@ -20,8 +21,35 @@ public class DataService
                 layout = dataService.GetGraphLayout(),
                 settings = dataService.GetSettings()
             };
-            
+
             return Json.Serialize(data, pretty: true);
+        });
+
+        app.MapGet("/api/ha-image", async (string url, HttpContext context) =>
+        {
+            var baseUrl = HaConnectionInfo.BaseHttpUrl;
+            var token = HaConnectionInfo.Token;
+            if (baseUrl == null || token == null)
+            {
+                context.Response.StatusCode = 503;
+                return;
+            }
+
+            using var client = new HttpClient();
+            client.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+            var response = await client.GetAsync($"{baseUrl}{url}");
+            if (!response.IsSuccessStatusCode)
+            {
+                context.Response.StatusCode = (int)response.StatusCode;
+                return;
+            }
+
+            var contentType = response.Content.Headers.ContentType?.ToString() ?? "image/png";
+            context.Response.ContentType = contentType;
+            context.Response.Headers.CacheControl = "public, max-age=3600";
+
+            await response.Content.CopyToAsync(context.Response.Body);
         });
     }
 

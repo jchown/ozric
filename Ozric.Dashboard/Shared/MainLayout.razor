@@ -110,37 +110,21 @@
     </MudAppBar>
     
     <MudMainContent>
-        <MudCarousel ShowArrows="true" ShowBullets="false" AutoCycle="false" Transition="Transition.Slide"
-                     @ref="_areasCarousel" ItemsSource="@Areas" @bind-SelectedIndex="SelectedAreaIndex"
-                     Class="mud-width-full">
-            <ItemTemplate>
-                <div class="d-flex flex-column flex-column justify-center" style="height: 100%">
-                    <MudText Align="@Align.Center" Class="mx-auto">@context.name</MudText>
-                </div>
-            </ItemTemplate>
-            <BulletTemplate Context="selected">
-                <div Class="mud-button-root mud-icon-button mud-icon-button-color-inherit mud-ripple mud-ripple-icon">
-                    <span class="mud-icon-button-label">
-                        <MudTooltip Text="Delete">
-                            <MudIcon Icon="@(selected ? Icons.Material.Filled.CheckCircle : Icons.Material.Filled.Circle)" Color="@Color.Inherit"/>
-                        </MudTooltip>
-                    </span>
-                </div>
-            </BulletTemplate>
-        </MudCarousel>
-        
-        <!-- Custom bullets with tooltips -->
-        <div class="d-flex justify-center mt-3">
+        <div class="area-selector">
             @for (var i = 0; i < Areas.Count; i++)
             {
-                var index = i; // Capture for closure
-                <MudTooltip Text="@Areas[i].name">
-                    <MudIconButton Icon="@(SelectedAreaIndex == index ? Icons.Material.Filled.Circle : Icons.Material.Outlined.Circle)"
-                                   Size="Size.Small"
-                                   Color="@(SelectedAreaIndex == index ? Color.Primary : Color.Default)"
-                                   OnClick="@(() => SelectedAreaIndex = index)"
-                                   Class="mx-1" />
-                </MudTooltip>
+                var index = i;
+                var area = Areas[i];
+                var isSelected = SelectedAreaIndex == index;
+                var imageUrl = GetAreaImageUrl(area);
+                var extraClass = area.area_id == IHome.PaletteId ? "palette" : area.area_id == IHome.GlobalAreaId ? "home" : imageUrl == null ? "no-image" : "";
+                <div class="area-card @(isSelected ? "selected" : "") @(extraClass)"
+                     @onclick="@(() => SelectedAreaIndex = index)"
+                     style="@(imageUrl != null ? $"background-image: url('{imageUrl}')" : "")">
+                    <div class="area-card-overlay">
+                        <span class="area-card-name">@area.name</span>
+                    </div>
+                </div>
             }
         </div>
         
@@ -178,7 +162,6 @@
 
     private bool _isDarkMode;
     private MudThemeProvider? _mudThemeProvider;
-    private MudCarousel<AreaConfig> _areasCarousel { get; set; } = new();
     private List<AreaConfig> Areas { get; set; } = new();
     private int SelectedAreaIndex { get; set; } = 0;
 
@@ -222,6 +205,11 @@
     {
         var settings = Data.GetSettings();
         return OzricService.Home.GetAreas().Where(a => !settings.HiddenAreas.Contains(a.area_id)).ToList();
+    }
+
+    private string? GetAreaImageUrl(AreaConfig area)
+    {
+        return area.picture != null ? $"api/ha-image?url={Uri.EscapeDataString(area.picture)}" : null;
     }
 
     private void ChooseInitialArea()

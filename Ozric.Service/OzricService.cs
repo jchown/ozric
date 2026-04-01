@@ -161,15 +161,20 @@ public class OzricService: IOzricService, ICommandSender
         var supervisor = Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN");
         if (supervisor != null)
         {
+            HaConnectionInfo.BaseHttpUrl = "http://supervisor/core";
+            HaConnectionInfo.Token = supervisor;
             return new Comms(Comms.INGRESS_API, supervisor);
         }
-        
+
         var core = Environment.GetEnvironmentVariable("CORE_TOKEN");
         if (core != null)
         {
+            var wsUri = Comms.CORE_API;
+            HaConnectionInfo.BaseHttpUrl = $"http://{wsUri.Host}:{wsUri.Port}";
+            HaConnectionInfo.Token = core;
             return new Comms(Comms.CORE_API, core);
         }
-        
+
         throw new Exception("No tokens");
     }
 
