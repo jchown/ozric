@@ -279,16 +279,24 @@ public class Comms : OzricObject, IComms, IDisposable
 
         await send;
 
-        var response = await completionSource.Task;
-        var result = Json.Deserialize<TResponse>(response);
-            
-        if (command.id != result.id)
+        using var timeout = new CancellationTokenSource(millisecondsTimeout);
+        try
         {
-            throw new Exception($"Command ID mismatch: sent {command.id}, received {result.id}");
+            var response = await completionSource.Task.WaitAsync(timeout.Token);
+            var result = Json.Deserialize<TResponse>(response);
+
+            if (command.id != result.id)
+            {
+                throw new Exception($"Command ID mismatch: sent {command.id}, received {result.id}");
+            }
+
+            Log(LogLevel.Info, "Received response: ID {0}, {1}", result.id, result.Describe());
+            return result;
         }
-            
-        Log(LogLevel.Info, "Received response: ID {0}, {1}", result.id, result.Describe());
-        return result;
+        catch (OperationCanceledException)
+        {
+            throw new Exception($"Timeout waiting for response to {command}");
+        }
     }
 
     /// <summary>

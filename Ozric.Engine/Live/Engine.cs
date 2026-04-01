@@ -15,6 +15,9 @@ namespace Ozric.Engine.Live;
 
 /// <summary>
 /// Main loop that drives all node behaviour
+///
+/// Fix 2026-03-01 11:23:41.952 | Comms                            | Sending command: ID 89153, Type "config/entity_registry/list"
+
 /// </summary>
 public class Engine : OzricObject
 {
