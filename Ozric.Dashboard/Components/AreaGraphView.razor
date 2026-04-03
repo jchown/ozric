@@ -190,9 +190,14 @@
 
     public void Dispose()
     {
-        GraphEditState.OnPinChanged -= DoPinChanged;
-        GraphEditState.OnEntityRefresh -= DoEntityRefresh;
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
+        GraphEditState.OnDoCommand -= DoCommand;
+        GraphEditState.OnDoAction -= DoAction;
+        GraphEditState.OnEntityRefresh -= DoEntityRefresh;
+        GraphEditState.OnPinChanged -= DoPinChanged;
+        GraphEditState.OnAlertChanged -= DoAlertChanged;
+        Diagram.SelectionChanged -= OnSelectionChanged;
+        Diagram.Links.Added -= OnDiagramLinkAdded;
     }
 
     private void OnGraphEditStateChanged()

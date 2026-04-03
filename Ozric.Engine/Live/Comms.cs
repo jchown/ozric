@@ -308,7 +308,7 @@ public class Comms : OzricObject, IComms, IDisposable
 
         _messagePumpRunning = true;
 
-        _ = Task.Run(MessagePump);
+        Tasks.Run(MessagePump);
     }
 
     private async Task SendSubscribe()
@@ -319,7 +319,7 @@ public class Comms : OzricObject, IComms, IDisposable
             throw new Exception($"Failed to subscribe to events: {result.Describe()}");
     }
 
-    private async void MessagePump()
+    private async Task MessagePump()
     {
         try
         {

@@ -12,6 +12,7 @@
 @using Ozric.Engine.Model
 @using Ozric.Service
 @using OzricEngine
+@using Ozric.Engine.Utils
 @using Sentry
 @inherits LayoutComponentBase
 @inject IDialogService DialogService
@@ -295,7 +296,7 @@
 
         UnloadGraph();
 
-        _ = Task.Run(async () =>
+        Tasks.Run(async () =>
         {
             await LoadGraph();
             await InvokeAsync(StateHasChanged);

@@ -48,11 +48,14 @@ public class CommandBatcher: OzricObject
         var tasks = new Dictionary<int, Task<ServerResult>>();
 
         ClientCommand[] commandsToSend;
+        Dictionary<int, List<Action<ServerResult>>> handlersToProcess;
 
         lock (commands)
         {
             commandsToSend = commands.ToArray();
             commands.Clear();
+            handlersToProcess = new Dictionary<int, List<Action<ServerResult>>>(handlers);
+            handlers.Clear();
         }
 
         foreach (var command in commandsToSend)
@@ -63,13 +66,11 @@ public class CommandBatcher: OzricObject
         foreach (var task in tasks)
         {
             var result = await task.Value;
-            if (!handlers.TryGetValue(task.Key, out var handlersList))
+            if (!handlersToProcess.TryGetValue(task.Key, out var handlersList))
                 continue;
-                
+
             foreach (var handler in handlersList)
                 handler.Invoke(result);
-
-            handlers.Remove(task.Key);
         }
     }
 }

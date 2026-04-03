@@ -3,6 +3,8 @@
 @using MudBlazor.Utilities
 @using System.Timers
 @using Ozric.Engine.Graph.Entities
+@using Ozric.Engine.Utils
+@implements IDisposable
 @inject IOzricService Ozric
 
 <MudSelect Value="_colorMode" Style="z-index:9999;" ValueChanged="OnColorModeChanged" HelperText="Matching colorspace modes with your lights can ensure accurate color reproduction" T="ColorMode" Label="Color Mode" Variant="Variant.Text">
@@ -116,8 +118,15 @@
     
     private async void TimerCallback(object? o, ElapsedEventArgs elapsedEventArgs)
     {
-        if (_previewLight != null)
-            await InvokeAsync(UpdatePreview);
+        try
+        {
+            if (_previewLight != null)
+                await InvokeAsync(UpdatePreview);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error in timer callback: {ex.Message}");
+        }
     }
 
     private void SetColorSliders(ColorValue colorValue)
@@ -281,6 +290,16 @@
         SetColorSliders(value);
     }
     
+    public void Dispose()
+    {
+        if (_timer != null)
+        {
+            _timer.Elapsed -= TimerCallback;
+            _timer.Stop();
+            _timer.Dispose();
+        }
+    }
+
     private void OnPreviewLightChanged(Light? light)
     {
         _previewLight = light;
@@ -295,7 +314,7 @@
         if (command == null)
             return;
 
-        Task.Run(async () =>
+        Tasks.Run(async () =>
         {
             var result = await Ozric.CommandSender.Send(command);
             if (!result.success)
