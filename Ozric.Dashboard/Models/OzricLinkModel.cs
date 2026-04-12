@@ -33,6 +33,9 @@ public class OzricLinkModel : LinkModel
 
             case ColorValue color:
             {
+                if (color.brightness == 0)
+                    return ("#333333", "#555555");
+
                 var hex = "#" + color.ToHexString();
                 var stripe = ShiftedColor(hex);
                 return (hex, stripe);
