@@ -95,8 +95,9 @@
 
     private RenderFragment GetSelectionHelperPath(string color, string d, int index)
     {
+        var showHighlight = !Link.Locked && (Link.Selected || _hovered);
         return @<path d="@d"
-                      stroke="@(Link.Selected || _hovered ? color : "transparent")"
+                      stroke="@(showHighlight ? color : "transparent")"
                       stroke-width="@((Link.Width + 12).ToString(System.Globalization.CultureInfo.InvariantCulture))"
                       fill="none"
                       class="selection-helper"

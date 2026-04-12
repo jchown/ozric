@@ -213,6 +213,9 @@
     
     private void SetLocked(bool locked)
     {
+        if (locked)
+            Diagram.UnselectAll();
+
         foreach (var node in Diagram.Nodes)
         {
             node.Locked = locked;
@@ -231,7 +234,10 @@
         }
 
         foreach (var link in Diagram.Links)
+        {
             link.Locked = locked;
+            link.Refresh();
+        }
     }
 
     private void OnDoUndo()
