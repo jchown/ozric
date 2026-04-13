@@ -1,5 +1,7 @@
 .diagram-container {
     width: 100%;
-    height: calc(100vh - 10rem);
+    height: calc(100vh - var(--nav-offset, 10rem));
+    background: linear-gradient(160deg, #faf8f5 0%, #e8e3db 40%, #d4cdc2 100%);
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.45);
 }
 

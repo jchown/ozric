@@ -33,6 +33,7 @@
 <MudThemeProvider @ref="@_mudThemeProvider" @bind-IsDarkMode="@_isDarkMode"/>
 
 <CascadingValue Value="@OzricService">
+<div class="@(_navBarCollapsed ? "nav-collapsed" : "")">
 <MudLayout>
     <MudAppBar>
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" Edge="Edge.Start" OnClick="@(async _ => await Javascript.InvokeAsync<object>("open", new []{"https://github.com/jchown/ozric-addon/", "_blank"}))" />
@@ -111,6 +112,10 @@
     </MudAppBar>
     
     <MudMainContent>
+        <div class="area-selector-wrapper">
+            <button class="pull-tab" @onclick="() => _navBarCollapsed = !_navBarCollapsed">
+                <span class="pull-tab-chevron @(_navBarCollapsed ? "collapsed" : "")"></span>
+            </button>
         <div class="area-selector">
             @for (var i = 0; i < Areas.Count; i++)
             {
@@ -128,7 +133,8 @@
                 </div>
             }
         </div>
-        
+        </div>
+
         <div style="height: 100%">
             @if (Graph == null || GraphLayout == null || Areas.Count == 0)
             {
@@ -138,7 +144,7 @@
             }
             else
             {
-                <div style="border-width: 1px; border-style: solid; border-color: black; margin: 2px">
+                <div>
                     @if (Areas[SelectedAreaIndex].area_id != IHome.PaletteId)
                     {
                         <!-- Most areas are shown as a graph -->
@@ -157,11 +163,13 @@
     </MudMainContent>
 
 </MudLayout>
+</div>
 </CascadingValue>
 
 @code {
 
     private bool _isDarkMode;
+    private bool _navBarCollapsed = false;
     private MudThemeProvider? _mudThemeProvider;
     private List<AreaConfig> Areas { get; set; } = new();
     private int SelectedAreaIndex { get; set; } = 0;

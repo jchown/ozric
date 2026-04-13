@@ -2,6 +2,7 @@
 
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    overflow: hidden;
 }
 
 h1:focus {
@@ -177,6 +178,73 @@ a, .btn-link {
 
 .area-card.no-image::before {
     background: inherit;
+}
+
+/* Nav bar collapse */
+
+:root {
+    --nav-offset: 10rem;
+}
+
+.nav-collapsed {
+    --nav-offset: 6rem;
+}
+
+.mud-appbar {
+    transition: transform 0.3s ease;
+}
+
+.mud-main-content {
+    transition: padding-top 0.3s ease !important;
+}
+
+.nav-collapsed .mud-appbar {
+    transform: translateY(-100%);
+}
+
+.nav-collapsed .mud-main-content {
+    padding-top: 0 !important;
+}
+
+/* Pull-tab toggle */
+
+.area-selector-wrapper {
+    position: relative;
+}
+
+.pull-tab {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 5;
+    width: 56px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.25);
+    border: none;
+    border-radius: 0 0 8px 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.pull-tab:hover {
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.pull-tab-chevron {
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid rgba(255, 255, 255, 0.8);
+    transition: transform 0.3s ease;
+}
+
+.pull-tab-chevron.collapsed {
+    transform: rotate(180deg);
 }
 
 .diagram-container .ozric-node {
