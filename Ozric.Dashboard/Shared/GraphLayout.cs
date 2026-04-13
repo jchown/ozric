@@ -5,6 +5,8 @@ namespace Ozric.Dashboard.Shared;
 
 public class GraphLayout: IEquatable<GraphLayout>
 {
+    public int version { get; set; }
+
     public Dictionary<string, Dictionary<string, LayoutPoint>> nodeLayoutsPerArea { get; set; } = new();
     
     public LayoutPoint? GetNodePosition(string areaId, string nodeId)
@@ -42,6 +44,21 @@ public class GraphLayout: IEquatable<GraphLayout>
                 areaLayouts[newId] = layoutPoint;
             }
         }
+    }
+
+    public void MigrateToNormalized(double containerWidth, double containerHeight)
+    {
+        foreach (var areaLayouts in nodeLayoutsPerArea.Values)
+        {
+            var keys = areaLayouts.Keys.ToList();
+            foreach (var key in keys)
+            {
+                var point = areaLayouts[key];
+                areaLayouts[key] = new LayoutPoint(point.x / containerWidth, point.y / containerHeight);
+            }
+        }
+
+        version = 2;
     }
 
     #region Comparison

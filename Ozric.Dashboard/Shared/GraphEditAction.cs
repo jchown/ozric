@@ -5,6 +5,7 @@ using Blazor.Diagrams.Core.Models;
 using OzricEngine.Nodes;
 using Ozric.Dashboard;
 using Ozric.Dashboard.Components;
+using Ozric.Dashboard.Shared;
 using Ozric.Engine.Graph;
 
 /// <summary>
@@ -55,10 +56,12 @@ public interface GraphEditAction
 
             editor.Graph.AddNode(Node);
             var pos = editor.Diagram.GetScreenPoint(0.3, 0.2);
-            editor.GraphLayout.SetNodePosition(editor.AreaId, Node.id, LayoutPoint.FromPoint(pos));
+            var container = editor.Diagram.Container!;
+            var normalized = LayoutCoordinateConverter.ToNormalized(pos, container);
+            editor.GraphLayout.SetNodePosition(editor.AreaId, Node.id, normalized);
             editor.AddNode(Node, pos);
         }
-        
+
         public void Undo(AreaGraphView editor)
         {
             editor.RemoveNode(Node);
@@ -128,21 +131,27 @@ public interface GraphEditAction
         }
     }
 
-    record MoveNode(NodeModel Node, Point From, Point To): GraphEditAction
+    record MoveNode(NodeModel Node, string NodeId, LayoutPoint FromNorm, LayoutPoint ToNorm): GraphEditAction
     {
         public void Do(AreaGraphView editor)
         {
-            Node.SetPosition(To.X, To.Y);
+            var container = editor.Diagram.Container!;
+            var pixelPos = LayoutCoordinateConverter.ToPixels(ToNorm, container);
+            Node.SetPosition(pixelPos.X, pixelPos.Y);
+            editor.GraphLayout.SetNodePosition(editor.AreaId, NodeId, ToNorm);
         }
 
         public void Undo(AreaGraphView editor)
         {
-            Node.SetPosition(From.X, From.Y);
+            var container = editor.Diagram.Container!;
+            var pixelPos = LayoutCoordinateConverter.ToPixels(FromNorm, container);
+            Node.SetPosition(pixelPos.X, pixelPos.Y);
+            editor.GraphLayout.SetNodePosition(editor.AreaId, NodeId, FromNorm);
         }
-        
-        public MoveNode WithTo(Point to)
+
+        public MoveNode WithTo(LayoutPoint to)
         {
-            return this with { To = to };
+            return this with { ToNorm = to };
         }
     }
 
@@ -159,27 +168,34 @@ public interface GraphEditAction
             for (int i = Moves.Count; --i >= 0;)
                 Moves[i].Undo(editor);
         }
-        
+
         public GraphEditAction WithTo(List<MoveNode> moves)
         {
-            return this with { Moves = Moves.Zip(moves, (a,b) => a.WithTo(b.To)).ToList() };
+            return this with { Moves = Moves.Zip(moves, (a, b) => a.WithTo(b.ToNorm)).ToList() };
         }
     }
 
     record RemoveNode(Node Node): GraphEditAction
     {
-        private Point _position = Point.Zero;
+        private LayoutPoint? _savedNorm;
 
         public void Do(AreaGraphView editor)
         {
-            _position = editor.GetPosition(Node);
+            _savedNorm = editor.GraphLayout.GetNodePosition(editor.AreaId, Node.id);
             editor.RemoveNode(Node);
+            editor.GraphLayout.RemoveNode(editor.AreaId, Node.id);
         }
 
         public void Undo(AreaGraphView editor)
         {
             editor.Graph.AddNode(Node);
-            editor.AddNode(Node, _position);
+            if (_savedNorm != null)
+                editor.GraphLayout.SetNodePosition(editor.AreaId, Node.id, _savedNorm);
+            var container = editor.Diagram.Container!;
+            var pixelPos = _savedNorm != null
+                ? LayoutCoordinateConverter.ToPixels(_savedNorm, container)
+                : Point.Zero;
+            editor.AddNode(Node, pixelPos);
         }
     }
     

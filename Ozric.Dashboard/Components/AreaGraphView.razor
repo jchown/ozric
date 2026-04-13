@@ -5,6 +5,7 @@
 @using Blazor.Diagrams.Core.Models.Base
 @using Blazor.Diagrams.Options
 @using Ozric.Dashboard.Diagram
+@using Ozric.Dashboard.Shared
 @using Ozric.Engine.Extensions
 @using Ozric.Engine.Graph
 @using Ozric.Engine.Graph.Entities
@@ -95,6 +96,7 @@
         Diagram.RegisterComponent<OzricLinkModel, OzricLinkWidget>();
 
         Diagram.SelectionChanged += OnSelectionChanged;
+        Diagram.ContainerChanged += OnContainerChanged;
         Diagram.Links.Added += OnDiagramLinkAdded;
 
         /* 9.0
@@ -135,13 +137,7 @@
         {
             PopulateDiagram(AreaId);
         }
-        else
-        {
-            Diagram.ContainerChanged += () =>
-            {
-                PopulateDiagram(AreaId);
-            };
-        }
+        // else: OnContainerChanged will call PopulateDiagram when the container becomes available
     }
 
     private void DoCommand(GraphEditState.Command command)
@@ -197,6 +193,7 @@
         GraphEditState.OnPinChanged -= DoPinChanged;
         GraphEditState.OnAlertChanged -= DoAlertChanged;
         Diagram.SelectionChanged -= OnSelectionChanged;
+        Diagram.ContainerChanged -= OnContainerChanged;
         Diagram.Links.Added -= OnDiagramLinkAdded;
     }
 
@@ -315,32 +312,41 @@
     {
         if (_areaId == areaId)
             return;
-        
+
         _areaId = areaId;
-        
+
+        var container = Diagram.Container!;
+
+        if (GraphLayout.version < 2)
+        {
+            GraphLayout.MigrateToNormalized(container.Width, container.Height);
+        }
+
         Diagram.Nodes.Clear();
-        
+
         nodeMappings.Clear();
         edgeMappings.Clear();
-        
+
         double minX = 0, minY = 0;
         int x = 0, y = 0, w = 160, h = 120, cols = 6;
 
         foreach (var node in Graph.nodes.Values.Where(IsActiveInArea))
         {
-            var point = GraphLayout.GetNodePosition(AreaId, node.id);
-            if (point == null)
+            var normalized = GraphLayout.GetNodePosition(AreaId, node.id);
+            if (normalized == null)
             {
-                point = new LayoutPoint(x * w, y * h);
+                // Grid fallback: compute pixel position, then normalize for storage
+                var gridPixel = new Point(x * w, y * h);
                 if (++x == cols)
                 {
                     x = 0;
                     ++y;
                 }
-                GraphLayout.SetNodePosition(AreaId, node.id, point);
+                normalized = LayoutCoordinateConverter.ToNormalized(gridPixel, container);
+                GraphLayout.SetNodePosition(AreaId, node.id, normalized);
             }
-            
-            var position = point.ToPoint();
+
+            var position = LayoutCoordinateConverter.ToPixels(normalized, container);
 
             minX = Math.Min(minX, position.X);
             minY = Math.Min(minY, position.Y);
@@ -377,6 +383,45 @@
 
             edgeMappings.Add(edge, link);
             Diagram.Links.Add(link);
+        }
+    }
+
+    private void OnContainerChanged()
+    {
+        if (Diagram.Container == null)
+            return;
+
+        if (_areaId == null)
+        {
+            // Container just became available - populate the diagram
+            if (!string.IsNullOrEmpty(AreaId))
+                PopulateDiagram(AreaId);
+        }
+        else
+        {
+            // Container resized - reposition all nodes from their normalized coordinates
+            RepositionAllNodes();
+        }
+    }
+
+    private void RepositionAllNodes()
+    {
+        var container = Diagram.Container;
+        if (container == null)
+            return;
+
+        foreach (var node in Graph.nodes.Values.Where(IsActiveInArea))
+        {
+            var normalized = GraphLayout.GetNodePosition(AreaId, node.id);
+            if (normalized == null)
+                continue;
+
+            if (!nodeMappings.HasGraphID(node.id))
+                continue;
+
+            var pixelPos = LayoutCoordinateConverter.ToPixels(normalized, container);
+            var nodeModel = nodeMappings.GetDiagram(node);
+            nodeModel.SetPosition(pixelPos.X, pixelPos.Y);
         }
     }
 
@@ -518,21 +563,22 @@
 
     private void OnNodeModelMoving(NodeModel nodeModel)
     {
-        GetNodeMove(nodeModel, out var from, out var to);
-        GetHistory().Node_Moved(nodeModel, from, to);
+        GetNodeMove(nodeModel, out var nodeId, out var fromNorm, out var toNorm);
+        GetHistory().Node_Moved(nodeModel, nodeId, fromNorm, toNorm);
 
         OnHistoryChanged();
     }
 
-    private void GetNodeMove(NodeModel nodeModel, out Point from, out Point to)
+    private void GetNodeMove(NodeModel nodeModel, out string nodeId, out LayoutPoint fromNorm, out LayoutPoint toNorm)
     {
-        var nodeID = nodeMappings.GetGraph(nodeModel.Id).id;
-        if (nodeID == null)
+        nodeId = nodeMappings.GetGraph(nodeModel.Id).id;
+        if (nodeId == null)
             throw new Exception("Node not found");
 
-        from = GraphLayout.GetNodePosition(AreaId, nodeID)!.ToPoint();
-        to = nodeModel.Position;
-        GraphLayout.SetNodePosition(AreaId, nodeID, LayoutPoint.FromPoint(to));
+        fromNorm = GraphLayout.GetNodePosition(AreaId, nodeId)!;
+        var container = Diagram.Container!;
+        toNorm = LayoutCoordinateConverter.ToNormalized(nodeModel.Position, container);
+        GraphLayout.SetNodePosition(AreaId, nodeId, toNorm);
     }
 
     private void OnHistoryChanged()
@@ -542,14 +588,16 @@
 
     public List<string> CreateNodes(List<Func<Node>> nodeCreators)
     {
+        var container = Diagram.Container!;
         var pos = new Point(20, 20);
         var nodeIDs = new List<string>(nodeCreators.Count);
-                
+
         foreach (var nodeCreator in nodeCreators)
         {
             var node = nodeCreator();
             Graph.AddNode(node);
-            GraphLayout.SetNodePosition(AreaId, node.id, LayoutPoint.FromPoint(pos));
+            var normalized = LayoutCoordinateConverter.ToNormalized(pos, container);
+            GraphLayout.SetNodePosition(AreaId, node.id, normalized);
             AddNode(node, pos);
             pos = pos.Add(20, 0);
             nodeIDs.Add(node.id);
@@ -582,7 +630,8 @@
 
     public Point GetPosition(Node node)
     {
-        return GraphLayout.GetNodePosition(AreaId, node.id)!.ToPoint();
+        var normalized = GraphLayout.GetNodePosition(AreaId, node.id)!;
+        return LayoutCoordinateConverter.ToPixels(normalized, Diagram.Container!);
     }
 
     private IGraphObject GetGraphObject(SelectableModel selectableModel)

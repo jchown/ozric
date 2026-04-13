@@ -1,4 +1,3 @@
-using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
 using OzricEngine.Nodes;
 using Ozric.Dashboard.Components;
@@ -93,11 +92,11 @@ public class EditHistory(AreaGraphView areaGraphView) : OzricObject
         _undoActionList.Add(editAction);
     }
     
-    public void Node_Moved(NodeModel node, Point from, Point to)
+    public void Node_Moved(NodeModel node, string nodeId, LayoutPoint fromNorm, LayoutPoint toNorm)
     {
         if (_isDoing)
             return;
-        
+
         if (_undoActionList.Any())
         {
             //  Compress moves of the same object
@@ -106,20 +105,20 @@ public class EditHistory(AreaGraphView areaGraphView) : OzricObject
             {
                 if (lastMove.Node == node)
                 {
-                    _undoActionList[^1] = lastMove.WithTo(to);
+                    _undoActionList[^1] = lastMove.WithTo(toNorm);
                     return;
                 }
             }
         }
-        
-        RegisterUndoHistoryAction(new GraphEditAction.MoveNode(node, from, to));
+
+        RegisterUndoHistoryAction(new GraphEditAction.MoveNode(node, nodeId, fromNorm, toNorm));
     }
-    
+
     public void Nodes_Moved(List<GraphEditAction.MoveNode> nodeMoves)
     {
         if (_isDoing)
             return;
-        
+
         if (_undoActionList.Any())
         {
             //  Compress moves of the same objects
@@ -133,7 +132,7 @@ public class EditHistory(AreaGraphView areaGraphView) : OzricObject
                 }
             }
         }
-        
+
         RegisterUndoHistoryAction(new GraphEditAction.MoveNodes(nodeMoves));
     }
 
