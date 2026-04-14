@@ -3,5 +3,88 @@
     height: calc(100vh - var(--nav-offset, 10rem));
     background: linear-gradient(160deg, #faf8f5 0%, #e8e3db 40%, #d4cdc2 100%);
     box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.45);
+    position: relative;
 }
 
+.unassigned-bubble {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    z-index: 5;
+    background: rgba(0, 0, 0, 0.7);
+    color: white;
+    border-radius: 16px;
+    padding: 6px 14px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    backdrop-filter: blur(4px);
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.unassigned-bubble:hover {
+    background: rgba(0, 0, 0, 0.85);
+}
+
+.unassigned-bubble.expanded {
+    border-radius: 12px;
+    flex-direction: column;
+    align-items: stretch;
+    padding: 8px;
+    min-width: 200px;
+    max-height: 300px;
+}
+
+.unassigned-count {
+    font-weight: 700;
+}
+
+.unassigned-header {
+    padding: 4px 8px;
+    font-weight: 600;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 4px;
+}
+
+.unassigned-list {
+    overflow-y: auto;
+}
+
+.unassigned-item {
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    border-radius: 4px;
+}
+
+.unassigned-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.unassigned-name {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.unassigned-add {
+    color: rgba(255, 255, 255, 0.7);
+    background: transparent;
+    border: none;
+    padding: 4px;
+    flex-shrink: 0;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.15s, color 0.15s;
+}
+
+.unassigned-add:hover {
+    color: white;
+    background: rgba(255, 255, 255, 0.15);
+}

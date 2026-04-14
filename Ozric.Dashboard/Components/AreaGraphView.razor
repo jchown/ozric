@@ -11,6 +11,7 @@
 @using Ozric.Engine.Graph.Entities
 @using OzricEngine
 @using OzricEngine.Values
+@using OzricService
 @using Anchor = Blazor.Diagrams.Core.Anchors.Anchor
 @using ValueType = Ozric.Engine.Values.ValueType
 @using Edge = Ozric.Engine.Graph.Edge
@@ -20,6 +21,35 @@
 @if (Diagram != null)
 {
     <div class="diagram-container @(IsRunning ? "running" : "") @(GraphEditState.IsEditing ? "editable" : "")">
+        @if (_unassignedEntities.Count > 0)
+        {
+            <div class="unassigned-bubble @(_unassignedExpanded ? "expanded" : "")" @onclick="ToggleUnassigned" @onclick:stopPropagation="true">
+                @if (!_unassignedExpanded)
+                {
+                    <span class="unassigned-count">@_unassignedEntities.Count</span>
+                    <span class="unassigned-label">unassigned</span>
+                }
+                else
+                {
+                    <div class="unassigned-header">
+                        <span>@_unassignedEntities.Count unassigned</span>
+                    </div>
+                    <div class="unassigned-list">
+                        @foreach (var entity in _unassignedEntities)
+                        {
+                            var e = entity;
+                            <div class="unassigned-item">
+                                <span class="iconify" data-icon="@e.Icon"></span>
+                                <span class="unassigned-name">@e.Name</span>
+                                <button class="unassigned-add" @onclick="() => AddUnassignedEntity(e)" @onclick:stopPropagation="true" title="Add node">
+                                    <span class="iconify" data-icon="mdi:plus-circle-outline"></span>
+                                </button>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        }
         <CascadingValue Value="Diagram">
             <DiagramCanvas></DiagramCanvas>
         </CascadingValue>
@@ -42,6 +72,9 @@
 
     [Parameter]
     public bool IsRunning { get; set; }
+
+    [CascadingParameter]
+    public IOzricService OzricService { get; set; }
 
     public BlazorDiagram Diagram { get; set; }
 
@@ -199,6 +232,7 @@
 
     private void OnGraphEditStateChanged()
     {
+        UpdateUnassignedEntities();
         StateHasChanged();
         UpdateLockedState();
     }
@@ -355,6 +389,8 @@
         }
 
         Diagram.SetPan(-(minX - 10), -(minY - 10));
+
+        UpdateUnassignedEntities();
 
         foreach (var edgeKV in Graph.edges.ToList())
         {
@@ -909,5 +945,57 @@
     public GraphNodeModel GetDiagramNode(string nodeID)
     {
         return nodeMappings.GetDiagram(Graph.nodes[nodeID]);
+    }
+
+    private record UnassignedEntity(string Name, string Icon, Func<Node> Create);
+
+    private bool _unassignedExpanded;
+    private List<UnassignedEntity> _unassignedEntities = new();
+
+    private void ToggleUnassigned()
+    {
+        _unassignedExpanded = !_unassignedExpanded;
+    }
+
+    private void UpdateUnassignedEntities()
+    {
+        if (OzricService?.Home == null || Graph == null || string.IsNullOrEmpty(AreaId))
+        {
+            _unassignedEntities = new();
+            return;
+        }
+
+        var home = OzricService.Home;
+        var entitiesInArea = home.GetEntitiesInArea(AreaId);
+        var entityStates = home.GetEntityStates();
+        var usableDevices = entityStates.Where(d => CategoryModelMappings.Exists(d.GetCategory())).ToList();
+        var unusedDevices = usableDevices.Where(d => !Graph.HasEntityNode(d.entity_id)).ToList();
+        var unusedInArea = unusedDevices
+            .Where(d => entitiesInArea.Any(e => e.entity_id == d.entity_id))
+            .ToList();
+
+        _unassignedEntities = unusedInArea.Select(d =>
+        {
+            var entityID = d.entity_id;
+            var category = d.GetCategory();
+            var type = CategoryModelMappings.Get(category);
+            var icon = AddNodeChoice.GetEntityIcon(type) ?? "icon-park-outline:chip";
+            var id = entityID.Substring(entityID.IndexOf('.') + 1);
+            if (Graph.HasEntityNode(id))
+                id = Graph.CreateNodeID(category.ToString().ToLowerInvariant());
+            var nodeId = id;
+            return new UnassignedEntity(entityID, icon, () => (Node)Activator.CreateInstance(type, nodeId, entityID)!);
+        }).OrderBy(e => e.Name).ToList();
+    }
+
+    private void AddUnassignedEntity(UnassignedEntity entity)
+    {
+        if (!GraphEditState.IsEditing)
+            GraphEditState.OnEdit();
+
+        var node = entity.Create();
+        node.area_id = AreaId;
+        GraphEditState.DoAction(new GraphEditAction.AddNode(node));
+        UpdateUnassignedEntities();
     }
 }

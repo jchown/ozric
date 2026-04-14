@@ -33,7 +33,7 @@ public class AddNodeChoice
         var entityStates = home.GetEntityStates();
         var usableDevices = entityStates.Where(device => CategoryModelMappings.Exists(device.GetCategory())).ToList();
         var unusedDevices = usableDevices.Where(device => !graph.HasEntityNode(device.entity_id)).ToList();
-        var unusedDevicesInArea = unusedDevices.Where(device => entitiesInArea.Any(entity => entity.id == device.entity_id)).ToList();
+        var unusedDevicesInArea = unusedDevices.Where(device => entitiesInArea.Any(entity => entity.entity_id == device.entity_id)).ToList();
         var choices = unusedDevicesInArea
             .Select(device =>
             {
@@ -150,7 +150,7 @@ public class AddNodeChoice
         return choices;
     }
 
-    private static string? GetEntityIcon(Type type)
+    internal static string? GetEntityIcon(Type type)
     {
         if (type == typeof(Light))
             return LightModel.ICON;
