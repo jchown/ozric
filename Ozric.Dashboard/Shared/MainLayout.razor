@@ -224,9 +224,14 @@
     private void ChooseInitialArea()
     {
         var uri = new Uri(Navigation.Uri);
-        var segments = uri.Segments;
-        var areaId = segments.Length > 1 ? segments[1].Trim('/') : null;
-        var selectedAreaIndex = Areas.FindIndex(a => a.area_id == areaId);
+        var path = Uri.UnescapeDataString(uri.AbsolutePath);
+        var areaPrefix = "/area/";
+        var areaStart = path.LastIndexOf(areaPrefix, StringComparison.OrdinalIgnoreCase);
+        string? areaId = null;
+        if (areaStart >= 0)
+            areaId = path.Substring(areaStart + areaPrefix.Length).TrimEnd('/');
+
+        var selectedAreaIndex = areaId != null ? Areas.FindIndex(a => a.area_id == areaId) : -1;
         if (selectedAreaIndex < 0)
             selectedAreaIndex = 0;
         SelectedAreaIndex = selectedAreaIndex;
