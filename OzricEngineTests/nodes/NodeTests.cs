@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using Ozric.Engine.Graph;
+using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Graph.Logic;
 using OzricEngine.Nodes;
 using OzricEngine.Values;

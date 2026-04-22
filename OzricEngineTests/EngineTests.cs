@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ozric.Engine.Extensions;
 using Ozric.Engine.Graph;
+using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Graph.Logic;
 using Ozric.Engine.Nodes;
 using Ozric.Engine.Utils;

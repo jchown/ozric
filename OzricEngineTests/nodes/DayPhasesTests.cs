@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Ozric.Engine.Graph;
 using OzricEngine.Values;
 using OzricEngineTests;
 using Xunit;

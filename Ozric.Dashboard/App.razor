@@ -16,6 +16,7 @@
 {
     [Parameter]
     public string Cookie { get; set; }
+    
     protected override Task OnInitializedAsync()
     {
         CookieProviderService.Cookie = Cookie;
