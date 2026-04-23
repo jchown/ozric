@@ -6,7 +6,24 @@ using Ozric.Engine.Graph;
 using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Graph.Logic;
 using Ozric.Engine.Nodes;
+using BinaryChoice = Ozric.Dashboard.Model.BinaryChoice;
+using BinarySustain = Ozric.Dashboard.Model.BinarySustain;
+using Constant = OzricEngine.Nodes.Constant;
+using DayPhases = Ozric.Dashboard.Model.DayPhases;
+using IfAll = Ozric.Dashboard.Model.IfAll;
+using IfAny = Ozric.Dashboard.Model.IfAny;
+using Light = Ozric.Dashboard.Model.Light;
+using MediaPlayer = Ozric.Dashboard.Model.MediaPlayer;
+using ModeMatch = Ozric.Dashboard.Model.ModeMatch;
+using ModeSensor = Ozric.Dashboard.Model.ModeSensor;
+using ModeSwitch = Ozric.Dashboard.Model.ModeSwitch;
+using NumberCompare = Ozric.Dashboard.Model.NumberCompare;
+using Person = Ozric.Dashboard.Model.Person;
+using SkyBrightness = Ozric.Dashboard.Model.SkyBrightness;
+using Switch = Ozric.Dashboard.Model.Switch;
+using Tween = Ozric.Dashboard.Model.Tween;
 using ValueType = Ozric.Engine.Values.ValueType;
+using Weather = Ozric.Dashboard.Model.Weather;
 
 namespace Ozric.Dashboard.Shared;
 
@@ -15,10 +32,10 @@ public class AddNodeChoice
     public readonly Category Category;
     public readonly string Name;
     public readonly string Icon;
-    public readonly Func<Node> Create;
+    public readonly Func<GraphNode> Create;
     public readonly bool Once;
 
-    public AddNodeChoice(Category category, string name, string icon, Func<Node> create, bool once = false)
+    public AddNodeChoice(Category category, string name, string icon, Func<GraphNode> create, bool once = false)
     {
         Category = category;
         Name = name;
@@ -49,7 +66,7 @@ public class AddNodeChoice
                     category: category,
                     name: entityID,
                     icon: icon,
-                    create: () => (Node) Activator.CreateInstance(type, id, entityID)!,
+                    create: () => (GraphNode) Activator.CreateInstance(type, id, entityID)!,
                     once: true);
             })
             .OrderBy(choice => choice.Category)
@@ -60,115 +77,115 @@ public class AddNodeChoice
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "If Any - OR",
-            icon: IfAnyModel.ICON,
-            create: () => new IfAny(graph.CreateNodeID("ifany"))));
+            icon: IfAny.ICON,
+            create: () => new Engine.Graph.Logic.IfAny(graph.CreateNodeID("ifany"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "If All - AND",
-            icon: IfAllModel.ICON,
-            create: () => new IfAll(graph.CreateNodeID("ifall"))));
+            icon: IfAll.ICON,
+            create: () => new Engine.Graph.Logic.IfAll(graph.CreateNodeID("ifall"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Constant,
             name: "Color",
-            icon: ConstantColorModel.ICON,
+            icon: ConstantColor.ICON,
             create: () => new Constant(graph.CreateNodeID("colour"), ColorRGB.WHITE)));
 
         choices.Add(new AddNodeChoice(
             category: Category.Constant,
             name: "Number",
-            icon: ConstantNumberModel.ICON,
+            icon: ConstantNumber.ICON,
             create: () => new Constant(graph.CreateNodeID("number"), new Number(0))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Constant,
             name: "Binary",
-            icon: ConstantBinaryModel.ICON,
+            icon: ConstantBinary.ICON,
             create: () => new Constant(graph.CreateNodeID("binary"), new Binary(false))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Compare Number",
-            icon: NumberCompareModel.ICON,
-            create: () => new NumberCompare(graph.CreateNodeID("compare"))));
+            icon: NumberCompare.ICON,
+            create: () => new Engine.Graph.Logic.NumberCompare(graph.CreateNodeID("compare"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Mode Matches",
-            icon: ModeMatchModel.ICON,
-            create: () => new ModeMatch(graph.CreateNodeID("match"))));
+            icon: ModeMatch.ICON,
+            create: () => new Engine.Graph.Logic.ModeMatch(graph.CreateNodeID("match"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Tween - Color",
-            icon: TweenModel.ICON,
-            create: () => new Tween(graph.CreateNodeID("tween"), ValueType.Color)));
+            icon: Tween.ICON,
+            create: () => new Engine.Graph.Logic.Tween(graph.CreateNodeID("tween"), ValueType.Color)));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Tween - Number",
-            icon: TweenModel.ICON,
-            create: () => new Tween(graph.CreateNodeID("tween"), ValueType.Number)));
+            icon: Tween.ICON,
+            create: () => new Engine.Graph.Logic.Tween(graph.CreateNodeID("tween"), ValueType.Number)));
         
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Binary Choice - Color",
-            icon: BinaryChoiceModel.ICON,
-            create: () => BinaryChoiceModel.Color(graph.CreateNodeID("binary-choice"))));
+            icon: BinaryChoice.ICON,
+            create: () => BinaryChoice.Color(graph.CreateNodeID("binary-choice"))));
         
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Binary Sustain",
-            icon: BinarySustainModel.ICON,
-            create: () => new BinarySustain(graph.CreateNodeID("sustain"))));
+            icon: BinarySustain.ICON,
+            create: () => new Engine.Graph.Logic.BinarySustain(graph.CreateNodeID("sustain"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Mode Switch - Color",
-            icon: ModeSwitchModel.ICON,
-            create: () => ModeSwitchModel.Color(graph.CreateNodeID("color-mode-switch"))));
+            icon: ModeSwitch.ICON,
+            create: () => ModeSwitch.Color(graph.CreateNodeID("color-mode-switch"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Environment,
             name: "Day Phases",
-            icon: DayPhasesModel.ICON,
-            create: () => new DayPhases(graph.CreateNodeID("day-phases"))));
+            icon: DayPhases.ICON,
+            create: () => new OzricEngine.Nodes.DayPhases(graph.CreateNodeID("day-phases"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Environment,
             name: "Sky Brightness",
-            icon: SkyBrightnessModel.ICON,
-            create: () => new SkyBrightness(graph.CreateNodeID("sky-brightness"))));
+            icon: SkyBrightness.ICON,
+            create: () => new OzricEngine.Nodes.SkyBrightness(graph.CreateNodeID("sky-brightness"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Environment,
             name: "Weather",
-            icon: WeatherModel.ICON,
-            create: () => new Weather(graph.CreateNodeID("weather"))));
+            icon: Weather.ICON,
+            create: () => new OzricEngine.Nodes.Weather(graph.CreateNodeID("weather"))));
 
         return choices;
     }
 
     internal static string? GetEntityIcon(Type type)
     {
-        if (type == typeof(Light))
-            return LightModel.ICON;
+        if (type == typeof(Engine.Graph.Entities.Light))
+            return Light.ICON;
 
         if (type == typeof(BinarySensor))
-            return SensorModel.ICON;
+            return Sensor.ICON;
 
-        if (type == typeof(Person))
-            return PersonModel.ICON;
+        if (type == typeof(OzricEngine.Nodes.Person))
+            return Person.ICON;
 
-        if (type == typeof(ModeSensor))
-            return ModeSensorModel.ICON;
+        if (type == typeof(OzricEngine.Nodes.ModeSensor))
+            return ModeSensor.ICON;
 
-        if (type == typeof(Switch))
-            return SwitchModel.ICON;
+        if (type == typeof(OzricEngine.Nodes.Switch))
+            return Switch.ICON;
 
-        if (type == typeof(MediaPlayer))
-            return MediaPlayerModel.ICON;
+        if (type == typeof(OzricEngine.Nodes.MediaPlayer))
+            return MediaPlayer.ICON;
 
         return null;
     }

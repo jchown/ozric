@@ -4,5 +4,5 @@ namespace Ozric.Engine.Graph;
 
 public interface IGraph
 {
-    public IList<Node> GetConnectedNodes(string nodeId);
+    public IList<GraphNode> GetConnectedNodes(string nodeId);
 }

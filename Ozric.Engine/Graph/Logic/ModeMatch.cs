@@ -12,7 +12,7 @@ using ValueType = Ozric.Engine.Values.ValueType;
 namespace Ozric.Engine.Graph.Logic;
 
 [TypeKey(NodeType.ModeMatch)]
-public class ModeMatch: Node
+public class ModeMatch: GraphNode
 {
     public const string INPUT_NAME = "mode";
     public const string OUTPUT_NAME = "matches";

@@ -5,6 +5,8 @@ using Blazor.Diagrams;
 using Blazor.Diagrams.Core;
 using Blazor.Diagrams.Core.Models;
 using Ozric.Dashboard.Model;
+using Ozric.Engine.Extensions;
+using Ozric.Engine.Graph;
 
 namespace Ozric.Dashboard.Diagram;
 
@@ -109,22 +111,39 @@ public class ConstraintBehavior : Behavior
         return ApplyConstraints(Diagram, model, x, y);
     }
     
+    public static (double ndx, double ndy) ApplyConstraints(Blazor.Diagrams.Core.Diagram diagram, GraphNode graphNode, double x, double y)
+    {
+        var diagramType = DiagramTypeCatalogue.GetDiagramTypeFor(graphNode);
+        var clampedLeft = diagramType.Implements(typeof(IAreaSource));
+        var clampedRight = diagramType.Implements(typeof(IAreaSink));
+
+        return ApplyConstraints(diagram, x, y, clampedLeft, clampedRight);
+    }
+    
     public static (double ndx, double ndy) ApplyConstraints(Blazor.Diagrams.Core.Diagram diagram, Blazor.Diagrams.Core.Models.Base.Model model, double x, double y)
+    {
+        var clampedLeft = model is IAreaSource;
+        var clampedRight = model is IAreaSink;
+
+        return ApplyConstraints(diagram, x, y, clampedLeft, clampedRight);
+    }
+
+    private static (double ndx, double ndy) ApplyConstraints(Blazor.Diagrams.Core.Diagram diagram, double x, double y, bool clampedLeft, bool clampedRight)
     {
         if (diagram.Container == null)
             return (x, y);
-        
+
         var minX = diagram.Container.Left + 100;
         var maxX = diagram.Container.Right - 300;
         var minY = diagram.Container.Top ;
         var maxY = diagram.Container.Bottom - 300;
-        
-        if (model is IAreaSource)
+
+        if (clampedLeft)
         {
             maxX = minX;
         }
-        
-        if (model is IAreaSink)
+
+        if (clampedRight)
         {
             minX = maxX;
         }

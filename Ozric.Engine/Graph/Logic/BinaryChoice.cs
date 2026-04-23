@@ -11,7 +11,7 @@ namespace Ozric.Engine.Graph.Logic;
 /// Choose from two values based on the state of an OnOff input
 /// </summary>
 [TypeKey(NodeType.BinaryChoice)]
-public class BinaryChoice: Node
+public class BinaryChoice: GraphNode
 {
     public override NodeType nodeType => NodeType.BinaryChoice;
 

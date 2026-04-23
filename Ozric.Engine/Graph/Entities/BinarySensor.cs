@@ -8,7 +8,7 @@ using ValueType = Ozric.Engine.Values.ValueType;
 namespace Ozric.Engine.Graph.Entities;
 
 [TypeKey(NodeType.Sensor)]
-public class BinarySensor : EntityNode
+public class BinarySensor : EntityGraphNode
 {
     public override NodeType nodeType => NodeType.Sensor;
 

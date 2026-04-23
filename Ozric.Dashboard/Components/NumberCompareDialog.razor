@@ -1,5 +1,6 @@
 @using Ozric.Dashboard.Model
 @using Ozric.Engine.Graph.Logic
+@using NumberCompare = Ozric.Dashboard.Model.NumberCompare
 
 <MudDialog>
     <DialogContent>
@@ -13,14 +14,14 @@
             <MudGrid>
                 <MudItem xs="6">
                     <MudSelect @bind-Value="@comparator" Label="Input is">
-                        <MudSelectItem Value="NumberCompare.Comparator.EqualTo">Equal To (= x)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.EqualToApprox">Approximately Equal To (≈ x)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.BetweenExclusive">Between, Exclusive (<span class="roman">&gt; x &lt;</span>)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.BetweenInclusive">Between, Inclusive (<span class="roman">≥ x ≤</span>)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.LessThan">Less Than (<span class="roman">&lt;</span>)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.LessThanOrEqualTo">Less Than, or Equal To (<span class="roman">≤ x</span>)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.GreaterThan">Greater Than (<span class="roman">&gt; x</span>)</MudSelectItem>
-                        <MudSelectItem Value="NumberCompare.Comparator.GreaterThanOrEqualTo">Greater Than, or Equal To (<span class="roman">≥ x</span>)</MudSelectItem>
+                        <MudSelectItem Value="Engine.Graph.Logic.NumberCompare.Comparator.EqualTo">Equal To (= x)</MudSelectItem>
+                        <MudSelectItem Value="Engine.Graph.Logic.NumberCompare.Comparator.EqualToApprox">Approximately Equal To (≈ x)</MudSelectItem>
+                        <MudSelectItem Value="Engine.Graph.Logic.NumberCompare.Comparator.BetweenExclusive">Between, Exclusive (<span class="roman">&gt; x &lt;</span>)</MudSelectItem>
+                        <MudSelectItem Value="Engine.Graph.Logic.NumberCompare.Comparator.BetweenInclusive">Between, Inclusive (<span class="roman">≥ x ≤</span>)</MudSelectItem>
+                        <MudSelectItem Value="Engine.Graph.Logic.NumberCompare.Comparator.LessThan">Less Than (<span class="roman">&lt;</span>)</MudSelectItem>
+                        <MudSelectItem Value="Engine.Graph.Logic.NumberCompare.Comparator.LessThanOrEqualTo">Less Than, or Equal To (<span class="roman">≤ x</span>)</MudSelectItem>
+                        <MudSelectItem Value="Engine.Graph.Logic.NumberCompare.Comparator.GreaterThan">Greater Than (<span class="roman">&gt; x</span>)</MudSelectItem>
+                        <MudSelectItem Value="Engine.Graph.Logic.NumberCompare.Comparator.GreaterThanOrEqualTo">Greater Than, or Equal To (<span class="roman">≥ x</span>)</MudSelectItem>
                     </MudSelect>
                 </MudItem>
                 <MudItem xs="3">
@@ -48,16 +49,16 @@
     IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public NumberCompareModel Model { get; set; }
+    public NumberCompare Model { get; set; }
 
     [Parameter]
-    public NumberCompare Node { get; set; }
+    public Engine.Graph.Logic.NumberCompare Node { get; set; }
 
     private string _id;
     
     private float a { get; set; }
     private float b { get; set; }
-    private NumberCompare.Comparator comparator { get; set; }
+    private Engine.Graph.Logic.NumberCompare.Comparator comparator { get; set; }
 
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
@@ -94,16 +95,16 @@
     {
         switch (comparator)
         {
-            case NumberCompare.Comparator.EqualTo:
-            case NumberCompare.Comparator.EqualToApprox:
-            case NumberCompare.Comparator.LessThan:
-            case NumberCompare.Comparator.LessThanOrEqualTo:
-            case NumberCompare.Comparator.GreaterThan:
-            case NumberCompare.Comparator.GreaterThanOrEqualTo:
+            case Engine.Graph.Logic.NumberCompare.Comparator.EqualTo:
+            case Engine.Graph.Logic.NumberCompare.Comparator.EqualToApprox:
+            case Engine.Graph.Logic.NumberCompare.Comparator.LessThan:
+            case Engine.Graph.Logic.NumberCompare.Comparator.LessThanOrEqualTo:
+            case Engine.Graph.Logic.NumberCompare.Comparator.GreaterThan:
+            case Engine.Graph.Logic.NumberCompare.Comparator.GreaterThanOrEqualTo:
                 return "Value";
  
-            case NumberCompare.Comparator.BetweenInclusive:
-            case NumberCompare.Comparator.BetweenExclusive:
+            case Engine.Graph.Logic.NumberCompare.Comparator.BetweenInclusive:
+            case Engine.Graph.Logic.NumberCompare.Comparator.BetweenExclusive:
                 return "Minimum";
 
             default:
@@ -115,18 +116,18 @@
     {
         switch (comparator)
         {
-            case NumberCompare.Comparator.EqualToApprox:
+            case Engine.Graph.Logic.NumberCompare.Comparator.EqualToApprox:
                 return "+/-";
             
-            case NumberCompare.Comparator.BetweenInclusive:
-            case NumberCompare.Comparator.BetweenExclusive:
+            case Engine.Graph.Logic.NumberCompare.Comparator.BetweenInclusive:
+            case Engine.Graph.Logic.NumberCompare.Comparator.BetweenExclusive:
                 return "Maximum";
                 
-            case NumberCompare.Comparator.EqualTo:
-            case NumberCompare.Comparator.LessThan:
-            case NumberCompare.Comparator.LessThanOrEqualTo:
-            case NumberCompare.Comparator.GreaterThan:
-            case NumberCompare.Comparator.GreaterThanOrEqualTo:
+            case Engine.Graph.Logic.NumberCompare.Comparator.EqualTo:
+            case Engine.Graph.Logic.NumberCompare.Comparator.LessThan:
+            case Engine.Graph.Logic.NumberCompare.Comparator.LessThanOrEqualTo:
+            case Engine.Graph.Logic.NumberCompare.Comparator.GreaterThan:
+            case Engine.Graph.Logic.NumberCompare.Comparator.GreaterThanOrEqualTo:
                 return "";
                 
             default:
@@ -138,16 +139,16 @@
     {
         switch (comparator)
         {
-            case NumberCompare.Comparator.EqualToApprox:
-            case NumberCompare.Comparator.BetweenInclusive:
-            case NumberCompare.Comparator.BetweenExclusive:
+            case Engine.Graph.Logic.NumberCompare.Comparator.EqualToApprox:
+            case Engine.Graph.Logic.NumberCompare.Comparator.BetweenInclusive:
+            case Engine.Graph.Logic.NumberCompare.Comparator.BetweenExclusive:
                 return false;
                 
-            case NumberCompare.Comparator.EqualTo:
-            case NumberCompare.Comparator.LessThan:
-            case NumberCompare.Comparator.LessThanOrEqualTo:
-            case NumberCompare.Comparator.GreaterThan:
-            case NumberCompare.Comparator.GreaterThanOrEqualTo:
+            case Engine.Graph.Logic.NumberCompare.Comparator.EqualTo:
+            case Engine.Graph.Logic.NumberCompare.Comparator.LessThan:
+            case Engine.Graph.Logic.NumberCompare.Comparator.LessThanOrEqualTo:
+            case Engine.Graph.Logic.NumberCompare.Comparator.GreaterThan:
+            case Engine.Graph.Logic.NumberCompare.Comparator.GreaterThanOrEqualTo:
                 return true;
                 
             default:
@@ -159,13 +160,13 @@
     {
         switch (comparator)
         {
-            case NumberCompare.Comparator.EqualToApprox:
+            case Engine.Graph.Logic.NumberCompare.Comparator.EqualToApprox:
             {
                 return b == 0 ? "Range should not be zero" : null;
             }
                 
-            case NumberCompare.Comparator.BetweenInclusive:
-            case NumberCompare.Comparator.BetweenExclusive:
+            case Engine.Graph.Logic.NumberCompare.Comparator.BetweenInclusive:
+            case Engine.Graph.Logic.NumberCompare.Comparator.BetweenExclusive:
             {
                 return b < a ? "Maximal value should be larger than minimal" : null;
             }

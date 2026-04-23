@@ -62,7 +62,7 @@
     public List<AddNodeChoice> Choices { get; set; } = new();
 
     [Parameter]
-    public Action<Node> OnAdd { get; set; }
+    public Action<GraphNode> OnAdd { get; set; }
 
     private Category? SelectedCategory
     {

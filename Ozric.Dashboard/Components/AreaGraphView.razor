@@ -5,7 +5,6 @@
 @using Blazor.Diagrams.Core.Models.Base
 @using Blazor.Diagrams.Options
 @using Ozric.Dashboard.Diagram
-@using Ozric.Dashboard.Shared
 @using Ozric.Engine.Extensions
 @using Ozric.Engine.Graph
 @using Ozric.Engine.Graph.Entities
@@ -13,15 +12,17 @@
 @using OzricEngine.Values
 @using OzricService
 @using Anchor = Blazor.Diagrams.Core.Anchors.Anchor
+@using Constant = OzricEngine.Nodes.Constant
 @using ValueType = Ozric.Engine.Values.ValueType
-@using Edge = Ozric.Engine.Graph.Edge
+@using Edge = Ozric.Engine.Graph.GraphEdge
+@using VariableInputs = Ozric.Dashboard.Model.VariableInputs
 @implements IDisposable
 @inject NavigationManager Navigation
 
 @if (Diagram != null)
 {
     <div class="diagram-container @(IsRunning ? "running" : "") @(GraphEditState.IsEditing ? "editable" : "")">
-        @if (_unassignedEntities.Count > 0)
+        @if (_unassignedEntities.Count > 0 && GraphEditState.IsEditing)
         {
             <div class="unassigned-bubble @(_unassignedExpanded ? "expanded" : "")" @onclick="ToggleUnassigned" @onclick:stopPropagation="true">
                 @if (!_unassignedExpanded)
@@ -70,14 +71,12 @@
     [Parameter]
     public GraphEditState GraphEditState { get; set; }
 
-    [Parameter]
-    public bool IsRunning { get; set; }
-
     [CascadingParameter]
     public IOzricService OzricService { get; set; }
 
     public BlazorDiagram Diagram { get; set; }
 
+    private bool IsRunning => !OzricService.Status.paused && !GraphEditState.IsEditing;
     private bool IsChanged => !IsNotChanged;
     private bool IsNotChanged => GetHistory().IsAtCheckpoint();
     private bool CanUndo => GraphEditState.IsEditing && GetHistory().CanUndo();
@@ -86,7 +85,7 @@
     private EditHistory? _history;
     private EditHistory GetHistory() => _history!;
 
-    private readonly Mapping<Node, GraphNodeModel> nodeMappings = new();
+    private readonly Mapping<GraphNode, DiagramNode> nodeMappings = new();
     private readonly Mapping<Edge, LinkModel> edgeMappings = new();
     
     private string _areaId;
@@ -94,6 +93,8 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
+        
+        Console.WriteLine($"Area {AreaId} subscribing to GraphEditState {GraphEditState.Id}");
         
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnDoCommand += DoCommand;
@@ -123,7 +124,7 @@
         
         Diagram = new BlazorDiagram(options);
         
-        foreach (var modelType in GraphNodeModel.GetDerivatives())
+        foreach (var modelType in DiagramTypeCatalogue.GetDiagramTypes())
             Diagram.RegisterComponent(modelType, typeof(GraphNodeComponent));
 
         Diagram.RegisterComponent<OzricLinkModel, OzricLinkWidget>();
@@ -155,7 +156,9 @@
 
         if (_areaId == AreaId)
             return;
-        
+
+        Console.WriteLine($"Area {AreaId} parametersSet");
+
         //  Check the URI of the page is correct for this area - this only really
         //  matters when testing in localhost, as the parent page masks the inner URI.
 
@@ -219,6 +222,8 @@
 
     public void Dispose()
     {
+        Console.WriteLine($"Area {AreaId} unsubscribing from GraphEditState {GraphEditState.Id}");
+
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
         GraphEditState.OnDoCommand -= DoCommand;
         GraphEditState.OnDoAction -= DoAction;
@@ -297,7 +302,7 @@
     
     private void DoEntityRefresh(string entityID)
     {
-        var node = Graph.nodes.Values.FirstOrDefault(n => n is EntityNode en && en.entityID == entityID);
+        var node = Graph.nodes.Values.FirstOrDefault(n => n is EntityGraphNode en && en.entityID == entityID);
         if (node == null)
             return;
 
@@ -348,6 +353,8 @@
             return;
 
         _areaId = areaId;
+
+        Console.WriteLine($"Area {_areaId} populating");
 
         var container = Diagram.Container!;
 
@@ -461,15 +468,15 @@
         }
     }
 
-    private bool IsActiveInArea(Node node)
+    private bool IsActiveInArea(GraphNode graphNode)
     {
-        if (node.area_id == AreaId)
+        if (graphNode.area_id == AreaId)
             return true;
 
-        if (node.area_id != IHome.GlobalAreaId)
+        if (graphNode.area_id != IHome.GlobalAreaId)
             return false;
         
-        var outputs = Graph.GetOutputs(node);
+        var outputs = Graph.GetOutputs(graphNode);
 
         return outputs.Any(n => n.area_id == AreaId);
     }
@@ -477,15 +484,14 @@
     /// Take an existing node in the Graph and add it as the equivalent model object in the Diagram.
     /// The caller is expected to have added it to the DiagramLayout
 
-    public GraphNodeModel AddNode(Node node, Point position)
+    public DiagramNode AddNode(GraphNode graphNode, Point position)
     {
-        var diagramNode = CreateModel(node, position);
+        var (x, y) = ConstraintBehavior.ApplyConstraints(Diagram, graphNode, position.X, position.Y);
+        
+        var diagramNode = CreateModel(graphNode, new Point(x, y));
 
-        nodeMappings.Add(node, diagramNode);
+        nodeMappings.Add(graphNode, diagramNode);
         Diagram.Nodes.Add(diagramNode);
-
-        var (x, y) = ConstraintBehavior.ApplyConstraints(Diagram, diagramNode, position.X, position.Y);
-        diagramNode.SetPosition(x, y);
 
         /*
         var expectedPortCount = node.inputs.Count + node.outputs.Count;
@@ -512,89 +518,62 @@
     
     /// Remove the model object that represents the given node in the Graph from the Diagram
 
-    public void RemoveNode(Node node)
+    public void RemoveNode(GraphNode graphNode)
     {
-        var diagramNode = nodeMappings.Remove(node);
+        var diagramNode = nodeMappings.Remove(graphNode);
         if (Diagram.Nodes.Contains(diagramNode))
             Diagram.Nodes.Remove(diagramNode);
-        Graph.RemoveNode(node);
+        Graph.RemoveNode(graphNode);
     }
 
     /// Take an existing edge in the Graph and add it as the equivalent model object in the Diagram.
 
-    public void AddEdge(Edge edge)
+    public void AddEdge(Edge graphEdge)
     {
-        var fromNodeModel = nodeMappings.GetDiagram(edge.from.nodeID);
-        var toNodeModel = nodeMappings.GetDiagram(edge.to.nodeID);
-        var fromPort = fromNodeModel.GetPort(edge.from.id);
-        var toPort = toNodeModel.GetPort(edge.to.id);
+        var fromNodeModel = nodeMappings.GetDiagram(graphEdge.from.nodeID);
+        var toNodeModel = nodeMappings.GetDiagram(graphEdge.to.nodeID);
+        var fromPort = fromNodeModel.GetPort(graphEdge.from.id);
+        var toPort = toNodeModel.GetPort(graphEdge.to.id);
 
         var link = new OzricLinkModel(fromPort, toPort);
 
-        var sourceNode = Graph.nodes[edge.from.nodeID];
-        var sourcePin = sourceNode.GetOutput(edge.from.outputName);
+        var sourceNode = Graph.nodes[graphEdge.from.nodeID];
+        var sourcePin = sourceNode.GetOutput(graphEdge.from.outputName);
         link.UpdateColors(sourcePin);
 
-        edgeMappings.Add(edge, link);
+        edgeMappings.Add(graphEdge, link);
         Diagram.Links.Add(link);
     }
     
     /// Remove the model object that represents the given edge from the Diagram 
     
-    public void RemoveEdge(Edge edge)
+    public void RemoveEdge(Edge graphEdge)
     {
-        var link = edgeMappings.Remove(edge);
+        var link = edgeMappings.Remove(graphEdge);
         
         if (Diagram.Links.Contains(link))
             Diagram.Links.Remove(link);
 
-        Graph.RemoveEdge(edge);
+        Graph.RemoveEdge(graphEdge);
     }
 
-    private GraphNodeModel CreateModel(Node node, Point? point = null)
+    private DiagramNode CreateModel(GraphNode graphNode, Point? point = null)
     {
-        var model = CreateModelForNode(node, point);
+        var model = CreateModelForNode(graphNode, point);
         model.Moving += OnNodeModelMoving;
         model.Locked = !GraphEditState.IsEditing; 
         return model;
     }
 
-    private GraphNodeModel CreateModelForNode(Node node, Point? point)
+    private DiagramNode CreateModelForNode(GraphNode graphNode, Point? point)
     {
-        switch (node)
+        var type = DiagramTypeCatalogue.GetDiagramTypeFor(graphNode);
+        var constructor = type.GetConstructors().First(c =>
         {
-            // Special case for constants, as we want a specific UI for each type
-        
-            case Constant c:
-            {
-                switch (c.value.ValueType)
-                {
-                    case ValueType.Color:
-                        return new ConstantColorModel(c, point);
-
-                    case ValueType.Number:
-                        return new ConstantNumberModel(c, point);
-
-                    case ValueType.Binary:
-                        return new ConstantBinaryModel(c, point);
-                        
-                    case ValueType.Mode:
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
-
-            default:
-            {
-                var constructors = GraphNodeModel.GetDerivatives().SelectMany(t => t.GetConstructors());
-                var applicable = constructors.First(c =>
-                {
-                    var p = c.GetParameters();
-                    return (p.Length == 2 && p[0].ParameterType == node.GetType() && p[1].ParameterType == typeof(Point));
-                });
-                return (GraphNodeModel) applicable.Invoke([node, point]);
-            }
-        }
+            var p = c.GetParameters();
+            return (p.Length == 2 && p[0].ParameterType == graphNode.GetType() && p[1].ParameterType == typeof(Point));
+        });
+        return (DiagramNode) constructor.Invoke([graphNode, point]);
     }
 
     private void OnNodeModelMoving(NodeModel nodeModel)
@@ -622,7 +601,7 @@
         GraphEditState.SetHistoryState(GetHistory());
     }
 
-    public List<string> CreateNodes(List<Func<Node>> nodeCreators)
+    public List<string> CreateNodes(List<Func<GraphNode>> nodeCreators)
     {
         var container = Diagram.Container!;
         var pos = new Point(20, 20);
@@ -652,7 +631,7 @@
         GraphEditState.SetSelected(selected);
     }
 
-    public void Select(params Node[] nodes)
+    public void Select(params GraphNode[] nodes)
     {
         if (nodes.Length == 0)
         {
@@ -664,15 +643,15 @@
             Diagram.SelectModel(nodeMappings.GetDiagram(nodes[i]), i == 0);
     }
 
-    public Point GetPosition(Node node)
+    public Point GetPosition(GraphNode graphNode)
     {
-        var normalized = GraphLayout.GetNodePosition(AreaId, node.id)!;
+        var normalized = GraphLayout.GetNodePosition(AreaId, graphNode.id)!;
         return LayoutCoordinateConverter.ToPixels(normalized, Diagram.Container!);
     }
 
     private IGraphObject GetGraphObject(SelectableModel selectableModel)
     {
-        if (selectableModel is GraphNodeModel gnm)
+        if (selectableModel is DiagramNode gnm)
             return nodeMappings.GetGraph(gnm);
                 
         if (selectableModel is LinkModel lm)
@@ -710,9 +689,9 @@
 
     /// Tell a Diagram model object to update itself and load its state from the Graph model.
     
-    public void Reload(Node node)
+    public void Reload(GraphNode graphNode)
     {
-        var nodeModel = nodeMappings.GetDiagram(node.id);
+        var nodeModel = nodeMappings.GetDiagram(graphNode.id);
         nodeModel.Load();
         nodeModel.Refresh();
     }
@@ -740,8 +719,8 @@
         var fromPort = (PinPort) link.Source.Model!;
         var toPort = (PinPort) link.Target.Model!;
 
-        var fromNodeModel = (GraphNodeModel) fromPort.Parent;
-        var toNodeModel = (GraphNodeModel) toPort.Parent;
+        var fromNodeModel = (DiagramNode) fromPort.Parent;
+        var toNodeModel = (DiagramNode) toPort.Parent;
         
         var createPin = link.Target.Model is PortInputAdd;
 
@@ -776,7 +755,7 @@
             
             Diagram.Links.Remove(link);
 
-            var toVarInput = toNode as VariableInputs ?? throw new Exception("Expect variable inputs");
+            var toVarInput = toNode as OzricEngine.Nodes.VariableInputs ?? throw new Exception("Expect variable inputs");
             var newPinName = toVarInput.NextPinName();
             
             var from = new OutputSelector(fromNode.id, fromPin.name);
@@ -888,7 +867,7 @@
         
         switch (selectableModel)
         {
-            case GraphNodeModel gnm:
+            case DiagramNode gnm:
             {
                 foreach (var link in gnm.Ports.SelectMany(p => p.Links))
                 {
@@ -916,9 +895,9 @@
     private IEnumerable<GraphEditAction> GetDeleteActions(LinkModel lm)
     {
         var edge = edgeMappings.GetGraph(lm);
-        if (lm.Target.Model is VariableInputsModel vim)
+        if (lm.Target.Model is VariableInputs vim)
         {
-            var inputNode = (VariableInputs)vim.node;
+            var inputNode = (OzricEngine.Nodes.VariableInputs)vim.graphNode;
             yield return new GraphEditAction.RemoveInput(inputNode, edge.to.inputName);
             yield return new GraphEditAction.RemoveEdge(edge);
             yield break;
@@ -927,27 +906,27 @@
         yield return new GraphEditAction.RemoveEdge(edge);
     }
 
-    public void AddNodeInput(VariableInputs variableInputs, string inputName)
+    public void AddNodeInput(OzricEngine.Nodes.VariableInputs variableInputs, string inputName)
     {
         var input = variableInputs.AddInput(inputName);
-        var model = (VariableInputsModel) nodeMappings.GetDiagram(variableInputs);
+        var model = (VariableInputs) nodeMappings.GetDiagram(variableInputs);
         model.AddVariableInput(input);
     }
 
-    public void RemoveNodeInput(VariableInputs variableInputs, string inputName)
+    public void RemoveNodeInput(OzricEngine.Nodes.VariableInputs variableInputs, string inputName)
     {
         var input = variableInputs.RemoveInput(inputName);
-        var model = (VariableInputsModel) nodeMappings.GetDiagram(variableInputs);
+        var model = (VariableInputs) nodeMappings.GetDiagram(variableInputs);
         model.RemoveInput(input);
     }
 
 
-    public GraphNodeModel GetDiagramNode(string nodeID)
+    public DiagramNode GetDiagramNode(string nodeID)
     {
         return nodeMappings.GetDiagram(Graph.nodes[nodeID]);
     }
 
-    private record UnassignedEntity(string Name, string Icon, Func<Node> Create);
+    private record UnassignedEntity(string Name, string Icon, Func<GraphNode> Create);
 
     private bool _unassignedExpanded;
     private List<UnassignedEntity> _unassignedEntities = new();
@@ -984,7 +963,7 @@
             if (Graph.HasEntityNode(id))
                 id = Graph.CreateNodeID(category.ToString().ToLowerInvariant());
             var nodeId = id;
-            return new UnassignedEntity(entityID, icon, () => (Node)Activator.CreateInstance(type, nodeId, entityID)!);
+            return new UnassignedEntity(entityID, icon, () => (GraphNode)Activator.CreateInstance(type, nodeId, entityID)!);
         }).OrderBy(e => e.Name).ToList();
     }
 

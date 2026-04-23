@@ -13,7 +13,7 @@ namespace Ozric.Engine.Graph.Logic;
 /// Once an input value is set for a period, keep it at that value
 /// </summary>
 [TypeKey(NodeType.BinarySustain)]
-public class BinarySustain: Node
+public class BinarySustain: GraphNode
 {
     public override NodeType nodeType => NodeType.BinarySustain;
 

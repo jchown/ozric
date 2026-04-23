@@ -4,6 +4,7 @@
 @using Humanizer
 @using Ozric.Engine.Extensions
 @using Ozric.Engine.Graph.Entities
+@using Light = Ozric.Dashboard.Model.Light
 @inject IOzricService OzricService
 
 <MudDialog>
@@ -23,10 +24,10 @@
 
             <MudDivider DividerType="DividerType.Middle" Class="my-4" />
 
-            <MudSelect @bind-Value="ColourSwitchMode" Style="z-index:9999;" HelperText="@CSMHelperText" T="Light.ColourSwitchMode" Label="Colour Switch Mode" Variant="Variant.Text">
-                <MudSelectItem Value="@(Light.ColourSwitchMode.Automatic)">Automatic (Use Default)</MudSelectItem>
-                <MudSelectItem Value="@(Light.ColourSwitchMode.Fast)">Fast</MudSelectItem>
-                <MudSelectItem Value="@(Light.ColourSwitchMode.TwoPhase)">Two Phase</MudSelectItem>
+            <MudSelect @bind-Value="ColourSwitchMode" Style="z-index:9999;" HelperText="@CSMHelperText" T="Engine.Graph.Entities.Light.ColourSwitchMode" Label="Colour Switch Mode" Variant="Variant.Text">
+                <MudSelectItem Value="@(Engine.Graph.Entities.Light.ColourSwitchMode.Automatic)">Automatic (Use Default)</MudSelectItem>
+                <MudSelectItem Value="@(Engine.Graph.Entities.Light.ColourSwitchMode.Fast)">Fast</MudSelectItem>
+                <MudSelectItem Value="@(Engine.Graph.Entities.Light.ColourSwitchMode.TwoPhase)">Two Phase</MudSelectItem>
             </MudSelect>
 
         </MudContainer>
@@ -46,15 +47,15 @@
     IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public LightModel Model { get; set; }
+    public Light Model { get; set; }
 
     [Parameter]
-    public Light Node { get; set; }
+    public Engine.Graph.Entities.Light Node { get; set; }
 
     private string _id;
     private string _entityId;
     private string _colorModes;
-    private Light.ColourSwitchMode ColourSwitchMode { get; set; }
+    private Engine.Graph.Entities.Light.ColourSwitchMode ColourSwitchMode { get; set; }
 
     private string CSMHelperText => $"Default for this light: {Node.GetColourSwitchModeAuto().ToString().Humanize(LetterCasing.Sentence)}";
 
@@ -67,7 +68,7 @@
     {
         _id = Node.id;
         _entityId = Node.entityID;
-        ColourSwitchMode = Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic;
+        ColourSwitchMode = Node.colourSwitchMode ?? Engine.Graph.Entities.Light.ColourSwitchMode.Automatic;
         _colorModes = Node.GetSupportedColorModes(OzricService.Home).Select(ColorValue.DescribeColorMode).Join(", ");
     }
 
@@ -76,15 +77,15 @@
         var changes = new List<GraphEditAction>();
         if (_id != Node.id)
             changes.Add(new GraphEditAction.RenameNode(Node, _id));
-        if (ColourSwitchMode != (Node.colourSwitchMode ?? Light.ColourSwitchMode.Automatic))
+        if (ColourSwitchMode != (Node.colourSwitchMode ?? Engine.Graph.Entities.Light.ColourSwitchMode.Automatic))
         {
-            var csm = ColourSwitchMode != Light.ColourSwitchMode.Automatic ? ColourSwitchMode : ((Light.ColourSwitchMode?) null);
+            var csm = ColourSwitchMode != Engine.Graph.Entities.Light.ColourSwitchMode.Automatic ? ColourSwitchMode : ((Engine.Graph.Entities.Light.ColourSwitchMode?) null);
             changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(Node.colourSwitchMode)), csm));
         }
         return changes;
     }
 
-    private void OnCSMChanged(Light.ColourSwitchMode csm)
+    private void OnCSMChanged(Engine.Graph.Entities.Light.ColourSwitchMode csm)
     {
         
     }

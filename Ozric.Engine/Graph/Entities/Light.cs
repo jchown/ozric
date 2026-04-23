@@ -14,7 +14,7 @@ using ValueType = Ozric.Engine.Values.ValueType;
 namespace Ozric.Engine.Graph.Entities;
 
 [TypeKey(NodeType.Light)]
-public class Light: EntityNode
+public class Light: EntityGraphNode
 {
     public override NodeType nodeType => NodeType.Light;
 

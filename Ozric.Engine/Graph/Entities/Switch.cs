@@ -10,7 +10,7 @@ using ValueType = Ozric.Engine.Values.ValueType;
 namespace OzricEngine.Nodes;
 
 [TypeKey(NodeType.Switch)]
-public class Switch: EntityNode
+public class Switch: EntityGraphNode
 {
     public override NodeType nodeType => NodeType.Switch;
 

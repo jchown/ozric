@@ -1,6 +1,7 @@
 @using Ozric.Dashboard.Model
 @using Ozric.Engine.Graph.Logic
 @using OzricEngine.Values
+@using ModeSwitch = Ozric.Dashboard.Model.ModeSwitch
 
 <MudDialog>
     <DialogContent>
@@ -13,7 +14,7 @@
 
             @if (modeValues.Count > 0)
             {
-                <MudTable Items="@modeValues" T="ModeSwitch.ModeValues"
+                <MudTable Items="@modeValues" T="Engine.Graph.Logic.ModeSwitch.ModeValues"
                           @bind-SelectedItem="selected"
                           CanCancelEdit="true"
                           CommitEditTooltip="Apply"
@@ -87,15 +88,15 @@
     IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public ModeSwitchModel Model { get; set; }
+    public ModeSwitch Model { get; set; }
 
     [Parameter]
-    public ModeSwitch Node { get; set; }
+    public Engine.Graph.Logic.ModeSwitch Node { get; set; }
 
     private string ID;
-    private ModeSwitch.ModeValues selected;
-    private List<ModeSwitch.ModeValues> modeValues = new();
-    private ModeSwitch.ModeValues preEdit;
+    private Engine.Graph.Logic.ModeSwitch.ModeValues selected;
+    private List<Engine.Graph.Logic.ModeSwitch.ModeValues> modeValues = new();
+    private Engine.Graph.Logic.ModeSwitch.ModeValues preEdit;
     private string addMode { get; set; } = "";
 
     void Cancel() => MudDialog.Cancel();
@@ -106,7 +107,7 @@
     protected override void OnInitialized()
     {
         ID = Node.id;
-        modeValues = new List<ModeSwitch.ModeValues>(Node.modeValues.Select(mv => mv.Clone()));
+        modeValues = new List<Engine.Graph.Logic.ModeSwitch.ModeValues>(Node.modeValues.Select(mv => mv.Clone()));
     }
 
     private List<GraphEditAction> GetChanges()
@@ -123,18 +124,18 @@
 
     private void Add()
     {
-        modeValues.Add(new ModeSwitch.ModeValues(new Mode(addMode), modeValues.Last().values.Clone()));
+        modeValues.Add(new Engine.Graph.Logic.ModeSwitch.ModeValues(new Mode(addMode), modeValues.Last().values.Clone()));
         addMode = "";
     }
 
     private void BackupItem(object element)
     {
-        preEdit = new ModeSwitch.ModeValues(((ModeSwitch.ModeValues)element).mode, ((ModeSwitch.ModeValues)element).values);
+        preEdit = new Engine.Graph.Logic.ModeSwitch.ModeValues(((Engine.Graph.Logic.ModeSwitch.ModeValues)element).mode, ((Engine.Graph.Logic.ModeSwitch.ModeValues)element).values);
     }
 
     private void ResetItem(object element)
     {
-        var pattern = (ModeSwitch.ModeValues)element;
+        var pattern = (Engine.Graph.Logic.ModeSwitch.ModeValues)element;
         pattern.mode = preEdit.mode;
         pattern.values = preEdit.values;
     }

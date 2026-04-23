@@ -19,41 +19,35 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
     [JsonIgnore]
     public override string Name => "Graph";
 
-    public Dictionary<string, Node> nodes { get; set; } = new();
-    public Dictionary<string, Edge> edges { get; set; } = new();
+    public Dictionary<string, GraphNode> nodes { get; set; } = new();
+    public Dictionary<string, GraphEdge> edges { get; set; } = new();
         
     public IEnumerable<string> GetNodeIDs()
     {
         return nodes.Keys;
     }
 
-    public Node? GetNode(string nodeId)
+    public GraphNode? GetNode(string nodeId)
     {
         return nodes.GetValueOrDefault(nodeId);
     }
         
-    public void AddNode(Node node)
+    public void AddNode(GraphNode graphNode)
     {
-        if (nodes.ContainsKey(node.id))
-            throw new Exception($"A node with ID {node.id} already exists");
-            
-        nodes[node.id] = node;
+        if (!nodes.TryAdd(graphNode.id, graphNode))
+            throw new Exception($"A node with ID {graphNode.id} already exists");
     }
 
-    public void RemoveNode(Node node)
+    public void RemoveNode(GraphNode graphNode)
     {
-        if (!nodes.ContainsKey(node.id))
-            throw new Exception($"No node found with ID {node.id}");
-
-        nodes.Remove(node.id);
+        if (!nodes.Remove(graphNode.id))
+            throw new Exception($"No node found with ID {graphNode.id}");
     }
         
-    public void RemoveEdge(Edge edge)
+    public void RemoveEdge(GraphEdge graphEdge)
     {
-        if (!edges.ContainsKey(edge.id))
-            throw new Exception($"No edge found with ID {edge.id}");
-
-        edges.Remove(edge.id);
+        if (!edges.Remove(graphEdge.id))
+            throw new Exception($"No edge found with ID {graphEdge.id}");
     }
 
     public void Connect(string outputNodeID, string outputPinName, string inputNodeID, string inputPinName)
@@ -64,18 +58,16 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
         if (!nodes.ContainsKey(inputNodeID))
             throw new Exception($"No node found with ID {inputNodeID}");
 
-        var edge = new Edge(new(outputNodeID, outputPinName), new (inputNodeID, inputPinName));
-        if (edges.ContainsKey(edge.id))
+        var edge = new GraphEdge(new(outputNodeID, outputPinName), new (inputNodeID, inputPinName));
+        if (!edges.TryAdd(edge.id, edge))
             throw new Exception($"An edge with ID {edge.id} already exists");
-            
-        edges[edge.id] = edge;
 
         Log(LogLevel.Debug, "{0}.{1} -> {2}.{3}", outputNodeID, outputPinName, inputNodeID, inputPinName);
     }
 
     public void Disconnect(string outputNodeID, string outputPinName, string inputNodeID, string inputPinName)
     {
-        var edgeID = Edge.GetID(outputNodeID, outputPinName, inputNodeID, inputPinName);
+        var edgeID = GraphEdge.GetID(outputNodeID, outputPinName, inputNodeID, inputPinName);
         edges.Remove(edgeID);
 
         Log(LogLevel.Debug, "{0}.{1} xx {2}.{3}", outputNodeID, outputPinName, inputNodeID, inputPinName);
@@ -87,8 +79,8 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
 
     public class NodeEdges
     {
-        public readonly HashSet<string> InputNodeIDs = new();
-        public readonly HashSet<string> OutputNodeIDs = new();
+        public readonly HashSet<string> inputNodeIDs = new();
+        public readonly HashSet<string> outputNodeIDs = new();
     }
 
     /// <summary>
@@ -110,8 +102,8 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
             var fromNodeEdges = nodeEdges.GetOrSet(fromID, () => new NodeEdges());
             var toNodeEdges = nodeEdges.GetOrSet(toID, () => new NodeEdges());
 
-            fromNodeEdges.OutputNodeIDs.Add(toID);
-            toNodeEdges.InputNodeIDs.Add(fromID);
+            fromNodeEdges.outputNodeIDs.Add(toID);
+            toNodeEdges.inputNodeIDs.Add(fromID);
         }
 
         return nodeEdges;
@@ -124,7 +116,7 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
 
     public List<string> GetInterestedEntityIDs()
     {
-        return nodes.Values.Select(node => node as EntityNode).Where(node => node != null).Select(node => node!.entityID).Distinct().ToList();
+        return nodes.Values.Select(node => node as EntityGraphNode).Where(node => node != null).Select(node => node!.entityID).Distinct().ToList();
     }
 
     /// <summary>
@@ -187,13 +179,13 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
     /// <summary>
     /// Copy all output values to connected nodes' inputs
     /// </summary>
-    /// <param name="node"></param>
+    /// <param name="graphNode"></param>
     /// <param name="context"></param>
-    public void CopyNodeOutputValues(Node node, Context context)
+    public void CopyNodeOutputValues(GraphNode graphNode, Context context)
     {
-        foreach (var edge in edges.Values.Where(edge => edge.from.nodeID == node.id).ToList())
+        foreach (var edge in edges.Values.Where(edge => edge.from.nodeID == graphNode.id).ToList())
         {
-            var value = node.GetOutput(edge.from.outputName).value;
+            var value = graphNode.GetOutput(edge.from.outputName).value;
             if (value == null)
                 continue;
                 
@@ -223,7 +215,7 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
         return HashCode.Combine(nodes, edges);
     }
 
-    public IList<Node> GetConnectedNodes(string nodeId)
+    public IList<GraphNode> GetConnectedNodes(string nodeId)
     {
         if (!nodes.ContainsKey(nodeId))
             throw new Exception($"No node found with ID {nodeId}");
@@ -247,12 +239,12 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
 
     public bool HasEntityNode(string entityID)
     {
-        return nodes.Values.Any(node => node is EntityNode en && en.entityID == entityID);
+        return nodes.Values.Any(node => node is EntityGraphNode en && en.entityID == entityID);
     }
 
-    public EntityNode GetEntityNode(string entityID)
+    public EntityGraphNode GetEntityNode(string entityID)
     {
-        return (EntityNode) nodes.Values.First(node => node is EntityNode en && en.entityID == entityID);
+        return (EntityGraphNode) nodes.Values.First(node => node is EntityGraphNode en && en.entityID == entityID);
     }
 
     public List<T> GetAll<T>() where T : class
@@ -300,8 +292,8 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
         return nodes.ContainsKey(nodeId);
     }
 
-    public IEnumerable<Node> GetOutputs(Node node)
+    public IEnumerable<GraphNode> GetOutputs(GraphNode graphNode)
     {
-        return edges.Values.Where(edge => edge.from.nodeID == node.id).Select(edge => nodes[edge.to.nodeID]);
+        return edges.Values.Where(edge => edge.from.nodeID == graphNode.id).Select(edge => nodes[edge.to.nodeID]);
     }
 }

@@ -14,7 +14,7 @@ namespace OzricEngine.Nodes;
 /// Uses a smoothstep curve on sun elevation and a multiplicative cloud occlusion model.
 /// </summary>
 [TypeKey(NodeType.SkyBrightness)]
-public class SkyBrightness: Node
+public class SkyBrightness: GraphNode
 {
     public override NodeType nodeType => NodeType.SkyBrightness;
 

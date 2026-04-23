@@ -10,7 +10,7 @@ namespace OzricEngine.Nodes;
 /// <summary>
 /// TODO: Remove and replace with a multi-value input type.
 /// </summary>
-public abstract class VariableInputs: Node
+public abstract class VariableInputs: GraphNode
 {
     public readonly ValueType valueType;
 

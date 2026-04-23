@@ -10,7 +10,7 @@ using ValueType = Ozric.Engine.Values.ValueType;
 namespace Ozric.Engine.Graph.Logic;
 
 [TypeKey(NodeType.Tween)]
-public class Tween: Node
+public class Tween: GraphNode
 {
     public const string INPUT_NAME = "input";
     public const string OUTPUT_NAME = "output";

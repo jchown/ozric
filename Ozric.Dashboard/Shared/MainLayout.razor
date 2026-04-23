@@ -149,7 +149,7 @@
                     {
                         <!-- Most areas are shown as a graph -->
                         
-                        <AreaGraphView Graph="@Graph" GraphEditState="@GraphEditState" GraphLayout="@GraphLayout" AreaId="@Areas[SelectedAreaIndex].area_id" IsRunning="@(!OzricService.Status.paused && !IsEditing)"/>
+                        <AreaGraphView Graph="@Graph" GraphEditState="@GraphEditState" GraphLayout="@GraphLayout" AreaId="@Areas[SelectedAreaIndex].area_id"/>
                     }
                     else
                     {
@@ -181,7 +181,7 @@
 
     private bool Saving => GraphEditState.Mode == GraphEditState.EditMode.Saving;
     private bool HasSelection => (SelectedItems.Count > 0);
-    private bool CanGetInfo => SelectedItems.Count == 1 && SelectedItems[0].Key is GraphNodeModel;
+    private bool CanGetInfo => SelectedItems.Count == 1 && SelectedItems[0].Key is DiagramNode;
 
     public bool IsEditing => GraphEditState.IsEditing;
     public bool IsChanged => GraphEditState.IsChanged;
@@ -192,15 +192,26 @@
     {
         if (firstRender)
         {
-            var task = _mudThemeProvider?.GetSystemPreference();
-            var dark = (task != null) && await task;
-            _isDarkMode = false && dark;
+            var dark = false;
+            
+            /*
+                TODO: Make theming optional, and disabled by default.
+             
+            if (_mudThemeProvider != null)
+            {
+                dark = await _mudThemeProvider.GetSystemDarkModeAsync();
+            }
+            */
+            
+            _isDarkMode = dark;
             StateHasChanged();
         }
     }
 
     protected override async Task OnInitializedAsync()
     {
+        Console.WriteLine($"MainLayout initializing, GraphEditState: {GraphEditState.Id}");
+        
         Areas = ShownAreas();
         
         ChooseInitialArea();
@@ -240,6 +251,9 @@
     void IDisposable.Dispose()
     {
         OzricService.Unsubscribe(OnPinChanged, OnAlertChanged);
+        GraphEditState.OnChanged -= OnGraphEditStateChanged;
+        GraphEditState.OnSelectionChanged -= GraphSelectionChanged;
+        GraphEditState.OnKeyDown -= OnDiagramKeyDown;
     }
 
     private void OnPinChanged(string nodeID, string pinName, Value value)
@@ -273,6 +287,9 @@
     private void UnloadGraph()
     {
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
+        GraphEditState.OnSelectionChanged -= GraphSelectionChanged;
+        GraphEditState.OnKeyDown -= OnDiagramKeyDown;
+
         Graph = new Graph();
         GraphLayout = new GraphLayout();
         GraphEditState = new GraphEditState();
@@ -369,7 +386,7 @@
     {
         var areaID = Areas[SelectedAreaIndex].area_id;
         
-        Action<Node> addNode = AddNode;
+        Action<GraphNode> addNode = AddNode;
 
         var parameters = new DialogParameters
         {
@@ -380,9 +397,9 @@
         await DialogService.ShowAsync<AddNodesDialog>("Add Nodes", parameters, Dialogs.StandardOptions());
     }
 
-    private void AddNode(Node node)
+    private void AddNode(GraphNode graphNode)
     {
-        GraphEditState.DoAction(new GraphEditAction.AddNode(node));
+        GraphEditState.DoAction(new GraphEditAction.AddNode(graphNode));
     }
 
     private void GraphSelectionChanged(List<KeyValuePair<SelectableModel, IGraphObject>> items)
@@ -397,7 +414,7 @@
             return;
 
         var (model, node) = SelectedItems[0];
-        if (model is not GraphNodeModel)
+        if (model is not DiagramNode)
             return;
 
         var editDialog = model.GetType().GetCustomAttribute<EditDialogAttribute>()!;
@@ -414,8 +431,9 @@
 
         var options = Dialogs.StandardOptions();
 
-        var result = await DialogService.Show(type, title, parameters, options).Result;
-        if (result.Canceled)
+        var dialog = await DialogService.ShowAsync(type, title, parameters, options);
+        var result = await dialog.Result;
+        if (result.Canceled || result.Data == null)
             return;
 
         var changes = (List<GraphEditAction>)result.Data;
@@ -437,15 +455,17 @@
     
     private void OnDiagramKeyDown(KeyboardEventArgs e)
     {
-        if (e.CtrlKey && e.Key.Equals("z"))
+        if (e is { CtrlKey: true, Key: "z" })
         {
             GraphEditState.DoCommand(GraphEditState.Command.Undo);
         }
-        else if (e.CtrlKey && e.Key.Equals("y"))
+        
+        if (e is { CtrlKey: true, Key: "y" })
         {
             GraphEditState.DoCommand(GraphEditState.Command.Redo);
         }
-        else if (e.Key == "Delete")
+        
+        if (e.Key == "Delete")
         {
             GraphEditState.DoCommand(GraphEditState.Command.Delete);
         }
@@ -460,7 +480,7 @@
     {
         var dialog = await DialogService.ShowAsync<DataUploadDialog>("Upload Data File", new DialogParameters(), Dialogs.StandardOptions());
         var result = await dialog.Result;
-        if (result == null)
+        if (result?.Data == null)
             return;
 
         var data = ((DataUploadDialog.Result) result.Data).Data;
@@ -497,7 +517,7 @@
         {
         };
             
-        DialogService.Show<InfoDialog>("App Information", parameters, Dialogs.StandardOptions());
+        Tasks.Run(() => DialogService.ShowAsync<InfoDialog>("App Information", parameters, Dialogs.StandardOptions()));
     }
     
     private async Task ShowSettings()

@@ -13,7 +13,7 @@ namespace Ozric.Engine.Graph.Logic;
 /// Choose from a number of values based on the value of a Mode input
 /// </summary>
 [TypeKey(NodeType.ModeSwitch)]
-public class ModeSwitch: Node
+public class ModeSwitch: GraphNode
 {
     public const string INPUT_NAME = "mode";
         

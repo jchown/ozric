@@ -8,7 +8,7 @@ using OzricEngine.Values;
 namespace OzricEngine.Nodes;
 
 [TypeKey(NodeType.Constant)]
-public class Constant: Node
+public class Constant: GraphNode
 {
     public const string OutputName = "value";
         

@@ -10,7 +10,7 @@ using ValueType = Ozric.Engine.Values.ValueType;
 namespace OzricEngine.Nodes;
 
 [TypeKey(NodeType.MediaPlayer)]
-public class MediaPlayer : EntityNode
+public class MediaPlayer : EntityGraphNode
 {
     public override NodeType nodeType => NodeType.MediaPlayer;
 

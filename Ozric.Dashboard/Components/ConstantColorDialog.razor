@@ -1,6 +1,7 @@
 @using Ozric.Dashboard.Model
 @using OzricEngine.Nodes
 @using OzricEngine.Values
+@using Constant = OzricEngine.Nodes.Constant
 
 <MudDialog>
     <DialogContent>
@@ -30,7 +31,7 @@
     IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public ConstantColorModel Model { get; set; }
+    public ConstantColor Model { get; set; }
 
     [Parameter]
     public Constant Node { get; set; }

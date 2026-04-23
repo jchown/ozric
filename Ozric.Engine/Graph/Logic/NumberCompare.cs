@@ -9,7 +9,7 @@ using ValueType = Ozric.Engine.Values.ValueType;
 namespace Ozric.Engine.Graph.Logic;
 
 [TypeKey(NodeType.NumberCompare)]
-public class NumberCompare: Node
+public class NumberCompare: GraphNode
 {
     public override NodeType nodeType => NodeType.NumberCompare;
 

@@ -261,7 +261,7 @@ public class Engine : OzricObject
     /// Process all nodes, ordering according to dependencies.
     /// </summary>
     /// <param name="nodeProcessor"></param>
-    private async Task ProcessNodesParallel(Func<Node, Context, Task> nodeProcessor)
+    private async Task ProcessNodesParallel(Func<GraphNode, Context, Task> nodeProcessor)
     {
         var context = new Context(home, commandBatcher, pinChanged, alertChanged);
         var dependencies = graph.GetNodeDependencies();
@@ -270,7 +270,7 @@ public class Engine : OzricObject
 
         foreach (var (nodeID, nodeEdges) in dependencies)
         {
-            var numInputs = nodeEdges.InputNodeIDs.Count;
+            var numInputs = nodeEdges.inputNodeIDs.Count;
             if (numInputs > 0)
                 readiness[nodeID] = new SemaphoreSlim(0, numInputs);
         }
@@ -287,7 +287,7 @@ public class Engine : OzricObject
                 {
                     //  Wait for all out dependencies to have signalled us
 
-                    for (int i = 0; i < dependency.InputNodeIDs.Count; ++i)
+                    for (int i = 0; i < dependency.inputNodeIDs.Count; ++i)
                         await semaphore.WaitAsync();
                 }
 
@@ -312,7 +312,7 @@ public class Engine : OzricObject
 
                     //  Now signal all our dependents
 
-                    foreach (var nodeID in dependency.OutputNodeIDs)
+                    foreach (var nodeID in dependency.outputNodeIDs)
                         readiness[nodeID].Release();
                 }
             }));
@@ -327,7 +327,7 @@ public class Engine : OzricObject
     /// Process all nodes, one at a time. May be useful when debugging.
     /// </summary>
     /// <param name="nodeProcessor"></param>
-    public async Task ProcessNodesSerial(Func<Node, Context, Task> nodeProcessor)
+    public async Task ProcessNodesSerial(Func<GraphNode, Context, Task> nodeProcessor)
     {
         var context = new Context(home, commandBatcher, pinChanged, alertChanged);
 

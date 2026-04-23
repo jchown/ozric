@@ -18,17 +18,15 @@
     @foreach (var port in Node.Ports.Select(p => p as IPort).Where(p => p != null))
     {
         <div class="@(port!.CssClass) port-@(Node.GetPortPosition(port))" hidden="@(port.HiddenIfLocked && Node.Locked)">
+            <PortRenderer Port="@((PortModel)port)">
+                @if (Node.Locked)
+                {
+                    // When locked, we show the live state
 
-            @if (Node.Locked)
-            {
-                // When locked, we show the live state
-
-                <PortRenderer Port="@((PortModel)port)">
                     @if (Node.HasPin((PortModel)port))
                     {
                         var pin = Node.GetPin((PortModel)port);
 
-                        //  Show the live state
                         switch (port.valueType)
                         {
                             case ValueType.Number:
@@ -72,25 +70,23 @@
                                 throw new ArgumentOutOfRangeException();
                         }
                     }
-                </PortRenderer>
-            }
-            else
-            {
-                //  When editing, we just show the type
+                }
+                else
+                {
+                    //  When editing, we just show the type
 
-                <PortRenderer Port="@((PortModel)port)">
                     @if (Node.ShowLabel(port))
                     {
                         <span>@port.Name</span>
                     }
                     <img src="icons/@(port.valueType).png" width="16" height="16" alt="@(port.valueType)"/>
-                </PortRenderer>
-            }
+                }
+            </PortRenderer>
         </div>
     }
 
 </div>
 
 @code {
-    [Parameter] public GraphNodeModel Node { get; set; }
+    [Parameter] public DiagramNode Node { get; set; }
 }

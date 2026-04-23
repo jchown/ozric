@@ -7,6 +7,14 @@ namespace Ozric.Dashboard.Shared;
 
 public class GraphEditState
 {
+    private static int _nextId;
+
+    internal GraphEditState()
+    {
+        Id = _nextId++;
+        Console.WriteLine($"GraphEditState {Id} created");
+    }
+    
     public enum EditMode
     {
         View, Saving, EditOffline, EditOnline
@@ -36,7 +44,7 @@ public class GraphEditState
     /// Events sent by GraphEditor
     /// </summary>
 
-    public event Action? OnChanged;
+    public event Action OnChanged;
     public event Action<List<KeyValuePair<SelectableModel, IGraphObject>>>? OnSelectionChanged; 
     public event Action<KeyboardEventArgs>? OnKeyDown;
 
@@ -47,22 +55,46 @@ public class GraphEditState
     public bool CanUndo { get; private set; }
     public bool CanRedo { get; private set; }
 
+    public int Id { get; }
+
     public void OnEdit()
     {
+        Console.WriteLine($"GraphEditState {Id} OnEdit");
         Mode = EditMode.EditOffline;
-        OnChanged?.Invoke();
+        InvokeOnChanged();
     }
 
     public void OnSaving()
     {
         Mode = EditMode.Saving;
-        OnChanged?.Invoke();
+        InvokeOnChanged();
     }
 
     public void OnCancel()
     {
+        Console.WriteLine($"GraphEditState {Id} OnCancel");
         Mode = EditMode.View;
-        OnChanged?.Invoke();
+        InvokeOnChanged();
+    }
+
+    private void InvokeOnChanged()
+    {
+        if (OnChanged == null)
+        {
+            return;
+        }
+
+        foreach (var action in OnChanged.GetInvocationList())
+        {
+            try
+            {
+                action.DynamicInvoke();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+        }
     }
 
     public void DoCommand(Command command)

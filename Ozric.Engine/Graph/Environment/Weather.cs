@@ -12,7 +12,7 @@ namespace OzricEngine.Nodes;
 /// Combines dawn & dusk times with the current weather to determine the overall light level. 1 = bright sunshine, 0 = darkness
 /// </summary>
 [TypeKey(NodeType.Weather)]
-public class Weather: EntityNode
+public class Weather: EntityGraphNode
 {
     public override NodeType nodeType => NodeType.Weather;
         

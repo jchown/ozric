@@ -9,7 +9,7 @@ using ValueType = Ozric.Engine.Values.ValueType;
 namespace OzricEngine.Nodes;
 
 [TypeKey(NodeType.ModeSensor)]
-public class ModeSensor : EntityNode
+public class ModeSensor : EntityGraphNode
 {
     public override NodeType nodeType => NodeType.ModeSensor;
 

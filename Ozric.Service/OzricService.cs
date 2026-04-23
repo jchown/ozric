@@ -99,7 +99,7 @@ public class OzricService: IOzricService, ICommandSender
                 try
                 {
                     var nodeJson = node.Value.ToString();
-                    Json.Deserialize<Node>(nodeJson);
+                    Json.Deserialize<GraphNode>(nodeJson);
                 }
                 catch (Exception e)
                 {
@@ -114,7 +114,7 @@ public class OzricService: IOzricService, ICommandSender
     {
         //  Check that all references are valid
 
-        var edgeChecks = new Func<Edge, string?>[]
+        var edgeChecks = new Func<GraphEdge, string?>[]
         {
             edge => graph.nodes.ContainsKey(edge.from.nodeID) ? null : $"The from node '{edge.from.nodeID}' does not exist",
             edge => graph.nodes.ContainsKey(edge.to.nodeID) ? null : $"The to node '{edge.to.nodeID}' does not exist",
@@ -257,7 +257,7 @@ public class OzricService: IOzricService, ICommandSender
             }
             else if (string.IsNullOrEmpty(node.area_id))
             {
-                if (node is EntityNode entityNode)
+                if (node is EntityGraphNode entityNode)
                 {
                     var entity = entities.FirstOrDefault(e => e.entity_id == entityNode.entityID);
                     if (entity == null)

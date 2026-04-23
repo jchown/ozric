@@ -47,31 +47,31 @@ public interface GraphEditAction
         }
     }
 
-    record AddNode(Node Node): GraphEditAction
+    record AddNode(GraphNode GraphNode): GraphEditAction
     {
         public void Do(AreaGraphView editor)
         {
-            if (editor.Graph.HasNode(Node.id))
-                throw new Exception($"Node with ID {Node.id} already exists");
+            if (editor.Graph.HasNode(GraphNode.id))
+                throw new Exception($"Node with ID {GraphNode.id} already exists");
 
-            editor.Graph.AddNode(Node);
+            editor.Graph.AddNode(GraphNode);
             var pos = editor.Diagram.GetScreenPoint(0.3, 0.2);
             var container = editor.Diagram.Container!;
             var normalized = LayoutCoordinateConverter.ToNormalized(pos, container);
-            editor.GraphLayout.SetNodePosition(editor.AreaId, Node.id, normalized);
-            editor.AddNode(Node, pos);
+            editor.GraphLayout.SetNodePosition(editor.AreaId, GraphNode.id, normalized);
+            editor.AddNode(GraphNode, pos);
         }
 
         public void Undo(AreaGraphView editor)
         {
-            editor.RemoveNode(Node);
-            editor.GraphLayout.RemoveNode(editor.AreaId, Node.id);
+            editor.RemoveNode(GraphNode);
+            editor.GraphLayout.RemoveNode(editor.AreaId, GraphNode.id);
         }
     }
 
-    record RenameNode(Node Node, string NewId): GraphEditAction
+    record RenameNode(GraphNode GraphNode, string NewId): GraphEditAction
     {
-        private readonly string _oldId = Node.id;
+        private readonly string _oldId = GraphNode.id;
         
         public void Do(AreaGraphView editor)
         {
@@ -84,20 +84,20 @@ public interface GraphEditAction
         }
     }
 
-    record EditNode(Node Node, PropertyInfo Property, object? NewValue): GraphEditAction
+    record EditNode(GraphNode GraphNode, PropertyInfo Property, object? NewValue): GraphEditAction
     {
-        private readonly object? _oldValue = Property.GetValue(Node);
+        private readonly object? _oldValue = Property.GetValue(GraphNode);
         
         public void Do(AreaGraphView editor)
         {
-            Property.SetValue(Node, NewValue);
-            editor.Reload(Node);
+            Property.SetValue(GraphNode, NewValue);
+            editor.Reload(GraphNode);
         }
 
         public void Undo(AreaGraphView editor)
         {
-            Property.SetValue(Node, _oldValue);
-            editor.Reload(Node);
+            Property.SetValue(GraphNode, _oldValue);
+            editor.Reload(GraphNode);
         }
     }
     
@@ -175,63 +175,63 @@ public interface GraphEditAction
         }
     }
 
-    record RemoveNode(Node Node): GraphEditAction
+    record RemoveNode(GraphNode GraphNode): GraphEditAction
     {
         private LayoutPoint? _savedNorm;
 
         public void Do(AreaGraphView editor)
         {
-            _savedNorm = editor.GraphLayout.GetNodePosition(editor.AreaId, Node.id);
-            editor.RemoveNode(Node);
-            editor.GraphLayout.RemoveNode(editor.AreaId, Node.id);
+            _savedNorm = editor.GraphLayout.GetNodePosition(editor.AreaId, GraphNode.id);
+            editor.RemoveNode(GraphNode);
+            editor.GraphLayout.RemoveNode(editor.AreaId, GraphNode.id);
         }
 
         public void Undo(AreaGraphView editor)
         {
-            editor.Graph.AddNode(Node);
+            editor.Graph.AddNode(GraphNode);
             if (_savedNorm != null)
-                editor.GraphLayout.SetNodePosition(editor.AreaId, Node.id, _savedNorm);
+                editor.GraphLayout.SetNodePosition(editor.AreaId, GraphNode.id, _savedNorm);
             var container = editor.Diagram.Container!;
             var pixelPos = _savedNorm != null
                 ? LayoutCoordinateConverter.ToPixels(_savedNorm, container)
                 : Point.Zero;
-            editor.AddNode(Node, pixelPos);
+            editor.AddNode(GraphNode, pixelPos);
         }
     }
     
-    record AddEdge(Edge Edge): GraphEditAction
+    record AddEdge(GraphEdge GraphEdge): GraphEditAction
     {
         public void Do(AreaGraphView editor)
         {
-            if (!editor.Graph.HasOutput(Edge.from))
+            if (!editor.Graph.HasOutput(GraphEdge.from))
                 throw new Exception();
             
-            if (!editor.Graph.HasInput(Edge.to))
+            if (!editor.Graph.HasInput(GraphEdge.to))
                 throw new Exception();
             
-            editor.Graph.edges.Add(Edge.id, Edge);
-            editor.AddEdge(Edge);
+            editor.Graph.edges.Add(GraphEdge.id, GraphEdge);
+            editor.AddEdge(GraphEdge);
         }
 
         public void Undo(AreaGraphView editor)
         {
-            editor.RemoveEdge(Edge);
-            editor.Graph.edges.Remove(Edge.id);
+            editor.RemoveEdge(GraphEdge);
+            editor.Graph.edges.Remove(GraphEdge.id);
         }
     }
     
-    record RemoveEdge(Edge Edge): GraphEditAction
+    record RemoveEdge(GraphEdge GraphEdge): GraphEditAction
     {
         public void Do(AreaGraphView editor)
         {
-            editor.RemoveEdge(Edge);
-            editor.Graph.edges.Remove(Edge.id);
+            editor.RemoveEdge(GraphEdge);
+            editor.Graph.edges.Remove(GraphEdge.id);
         }
 
         public void Undo(AreaGraphView editor)
         {
-            editor.Graph.edges.Add(Edge.id, Edge);
-            editor.AddEdge(Edge);
+            editor.Graph.edges.Add(GraphEdge.id, GraphEdge);
+            editor.AddEdge(GraphEdge);
         }
     }
 }

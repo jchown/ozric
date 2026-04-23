@@ -18,7 +18,7 @@ namespace OzricEngine.Nodes;
 /// Split the day into phases, emitting a Mode for each one.
 /// </summary>
 [TypeKey(NodeType.DayPhases)]
-public class DayPhases: Node
+public class DayPhases: GraphNode
 {
     public override NodeType nodeType => NodeType.DayPhases;
 
