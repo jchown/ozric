@@ -1,11 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Ozric.Engine.Graph;
 using OzricEngine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Graph;
 
 /// <summary>
 /// TODO: Remove and replace with a multi-value input type.

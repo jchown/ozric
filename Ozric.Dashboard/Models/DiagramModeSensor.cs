@@ -1,6 +1,7 @@
 using Blazor.Diagrams.Core.Geometry;
+using Ozric.Dashboard.Model;
 
-namespace Ozric.Dashboard.Model;
+namespace Ozric.Dashboard.Models;
 
 public class DiagramModeSensor: DiagramNode
 {

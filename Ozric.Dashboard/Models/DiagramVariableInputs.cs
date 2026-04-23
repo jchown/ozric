@@ -8,7 +8,7 @@ public abstract class DiagramVariableInputs: DiagramNode
 {
     public PortInputAdd plus;
 
-    public DiagramVariableInputs(OzricEngine.Nodes.GraphVariableInputs node, Point? point = null) : base(node, point)
+    public DiagramVariableInputs(GraphVariableInputs node, Point? point = null) : base(node, point)
     {
         plus = new PortInputAdd(this, node.valueType, PortAlignment.BottomLeft);
         AddPort(plus);

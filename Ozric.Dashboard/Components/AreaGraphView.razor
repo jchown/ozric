@@ -11,8 +11,6 @@
 @using OzricEngine.Values
 @using OzricService
 @using Anchor = Blazor.Diagrams.Core.Anchors.Anchor
-@using Edge = Ozric.Engine.Graph.GraphEdge
-@using DiagramVariableInputs = Ozric.Dashboard.Model.DiagramVariableInputs
 @implements IDisposable
 @inject NavigationManager Navigation
 
@@ -83,7 +81,7 @@
     private EditHistory GetHistory() => _history!;
 
     private readonly Mapping<GraphNode, DiagramNode> nodeMappings = new();
-    private readonly Mapping<Edge, LinkModel> edgeMappings = new();
+    private readonly Mapping<GraphEdge, LinkModel> edgeMappings = new();
     
     private string _areaId;
 
@@ -525,7 +523,7 @@
 
     /// Take an existing edge in the Graph and add it as the equivalent model object in the Diagram.
 
-    public void AddEdge(Edge graphEdge)
+    public void AddEdge(GraphEdge graphEdge)
     {
         var fromNodeModel = nodeMappings.GetDiagram(graphEdge.from.nodeID);
         var toNodeModel = nodeMappings.GetDiagram(graphEdge.to.nodeID);
@@ -544,7 +542,7 @@
     
     /// Remove the model object that represents the given edge from the Diagram 
     
-    public void RemoveEdge(Edge graphEdge)
+    public void RemoveEdge(GraphEdge graphEdge)
     {
         var link = edgeMappings.Remove(graphEdge);
         
@@ -734,7 +732,7 @@
 
             var from = new OutputSelector(fromNode.id, fromPin.name);
             var to = new InputSelector(toNode.id, toPin.name);
-            var edge = new Edge(from, to);
+            var edge = new GraphEdge(from, to);
 
             if (Graph.edges.ContainsKey(edge.id))
                 return;
@@ -752,12 +750,12 @@
             
             Diagram.Links.Remove(link);
 
-            var toVarInput = toNode as OzricEngine.Nodes.GraphVariableInputs ?? throw new Exception("Expect variable inputs");
+            var toVarInput = toNode as GraphVariableInputs ?? throw new Exception("Expect variable inputs");
             var newPinName = toVarInput.NextPinName();
             
             var from = new OutputSelector(fromNode.id, fromPin.name);
             var to = new InputSelector(toNode.id, newPinName);
-            var edge = new Edge(from, to);
+            var edge = new GraphEdge(from, to);
 
             var addPort = new GraphEditAction.AddInput(toVarInput, newPinName);
             var addEdge = new GraphEditAction.AddEdge(edge);
@@ -799,7 +797,7 @@
 
             var from = new OutputSelector(fromNode.id, fromPin.name);
             var to = new InputSelector(toNode.id, toPin.name);
-            var edge = new Edge(from, to);
+            var edge = new GraphEdge(from, to);
 
             if (Graph.edges.ContainsKey(edge.id))
                 return;
@@ -822,7 +820,7 @@
             
             var from = new OutputSelector(fromNode.id, fromPin.name);
             var to = new InputSelector(toNode.id, newPinName);
-            var edge = new Edge(from, to);
+            var edge = new GraphEdge(from, to);
 
             var addPort = new GraphEditAction.AddInput(toVarInput, newPinName);
             var addEdge = new GraphEditAction.AddEdge(edge);
@@ -894,7 +892,7 @@
         var edge = edgeMappings.GetGraph(lm);
         if (lm.Target.Model is DiagramVariableInputs vim)
         {
-            var inputNode = (OzricEngine.Nodes.GraphVariableInputs)vim.graphNode;
+            var inputNode = (GraphVariableInputs)vim.graphNode;
             yield return new GraphEditAction.RemoveInput(inputNode, edge.to.inputName);
             yield return new GraphEditAction.RemoveEdge(edge);
             yield break;
@@ -903,14 +901,14 @@
         yield return new GraphEditAction.RemoveEdge(edge);
     }
 
-    public void AddNodeInput(OzricEngine.Nodes.GraphVariableInputs variableInputs, string inputName)
+    public void AddNodeInput(GraphVariableInputs variableInputs, string inputName)
     {
         var input = variableInputs.AddInput(inputName);
         var model = (DiagramVariableInputs) nodeMappings.GetDiagram(variableInputs);
         model.AddVariableInput(input);
     }
 
-    public void RemoveNodeInput(OzricEngine.Nodes.GraphVariableInputs variableInputs, string inputName)
+    public void RemoveNodeInput(GraphVariableInputs variableInputs, string inputName)
     {
         var input = variableInputs.RemoveInput(inputName);
         var model = (DiagramVariableInputs) nodeMappings.GetDiagram(variableInputs);

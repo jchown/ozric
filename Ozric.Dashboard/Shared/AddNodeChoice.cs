@@ -5,6 +5,7 @@ using Ozric.Dashboard.Model;
 using Ozric.Dashboard.Models;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Graph.Entities;
+using Ozric.Engine.Graph.Logic;
 using Ozric.Engine.Nodes;
 using ValueType = Ozric.Engine.Values.ValueType;
 
@@ -61,13 +62,13 @@ public class AddNodeChoice
             category: Category.Logic,
             name: "If Any - OR",
             icon: DiagramIfAny.ICON,
-            create: () => new Engine.Graph.Logic.GraphIfAny(graph.CreateNodeID("ifany"))));
+            create: () => new GraphIfAny(graph.CreateNodeID("ifany"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "If All - AND",
             icon: DiagramIfAll.ICON,
-            create: () => new Engine.Graph.Logic.GraphIfAll(graph.CreateNodeID("ifall"))));
+            create: () => new GraphIfAll(graph.CreateNodeID("ifall"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Constant,
@@ -91,37 +92,37 @@ public class AddNodeChoice
             category: Category.Logic,
             name: "Compare Number",
             icon: DiagramNumberCompare.ICON,
-            create: () => new Engine.Graph.Logic.GraphNumberCompare(graph.CreateNodeID("compare"))));
+            create: () => new GraphNumberCompare(graph.CreateNodeID("compare"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Mode Matches",
             icon: DiagramModeMatch.ICON,
-            create: () => new Engine.Graph.Logic.GraphModeMatch(graph.CreateNodeID("match"))));
+            create: () => new GraphModeMatch(graph.CreateNodeID("match"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Tween - Color",
             icon: DiagramTween.ICON,
-            create: () => new Engine.Graph.Logic.GraphTween(graph.CreateNodeID("tween"), ValueType.Color)));
+            create: () => new GraphTween(graph.CreateNodeID("tween"), ValueType.Color)));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Tween - Number",
             icon: DiagramTween.ICON,
-            create: () => new Engine.Graph.Logic.GraphTween(graph.CreateNodeID("tween"), ValueType.Number)));
-        
+            create: () => new GraphTween(graph.CreateNodeID("tween"), ValueType.Number)));
+
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Binary Choice - Color",
             icon: DiagramBinaryChoice.ICON,
             create: () => DiagramBinaryChoice.Color(graph.CreateNodeID("binary-choice"))));
-        
+
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
             name: "Binary Sustain",
             icon: DiagramBinarySustain.ICON,
-            create: () => new Engine.Graph.Logic.GraphBinarySustain(graph.CreateNodeID("sustain"))));
+            create: () => new GraphBinarySustain(graph.CreateNodeID("sustain"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Logic,
@@ -133,26 +134,26 @@ public class AddNodeChoice
             category: Category.Environment,
             name: "Day Phases",
             icon: DiagramDayPhases.ICON,
-            create: () => new OzricEngine.Nodes.GraphDayPhases(graph.CreateNodeID("day-phases"))));
+            create: () => new GraphDayPhases(graph.CreateNodeID("day-phases"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Environment,
             name: "Sky Brightness",
             icon: DiagramSkyBrightness.ICON,
-            create: () => new OzricEngine.Nodes.GraphSkyBrightness(graph.CreateNodeID("sky-brightness"))));
+            create: () => new GraphSkyBrightness(graph.CreateNodeID("sky-brightness"))));
 
         choices.Add(new AddNodeChoice(
             category: Category.Environment,
             name: "Weather",
             icon: DiagramWeather.ICON,
-            create: () => new OzricEngine.Nodes.GraphWeather(graph.CreateNodeID("weather"))));
+            create: () => new GraphWeather(graph.CreateNodeID("weather"))));
 
         return choices;
     }
 
     internal static string? GetEntityIcon(Type type)
     {
-        if (type == typeof(Engine.Graph.Entities.GraphLight))
+        if (type == typeof(GraphLight))
             return DiagramLight.ICON;
 
         if (type == typeof(GraphBinarySensor))
