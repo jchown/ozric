@@ -35,18 +35,18 @@ public static class DiagramTypeCatalogue
         {
             // Special case for constants, as we want a specific type/UI for each value type
 
-            case OzricEngine.Nodes.Constant c:
+            case OzricEngine.Nodes.GraphConstant c:
             {
                 switch (c.value.ValueType)
                 {
                     case Engine.Values.ValueType.Color:
-                        return typeof(ConstantColor);
+                        return typeof(DiagramConstantColor);
 
                     case Engine.Values.ValueType.Number:
-                        return typeof(ConstantNumber);
+                        return typeof(DiagramConstantNumber);
 
                     case Engine.Values.ValueType.Binary:
-                        return typeof(ConstantBinary);
+                        return typeof(DiagramConstantBinary);
 
                     case Engine.Values.ValueType.Mode:
                     default:

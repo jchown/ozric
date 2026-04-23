@@ -71,9 +71,9 @@ namespace OzricEngineTests
         private static Graph GetSimpleGraph()
         {
             var graph = new Graph();
-            var a = new Constant("a", new Binary(false));
-            var b = new IfAny("b");
-            var c = new IfAny("c");
+            var a = new GraphConstant("a", new Binary(false));
+            var b = new GraphIfAny("b");
+            var c = new GraphIfAny("c");
 
             b.AddInput("value", ValueType.Binary);
             c.AddInput("value1", ValueType.Binary);

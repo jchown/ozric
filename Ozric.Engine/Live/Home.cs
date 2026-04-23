@@ -371,7 +371,7 @@ public class Home: OzricObject, IHome
             {
                 //  Check only the relevant details, ignoring timers etc.
 
-                if (entityState.state == newState.state && entityState.attributes.EqualsKeys(newState.attributes, Light.ATTRIBUTE_KEYS))
+                if (entityState.state == newState.state && entityState.attributes.EqualsKeys(newState.attributes, GraphLight.ATTRIBUTE_KEYS))
                 {
                     return false;
                 }

@@ -101,7 +101,7 @@ public interface GraphEditAction
         }
     }
     
-    record AddInput(VariableInputs Node, string InputName): GraphEditAction
+    record AddInput(GraphVariableInputs Node, string InputName): GraphEditAction
     {
         public void Do(AreaGraphView editor)
         {
@@ -116,7 +116,7 @@ public interface GraphEditAction
         }
     }
 
-    record RemoveInput(VariableInputs Node, string InputName): GraphEditAction
+    record RemoveInput(GraphVariableInputs Node, string InputName): GraphEditAction
     {
         public void Do(AreaGraphView editor)
         {

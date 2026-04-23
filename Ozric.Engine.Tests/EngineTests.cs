@@ -20,16 +20,16 @@ namespace OzricEngineTests
         [Fact]
         void nodeOrderDependsOnConnections()
         {
-            var o1 = new IfAny("o1");
-            var o2 = new IfAny("o2");
-            var o3 = new IfAny("o3");
+            var o1 = new GraphIfAny("o1");
+            var o2 = new GraphIfAny("o2");
+            var o3 = new GraphIfAny("o3");
 
             var nodes = new List<GraphNode>
             {
-                new BinarySensor("s1", "e1"),
-                new BinarySensor("s2", "e2"),
-                new BinarySensor("s3", "e3"),
-                new BinarySensor("s4", "e4"),
+                new GraphBinarySensor("s1", "e1"),
+                new GraphBinarySensor("s2", "e2"),
+                new GraphBinarySensor("s3", "e3"),
+                new GraphBinarySensor("s4", "e4"),
                 o1, o2, o3
             };
             nodes.Shuffle();
@@ -69,10 +69,10 @@ namespace OzricEngineTests
             var engine = new MockEngine(home);
             var context = new MockContext(engine);
 
-            var phases = new DayPhases("phase_id");
+            var phases = new GraphDayPhases("phase_id");
             phases.AddOutput("color", ValueType.Color);
-            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Midnight, 0, new Mode("am")));
-            phases.AddPhase(DayPhases.PhaseStart.Create(DayPhases.SunPhase.Noon, 0, new Mode("pm")));
+            phases.AddPhase(GraphDayPhases.PhaseStart.Create(GraphDayPhases.SunPhase.Midnight, 0, new Mode("am")));
+            phases.AddPhase(GraphDayPhases.PhaseStart.Create(GraphDayPhases.SunPhase.Noon, 0, new Mode("pm")));
 
             await phases.OnInit(context);
             engine.ProcessMockEvent("sun_event");
@@ -124,7 +124,7 @@ namespace OzricEngineTests
             var engine = new MockEngine(home);
             var context = new MockContext(engine);
 
-            var sensor = new BinarySensor("sensor_1", "binary_sensor.sensor_1");
+            var sensor = new GraphBinarySensor("sensor_1", "binary_sensor.sensor_1");
             engine.graph.AddNode(sensor);
 
             await sensor.OnInit(context);

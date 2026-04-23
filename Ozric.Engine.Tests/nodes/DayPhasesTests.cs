@@ -13,10 +13,10 @@ namespace OzricEngine.Nodes
         [Fact]
         public void canSplitDayInToMorningAndEvening()
         {
-            var node = new DayPhases("am_pm");
+            var node = new GraphDayPhases("am_pm");
             node.outputs.Add(new Pin("morning", ValueType.Binary));
-            node.AddPhase(new DayPhases.PhaseStart(new Mode("am"), DayPhases.SunPhase.Midnight));
-            node.AddPhase(new DayPhases.PhaseStart(new Mode("pm"), DayPhases.SunPhase.Noon));
+            node.AddPhase(new GraphDayPhases.PhaseStart(new Mode("am"), GraphDayPhases.SunPhase.Midnight));
+            node.AddPhase(new GraphDayPhases.PhaseStart(new Mode("pm"), GraphDayPhases.SunPhase.Noon));
 
             var homePM = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_morning");
             var enginePM = new MockEngine(homePM);
@@ -32,12 +32,12 @@ namespace OzricEngine.Nodes
         [Fact]
         public void canEvaluatePhaseCorrectly()
         {
-            var node = new DayPhases("Color-phases");
+            var node = new GraphDayPhases("Color-phases");
             node.AddOutput("Color", ValueType.Color);
-            node.AddPhase(new DayPhases.PhaseStart(new Mode("after-midnight"), DayPhases.SunPhase.Midnight));
-            node.AddPhase(new DayPhases.PhaseStart(new Mode("after-6am"), DayPhases.SunPhase.Midnight, + 6 * 60 * 60));
-            node.AddPhase(new DayPhases.PhaseStart(new Mode("after-noon"), DayPhases.SunPhase.Noon));
-            node.AddPhase(new DayPhases.PhaseStart(new Mode("after-6pm"), DayPhases.SunPhase.Midnight, - 6 * 60 * 60));
+            node.AddPhase(new GraphDayPhases.PhaseStart(new Mode("after-midnight"), GraphDayPhases.SunPhase.Midnight));
+            node.AddPhase(new GraphDayPhases.PhaseStart(new Mode("after-6am"), GraphDayPhases.SunPhase.Midnight, + 6 * 60 * 60));
+            node.AddPhase(new GraphDayPhases.PhaseStart(new Mode("after-noon"), GraphDayPhases.SunPhase.Noon));
+            node.AddPhase(new GraphDayPhases.PhaseStart(new Mode("after-6pm"), GraphDayPhases.SunPhase.Midnight, - 6 * 60 * 60));
             
             var home = new MockHome(DateTime.Parse("2021-11-29T03:21:25.459551+00:00"), "sun_morning");
             var engine = new MockEngine(home);
@@ -63,13 +63,13 @@ namespace OzricEngine.Nodes
         [Fact]
         public void notConfusedByPreMidnightPhases()
         {
-            var node = new DayPhases("kitchen-lights-phases");
+            var node = new GraphDayPhases("kitchen-lights-phases");
             node.AddOutput("colour", ValueType.Color);
 
-            node.AddPhase(new DayPhases.PhaseStart(new Mode("near-midnight"), DayPhases.SunPhase.Midnight, - 30 * 60));
-            node.AddPhase(new DayPhases.PhaseStart(new Mode("after-6am"), DayPhases.SunPhase.Midnight, + 6 * 60 * 60));
-            node.AddPhase(new DayPhases.PhaseStart(new Mode("sun-setting"), DayPhases.SunPhase.Setting, - 30 * 60));
-            node.AddPhase(new DayPhases.PhaseStart(new Mode("after-7pm"), DayPhases.SunPhase.Midnight, - 5 * 60 * 60));
+            node.AddPhase(new GraphDayPhases.PhaseStart(new Mode("near-midnight"), GraphDayPhases.SunPhase.Midnight, - 30 * 60));
+            node.AddPhase(new GraphDayPhases.PhaseStart(new Mode("after-6am"), GraphDayPhases.SunPhase.Midnight, + 6 * 60 * 60));
+            node.AddPhase(new GraphDayPhases.PhaseStart(new Mode("sun-setting"), GraphDayPhases.SunPhase.Setting, - 30 * 60));
+            node.AddPhase(new GraphDayPhases.PhaseStart(new Mode("after-7pm"), GraphDayPhases.SunPhase.Midnight, - 5 * 60 * 60));
 
             var home = new MockHome(DateTime.Parse("2021-11-29T03:21:25.459551+00:00"), "sun_morning");
             var engine = new MockEngine(home);

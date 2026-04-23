@@ -47,8 +47,8 @@
     protected override void OnInitialized()
     {
         _currentColors = OzricService.Graph.nodes
-            .Where(n => n.Value is Constant c && c.ConstantType == ValueType.Color)
-            .ToDictionary(n => n.Key, n => (ColorValue) ((Constant) n.Value).ConstantValue!);
+            .Where(n => n.Value is GraphConstant c && c.ConstantType == ValueType.Color)
+            .ToDictionary(n => n.Key, n => (ColorValue) ((GraphConstant) n.Value).ConstantValue!);
 
         _editedColors = new Dictionary<string, ColorValue>(_currentColors);
     }

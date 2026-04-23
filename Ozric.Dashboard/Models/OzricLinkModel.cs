@@ -1,5 +1,4 @@
 using Blazor.Diagrams.Core.Models;
-using Blazor.Diagrams.Core.Models.Base;
 using Ozric.Engine.Graph;
 using OzricEngine.Values;
 

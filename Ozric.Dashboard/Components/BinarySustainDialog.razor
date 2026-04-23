@@ -1,7 +1,5 @@
-@using Ozric.Dashboard.Model
 @using Humanizer
-@using Ozric.Engine.Graph.Logic
-@using BinarySustain = Ozric.Dashboard.Model.BinarySustain
+@using DiagramBinarySustain = Ozric.Dashboard.Model.DiagramBinarySustain
 
 <MudDialog>
     <DialogContent>
@@ -39,10 +37,10 @@
     IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public BinarySustain Model { get; set; }
+    public DiagramBinarySustain Model { get; set; }
 
     [Parameter]
-    public Engine.Graph.Logic.BinarySustain Node { get; set; }
+    public Engine.Graph.Logic.GraphBinarySustain Node { get; set; }
 
     private string ID;
     private bool SustainValue { get; set; }

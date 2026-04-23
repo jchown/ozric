@@ -26,21 +26,21 @@ namespace OzricEngineTests
         {
             assertSerializeRoundTripWorks(new List<Pin> { new("input", ValueType.Color, ColorRGB.RED) });
             assertSerializeRoundTripWorks(new InputSelector("a-node", "an-output"));
-            assertSerializeRoundTripWorks(new Constant("red", ColorRGB.RED));
-            assertSerializeRoundTripWorks(new DayPhases("work-times"));
-            assertSerializeRoundTripWorks(new IfAll("all-right"));
-            assertSerializeRoundTripWorks(new IfAny("any-left"));
-            assertSerializeRoundTripWorks(new Light("Main Light", "hue-light-1"));
-            assertSerializeRoundTripWorks(new ModeSwitch("bot-mode"));
-            assertSerializeRoundTripWorks(new BinarySensor("Main Sensor", "sensor-01"));
-            assertSerializeRoundTripWorks(new SkyBrightness());
-            assertSerializeRoundTripWorks(new BinaryChoice("bot-colour", ValueType.Color));
+            assertSerializeRoundTripWorks(new GraphConstant("red", ColorRGB.RED));
+            assertSerializeRoundTripWorks(new GraphDayPhases("work-times"));
+            assertSerializeRoundTripWorks(new GraphIfAll("all-right"));
+            assertSerializeRoundTripWorks(new GraphIfAny("any-left"));
+            assertSerializeRoundTripWorks(new GraphLight("Main Light", "hue-light-1"));
+            assertSerializeRoundTripWorks(new GraphModeSwitch("bot-mode"));
+            assertSerializeRoundTripWorks(new GraphBinarySensor("Main Sensor", "sensor-01"));
+            assertSerializeRoundTripWorks(new GraphSkyBrightness());
+            assertSerializeRoundTripWorks(new GraphBinaryChoice("bot-colour", ValueType.Color));
         }
                 
         [Fact]
         public void serializeRoundTripWorksWithInputs1()
         {
-            var ifAll = new IfAll("all-right");
+            var ifAll = new GraphIfAll("all-right");
             ifAll.inputs.Add(new Pin("input-1", ValueType.Binary));
             ifAll.inputs.Add(new Pin("input-2", ValueType.Binary));
             assertSerializeRoundTripWorks(ifAll);
@@ -49,7 +49,7 @@ namespace OzricEngineTests
         [Fact]
         public void serializeRoundTripWorksWithInputs2()
         {
-            var ifAny = new IfAny("any-left");
+            var ifAny = new GraphIfAny("any-left");
             ifAny.inputs.Add(new Pin("input-1", ValueType.Binary));
             ifAny.inputs.Add(new Pin("input-2", ValueType.Binary));
             assertSerializeRoundTripWorks(ifAny);

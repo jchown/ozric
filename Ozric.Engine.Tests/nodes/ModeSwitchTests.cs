@@ -16,7 +16,7 @@ namespace OzricEngine.Nodes
             var engine = new MockEngine(homePM);
             var context = new MockContext(engine);
 
-            var node = new ModeSwitch("mode-colors");
+            var node = new GraphModeSwitch("mode-colors");
             node.AddOutput("shirts", ValueType.Color);
             node.AddOutput("shorts", ValueType.Color);
             node.AddModeValues("liverpool", ("shirts", ColorRGB.RED), ("shorts", ColorRGB.RED));

@@ -1,5 +1,4 @@
 @using Blazor.Diagrams
-@using OzricEngine.Nodes
 @using Ozric.Dashboard.Model
 @using Blazor.Diagrams.Components
 @using Blazor.Diagrams.Core.Models.Base
@@ -12,10 +11,8 @@
 @using OzricEngine.Values
 @using OzricService
 @using Anchor = Blazor.Diagrams.Core.Anchors.Anchor
-@using Constant = OzricEngine.Nodes.Constant
-@using ValueType = Ozric.Engine.Values.ValueType
 @using Edge = Ozric.Engine.Graph.GraphEdge
-@using VariableInputs = Ozric.Dashboard.Model.VariableInputs
+@using DiagramVariableInputs = Ozric.Dashboard.Model.DiagramVariableInputs
 @implements IDisposable
 @inject NavigationManager Navigation
 
@@ -302,7 +299,7 @@
     
     private void DoEntityRefresh(string entityID)
     {
-        var node = Graph.nodes.Values.FirstOrDefault(n => n is EntityGraphNode en && en.entityID == entityID);
+        var node = Graph.nodes.Values.FirstOrDefault(n => n is GraphEntity en && en.entityID == entityID);
         if (node == null)
             return;
 
@@ -755,7 +752,7 @@
             
             Diagram.Links.Remove(link);
 
-            var toVarInput = toNode as OzricEngine.Nodes.VariableInputs ?? throw new Exception("Expect variable inputs");
+            var toVarInput = toNode as OzricEngine.Nodes.GraphVariableInputs ?? throw new Exception("Expect variable inputs");
             var newPinName = toVarInput.NextPinName();
             
             var from = new OutputSelector(fromNode.id, fromPin.name);
@@ -820,7 +817,7 @@
             
             diagram.Links.Remove(link);
 
-            var toVarInput = toNode as VariableInputs ?? throw new Exception("Expect variable inputs");
+            var toVarInput = toNode as DiagramVariableInputs ?? throw new Exception("Expect variable inputs");
             var newPinName = toVarInput.NextPinName();
             
             var from = new OutputSelector(fromNode.id, fromPin.name);
@@ -895,9 +892,9 @@
     private IEnumerable<GraphEditAction> GetDeleteActions(LinkModel lm)
     {
         var edge = edgeMappings.GetGraph(lm);
-        if (lm.Target.Model is VariableInputs vim)
+        if (lm.Target.Model is DiagramVariableInputs vim)
         {
-            var inputNode = (OzricEngine.Nodes.VariableInputs)vim.graphNode;
+            var inputNode = (OzricEngine.Nodes.GraphVariableInputs)vim.graphNode;
             yield return new GraphEditAction.RemoveInput(inputNode, edge.to.inputName);
             yield return new GraphEditAction.RemoveEdge(edge);
             yield break;
@@ -906,17 +903,17 @@
         yield return new GraphEditAction.RemoveEdge(edge);
     }
 
-    public void AddNodeInput(OzricEngine.Nodes.VariableInputs variableInputs, string inputName)
+    public void AddNodeInput(OzricEngine.Nodes.GraphVariableInputs variableInputs, string inputName)
     {
         var input = variableInputs.AddInput(inputName);
-        var model = (VariableInputs) nodeMappings.GetDiagram(variableInputs);
+        var model = (DiagramVariableInputs) nodeMappings.GetDiagram(variableInputs);
         model.AddVariableInput(input);
     }
 
-    public void RemoveNodeInput(OzricEngine.Nodes.VariableInputs variableInputs, string inputName)
+    public void RemoveNodeInput(OzricEngine.Nodes.GraphVariableInputs variableInputs, string inputName)
     {
         var input = variableInputs.RemoveInput(inputName);
-        var model = (VariableInputs) nodeMappings.GetDiagram(variableInputs);
+        var model = (DiagramVariableInputs) nodeMappings.GetDiagram(variableInputs);
         model.RemoveInput(input);
     }
 

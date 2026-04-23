@@ -1,6 +1,4 @@
-@using Ozric.Dashboard.Model
-@using Ozric.Engine.Graph.Logic
-@using ModeMatch = Ozric.Dashboard.Model.ModeMatch
+@using DiagramModeMatch = Ozric.Dashboard.Model.DiagramModeMatch
 
 <MudDialog>
     <DialogContent>
@@ -13,7 +11,7 @@
 
             @if (_patterns.Count > 0)
             {
-                <MudTable Items="@_patterns" T="Engine.Graph.Logic.ModeMatch.Pattern" 
+                <MudTable Items="@_patterns" T="Engine.Graph.Logic.GraphModeMatch.Pattern" 
                           @bind-SelectedItem="selected"  
                           CanCancelEdit="true"
                           CommitEditTooltip="Apply"
@@ -44,9 +42,9 @@
                         </MudTd>
                         <MudTd DataLabel="Type">
                             <MudSelect @bind-Value="@context.type" Variant="Variant.Text">
-                                <MudSelectItem Value="Engine.Graph.Logic.ModeMatch.PatternType.Exact">Exact</MudSelectItem>
-                                <MudSelectItem Value="Engine.Graph.Logic.ModeMatch.PatternType.Wildcard">Wildcard</MudSelectItem>
-                                <MudSelectItem Value="Engine.Graph.Logic.ModeMatch.PatternType.Regex">Regex</MudSelectItem>
+                                <MudSelectItem Value="Engine.Graph.Logic.GraphModeMatch.PatternType.Exact">Exact</MudSelectItem>
+                                <MudSelectItem Value="Engine.Graph.Logic.GraphModeMatch.PatternType.Wildcard">Wildcard</MudSelectItem>
+                                <MudSelectItem Value="Engine.Graph.Logic.GraphModeMatch.PatternType.Regex">Regex</MudSelectItem>
                             </MudSelect>
                         </MudTd>
                     </RowEditingTemplate>
@@ -103,16 +101,16 @@
     IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public ModeMatch Model { get; set; }
+    public DiagramModeMatch Model { get; set; }
 
     [Parameter]
-    public Engine.Graph.Logic.ModeMatch Node { get; set; }
+    public Engine.Graph.Logic.GraphModeMatch Node { get; set; }
 
     private string _id;
-    private List<Engine.Graph.Logic.ModeMatch.Pattern> _patterns;
+    private List<Engine.Graph.Logic.GraphModeMatch.Pattern> _patterns;
     
-    private Engine.Graph.Logic.ModeMatch.Pattern selected;
-    private Engine.Graph.Logic.ModeMatch.Pattern elementBeforeEdit;
+    private Engine.Graph.Logic.GraphModeMatch.Pattern selected;
+    private Engine.Graph.Logic.GraphModeMatch.Pattern elementBeforeEdit;
     private string addPattern { get; set; } = "";
     private string testPattern { get; set; } = "";
 
@@ -124,7 +122,7 @@
     protected override void OnInitialized()
     {
         _id = Node.id;
-        _patterns = new List<Engine.Graph.Logic.ModeMatch.Pattern>(Node.patterns);
+        _patterns = new List<Engine.Graph.Logic.GraphModeMatch.Pattern>(Node.patterns);
     }
 
     private bool TestMatch()
@@ -132,7 +130,7 @@
         if (string.IsNullOrWhiteSpace(testPattern))
             return false;
         
-        return Engine.Graph.Logic.ModeMatch.ToRegex(_patterns).Any(r => r.Match(testPattern).Success);
+        return Engine.Graph.Logic.GraphModeMatch.ToRegex(_patterns).Any(r => r.Match(testPattern).Success);
     }
     
     private List<GraphEditAction> GetChanges()
@@ -149,7 +147,7 @@
 
     private void Add()
     {
-        _patterns.Add(new Engine.Graph.Logic.ModeMatch.Pattern
+        _patterns.Add(new Engine.Graph.Logic.GraphModeMatch.Pattern
         {
             pattern = addPattern
         });
@@ -160,19 +158,19 @@
     {
         elementBeforeEdit = new()
         {
-            type = ((Engine.Graph.Logic.ModeMatch.Pattern)element).type,
-            pattern = ((Engine.Graph.Logic.ModeMatch.Pattern)element).pattern,
+            type = ((Engine.Graph.Logic.GraphModeMatch.Pattern)element).type,
+            pattern = ((Engine.Graph.Logic.GraphModeMatch.Pattern)element).pattern,
         };
     }
 
     private void ResetItem(object element)
     {
-        var pattern = (Engine.Graph.Logic.ModeMatch.Pattern) element;
+        var pattern = (Engine.Graph.Logic.GraphModeMatch.Pattern) element;
         pattern.type = elementBeforeEdit.type;
         pattern.pattern = elementBeforeEdit.pattern;
     }
 
-    private void OnRemove(Engine.Graph.Logic.ModeMatch.Pattern context)
+    private void OnRemove(Engine.Graph.Logic.GraphModeMatch.Pattern context)
     {
         _patterns.Remove(context);
     }

@@ -116,7 +116,7 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
 
     public List<string> GetInterestedEntityIDs()
     {
-        return nodes.Values.Select(node => node as EntityGraphNode).Where(node => node != null).Select(node => node!.entityID).Distinct().ToList();
+        return nodes.Values.Select(node => node as GraphEntity).Where(node => node != null).Select(node => node!.entityID).Distinct().ToList();
     }
 
     /// <summary>
@@ -239,12 +239,12 @@ public class Graph: OzricObject, IEquatable<Graph>, IGraph
 
     public bool HasEntityNode(string entityID)
     {
-        return nodes.Values.Any(node => node is EntityGraphNode en && en.entityID == entityID);
+        return nodes.Values.Any(node => node is GraphEntity en && en.entityID == entityID);
     }
 
-    public EntityGraphNode GetEntityNode(string entityID)
+    public GraphEntity GetEntityNode(string entityID)
     {
-        return (EntityGraphNode) nodes.Values.First(node => node is EntityGraphNode en && en.entityID == entityID);
+        return (GraphEntity) nodes.Values.First(node => node is GraphEntity en && en.entityID == entityID);
     }
 
     public List<T> GetAll<T>() where T : class

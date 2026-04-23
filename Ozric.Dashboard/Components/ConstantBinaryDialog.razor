@@ -1,7 +1,6 @@
 @using Ozric.Dashboard.Model
 @using OzricEngine.Nodes
 @using OzricEngine.Values
-@using Constant = OzricEngine.Nodes.Constant
 
 <MudDialog>
     <DialogContent>
@@ -31,10 +30,10 @@
     IMudDialogInstance MudDialog { get; set; }
 
     [Parameter]
-    public ConstantBinary Model { get; set; }
+    public DiagramConstantBinary Model { get; set; }
 
     [Parameter]
-    public Constant Node { get; set; }
+    public GraphConstant Node { get; set; }
 
     private string _id { get; set; }
     private bool _value { get; set; }

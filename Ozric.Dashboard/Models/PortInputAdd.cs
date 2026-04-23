@@ -15,7 +15,7 @@ public class PortInputAdd : PortModel, IPort
     public string CssClass => "input-port";
     public ValueType valueType { get; }
 
-    public PortInputAdd(VariableInputs model, ValueType valueType, PortAlignment alignment) : base(model, alignment)
+    public PortInputAdd(DiagramVariableInputs model, ValueType valueType, PortAlignment alignment) : base(model, alignment)
     {
         this.valueType = valueType;
     }

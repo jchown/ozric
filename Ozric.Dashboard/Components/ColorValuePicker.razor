@@ -48,8 +48,8 @@
 
         <p class="mud-input-helper-text">Brightness is not affected by the color luminance.</p>
                             
-        <MudSelect Value="_previewLight" Style="z-index:9999;" ValueChanged="OnPreviewLightChanged" HelperText="Choose a light to directly preview the color" T="Light" Label="Preview Light" Variant="Variant.Text">
-            <MudSelectItem Value="@((Light?) null)">(None)</MudSelectItem>
+        <MudSelect Value="_previewLight" Style="z-index:9999;" ValueChanged="OnPreviewLightChanged" HelperText="Choose a light to directly preview the color" T="GraphLight" Label="Preview Light" Variant="Variant.Text">
+            <MudSelectItem Value="@((GraphLight?) null)">(None)</MudSelectItem>
             @foreach (var light in _lights)
             {
                 <MudSelectItem Value="@(light)">@light.Name</MudSelectItem>
@@ -76,10 +76,10 @@
 
     ColorValue _color;
 
-    private List<Light> _lights;
+    private List<GraphLight> _lights;
     private MudColor _pickerColor { get; set; }
     private ColorMode _colorMode { get; set; }
-    private Light? _previewLight { get; set; }
+    private GraphLight? _previewLight { get; set; }
     private Timer _timer;
     private bool _settingSliders;
     private bool _settingPicker;
@@ -109,7 +109,7 @@
     {
         SetColorSliders(Value);
         _brightness = (int) (Value.brightness * BRIGHTNESS_SCALE);
-        _lights = Ozric.Graph.GetAll<Light>();
+        _lights = Ozric.Graph.GetAll<GraphLight>();
         
         _timer = new Timer(300);
         _timer.Elapsed += TimerCallback;
@@ -300,7 +300,7 @@
         }
     }
 
-    private void OnPreviewLightChanged(Light? light)
+    private void OnPreviewLightChanged(GraphLight? light)
     {
         _previewLight = light;
     }

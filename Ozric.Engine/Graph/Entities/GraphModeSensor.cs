@@ -1,0 +1,45 @@
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Ozric.Engine.Graph;
+using Ozric.Engine.Graph.Entities;
+using Ozric.Engine.Utils;
+using OzricEngine.Values;
+using ValueType = Ozric.Engine.Values.ValueType;
+
+namespace OzricEngine.Nodes;
+
+[TypeKey(NodeType.ModeSensor)]
+public class GraphModeSensor : GraphEntity
+{
+    public override NodeType nodeType => NodeType.ModeSensor;
+
+    public const string OUTPUT_NAME = "state";
+
+    public GraphModeSensor(string id, string entityID) : base(id, entityID, null, new List<Pin> { new(OUTPUT_NAME, ValueType.Mode) })
+    {
+    }
+
+    public override Task OnInit(Context context)
+    {
+        UpdateState(context);
+        return Task.CompletedTask;
+    }
+
+    public override Task OnUpdate(Context context)
+    {
+        UpdateState(context);
+        return Task.CompletedTask;
+    }
+
+    private void UpdateState(Context context)
+    {
+        var device = context.home.GetEntityState(entityID);
+        if (device == null)
+        {
+            Log(LogLevel.Warning, $"Unknown device {entityID}");
+            return;
+        }
+
+        SetOutputValue(OUTPUT_NAME, new Mode(device.state), context);
+    }
+}

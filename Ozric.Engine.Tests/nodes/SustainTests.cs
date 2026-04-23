@@ -14,7 +14,7 @@ namespace OzricEngine.Nodes
             // If the input is on for over 15 seconds, then
             // the output will stay on until it is off for 60 seconds
             
-            var node = new BinarySustain("sus-1");
+            var node = new GraphBinarySustain("sus-1");
             node.sustainValue = true;
             node.sustainActivateSecs = 15;
             node.sustainDeactivateSecs = 60;
@@ -24,9 +24,9 @@ namespace OzricEngine.Nodes
             //  Initial state is off
 
             var context = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(false), context);
+            node.SetInputValue(GraphBinarySustain.INPUT_NAME, new Binary(false), context);
             node.OnInit(context);
-            Assert.False(node.GetOutputValue<Binary>(BinarySustain.OUTPUT_NAME).value);
+            Assert.False(node.GetOutputValue<Binary>(GraphBinarySustain.OUTPUT_NAME).value);
 
             //  A little later it goes on
             now = now.AddSeconds(10);
@@ -55,7 +55,7 @@ namespace OzricEngine.Nodes
         [Fact]
         public void canSustainBinaryRigorous()
         {
-            var node = new BinarySustain("sus-1");
+            var node = new GraphBinarySustain("sus-1");
             node.sustainValue = true;
             node.sustainActivateSecs = 15;
             node.sustainDeactivateSecs = 60;
@@ -65,9 +65,9 @@ namespace OzricEngine.Nodes
             //  Initial state is off
 
             var context = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(false), context);
+            node.SetInputValue(GraphBinarySustain.INPUT_NAME, new Binary(false), context);
             node.OnInit(context);
-            Assert.False(node.GetOutputValue<Binary>(BinarySustain.OUTPUT_NAME).value);
+            Assert.False(node.GetOutputValue<Binary>(GraphBinarySustain.OUTPUT_NAME).value);
             
             //  No matter how many time we go off/on quickly it will go off after 
 
@@ -81,52 +81,52 @@ namespace OzricEngine.Nodes
             
             now = now.AddSeconds(60);
             var contextOff = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(false), contextOff);
+            node.SetInputValue(GraphBinarySustain.INPUT_NAME, new Binary(false), contextOff);
             node.OnUpdate(contextOff);
-            Assert.False(node.GetOutputValue<Binary>(BinarySustain.OUTPUT_NAME).value);
+            Assert.False(node.GetOutputValue<Binary>(GraphBinarySustain.OUTPUT_NAME).value);
         }
         
         /// <summary>
         /// Turn the input off and the on for the given seconds, then finally set the final state for the given time 
         /// </summary>
 
-        private DateTime AssertSustainRigorous(BinarySustain node, DateTime now, int timeOff, int timeOn, int timeFinal, bool inputFinal, bool expectedOutput)
+        private DateTime AssertSustainRigorous(GraphBinarySustain node, DateTime now, int timeOff, int timeOn, int timeFinal, bool inputFinal, bool expectedOutput)
         {
             for (int i = 0; i < 10; i++)
             {
                 now = now.AddSeconds(timeOff);
 
                 var contextOff = MockContextAtTime(now);
-                node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(false), contextOff);
+                node.SetInputValue(GraphBinarySustain.INPUT_NAME, new Binary(false), contextOff);
                 node.OnUpdate(contextOff);
 
                 now = now.AddSeconds(timeOn);
 
                 var contextOn = MockContextAtTime(now);
-                node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(true), contextOn);
+                node.SetInputValue(GraphBinarySustain.INPUT_NAME, new Binary(true), contextOn);
                 node.OnUpdate(contextOn);
             }
             
             var contextPre = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(inputFinal), contextPre);
+            node.SetInputValue(GraphBinarySustain.INPUT_NAME, new Binary(inputFinal), contextPre);
             node.OnUpdate(contextPre);
             
             now = now.AddSeconds(timeFinal);
             
             var contextPost = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(inputFinal), contextPost);
+            node.SetInputValue(GraphBinarySustain.INPUT_NAME, new Binary(inputFinal), contextPost);
             node.OnUpdate(contextPost);
-            Assert.Equal(expectedOutput, node.GetOutputValue<Binary>(BinarySustain.OUTPUT_NAME).value);
+            Assert.Equal(expectedOutput, node.GetOutputValue<Binary>(GraphBinarySustain.OUTPUT_NAME).value);
             
             return now;
         }
 
-        private static void AssertUpdateSustain(bool expectedOutput, bool input, BinarySustain node, DateTime now)
+        private static void AssertUpdateSustain(bool expectedOutput, bool input, GraphBinarySustain node, DateTime now)
         {
             var context = MockContextAtTime(now);
-            node.SetInputValue(BinarySustain.INPUT_NAME, new Binary(input), context);
+            node.SetInputValue(GraphBinarySustain.INPUT_NAME, new Binary(input), context);
             node.OnUpdate(context);
-            Assert.Equal(expectedOutput, node.GetOutputValue<Binary>(BinarySustain.OUTPUT_NAME).value);
+            Assert.Equal(expectedOutput, node.GetOutputValue<Binary>(GraphBinarySustain.OUTPUT_NAME).value);
         }
 
         private static MockContext MockContextAtTime(DateTime now)

@@ -251,13 +251,13 @@ public class OzricService: IOzricService, ICommandSender
         
         foreach (var node in graph.nodes.Values)
         {
-            if (node is Constant constantNode && constantNode.ConstantType == Ozric.Engine.Values.ValueType.Color)
+            if (node is GraphConstant constantNode && constantNode.ConstantType == Ozric.Engine.Values.ValueType.Color)
             {
                 node.area_id = IHome.PaletteId;
             }
             else if (string.IsNullOrEmpty(node.area_id))
             {
-                if (node is EntityGraphNode entityNode)
+                if (node is GraphEntity entityNode)
                 {
                     var entity = entities.FirstOrDefault(e => e.entity_id == entityNode.entityID);
                     if (entity == null)

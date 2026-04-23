@@ -10,12 +10,12 @@ public static class CategoryModelMappings
 {
     private static readonly Dictionary<Category, Type> ModelMappings = new()
     {
-        { Category.Light, typeof(Light) },
-        { Category.Switch, typeof(Switch) },
-        { Category.Sensor, typeof(BinarySensor) },
-        { Category.ModeSensor, typeof(ModeSensor) },
-        { Category.MediaPlayer, typeof(MediaPlayer) },
-        { Category.Person, typeof(Person) }
+        { Category.Light, typeof(GraphLight) },
+        { Category.Switch, typeof(GraphSwitch) },
+        { Category.Sensor, typeof(GraphBinarySensor) },
+        { Category.ModeSensor, typeof(GraphModeSensor) },
+        { Category.MediaPlayer, typeof(GraphMediaPlayer) },
+        { Category.Person, typeof(GraphPerson) }
     };
     
     public static bool Exists(Category category)
