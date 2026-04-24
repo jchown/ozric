@@ -11,33 +11,41 @@ public class EditHistory(AreaGraphView areaGraphView) : OzricObject
 
     private readonly List<GraphEditAction> _undoActionList = new();
     private readonly List<GraphEditAction> _redoActionList = new();
-    private readonly bool _isTrackingHistory = true;
 
     private const int ActionHistoryMaxSize = 200;
     private bool _isDoing;
-    private int _checkpoint = 0;
+    private GraphEditAction? _checkpointAction;
 
     public bool CanUndo()
     {
         return _undoActionList.Any();
     }
-    
+
     public bool CanRedo()
     {
         return _redoActionList.Any();
     }
 
+    public int UndoCount => _undoActionList.Count;
+    public int RedoCount => _redoActionList.Count;
+
     public void UndoLastAction()
     {
         if (!_undoActionList.Any())
             return;
-        
+
         Log(LogLevel.Debug, "Undo {0}", _undoActionList[^1]);
         _isDoing = true;
-        _undoActionList[^1].Undo(areaGraphView);
-        RemoveLastUndoAction();
-        areaGraphView.Diagram.UnselectAll();
-        _isDoing = false;
+        try
+        {
+            _undoActionList[^1].Undo(areaGraphView);
+            RemoveLastUndoAction();
+            areaGraphView?.Diagram?.UnselectAll();
+        }
+        finally
+        {
+            _isDoing = false;
+        }
     }
 
     public void RedoLastAction()
@@ -47,10 +55,16 @@ public class EditHistory(AreaGraphView areaGraphView) : OzricObject
 
         Log(LogLevel.Debug, "Redo {0}", _redoActionList[^1]);
         _isDoing = true;
-        _redoActionList[^1].Do(areaGraphView);
-        RemoveLastRedoAction();
-        areaGraphView.Diagram.UnselectAll();
-        _isDoing = false;
+        try
+        {
+            _redoActionList[^1].Do(areaGraphView);
+            RemoveLastRedoAction();
+            areaGraphView?.Diagram?.UnselectAll();
+        }
+        finally
+        {
+            _isDoing = false;
+        }
     }
 
     private void RemoveLastUndoAction()
@@ -77,15 +91,11 @@ public class EditHistory(AreaGraphView areaGraphView) : OzricObject
 
     private void RegisterUndoHistoryAction(GraphEditAction editAction)
     {
-        if (!_isTrackingHistory)
-            return;
-
         ClearRedoList();
 
         if (_undoActionList.Count > ActionHistoryMaxSize)
         {
             _undoActionList.RemoveAt(0);
-            _checkpoint--;
         }
 
         Log(LogLevel.Debug, "Did {0}", editAction);
@@ -138,12 +148,16 @@ public class EditHistory(AreaGraphView areaGraphView) : OzricObject
 
     public void SetCheckpoint()
     {
-        _checkpoint = _undoActionList.Count;
+        _checkpointAction = _undoActionList.Count == 0 ? null : _undoActionList[^1];
     }
 
     public bool IsAtCheckpoint()
     {
-        return _checkpoint == _undoActionList.Count;
+        if (_checkpointAction == null)
+            return _undoActionList.Count == 0;
+
+        return _undoActionList.Count > 0
+            && ReferenceEquals(_undoActionList[^1], _checkpointAction);
     }
 
     public void Record(Func<GraphEditAction> action)

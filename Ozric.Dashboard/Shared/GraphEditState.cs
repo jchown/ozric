@@ -112,7 +112,7 @@ public class GraphEditState
         CanUndo = history.CanUndo();
         CanRedo = history.CanRedo();
         IsChanged = !history.IsAtCheckpoint();
-        OnChanged?.Invoke();
+        InvokeOnChanged();
     }
     
     public void SetSelected(List<KeyValuePair<SelectableModel, IGraphObject>> models)

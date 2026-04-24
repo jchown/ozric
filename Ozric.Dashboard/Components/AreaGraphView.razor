@@ -127,6 +127,7 @@
         Diagram.SelectionChanged += OnSelectionChanged;
         Diagram.ContainerChanged += OnContainerChanged;
         Diagram.Links.Added += OnDiagramLinkAdded;
+        Diagram.Links.Removed += OnDiagramLinkRemoved;
 
         /* 9.0
         diagram.KeyDown += GraphEditState.KeyDown;
@@ -228,6 +229,7 @@
         Diagram.SelectionChanged -= OnSelectionChanged;
         Diagram.ContainerChanged -= OnContainerChanged;
         Diagram.Links.Added -= OnDiagramLinkAdded;
+        Diagram.Links.Removed -= OnDiagramLinkRemoved;
     }
 
     private void OnGraphEditStateChanged()
@@ -703,14 +705,31 @@
             link.TargetAttached += OnDiagramLinkAttached;
             link.TargetChanged += OnDiagramLinkTargetChanged;
         }
-        
+
     //else
     //In case it was connected instantaneously (via code)
-       //     RegisterUndoHistoryAction(new GraphAction.AddLink(link)); 
+       //     RegisterUndoHistoryAction(new GraphAction.AddLink(link));
+    }
+
+    private void UnsubscribeLinkDragHandlers(BaseLinkModel link)
+    {
+        link.SourceChanged -= OnDiagramLinkSourceChanged;
+        link.TargetAttached -= OnDiagramLinkAttached;
+        link.TargetChanged -= OnDiagramLinkTargetChanged;
+    }
+
+    private void OnDiagramLinkRemoved(BaseLinkModel link)
+    {
+        //  Covers the abandoned-drag case: user started dragging a link but
+        //  released over empty space, so the library removes it without ever
+        //  attaching a target.
+        UnsubscribeLinkDragHandlers(link);
     }
 
     private void OnDiagramLinkTargetChanged(BaseLinkModel link, Anchor anchorFrom, Anchor anchorTo)
     {
+        UnsubscribeLinkDragHandlers(link);
+
         var fromPort = (PinPort) link.Source.Model!;
         var toPort = (PinPort) link.Target.Model!;
 
@@ -771,7 +790,7 @@
 
     private void OnDiagramLinkAttached(BaseLinkModel link)
     {
-        link.TargetAttached -= OnDiagramLinkAttached;
+        UnsubscribeLinkDragHandlers(link);
     }
 
     private void OnDiagramLinkAttached(BaseLinkModel link, PortModel? inPort, PortModel? outPort)
