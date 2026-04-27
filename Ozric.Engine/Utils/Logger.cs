@@ -9,15 +9,11 @@ public class Logger
 {
     public static Action<string> Output = line => Console.WriteLine(line);
 
-    private readonly Func<string> _name;
+    private readonly string _name;
 
     public LogLevel MinLevel { get; set; } = LogLevel.Info;
 
-    public Logger(string name) : this(() => name)
-    {
-    }
-
-    public Logger(Func<string> name)
+    public Logger(string name)
     {
         _name = name;
     }
@@ -52,20 +48,21 @@ public class Logger
             Write(level, message, arg0, arg1, arg2, arg3);
     }
 
-    private static readonly string[] colors =
+    private static readonly string[] Colors =
     {
         "[90m",            // Trace (dark grey)
         "[37m",            // Debug (light grey)
         "[97m",            // Info (black)
         "[93m",            // Warning (orange)
         "[91m",            // Error (red)
-        "[93m[101m", // Fatal
+        "[93m[101m",    // Fatal
     };
 
     private void Write(LogLevel level, string message)
     {
-        var name = _name();
-        Output($"{colors[(int)level]}{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture)} | {name.Truncate(32, name, TruncateFrom.Left).PadRight(32)} | {message}[0m");
+        var timestamp = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
+        var module = _name.Truncate(32, _name, TruncateFrom.Left);
+        Output($"{Colors[(int)level]}{timestamp} | {module,-32} | {message}[0m");
     }
 
     private void Write(LogLevel level, string format, params object?[] args)

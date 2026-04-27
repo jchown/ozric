@@ -16,25 +16,42 @@ namespace Ozric.Engine.Graph;
 
 public abstract class GraphNode : OzricObject, IGraphObject, IEquatable<GraphNode>
 {
-    [JsonIgnore] public override string Name => $"{GetType().Name}.{id}";
+    [JsonIgnore] public override string Name => _name;
     
     [JsonIgnore] public readonly List<Alert> Alerts = new();
 
     public abstract NodeType nodeType { get; }
 
-    public string id { get; set; }
+    public string id { get; private set; }
     public string? area_id { get; set; }
 
     public List<Pin> inputs;
     public List<Pin> outputs;
 
+    private readonly string _name;
+    
     protected GraphNode(string id, List<Pin>? inputs, List<Pin>? outputs)
     {
+        var typeName = GetType().Name;
+        if (typeName.StartsWith("Graph"))
+            typeName = typeName.Substring("Graph".Length);
+        
+        _name = $"{typeName}.{id}";
+        
         this.id = id;
-        this.inputs = inputs ?? new List<Pin>();
-        this.outputs = outputs ?? new List<Pin>();
+        this.inputs = inputs ?? [];
+        this.outputs = outputs ?? [];
     }
     
+    /// <summary>
+    /// This should only be used by the rename node method, as it is used as a key in several places.
+    /// </summary>
+    
+    public void SetID(string id)
+    {
+        this.id = id;
+    }
+
     public virtual bool IsReady()
     {
         return inputs.All(input => input.value != null);

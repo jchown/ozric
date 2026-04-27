@@ -8,8 +8,8 @@ public abstract class OzricObject
     [JsonIgnore]
     public abstract string Name { get; }
 
-    private Logger _logger;
-    private Logger Logger => _logger ??= new Logger(() => Name);
+    private Logger? _logger;
+    private Logger Logger => _logger ??= new Logger(Name);
 
     protected void Log(LogLevel level, string message) => Logger.Log(level, message);
 

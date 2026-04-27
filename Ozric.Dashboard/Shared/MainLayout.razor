@@ -167,7 +167,7 @@
 
 @code {
 
-    private static readonly Logger _log = new(nameof(MainLayout));
+    private static readonly Logger Log = new(nameof(MainLayout));
 
     private bool _isDarkMode;
     private bool _navBarCollapsed = false;
@@ -211,13 +211,13 @@
 
     protected override async Task OnInitializedAsync()
     {
-        _log.Log(LogLevel.Info, "MainLayout initializing, GraphEditState: {0}", GraphEditState.Id);
+        Log.Log(LogLevel.Info, "MainLayout initializing, GraphEditState: {0}", GraphEditState.Id);
         
         Areas = ShownAreas();
         
         ChooseInitialArea();
 
-        await LoadGraph();
+        LoadGraph();
 
         OzricService.Subscribe(OnPinChanged, OnAlertChanged);
     }
@@ -275,9 +275,9 @@
         });
     }
 
-    private async Task LoadGraph()
+    private void LoadGraph()
     {
-        Graph = OzricService.Graph;//Json.Clone(Ozric.Service.Graph); // Don't edit the live graph!
+        Graph = OzricService.Graph;
         GraphLayout = Data.GetGraphLayout();
 
         GraphEditState.OnChanged += OnGraphEditStateChanged;
@@ -309,6 +309,7 @@
 
     private void OnClickEdit()
     {
+        Graph = Json.Clone(OzricService.Graph); // Don't edit the live graph!
         GraphEditState.OnEdit();
     }
 
@@ -329,7 +330,7 @@
 
         Tasks.Run(async () =>
         {
-            await LoadGraph();
+            LoadGraph();
             await InvokeAsync(StateHasChanged);
         });
     }
@@ -349,7 +350,7 @@
         }
         catch (Exception e)
         {
-            _log.Log(LogLevel.Error, "Error: {0}", e.Message);
+            Log.Log(LogLevel.Error, "Error: {0}", e.Message);
             SentrySdk.CaptureException(e);
         }
         finally
@@ -492,7 +493,7 @@
             UnloadGraph();
             await OzricService.Restart(data.graph);
             await Data.SetGraphLayoutAsync(data.layout);
-            await LoadGraph();
+            LoadGraph();
             await InvokeAsync(() =>
             {
                 //  TODO: These commands don't get through, so a manual refresh is needed.
@@ -503,7 +504,7 @@
         }
         catch (Exception e)
         {
-            _log.Log(LogLevel.Error, "{0}", e);
+            Log.Log(LogLevel.Error, "{0}", e);
             SentrySdk.CaptureException(e);
         }
         finally
