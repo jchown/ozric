@@ -14,12 +14,12 @@ namespace Ozric.Engine.Tests
         public MockEngine() : this(new MockHome(new List<EntityState>()))
         {
         }
-        
+
         public MockEngine(MockHome home) : this(home, new Graph())
         {
         }
-        
-        public MockEngine(MockHome home, Graph graph) : base(home, graph, new MockComms())
+
+        public MockEngine(MockHome home, Graph graph) : base(home, graph)
         {
         }
 

@@ -30,10 +30,6 @@ public class Home: OzricObject, IHome
 
     private bool _hasData;
 
-    //  How recent an event must be to be assumed a response so an update 
-        
-    public const int SelfEventSecs = 10;
-
     //  We should definitely not spam
         
     private const double MIN_UPDATE_INTERVAL_SECS = 0.5;
@@ -376,18 +372,14 @@ public class Home: OzricObject, IHome
                 }
             }
 
-            var expected = Live.Engine.IGNORE_OWN_STATE_CHANGES && WasRecentlyUpdatedByOzric(entityState.entity_id, Home.SelfEventSecs);
-            if (!expected)
-            {
-                entityState.state = newState.state;
-                entityState.attributes = newState.attributes;
-                entityState.last_updated = GetTime();
+            entityState.state = newState.state;
+            entityState.attributes = newState.attributes;
+            entityState.last_updated = GetTime();
 
-                if (entityState.entity_id.StartsWith("light."))
-                    entityState.LogLightState();
-            }
+            if (entityState.entity_id.StartsWith("light."))
+                entityState.LogLightState();
 
-            return !expected;
+            return true;
         }
     }
 

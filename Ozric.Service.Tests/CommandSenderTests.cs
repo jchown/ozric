@@ -1,15 +1,15 @@
-﻿using System.Collections.Generic;
-using Ozric.Engine.Nodes;
-using Xunit;
-using System;
+﻿using System;
+using System.Collections.Generic;
+using Ozric.Engine;
 using Ozric.Engine.Messages;
+using Xunit;
 
-namespace Ozric.Engine.Tests
+namespace Ozric.Service.Tests
 {
     public class CommandSenderTests
     {
         [Fact]
-        public void canMergeCallServicesTurnOff()
+        public void CanMergeCallServicesTurnOff()
         {
             var sender = new MockCommandBatcher();
 
@@ -27,7 +27,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        public void canMergeCallServicesTurnOn()
+        public void CanMergeCallServicesTurnOn()
         {
             var sender = new MockCommandBatcher();
 

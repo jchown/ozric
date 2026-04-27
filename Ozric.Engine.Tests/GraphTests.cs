@@ -13,7 +13,7 @@ namespace Ozric.Engine.Tests
     public class GraphTests
     {
         [Fact]
-        public void canGetNodeOrdering()
+        public void CanGetNodeOrdering()
         {
             var graph = GetSimpleGraph();
             
@@ -21,7 +21,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        public void canGetNodeDependencies()
+        public void CanGetNodeDependencies()
         {
             var graph = GetSimpleGraph();
 
@@ -38,7 +38,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        public void canSerialiseRoundTrip()
+        public void CanSerialiseRoundTrip()
         {
             var a = GetSimpleGraph();
 
@@ -53,7 +53,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        public void canDeserialiseLargeGraph()
+        public void CanDeserialiseLargeGraph()
         {
             var json = File.ReadAllText("../../../graphs/chown_graph_1.json");
             var graph = Graph.Deserialize(json);

@@ -18,7 +18,7 @@ namespace Ozric.Engine.Tests
     public class EngineTests
     {
         [Fact]
-        void nodeOrderDependsOnConnections()
+        void NodeOrderDependsOnConnections()
         {
             var o1 = new GraphIfAny("o1");
             var o2 = new GraphIfAny("o2");
@@ -63,7 +63,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        async Task canProcessSunEvents()
+        async Task CanProcessSunEvents()
         {
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
             var engine = new MockEngine(home);
@@ -80,7 +80,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        void canProcessHacsEvents()
+        void CanProcessHacsEvents()
         {
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
             var engine = new MockEngine(home);
@@ -91,7 +91,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        void canProcessZHAEvents()
+        void CanProcessZhaEvents()
         {
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
             var engine = new MockEngine(home);
@@ -100,7 +100,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        void canProcessLightEvents()
+        void CanProcessLightEvents()
         {
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
             var engine = new MockEngine(home);
@@ -109,7 +109,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        void canProcessEntityRegistryUpdatedEvents()
+        void CanProcessEntityRegistryUpdatedEvents()
         {
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sun_evening", "weather_sunny");
             var engine = new MockEngine(home);
@@ -118,7 +118,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        async Task sensorEventWillTriggerStateChange()
+        async Task SensorEventWillTriggerStateChange()
         {
             var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sensor_1");
             var engine = new MockEngine(home);
@@ -146,7 +146,7 @@ namespace Ozric.Engine.Tests
         }
 
         [Fact]
-        void canSendLogsOfAllLevel()
+        void CanSendLogsOfAllLevel()
         {
             var vo = new VerboseObject();
 
@@ -156,19 +156,5 @@ namespace Ozric.Engine.Tests
             }
         }
 
-        /*
-        [Fact]
-        async Task serviceCallsReconciled()
-        {
-            var home = new MockHome(DateTime.Parse("2021-11-29T19:21:25.459551+00:00"), "sensor_1");
-            var engine = new MockEngine(home);
-
-            var sender = new MockCommandBatcher("lights_on");
-            await engine.SendCommands();
-
-            engine.ProcessMockEvent("lights_on");
-            Assert.False(engine.ProcessMockEvent("light_on"));
-        }
-        */
     }
 }

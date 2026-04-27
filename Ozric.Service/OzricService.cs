@@ -5,6 +5,7 @@ using Ozric.Engine;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Live;
+using Ozric.Engine.Messages;
 using Ozric.Engine.Nodes;
 using Ozric.Engine.Utils;
 
@@ -17,9 +18,24 @@ public class OzricService: IOzricService, ICommandSender
 {
     private Engine? _engine;
     private IComms? _comms;
+    private CommandBatcher? _batcher;
 
     public Engine Engine => _engine ?? throw new InvalidOperationException();
-    public EngineStatus Status => _engine?.Status ?? new EngineStatus();
+
+    public EngineStatus Status
+    {
+        get
+        {
+            if (_engine == null)
+                return new EngineStatus();
+
+            var status = _engine.Status;
+            if (_comms != null)
+                status.comms = _comms.Status;
+            return status;
+        }
+    }
+
     public Graph Graph => Engine.graph ?? throw new InvalidOperationException();
     public IHome Home => Engine.home ?? throw new InvalidOperationException();
     public ICommandSender CommandSender => this;
@@ -31,19 +47,95 @@ public class OzricService: IOzricService, ICommandSender
         var graph = await LoadGraph();
 
         ValidateAndFixGraph(graph);
-        
+
         _comms = await Connect();
+        _comms.OnSentMessage(OnSendUpdateEntityUpdateTime);
 
         var home = new Home(_comms);
 
         await home.WaitForEntities();
 
         CheckAreas(home, graph);
-        
-        _engine = new Engine(home, graph, _comms);
+
+        _engine = new Engine(home, graph);
+        _batcher = new CommandBatcher();
 
         var token = _mainLoopCancel.Token;
-        Tasks.Run(() => _engine.MainLoop(token), token);
+        Tasks.Run(() => MainLoop(token), token);
+    }
+
+    private async Task MainLoop(CancellationToken cancellationToken)
+    {
+        var engine = _engine!;
+        var batcher = _batcher!;
+        var comms = _comms!;
+        var home = engine.home;
+
+        try
+        {
+            await engine.InitNodes(batcher);
+            await Flush(batcher, comms);
+
+            while (!cancellationToken.IsCancellationRequested)
+            {
+                if (!engine.paused)
+                {
+                    await engine.UpdateNodes(batcher);
+                    await Flush(batcher, comms);
+                }
+
+                //  Avoid spinning constantly by waiting for an event (that we aren't responsible for)
+                //  OR a period of time has elapsed.
+
+                DateTime waitTimeout = home.GetTime().AddMilliseconds(100);
+
+                while (true)
+                {
+                    int millisToWait = (int)(waitTimeout - home.GetTime()).TotalMilliseconds;
+                    if (millisToWait <= 0)
+                        break;
+
+                    var events = comms.TakePendingEvents(millisToWait);
+                    if (events.Count > 0)
+                    {
+                        if (engine.ProcessEvents(events))
+                            break;
+                    }
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine($"Main loop threw exception: {e}");
+            SentrySdk.CaptureException(e);
+        }
+        finally
+        {
+            Console.WriteLine("Main loop ended");
+        }
+    }
+
+    private static async Task Flush(CommandBatcher batcher, IComms comms)
+    {
+        if (batcher.commands.Count == 0)
+            return;
+
+        await batcher.Send(comms);
+    }
+
+    /// <summary>
+    /// Housekeeping to avoid spamming entities — record when we last sent a service call for them.
+    /// </summary>
+    private void OnSendUpdateEntityUpdateTime(object message)
+    {
+        if (_engine == null)
+            return;
+
+        if (message is ClientCallService ccs)
+        {
+            foreach (var entityID in ccs.GetEntities())
+                _engine.home.SetUpdatedTime(entityID);
+        }
     }
 
 
@@ -182,12 +274,11 @@ public class OzricService: IOzricService, ICommandSender
         try
         {
             _mainLoopCancel.Cancel();
-            
-            if (_engine != null)
-            {
-                _engine.Dispose();
-                _engine = null;
-            }
+
+            _comms?.Dispose();
+            _comms = null;
+            _engine = null;
+            _batcher = null;
         }
         catch (Exception e)
         {

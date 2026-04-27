@@ -5,7 +5,7 @@ namespace Ozric.Engine.Nodes
 {
     public class Context
     {
-        public Context(IHome home, CommandBatcher commands, Pin.Changed? pinChanged, Alert.Changed? alertChanged)
+        public Context(IHome home, ICommandSink commands, Pin.Changed? pinChanged, Alert.Changed? alertChanged)
         {
             this.home = home;
             this.commands = commands;
@@ -14,7 +14,7 @@ namespace Ozric.Engine.Nodes
         }
 
         public IHome home { get;}
-        public CommandBatcher commands { get;}
+        public ICommandSink commands { get;}
         public Pin.Changed? pinChanged { get;}
         public Alert.Changed? alertChanged { get;}
     }
