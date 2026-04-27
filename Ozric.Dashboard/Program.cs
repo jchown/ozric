@@ -4,10 +4,9 @@ using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.Extensions.FileProviders;
 using Ozric.Dashboard.Data;
 using MudBlazor.Services;
-using OzricEngine;
-using OzricService;
-using Ozric.Dashboard.Shared;
 using Ozric.Engine;
+using Ozric.Service;
+using Ozric.Dashboard.Shared;
 
 OzricConfig ozricConfig = new()
 {
@@ -93,7 +92,7 @@ builder.WebHost.UseSentry(options =>
     options.AutoSessionTracking = true;
 });
 
-IOzricService ozricEngine = new OzricService.OzricService();
+IOzricService ozricEngine = new Ozric.Service.OzricService();
 await ozricEngine.Start(CancellationToken.None);
 builder.Services.AddSingleton<IOzricService>(_ => ozricEngine);
 builder.Services.AddHttpContextAccessor();

@@ -1,4 +1,4 @@
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("subscribe_events")]
     public class ClientEventSubscribe: ClientCommand

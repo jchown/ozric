@@ -1,7 +1,6 @@
-using System;
 using System.Threading.Tasks;
 
-namespace OzricEngine;
+namespace Ozric.Engine;
 
 /// <summary>
 /// Simple fire-and-forget interface to sending client messages

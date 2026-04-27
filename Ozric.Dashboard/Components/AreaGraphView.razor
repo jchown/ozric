@@ -7,10 +7,12 @@
 @using Ozric.Engine.Extensions
 @using Ozric.Engine.Graph
 @using Ozric.Engine.Graph.Entities
-@using OzricEngine
-@using OzricEngine.Values
-@using OzricService
+@using Ozric.Engine
+@using LogLevel = Ozric.Engine.Utils.LogLevel
+@using Ozric.Engine.Values
+@using Ozric.Service
 @using Anchor = Blazor.Diagrams.Core.Anchors.Anchor
+@inherits DashboardComponent
 @implements IDisposable
 @inject NavigationManager Navigation
 
@@ -89,7 +91,7 @@
     {
         base.OnInitialized();
         
-        Console.WriteLine($"Area {AreaId} subscribing to GraphEditState {GraphEditState.Id}");
+        Log(LogLevel.Info, "Area {0} subscribing to GraphEditState {1}", AreaId, GraphEditState.Id);
         
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnDoCommand += DoCommand;
@@ -153,7 +155,7 @@
         if (_areaId == AreaId)
             return;
 
-        Console.WriteLine($"Area {AreaId} parametersSet");
+        Log(LogLevel.Debug, "Area {0} parametersSet", AreaId);
 
         //  Check the URI of the page is correct for this area - this only really
         //  matters when testing in localhost, as the parent page masks the inner URI.
@@ -218,7 +220,7 @@
 
     public void Dispose()
     {
-        Console.WriteLine($"Area {AreaId} unsubscribing from GraphEditState {GraphEditState.Id}");
+        Log(LogLevel.Info, "Area {0} unsubscribing from GraphEditState {1}", AreaId, GraphEditState.Id);
 
         GraphEditState.OnChanged -= OnGraphEditStateChanged;
         GraphEditState.OnDoCommand -= DoCommand;
@@ -351,7 +353,7 @@
 
         _areaId = areaId;
 
-        Console.WriteLine($"Area {_areaId} populating");
+        Log(LogLevel.Info, "Populating diagram from {0}", _areaId);
 
         var container = Diagram.Container!;
 

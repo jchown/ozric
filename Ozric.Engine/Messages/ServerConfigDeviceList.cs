@@ -1,8 +1,7 @@
 using System.Collections.Generic;
 using Ozric.Engine.Model;
-using Sentry.Protocol;
 
-namespace OzricEngine.messages;
+namespace Ozric.Engine.Messages;
 
 [ManualSubType]
 public class ServerConfigDeviceList: ServerResponse

@@ -1,6 +1,4 @@
-using OzricEngine.Nodes;
-
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("call_service")]
     public class EventCallService: Event

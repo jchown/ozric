@@ -1,11 +1,11 @@
 using System;
 using Ozric.Engine.Graph.Logic;
-using OzricEngine.Values;
-using OzricEngineTests;
+using Ozric.Engine.Values;
+using Ozric.Engine.Tests;
 using Xunit;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Nodes
+namespace Ozric.Engine.Nodes
 {
     public class TweenTests
     {

@@ -1,6 +1,6 @@
 using System;
 using System.Text.Json.Serialization;
-using OzricEngine.Values;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace Ozric.Engine.Graph;

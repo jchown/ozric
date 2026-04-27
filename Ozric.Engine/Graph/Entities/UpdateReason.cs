@@ -1,7 +1,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Nodes;
 
 /// <summary>
 /// Unify "checking values" to make debugging the reason an update is happening easier. 

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Threading.Tasks;
 using Ozric.Engine.Model;
-using OzricEngine.messages;
 
-namespace OzricEngine;
+namespace Ozric.Engine;
 
 /// <summary>
 /// The current state of the home.

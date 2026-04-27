@@ -1,9 +1,11 @@
-@using OzricEngine.Values
-@using OzricService
+@using Ozric.Engine.Values
+@using Ozric.Service
 @using MudBlazor.Utilities
 @using System.Timers
 @using Ozric.Engine.Graph.Entities
 @using Ozric.Engine.Utils
+@using LogLevel = Ozric.Engine.Utils.LogLevel
+@inherits DashboardComponent
 @implements IDisposable
 @inject IOzricService Ozric
 
@@ -125,7 +127,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error in timer callback: {ex.Message}");
+            Log(LogLevel.Error, "Error in timer callback: {0}", ex.Message);
         }
     }
 
@@ -319,7 +321,7 @@
             var result = await Ozric.CommandSender.Send(command);
             if (!result.success)
             {
-                Console.WriteLine("Service call failed ({0}) - {1}", result.error.code, result.error.message);
+                Log(LogLevel.Warning, "Service call failed ({0}) - {1}", result.error.code, result.error.message);
             }
         });
     }

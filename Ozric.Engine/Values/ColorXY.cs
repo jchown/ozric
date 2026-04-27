@@ -1,8 +1,7 @@
 using System;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
-namespace OzricEngine.Values
+namespace Ozric.Engine.Values
 {
     /// <summary>
     /// A <see cref="ColorValue"/> defined by Hue and Saturation. 

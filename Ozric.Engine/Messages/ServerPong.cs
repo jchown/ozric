@@ -1,7 +1,4 @@
-using System;
-using System.Text.Json.Serialization;
-
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("pong")]
     public class ServerPong: ServerResponse

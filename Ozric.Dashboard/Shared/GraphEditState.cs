@@ -1,7 +1,9 @@
 using Blazor.Diagrams.Core.Models.Base;
 using Microsoft.AspNetCore.Components.Web;
 using Ozric.Engine.Graph;
-using OzricEngine.Values;
+using Ozric.Engine.Utils;
+using Ozric.Engine.Values;
+using LogLevel = Ozric.Engine.Utils.LogLevel;
 
 namespace Ozric.Dashboard.Shared;
 
@@ -9,10 +11,13 @@ public class GraphEditState
 {
     private static int _nextId;
 
+    private readonly Logger _log;
+
     internal GraphEditState()
     {
         Id = _nextId++;
-        Console.WriteLine($"GraphEditState {Id} created");
+        _log = new Logger($"GraphEditState {Id}");
+        _log.Log(LogLevel.Info, "created");
     }
     
     public enum EditMode
@@ -59,7 +64,7 @@ public class GraphEditState
 
     public void OnEdit()
     {
-        Console.WriteLine($"GraphEditState {Id} OnEdit");
+        _log.Log(LogLevel.Info, "OnEdit");
         Mode = EditMode.EditOffline;
         InvokeOnChanged();
     }
@@ -72,7 +77,7 @@ public class GraphEditState
 
     public void OnCancel()
     {
-        Console.WriteLine($"GraphEditState {Id} OnCancel");
+        _log.Log(LogLevel.Info, "OnCancel");
         Mode = EditMode.View;
         InvokeOnChanged();
     }
@@ -92,7 +97,7 @@ public class GraphEditState
             }
             catch (Exception e)
             {
-                Console.WriteLine(e);
+                _log.Log(LogLevel.Error, "{0}", e);
             }
         }
     }

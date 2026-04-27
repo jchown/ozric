@@ -1,7 +1,7 @@
 using System;
 using System.Text.Json;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// Event deserializer

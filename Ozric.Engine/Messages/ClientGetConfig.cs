@@ -1,6 +1,4 @@
-using System.Collections.Generic;
-
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("get_config")]
     public class ClientGetConfig : ClientCommand

@@ -1,4 +1,4 @@
-namespace OzricEngine.messages;
+namespace Ozric.Engine.Messages;
 
 [TypeKey("config/device_registry/list")]
 public class ClientConfigDeviceList : ClientCommand

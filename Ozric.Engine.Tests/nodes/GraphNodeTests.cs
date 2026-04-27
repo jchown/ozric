@@ -1,16 +1,14 @@
-﻿using OzricEngine;
-using System.Collections.Generic;
-using System.Text.Json;
+﻿using System.Collections.Generic;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Graph.Logic;
-using OzricEngine.Nodes;
-using OzricEngine.Values;
+using Ozric.Engine.Nodes;
+using Ozric.Engine.Values;
 using Xunit;
 using Xunit.Abstractions;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngineTests
+namespace Ozric.Engine.Tests
 {
     public class GraphNodeTests
     {

@@ -1,15 +1,14 @@
-using System.Text.Json.Serialization;
+using Microsoft.AspNetCore.Components;
 using Ozric.Engine.Utils;
+using LogLevel = Ozric.Engine.Utils.LogLevel;
 
-namespace Ozric.Engine.Graph;
+namespace Ozric.Dashboard;
 
-public abstract class OzricObject
+public class DashboardComponent : ComponentBase
 {
-    [JsonIgnore]
-    public abstract string Name { get; }
-
     private Logger _logger;
-    private Logger Logger => _logger ??= new Logger(() => Name);
+    
+    protected Logger Logger => _logger ??= new Logger(GetType().Name);
 
     protected void Log(LogLevel level, string message) => Logger.Log(level, message);
 
@@ -20,9 +19,4 @@ public abstract class OzricObject
     protected void Log<T0, T1, T2>(LogLevel level, string message, T0 arg0, T1 arg1, T2 arg2) => Logger.Log(level, message, arg0, arg1, arg2);
 
     protected void Log<T0, T1, T2, T3>(LogLevel level, string message, T0 arg0, T1 arg1, T2 arg2, T3 arg3) => Logger.Log(level, message, arg0, arg1, arg2, arg3);
-
-    public override string ToString()
-    {
-        return Json.Serialize(this, GetType());
-    }
 }

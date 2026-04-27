@@ -1,5 +1,5 @@
 using Ozric.Engine.Extensions;
-using OzricEngine;
+using Ozric.Engine;
 
 namespace Ozric.Dashboard.Shared;
 

@@ -1,8 +1,7 @@
 using System;
 using System.Text.Json;
-using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Values
+namespace Ozric.Engine.Values
 {
     /// <summary>
     /// A single string tag to represent a state of operation, scene, etc.

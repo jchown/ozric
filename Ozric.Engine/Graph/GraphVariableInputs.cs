@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using OzricEngine.Values;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace Ozric.Engine.Graph;

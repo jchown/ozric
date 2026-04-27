@@ -1,4 +1,4 @@
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("get_states")]
     public class ClientGetStates : ClientCommand

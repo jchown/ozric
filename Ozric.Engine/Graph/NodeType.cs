@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Nodes;
 
 [JsonConverter(typeof(JsonStringEnumConverter))] 
 public enum NodeType

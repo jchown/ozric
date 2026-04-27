@@ -1,7 +1,6 @@
 using Ozric.Engine.Graph;
-using OzricEngine.Nodes;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// Node deserializer

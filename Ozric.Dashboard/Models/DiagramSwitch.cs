@@ -6,7 +6,7 @@ public class DiagramSwitch: DiagramNode
 {
     public const string ICON = "mdi:electric-switch";
 
-    public DiagramSwitch(OzricEngine.Nodes.GraphSwitch graphSwitch, Point? point = null): base(graphSwitch, point)
+    public DiagramSwitch(Ozric.Engine.Nodes.GraphSwitch graphSwitch, Point? point = null): base(graphSwitch, point)
     {
     }
     

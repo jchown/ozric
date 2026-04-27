@@ -4,7 +4,7 @@ using System.IO;
 using Ozric.Engine.Extensions;
 using Ozric.Engine.Live;
 
-namespace OzricEngine.Nodes
+namespace Ozric.Engine.Nodes
 {
     public class MockCommandBatcher : CommandBatcher
     {

@@ -1,11 +1,11 @@
 using System;
 using Ozric.Engine.Graph.Logic;
-using OzricEngineTests;
+using Ozric.Engine.Tests;
 using Xunit;
-using OzricEngine.Values;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Nodes
+namespace Ozric.Engine.Nodes
 {
     public class ModeSwitchTests
     {

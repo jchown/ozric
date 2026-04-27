@@ -1,11 +1,9 @@
 using System;
 using System.IO;
-using System.Text.Json;
 using Ozric.Engine.Extensions;
 using Ozric.Engine.Model;
-using OzricEngine;
 
-namespace OzricEngineTests
+namespace Ozric.Engine.Tests
 {
     public static class MockStates
     {

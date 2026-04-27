@@ -1,10 +1,9 @@
 using System.IO;
 using System.Threading.Tasks;
 using Ozric.Engine.Utils;
-using OzricEngine;
 using Xunit;
 
-namespace OzricEngineTests
+namespace Ozric.Engine.Tests
 {
     public class MessageWriterTests
     {

@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
-using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Values
+namespace Ozric.Engine.Values
 {
     /// <summary>
     /// Base class for all colors. All color representations (e.g. <see cref="ColorRGB"/>, <see cref="ColorHS"/> etc.)

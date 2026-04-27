@@ -4,12 +4,11 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Ozric.Engine.Graph;
 using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Model;
 using Ozric.Engine.Utils;
-using OzricEngine;
-using OzricEngine.messages;
-using OzricEngine.Nodes;
+using Ozric.Engine.Messages;
 
 namespace Ozric.Engine;
 

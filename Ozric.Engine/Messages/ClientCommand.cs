@@ -1,4 +1,4 @@
-namespace OzricEngine
+namespace Ozric.Engine
 {
     public abstract class ClientCommand
     {

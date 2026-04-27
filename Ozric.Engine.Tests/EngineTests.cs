@@ -7,14 +7,14 @@ using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Graph.Logic;
 using Ozric.Engine.Nodes;
 using Ozric.Engine.Utils;
-using OzricEngine;
-using OzricEngine.Nodes;
 using Xunit;
-using OzricEngine.Values;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngineTests
+namespace Ozric.Engine.Tests
 {
+    using Graph = Ozric.Engine.Graph.Graph;
+
     public class EngineTests
     {
         [Fact]

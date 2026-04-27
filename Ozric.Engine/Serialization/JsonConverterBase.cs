@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// Generic JSON deserializer (only) for an abstract base type, using a specified field to indicate derived type. 

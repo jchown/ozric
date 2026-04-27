@@ -6,7 +6,7 @@ namespace Ozric.Dashboard.Model;
 [EditDialog(typeof(ConstantNumberDialog), "Number")]
 public class DiagramConstantNumber: DiagramConstant
 {
-    public DiagramConstantNumber(OzricEngine.Nodes.GraphConstant constant, Point? point = null): base(constant, point)
+    public DiagramConstantNumber(Ozric.Engine.Nodes.GraphConstant constant, Point? point = null): base(constant, point)
     {
     }
     

@@ -6,7 +6,7 @@ namespace Ozric.Dashboard.Model;
 [EditDialog(typeof(ConstantColorDialog), "Color")]
 public class DiagramConstantColor: DiagramConstant
 {
-    public DiagramConstantColor(OzricEngine.Nodes.GraphConstant constant, Point? point = null): base(constant, point)
+    public DiagramConstantColor(Ozric.Engine.Nodes.GraphConstant constant, Point? point = null): base(constant, point)
     {
     }
     

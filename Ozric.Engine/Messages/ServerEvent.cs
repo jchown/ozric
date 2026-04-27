@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("event")]
     public class ServerEvent: ServerMessage

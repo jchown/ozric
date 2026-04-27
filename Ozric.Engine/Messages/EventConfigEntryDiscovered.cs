@@ -1,6 +1,6 @@
 using Ozric.Engine.Messages;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("config_entry_discovered")]
     public class ConfigEntryDicovered: Event

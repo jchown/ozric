@@ -5,8 +5,7 @@ using System.Text.Json.Serialization;
 using Ozric.Engine.Extensions;
 using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Utils;
-using OzricEngine;
-using OzricEngine.Nodes;
+using Ozric.Engine.Nodes;
 
 namespace Ozric.Engine.Graph;
 

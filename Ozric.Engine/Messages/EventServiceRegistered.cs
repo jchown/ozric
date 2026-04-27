@@ -1,6 +1,6 @@
 using Ozric.Engine.Messages;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("service_registered")]
     public class EventServiceRegistered: Event

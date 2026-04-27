@@ -1,8 +1,9 @@
 using Ozric.Dashboard.Shared;
 using Ozric.Engine.Live;
+using Ozric.Engine.Utils;
 using Ozric.Service;
-using OzricEngine;
-using OzricService;
+using Ozric.Engine;
+using LogLevel = Ozric.Engine.Utils.LogLevel;
 
 namespace Ozric.Dashboard.Data;
 
@@ -53,6 +54,8 @@ public class DataService
         });
     }
 
+    private static readonly Logger _log = new(nameof(DataService));
+
     private readonly IHttpClientFactory _httpClientFactory;
     private readonly ILogger<DataService> _logger;
     private readonly string _layoutFilename;
@@ -77,7 +80,7 @@ public class DataService
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Failed to load graph layout: {e.Message}");
+            _log.Log(LogLevel.Warning, "Failed to load graph layout: {0}", e.Message);
             _currentGraphLayout = new GraphLayout();
         }
         
@@ -88,7 +91,7 @@ public class DataService
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Failed to load settings: {e.Message}");
+            _log.Log(LogLevel.Warning, "Failed to load settings: {0}", e.Message);
             _currentSettings = new Settings();
         }
     }

@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Ozric.Engine.Extensions;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     public class Json
     {

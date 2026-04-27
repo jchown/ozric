@@ -1,4 +1,4 @@
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Nodes;
 
 [TypeKey(NodeType.Person)]
 public class GraphPerson : GraphModeSensor

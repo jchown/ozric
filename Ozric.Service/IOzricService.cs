@@ -1,9 +1,8 @@
 using Ozric.Engine.Graph;
-using OzricEngine;
-using OzricEngine.engine;
-using OzricEngine.Nodes;
+using Ozric.Engine;
+using Ozric.Engine.Live;
 
-namespace OzricService;
+namespace Ozric.Service;
 
 /// <summary>
 /// Interface to the engine

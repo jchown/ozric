@@ -1,8 +1,6 @@
-using System.Collections.Generic;
-using System.Text.Json.Serialization;
 using Ozric.Engine.Messages;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// Is this a dupe of EventCallService?

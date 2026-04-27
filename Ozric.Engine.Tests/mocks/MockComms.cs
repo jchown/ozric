@@ -1,8 +1,7 @@
 using System.Threading.Tasks;
 using Ozric.Engine.Live;
-using OzricEngine;
 
-namespace OzricEngineTests
+namespace Ozric.Engine.Tests
 {
     public class MockComms : Comms
     {

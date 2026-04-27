@@ -1,6 +1,6 @@
 using Blazor.Diagrams.Core.Geometry;
 using Ozric.Dashboard.Model;
-using OzricEngine.Nodes;
+using Ozric.Engine.Nodes;
 
 namespace Ozric.Dashboard.Models;
 

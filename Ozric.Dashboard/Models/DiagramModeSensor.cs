@@ -7,7 +7,7 @@ public class DiagramModeSensor: DiagramNode
 {
     public const string ICON = "mdi:label";
 
-    public DiagramModeSensor(OzricEngine.Nodes.GraphModeSensor sensor, Point? point = null): base(sensor, point)
+    public DiagramModeSensor(Ozric.Engine.Nodes.GraphModeSensor sensor, Point? point = null): base(sensor, point)
     {
     }
     

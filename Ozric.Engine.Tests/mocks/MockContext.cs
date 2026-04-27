@@ -1,8 +1,7 @@
-using Ozric.Engine;
-using OzricEngine.Values;
-using OzricEngineTests;
+using Ozric.Engine.Values;
+using Ozric.Engine.Tests;
 
-namespace OzricEngine.Nodes
+namespace Ozric.Engine.Nodes
 {
     public class MockContext : Context
     {

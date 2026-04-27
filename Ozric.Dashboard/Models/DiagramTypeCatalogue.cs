@@ -35,7 +35,7 @@ public static class DiagramTypeCatalogue
         {
             // Special case for constants, as we want a specific type/UI for each value type
 
-            case OzricEngine.Nodes.GraphConstant c:
+            case Ozric.Engine.Nodes.GraphConstant c:
             {
                 switch (c.value.ValueType)
                 {

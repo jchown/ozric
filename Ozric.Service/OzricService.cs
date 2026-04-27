@@ -5,14 +5,13 @@ using Ozric.Engine;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Live;
+using Ozric.Engine.Nodes;
 using Ozric.Engine.Utils;
-using Ozric.Service;
-using OzricEngine;
-using OzricEngine.engine;
-using OzricEngine.Nodes;
-using Graph = Ozric.Engine.Graph.Graph;
 
-namespace OzricService;
+namespace Ozric.Service;
+
+using Engine = Ozric.Engine.Live.Engine;
+using Graph = Ozric.Engine.Graph.Graph;
 
 public class OzricService: IOzricService, ICommandSender
 {

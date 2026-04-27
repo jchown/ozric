@@ -1,12 +1,11 @@
-using OzricEngine;
-using OzricEngine.Nodes;
-using OzricEngine.Values;
+using Ozric.Engine;
+using Ozric.Engine.Nodes;
+using Ozric.Engine.Values;
 using Ozric.Dashboard.Model;
 using Ozric.Dashboard.Models;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Graph.Logic;
-using Ozric.Engine.Nodes;
 using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace Ozric.Dashboard.Shared;
@@ -159,16 +158,16 @@ public class AddNodeChoice
         if (type == typeof(GraphBinarySensor))
             return DiagramSensor.ICON;
 
-        if (type == typeof(OzricEngine.Nodes.GraphPerson))
+        if (type == typeof(Ozric.Engine.Nodes.GraphPerson))
             return DiagramPerson.ICON;
 
-        if (type == typeof(OzricEngine.Nodes.GraphModeSensor))
+        if (type == typeof(Ozric.Engine.Nodes.GraphModeSensor))
             return DiagramModeSensor.ICON;
 
-        if (type == typeof(OzricEngine.Nodes.GraphSwitch))
+        if (type == typeof(Ozric.Engine.Nodes.GraphSwitch))
             return DiagramSwitch.ICON;
 
-        if (type == typeof(OzricEngine.Nodes.GraphMediaPlayer))
+        if (type == typeof(Ozric.Engine.Nodes.GraphMediaPlayer))
             return DiagramMediaPlayer.ICON;
 
         return null;

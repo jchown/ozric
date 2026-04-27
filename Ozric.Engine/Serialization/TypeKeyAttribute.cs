@@ -1,6 +1,6 @@
 using System;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// Attribute that must be placed on derived types 

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace OzricEngine;
+namespace Ozric.Engine;
 
 /// <summary>
 /// Comms wrapper for the WebSocket API to Home Assistant.

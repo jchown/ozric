@@ -1,8 +1,6 @@
 using System;
-using Ozric.Engine;
-using OzricEngine.Nodes;
 
-namespace OzricEngine;
+namespace Ozric.Engine;
 
 class OriginatedContext
 {

@@ -1,7 +1,8 @@
-@using OzricEngine.Values
+@using Ozric.Engine.Values
 @using Humanizer
 @using Ozric.Engine.Messages
-@using OzricService
+@using Ozric.Engine.Nodes
+@using Ozric.Service
 @using Ozric.Dashboard.Model
 @inject IOzricService Ozric
 
@@ -16,7 +17,7 @@
 
             @if (phases.Count > 0)
             {
-                <MudTable Items="@phases" T="OzricEngine.Nodes.GraphDayPhases.PhaseStart" 
+                <MudTable Items="@phases" T="GraphDayPhases.PhaseStart" 
                           @bind-SelectedItem="selected"  
                           CanCancelEdit="true"
                           CommitEditTooltip="Apply"
@@ -96,16 +97,16 @@
     public DiagramDayPhases Model { get; set; }
 
     [Parameter]
-    public OzricEngine.Nodes.GraphDayPhases Node { get; set; }
+    public GraphDayPhases Node { get; set; }
     
     public Attributes Sun { get; set; }
 
     private string ID;
-    private List<OzricEngine.Nodes.GraphDayPhases.PhaseStart> phases = new();
-    private OzricEngine.Nodes.GraphDayPhases.PhaseStart selected;
-    private OzricEngine.Nodes.GraphDayPhases.PhaseStart preEdit;
+    private List<GraphDayPhases.PhaseStart> phases = new();
+    private GraphDayPhases.PhaseStart selected;
+    private GraphDayPhases.PhaseStart preEdit;
     private string addPhase { get; set; } = "";
-    private OzricEngine.Nodes.GraphDayPhases.SunPhase[] SunPhases = Enum.GetValues<OzricEngine.Nodes.GraphDayPhases.SunPhase>();
+    private GraphDayPhases.SunPhase[] SunPhases = Enum.GetValues<GraphDayPhases.SunPhase>();
 
     void Cancel() => MudDialog.Cancel();
     void Save() => MudDialog.Close(DialogResult.Ok(GetChanges()));
@@ -115,8 +116,8 @@
     protected override void OnInitialized()
     {
         ID = Node.id;
-        phases = new List<OzricEngine.Nodes.GraphDayPhases.PhaseStart>(Node.phases.Select(p => p.Copy()));
-        Sun = Ozric.Home.GetEntityState(OzricEngine.Nodes.GraphDayPhases.SUN_ENTITY_ID)?.attributes ?? FakeSunAttributes();
+        phases = new List<GraphDayPhases.PhaseStart>(Node.phases.Select(p => p.Copy()));
+        Sun = Ozric.Home.GetEntityState(GraphDayPhases.SUN_ENTITY_ID)?.attributes ?? FakeSunAttributes();
     }
 
     private Attributes FakeSunAttributes()
@@ -150,26 +151,26 @@
             changes.Add(new GraphEditAction.RenameNode(Node, ID));
         
         if (!phases.SequenceEqual(Node.phases))
-            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(OzricEngine.Nodes.GraphDayPhases.phases)), phases));
+            changes.Add(new GraphEditAction.EditNode(Node, Node.GetProperty(nameof(GraphDayPhases.phases)), phases));
 
         return changes;
     }
 
     private void Add()
     {
-        phases.Add(new OzricEngine.Nodes.GraphDayPhases.PhaseStart(new Mode(addPhase), OzricEngine.Nodes.GraphDayPhases.SunPhase.Dawn));
+        phases.Add(new GraphDayPhases.PhaseStart(new Mode(addPhase), GraphDayPhases.SunPhase.Dawn));
         addPhase = "";
     }
     
     private void BackupItem(object element)
     {
-        var phaseStart = (OzricEngine.Nodes.GraphDayPhases.PhaseStart) element;
-        preEdit = new OzricEngine.Nodes.GraphDayPhases.PhaseStart(phaseStart.mode, phaseStart.start, phaseStart.startOffsetSeconds);
+        var phaseStart = (GraphDayPhases.PhaseStart) element;
+        preEdit = new GraphDayPhases.PhaseStart(phaseStart.mode, phaseStart.start, phaseStart.startOffsetSeconds);
     }
 
     private void ResetItem(object element)
     {
-        var phaseStart = (OzricEngine.Nodes.GraphDayPhases.PhaseStart) element;
+        var phaseStart = (GraphDayPhases.PhaseStart) element;
         phaseStart.mode = preEdit.mode;
         phaseStart.start = preEdit.start;
         phaseStart.startOffsetSeconds = preEdit.startOffsetSeconds;
@@ -220,26 +221,26 @@
         return "1 second";
     }
 
-    private string DescribePhaseStart(OzricEngine.Nodes.GraphDayPhases.SunPhase contextStart)
+    private string DescribePhaseStart(GraphDayPhases.SunPhase contextStart)
     {
         switch (contextStart)
         {
-            case OzricEngine.Nodes.GraphDayPhases.SunPhase.Dawn:
+            case GraphDayPhases.SunPhase.Dawn:
                 return "the sun starts to rise";
                 
-            case OzricEngine.Nodes.GraphDayPhases.SunPhase.Dusk:
+            case GraphDayPhases.SunPhase.Dusk:
                 return "the sun has fully set";
                 
-            case OzricEngine.Nodes.GraphDayPhases.SunPhase.Rising:
+            case GraphDayPhases.SunPhase.Rising:
                 return "dawn has finished";
                 
-            case OzricEngine.Nodes.GraphDayPhases.SunPhase.Setting:
+            case GraphDayPhases.SunPhase.Setting:
                 return "sunset has started";
 
-            case OzricEngine.Nodes.GraphDayPhases.SunPhase.Noon:
+            case GraphDayPhases.SunPhase.Noon:
                 return "solar midday";
             
-            case OzricEngine.Nodes.GraphDayPhases.SunPhase.Midnight:
+            case GraphDayPhases.SunPhase.Midnight:
                 return "solar midnight";
                 
             default:
@@ -247,12 +248,12 @@
         }
     }
     
-    private void OnRemove(OzricEngine.Nodes.GraphDayPhases.PhaseStart phase)
+    private void OnRemove(GraphDayPhases.PhaseStart phase)
     {
         phases.Remove(phase);
     }
     
-    private void OnUp(OzricEngine.Nodes.GraphDayPhases.PhaseStart phase)
+    private void OnUp(GraphDayPhases.PhaseStart phase)
     {
         var index = phases.IndexOf(phase);
         if (index > 0)
@@ -262,7 +263,7 @@
         }
     }
     
-    private void OnDown(OzricEngine.Nodes.GraphDayPhases.PhaseStart phase)
+    private void OnDown(GraphDayPhases.PhaseStart phase)
     {
         var index = phases.IndexOf(phase);
         if (index < phases.Count - 1)

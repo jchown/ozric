@@ -1,4 +1,4 @@
-namespace OzricEngine.messages;
+namespace Ozric.Engine.Messages;
 
 [TypeKey("config/entity_registry/list")]
 public class ClientConfigEntityList : ClientCommand

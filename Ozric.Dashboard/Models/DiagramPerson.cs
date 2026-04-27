@@ -6,7 +6,7 @@ public class DiagramPerson: DiagramNode
 {
     public const string ICON = "mdi:person";
 
-    public DiagramPerson(OzricEngine.Nodes.GraphPerson sensor, Point? point = null): base(sensor, point)
+    public DiagramPerson(Ozric.Engine.Nodes.GraphPerson sensor, Point? point = null): base(sensor, point)
     {
     }
     

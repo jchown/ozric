@@ -1,4 +1,4 @@
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("entity_registry_updated")]
     public class EventEntityRegistryUpdated: Event

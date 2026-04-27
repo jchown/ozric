@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Ozric.Engine.Messages;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// Convert a dictionary of object values into their natural JSON equivalents and back again.

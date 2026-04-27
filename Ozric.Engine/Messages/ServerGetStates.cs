@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Ozric.Engine.Model;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("get_states")]
     public class ServerGetStates: ServerResult

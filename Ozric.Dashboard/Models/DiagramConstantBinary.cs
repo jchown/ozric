@@ -6,7 +6,7 @@ namespace Ozric.Dashboard.Model;
 [EditDialog(typeof(ConstantBinaryDialog), "Binary")]
 public class DiagramConstantBinary: DiagramConstant
 {
-    public DiagramConstantBinary(OzricEngine.Nodes.GraphConstant constant, Point? point = null): base(constant, point)
+    public DiagramConstantBinary(Ozric.Engine.Nodes.GraphConstant constant, Point? point = null): base(constant, point)
     {
     }
     

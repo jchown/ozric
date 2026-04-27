@@ -1,6 +1,6 @@
 using Ozric.Engine.Messages;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("hacs/stage")]
     public class EventHACSStage: Event

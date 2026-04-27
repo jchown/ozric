@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Ozric.Engine.Model;
 
-namespace OzricEngine.messages;
+namespace Ozric.Engine.Messages;
 
 [ManualSubType]
 public class ServerConfigEntityList: ServerResponse

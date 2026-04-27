@@ -1,12 +1,11 @@
 using System;
-using System.Collections.Generic;
 using Ozric.Engine.Graph;
-using OzricEngine.Values;
-using OzricEngineTests;
+using Ozric.Engine.Values;
+using Ozric.Engine.Tests;
 using Xunit;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Nodes
+namespace Ozric.Engine.Nodes
 {
     public class DayPhasesTests
     {

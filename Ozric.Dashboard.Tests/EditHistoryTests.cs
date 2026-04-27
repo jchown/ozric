@@ -1,5 +1,4 @@
 using Blazor.Diagrams.Core.Models;
-using Ozric.Dashboard;
 using Ozric.Dashboard.Components;
 using Ozric.Dashboard.Shared;
 using Xunit;

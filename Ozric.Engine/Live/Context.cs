@@ -1,8 +1,7 @@
 using Ozric.Engine.Graph;
 using Ozric.Engine.Live;
-using OzricEngine.engine;
 
-namespace OzricEngine.Nodes
+namespace Ozric.Engine.Nodes
 {
     public class Context
     {

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// Convert no item, a string or a list of strings to a list of strings

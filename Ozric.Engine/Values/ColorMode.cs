@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace OzricEngine.Values
+namespace Ozric.Engine.Values
 {
     [JsonConverter(typeof(JsonStringEnumConverter))] 
     public enum ColorMode

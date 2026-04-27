@@ -1,11 +1,10 @@
-﻿using OzricEngine;
-using System.Collections.Generic;
-using OzricEngine.Nodes;
+﻿using System.Collections.Generic;
+using Ozric.Engine.Nodes;
 using Xunit;
 using System;
 using Ozric.Engine.Messages;
 
-namespace OzricEngineTests
+namespace Ozric.Engine.Tests
 {
     public class CommandSenderTests
     {

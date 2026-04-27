@@ -6,9 +6,8 @@ using Ozric.Engine.Extensions;
 using Ozric.Engine.Messages;
 using Ozric.Engine.Model;
 using Ozric.Engine.Utils;
-using OzricEngine;
-using OzricEngine.Nodes;
-using OzricEngine.Values;
+using Ozric.Engine.Nodes;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace Ozric.Engine.Graph.Entities;

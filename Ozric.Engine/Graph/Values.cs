@@ -1,7 +1,7 @@
 using System.Collections.Generic;
-using OzricEngine.Values;
+using Ozric.Engine.Values;
 
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Nodes;
 
 public class Values: Dictionary<string, Value>
 {

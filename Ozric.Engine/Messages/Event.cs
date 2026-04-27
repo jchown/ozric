@@ -1,8 +1,7 @@
 using System;
 using JetBrains.Annotations;
-using System.Text.Json;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// Base class for events, the payload of a ServerEvent, sent by the server. The "event_type" field indicates the specific type.  

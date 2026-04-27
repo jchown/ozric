@@ -2,9 +2,8 @@ using System;
 using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Ozric.Engine.Utils;
-using OzricEngine;
-using OzricEngine.Nodes;
-using OzricEngine.Values;
+using Ozric.Engine.Nodes;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace Ozric.Engine.Graph.Logic;

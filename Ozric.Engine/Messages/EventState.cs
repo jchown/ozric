@@ -1,9 +1,7 @@
 using System;
-using System.Collections.Generic;
-using System.Text.Json;
 using Ozric.Engine.Messages;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     public class EventState
     {

@@ -1,15 +1,8 @@
-﻿using OzricEngine;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Text.Json;
-using System.Text.Json.Serialization;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using Ozric.Engine.Messages;
 using Xunit;
 
-namespace OzricEngineTests
+namespace Ozric.Engine.Tests
 {
     public class AttributesTests
     {

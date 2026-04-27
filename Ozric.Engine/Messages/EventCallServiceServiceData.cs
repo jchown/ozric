@@ -1,7 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Text.Json.Serialization;
-
-namespace OzricEngine
+﻿namespace Ozric.Engine
 {
     /*
     public class EventCallServiceServiceData

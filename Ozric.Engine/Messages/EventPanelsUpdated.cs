@@ -1,6 +1,6 @@
 using Ozric.Engine.Messages;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("panels_updated")]
     public class EventPanelsUpdated: Event

@@ -3,9 +3,8 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Values;
-using OzricEngine.Values;
 
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Nodes;
 
 [TypeKey(NodeType.Constant)]
 public class GraphConstant: GraphNode

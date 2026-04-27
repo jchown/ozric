@@ -1,11 +1,9 @@
-﻿using OzricEngine;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text.Json;
 using Ozric.Engine.Messages;
 using Xunit;
 
-namespace OzricEngineTests
+namespace Ozric.Engine.Tests
 {
     public class MessageTests
     {

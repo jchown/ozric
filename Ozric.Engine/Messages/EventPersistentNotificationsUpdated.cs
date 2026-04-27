@@ -1,6 +1,6 @@
 using Ozric.Engine.Messages;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("persistent_notifications_updated")]
     public class EventPersistentNotificationsUpdated: Event

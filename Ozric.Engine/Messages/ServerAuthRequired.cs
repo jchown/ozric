@@ -1,4 +1,4 @@
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("auth_required")]
     public class ServerAuthRequired: ServerMessage

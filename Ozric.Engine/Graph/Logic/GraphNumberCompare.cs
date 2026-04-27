@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OzricEngine;
-using OzricEngine.Nodes;
-using OzricEngine.Values;
+using Ozric.Engine.Nodes;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace Ozric.Engine.Graph.Logic;

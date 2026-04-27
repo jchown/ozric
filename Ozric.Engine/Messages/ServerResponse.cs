@@ -1,4 +1,4 @@
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// Base class for response messages from the server.

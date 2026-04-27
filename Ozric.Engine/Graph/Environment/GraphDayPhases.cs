@@ -9,10 +9,10 @@ using Ozric.Engine.Extensions;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Messages;
 using Ozric.Engine.Utils;
-using OzricEngine.Values;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Nodes;
 
 /// <summary>
 /// Split the day into phases, emitting a Mode for each one.

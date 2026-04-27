@@ -1,8 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Ozric.Engine.Values;
 
-namespace OzricEngine.Values
+namespace Ozric.Engine.Values
 {
     /// <summary>
     /// Base class for all "value" types that are used in the inputs & outputs of [Ozric.Engine.node.Node]s.

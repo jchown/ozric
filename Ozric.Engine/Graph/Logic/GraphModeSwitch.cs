@@ -2,9 +2,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using OzricEngine;
-using OzricEngine.Nodes;
-using OzricEngine.Values;
+using Ozric.Engine.Nodes;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
 namespace Ozric.Engine.Graph.Logic;
@@ -21,14 +20,14 @@ public class GraphModeSwitch: GraphNode
 
     public class ModeValues
     {
-        public ModeValues(Mode mode, OzricEngine.Nodes.Values values)
+        public ModeValues(Mode mode, Ozric.Engine.Nodes.Values values)
         {
             this.mode = mode;
             this.values = values;
         }
 
         public Mode mode { get; set; }
-        public OzricEngine.Nodes.Values values { get; set; }
+        public Ozric.Engine.Nodes.Values values { get; set; }
 
         public ModeValues Clone()
         {
@@ -55,7 +54,7 @@ public class GraphModeSwitch: GraphNode
                 throw new Exception($"Expected value of type {expectedType} for {key}, but was {value.ValueType}");
         }
             
-        modeValues.Add(new ModeValues(new Mode(mode), new OzricEngine.Nodes.Values(attributes)));
+        modeValues.Add(new ModeValues(new Mode(mode), new Ozric.Engine.Nodes.Values(attributes)));
     }
 
     public override Task OnInit(Context context)

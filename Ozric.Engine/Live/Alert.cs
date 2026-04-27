@@ -1,7 +1,7 @@
 using System;
 using Ozric.Engine.Utils;
 
-namespace OzricEngine.engine;
+namespace Ozric.Engine.Live;
 
 public class Alert
 {

@@ -1,4 +1,4 @@
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("ping")]
     public class ClientPing : ClientCommand

@@ -1,7 +1,6 @@
-using System.Text.Json;
 using JetBrains.Annotations;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// Base class for messages from the server, with a "type" that indicates the specific type.  

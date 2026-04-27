@@ -1,9 +1,9 @@
 using System;
-using OzricEngine.Nodes;
-using OzricEngine.Values;
+using Ozric.Engine.Nodes;
+using Ozric.Engine.Values;
 using Xunit;
 
-namespace OzricEngineTests
+namespace Ozric.Engine.Tests
 {
     public class TestSkyBrightness
     {

@@ -1,4 +1,4 @@
-namespace OzricEngine.messages;
+namespace Ozric.Engine.Messages;
 
 [TypeKey("config/area_registry/list")]
 public class ClientConfigAreaList : ClientCommand

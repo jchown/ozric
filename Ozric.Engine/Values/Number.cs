@@ -1,8 +1,7 @@
 using System;
 using System.Text.Json;
-using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Values
+namespace Ozric.Engine.Values
 {
     public sealed class Number: Value, IEquatable<Number>
     {

@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using OzricEngine;
-using OzricEngine.Nodes;
+using Ozric.Engine.Graph;
 
 namespace Ozric.Engine.Live;
 

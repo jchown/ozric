@@ -3,10 +3,10 @@ using System.Threading.Tasks;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Model;
 using Ozric.Engine.Utils;
-using OzricEngine.Values;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine.Nodes;
+namespace Ozric.Engine.Nodes;
 
 /// <summary>
 /// Combines sun elevation with cloud coverage to determine the overall sky brightness.

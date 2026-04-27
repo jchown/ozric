@@ -1,11 +1,7 @@
-﻿using OzricEngine;
-using System.Collections.Generic;
-using System.Text.Json;
-using OzricEngine.Nodes;
-using Xunit;
-using OzricEngine.Values;
+﻿using Xunit;
+using Ozric.Engine.Values;
 
-namespace OzricEngineTests
+namespace Ozric.Engine.Tests
 {
     public class ValuesTests
     {

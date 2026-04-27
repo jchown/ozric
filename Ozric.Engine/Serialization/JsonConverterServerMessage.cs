@@ -2,7 +2,7 @@ using System;
 using System.Text.Json;
 using Sentry;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// ServerMessage deserializer

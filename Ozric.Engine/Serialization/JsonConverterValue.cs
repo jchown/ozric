@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using OzricEngine.Values;
+using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace OzricEngine;
+namespace Ozric.Engine;
 
 /// <summary>
 /// Value deserializer. Because there isn't a simple field <-> type key (because Color has several derivatives), we need a custom deserializer

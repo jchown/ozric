@@ -1,6 +1,6 @@
 using Ozric.Engine.Messages;
 
-namespace OzricEngine;
+namespace Ozric.Engine;
 
 [TypeKey("timer_out_of_sync")]
 public class EventTimerOutOfSync: Event

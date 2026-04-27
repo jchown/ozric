@@ -1,4 +1,4 @@
-namespace OzricEngine;
+namespace Ozric.Engine;
 
 /// <summary>
 /// See https://developers.home-assistant.io/docs/core/entity/light/

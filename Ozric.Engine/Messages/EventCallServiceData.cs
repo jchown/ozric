@@ -1,7 +1,7 @@
 using System;
 using Ozric.Engine.Messages;
 
-namespace OzricEngine
+namespace Ozric.Engine
 {
     public class EventCallServiceData
     {

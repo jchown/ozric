@@ -1,6 +1,6 @@
-using OzricEngine;
+using Ozric.Engine;
 
-namespace OzricService.Model;
+namespace Ozric.Service.Model;
 
 public class Options
 {

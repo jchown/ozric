@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Ozric.Engine.Model;
 
-namespace OzricEngine.engine;
+namespace Ozric.Engine.Live;
 
 public class EngineStatus
 {

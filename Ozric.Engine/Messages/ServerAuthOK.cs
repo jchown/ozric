@@ -1,4 +1,4 @@
-namespace OzricEngine
+namespace Ozric.Engine
 {
     [TypeKey("auth_ok")]
     public class ServerAuthOK: ServerMessage

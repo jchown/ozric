@@ -1,6 +1,6 @@
 using Blazor.Diagrams.Core.Models;
-using OzricEngine.Nodes;
 using Ozric.Dashboard.Components;
+using Ozric.Engine.Graph;
 using LogLevel = Ozric.Engine.Utils.LogLevel;
 
 namespace Ozric.Dashboard.Shared;

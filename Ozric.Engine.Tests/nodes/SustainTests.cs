@@ -1,10 +1,10 @@
 using System;
 using Ozric.Engine.Graph.Logic;
-using OzricEngine.Values;
-using OzricEngineTests;
+using Ozric.Engine.Values;
+using Ozric.Engine.Tests;
 using Xunit;
 
-namespace OzricEngine.Nodes
+namespace Ozric.Engine.Nodes
 {
     public class SustainTests
     {

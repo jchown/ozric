@@ -1,4 +1,4 @@
-namespace OzricEngine
+namespace Ozric.Engine
 {
     /// <summary>
     /// A generic untyped result message from the server. 
