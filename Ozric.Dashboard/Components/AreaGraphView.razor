@@ -677,7 +677,7 @@
 
         var node = Graph.nodes[originalID];
         nodeMappings.Remap(node, newID);
-        node.SetID(newID);
+        node.id = newID;
         Graph.nodes.Remove(originalID);
         Graph.nodes[newID] = node;
 

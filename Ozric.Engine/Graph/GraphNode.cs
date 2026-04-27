@@ -22,7 +22,7 @@ public abstract class GraphNode : OzricObject, IGraphObject, IEquatable<GraphNod
 
     public abstract NodeType nodeType { get; }
 
-    public string id { get; private set; }
+    public string id { get; set; }
     public string? area_id { get; set; }
 
     public List<Pin> inputs;
@@ -41,15 +41,6 @@ public abstract class GraphNode : OzricObject, IGraphObject, IEquatable<GraphNod
         this.id = id;
         this.inputs = inputs ?? [];
         this.outputs = outputs ?? [];
-    }
-    
-    /// <summary>
-    /// This should only be used by the rename node method, as it is used as a key in several places.
-    /// </summary>
-    
-    public void SetID(string id)
-    {
-        this.id = id;
     }
 
     public virtual bool IsReady()
