@@ -106,6 +106,40 @@ if (!app.Environment.IsDevelopment())
     app.UseExceptionHandler("/Error");
 }
 
+// Intercept 404s with a diagnostic body so ingress / base-path issues are visible
+// in the browser instead of a blank "404 Not Found".
+app.UseStatusCodePages(async context =>
+{
+    var http = context.HttpContext;
+    if (http.Response.StatusCode != StatusCodes.Status404NotFound)
+        return;
+
+    var req = http.Request;
+    http.Response.ContentType = "text/plain; charset=utf-8";
+
+    var sb = new System.Text.StringBuilder();
+    sb.AppendLine("404 - Ozric Dashboard could not match this request to a route or static file.");
+    sb.AppendLine();
+    sb.AppendLine("Request:");
+    sb.AppendLine($"  Method      = {req.Method}");
+    sb.AppendLine($"  Scheme      = {req.Scheme}");
+    sb.AppendLine($"  Host        = {req.Host}");
+    sb.AppendLine($"  PathBase    = {req.PathBase}");
+    sb.AppendLine($"  Path        = {req.Path}");
+    sb.AppendLine($"  QueryString = {req.QueryString}");
+    sb.AppendLine();
+    sb.AppendLine("Configured:");
+    sb.AppendLine($"  Base path   = {ozricConfig.Path}");
+    sb.AppendLine($"  Port        = {ozricConfig.Port}");
+    sb.AppendLine($"  Version     = {ozricConfig.Version}");
+    sb.AppendLine();
+    sb.AppendLine("Headers:");
+    foreach (var (name, values) in req.Headers)
+        sb.AppendLine($"  {name} = {values}");
+
+    await http.Response.WriteAsync(sb.ToString());
+});
+
 app.UseStaticFiles(staticFileOptions);
 app.UseStaticFiles();
 app.UseRouting();
