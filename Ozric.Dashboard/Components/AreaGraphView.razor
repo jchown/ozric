@@ -157,14 +157,15 @@
 
         Log(LogLevel.Debug, "Area {0} parametersSet", AreaId);
 
-        //  Check the URI of the page is correct for this area - this only really
-        //  matters when testing in localhost, as the parent page masks the inner URI.
+        //  Check the URI of the page is correct for this area. Use a relative path so the
+        //  navigation resolves against <base href>, which under HA ingress is the ingress
+        //  prefix (e.g. /api/hassio_ingress/<token>/).
 
         var currentUri = Navigation.ToAbsoluteUri(Navigation.Uri);
-        var expectedPath = $"/area/{Uri.EscapeDataString(AreaId)}";
-        if (!currentUri.AbsolutePath.EndsWith(expectedPath))
+        var expectedRelative = $"area/{Uri.EscapeDataString(AreaId)}";
+        if (!currentUri.AbsolutePath.EndsWith(expectedRelative))
         {
-            Navigation.NavigateTo($"{currentUri.GetLeftPart(UriPartial.Authority)}{expectedPath}", forceLoad: false);
+            Navigation.NavigateTo(expectedRelative, forceLoad: false);
         }
 
         if (Diagram.Container != null)
