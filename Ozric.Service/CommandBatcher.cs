@@ -12,9 +12,10 @@ public class CommandBatcher: OzricObject, ICommandSink
     public override string Name => "CommandSender";
 
     public readonly List<ClientCommand> commands = new();
-    private readonly Dictionary<int, List<Action<ServerResult>>> handlers = new();
 
-    private const int COMMAND_TIMEOUT_MS = 5000;
+    private const int CommandTimeoutMs = 5000;
+
+    private readonly Dictionary<int, List<Action<ServerResult>>> _handlers = new();
 
     public void Add(ClientCommand command, Action<ServerResult> resultHandler)
     {
@@ -27,15 +28,15 @@ public class CommandBatcher: OzricObject, ICommandSink
                     if (oc is not IMergable om)
                         continue;
 
-                    if (om.Merge(command))
-                    {
-                        handlers[oc.id].Add(resultHandler);
-                        return;
-                    }
+                    if (!om.Merge(command))
+                        continue;
+                    
+                    _handlers[oc.id].Add(resultHandler);
+                    return;
                 }
             }
 
-            handlers[command.id] = new List<Action<ServerResult>> { resultHandler };
+            _handlers[command.id] = [resultHandler];
             commands.Add(command);
         }
     }
@@ -51,13 +52,13 @@ public class CommandBatcher: OzricObject, ICommandSink
         {
             commandsToSend = commands.ToArray();
             commands.Clear();
-            handlersToProcess = new Dictionary<int, List<Action<ServerResult>>>(handlers);
-            handlers.Clear();
+            handlersToProcess = new Dictionary<int, List<Action<ServerResult>>>(_handlers);
+            _handlers.Clear();
         }
 
         foreach (var command in commandsToSend)
         {
-            tasks[command.id] = comms.SendCommand<ServerResult>(command, COMMAND_TIMEOUT_MS);
+            tasks[command.id] = comms.SendCommand<ServerResult>(command, CommandTimeoutMs);
         }
 
         foreach (var task in tasks)

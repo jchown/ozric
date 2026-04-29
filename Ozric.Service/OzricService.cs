@@ -254,16 +254,16 @@ public class OzricService: IOzricService, ICommandSender
         {
             HaConnectionInfo.BaseHttpUrl = "http://supervisor/core";
             HaConnectionInfo.Token = supervisor;
-            return new Comms(Comms.INGRESS_API, supervisor);
+            return new Comms(Comms.IngressApi, supervisor);
         }
 
         var core = Environment.GetEnvironmentVariable("CORE_TOKEN");
         if (core != null)
         {
-            var wsUri = Comms.CORE_API;
+            var wsUri = Comms.CoreApi;
             HaConnectionInfo.BaseHttpUrl = $"http://{wsUri.Host}:{wsUri.Port}";
             HaConnectionInfo.Token = core;
-            return new Comms(Comms.CORE_API, core);
+            return new Comms(Comms.CoreApi, core);
         }
 
         throw new Exception("No tokens");

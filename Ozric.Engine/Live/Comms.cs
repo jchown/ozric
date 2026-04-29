@@ -19,9 +19,8 @@ public class Comms : OzricObject, IComms, IDisposable
 {
     public override string Name => "Comms";
 
-    public static readonly Uri INGRESS_API = new("ws://supervisor/core/websocket");
-    //public static readonly Uri CORE_API = new("ws://homeassistant.local:8123/api/websocket");
-    public static readonly Uri CORE_API = new("ws://192.168.2.48:8123/api/websocket");
+    public static readonly Uri IngressApi = new("ws://supervisor/core/websocket");
+    public static readonly Uri CoreApi = new("ws://192.168.2.48:8123/api/websocket");
 
     private const int PingTimeoutMilliseconds = 3000;
 
@@ -47,16 +46,16 @@ public class Comms : OzricObject, IComms, IDisposable
     /// </summary>
     private readonly string llat;
 
-    private event IComms.MessageHandler? sentMessageHandler;
-    private event IComms.JsonHandler? sentJsonHandler;
-    private event IComms.JsonHandler? receivedJsonHandler;
+    private event IComms.MessageHandler? SentMessageHandler;
+    private event IComms.JsonHandler? SentJsonHandler;
+    private event IComms.JsonHandler? ReceivedJsonHandler;
 
     private int _nextCommandId = 1;
-    private readonly object _sendLock = new();
-    private readonly object _sendCommandLock = new();
+    private readonly Lock _sendLock = new();
+    private readonly Lock _sendCommandLock = new();
 
 
-    public Comms(string llat): this(CORE_API, llat)
+    public Comms(string llat): this(CoreApi, llat)
     {
     }
 
@@ -123,7 +122,7 @@ public class Comms : OzricObject, IComms, IDisposable
             try
             {
                 var t = Json.Deserialize<T>(json);
-                receivedJsonHandler?.Invoke(json);
+                ReceivedJsonHandler?.Invoke(json);
                 return t;
             }
             catch (Exception e)
@@ -144,15 +143,7 @@ public class Comms : OzricObject, IComms, IDisposable
         Log(LogLevel.Debug, "<< {0}", json);
         return json;
     }
-
-    private string ReceiveJson()
-    {
-        var json = receivedMessages.Receive(ReceiveTimeout);
-
-        Log(LogLevel.Debug, "<< {0}", json);
-        return json;
-    }
-
+    
     private async Task SendAsync<T>(T t)
     {
         if (t == null)
@@ -161,7 +152,7 @@ public class Comms : OzricObject, IComms, IDisposable
         if (_client == null)
             throw new IOException("Not connected");
 
-        sentMessageHandler?.Invoke(t);
+        SentMessageHandler?.Invoke(t);
 
         if (t is ClientCommand cc && cc.id == 0)
         {
@@ -177,7 +168,7 @@ public class Comms : OzricObject, IComms, IDisposable
         var json = Json.Serialize(t, t.GetType());
 
         Log(LogLevel.Debug, ">> {0}", json);
-        sentJsonHandler?.Invoke(json);
+        SentJsonHandler?.Invoke(json);
 
         Task sendTask;
             
@@ -197,7 +188,7 @@ public class Comms : OzricObject, IComms, IDisposable
         if (_client == null)
             throw new IOException("Not connected");
 
-        sentMessageHandler?.Invoke(t);
+        SentMessageHandler?.Invoke(t);
 
         if (t is ClientCommand cc && cc.id == 0)
         {
@@ -213,7 +204,7 @@ public class Comms : OzricObject, IComms, IDisposable
         var json = Json.Serialize(t, t.GetType());
 
         Log(LogLevel.Debug, ">> {0}", json);
-        sentJsonHandler?.Invoke(json);
+        SentJsonHandler?.Invoke(json);
 
         lock (_sendLock)
         {
@@ -257,7 +248,7 @@ public class Comms : OzricObject, IComms, IDisposable
         }
     }
 
-    public virtual async Task<TResponse> SendCommand<TResponse>(ClientCommand command, int millisecondsTimeout = IComms.DefaultCommandTimeoutMilliseconds) where TResponse: ServerResponse, new()
+    public virtual async Task<TResponse> SendCommand<TResponse>(ClientCommand command, int millisecondsTimeout = IComms.DefaultCommandTimeoutMilliseconds, bool verbose = false) where TResponse: ServerResponse, new()
     {
         if (!_messagePumpRunning)
             throw new Exception("Message pump not running");
@@ -282,6 +273,12 @@ public class Comms : OzricObject, IComms, IDisposable
         try
         {
             var response = await completionSource.Task.WaitAsync(timeout.Token);
+
+            if (verbose)
+            {
+                Log(LogLevel.Info, "Received {0}", Json.Prettify(response));
+            }
+
             var result = Json.Deserialize<TResponse>(response);
 
             if (command.id != result.id)
@@ -471,16 +468,16 @@ public class Comms : OzricObject, IComms, IDisposable
 
     public void OnSentMessage(IComms.MessageHandler action)
     {
-        sentMessageHandler += action;
+        SentMessageHandler += action;
     }
 
     public void OnSentJson(IComms.JsonHandler action)
     {
-        sentJsonHandler += action;
+        SentJsonHandler += action;
     }
 
     public void OnReceivedJson(IComms.JsonHandler action)
     {
-        receivedJsonHandler += action;
+        ReceivedJsonHandler += action;
     }
 }

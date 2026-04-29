@@ -32,12 +32,12 @@ public class Home: OzricObject, IHome
 
     //  We should definitely not spam
         
-    private const double MIN_UPDATE_INTERVAL_SECS = 0.5;
+    private const double MinUpdateIntervalSecs = 0.5;
 
     //  Throttling: Some devices have a "number of updates within a period" limit   
         
-    private const int UPDATE_THROTTLE_PERIOD_SECS = 15;
-    private const int UPDATE_THROTTLE_MAX_NUMBER = 5;
+    private const int UpdateThrottlePeriodSecs = 15;
+    private const int UpdateThrottleMaxNumber = 5;
 
     //  How long after an "external" update we can take control back 
         
@@ -99,7 +99,7 @@ public class Home: OzricObject, IHome
             }
             catch (Exception e)
             {
-                Log(LogLevel.Error, e.Message);
+                Log(LogLevel.Error, "{0}\n{1}", e.Message, e.StackTrace);
             }
 
             if (_hasData)
@@ -115,7 +115,7 @@ public class Home: OzricObject, IHome
 
     private async Task SyncEntityStates()
     {
-        var entityStateResult = await _comms.SendCommand<ServerGetStates>(new ClientGetStates(), SyncMessageTimeoutMs);
+        var entityStateResult = await _comms.SendCommand<ServerGetStates>(new ClientGetStates(), SyncMessageTimeoutMs, verbose: true);
 
         OnStatesReceived(entityStateResult);
     }
@@ -317,13 +317,13 @@ public class Home: OzricObject, IHome
     {
         //  Spamming some lights causes them to stop responding
             
-        if (WasRecentlyUpdatedByOzric(entityState.entity_id, MIN_UPDATE_INTERVAL_SECS))
+        if (WasRecentlyUpdatedByOzric(entityState.entity_id, MinUpdateIntervalSecs))
             return false;
 
         if (entityState.IsOverridden(GetTime(), SecondsToAllowOverrideByOthers))
             return false;
 
-        if (GetNumberOfUpdatesByOzric(entityState.entity_id, UPDATE_THROTTLE_PERIOD_SECS) > UPDATE_THROTTLE_MAX_NUMBER)
+        if (GetNumberOfUpdatesByOzric(entityState.entity_id, UpdateThrottlePeriodSecs) > UpdateThrottleMaxNumber)
             return false;
 
         return true;

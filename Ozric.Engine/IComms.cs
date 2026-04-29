@@ -19,7 +19,7 @@ public interface IComms: IDisposable
 
     Task Connect();
 
-    public Task<TResponse> SendCommand<TResponse>(ClientCommand command, int millisecondsTimeout = DefaultCommandTimeoutMilliseconds) where TResponse: ServerResponse, new();
+    public Task<TResponse> SendCommand<TResponse>(ClientCommand command, int millisecondsTimeout = DefaultCommandTimeoutMilliseconds, bool verbose = false) where TResponse: ServerResponse, new();
         
     List<ServerEvent> TakePendingEvents(int millisToWait);
 

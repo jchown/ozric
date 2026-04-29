@@ -59,16 +59,23 @@ namespace Ozric.Engine.Model
         {
             if (state == "on")
             {
-                if (attributes.ContainsKey("color_mode"))
+                if (attributes.TryGetValue("color_mode", out var attribute))
                 {
-                    string colorMode = attributes["color_mode"].ToString()!;
-                    string colorKey = colorMode switch
+                    var colorMode = attribute.ToString()!;
+                    var colorKey = colorMode switch
                     {
-                        "color_temp" => "color_temp",
+                        "color_temp" => attributes.ContainsKey("color_temp_kelvin") ? "color_temp_kelvin" : "color_temp",
                         _ => $"{colorMode}_color"
                     };
 
-                    Log(level, "{0}: on, brightness = {1}, {2} = {3}", entity_id, attributes["brightness"], colorMode, attributes[colorKey]);
+                    if (attributes.TryGetValue(colorKey, out var colorValue))
+                    {
+                        Log(level, "{0}: on, brightness = {1}, {2} = {3}", entity_id, attributes["brightness"], colorMode, colorValue);
+                    }
+                    else
+                    {
+                        Log(LogLevel.Warning, "{0}: on, brightness = {1}, {2} = <unknown>", entity_id, attributes["brightness"], colorMode);
+                    }
                 }
                 else
                 {
