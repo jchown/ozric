@@ -11,6 +11,7 @@ public class LightAttributes
     public string[] supported_color_modes;
 
     public int? color_temp;
+    public int? color_temp_kelvin;
     public float[]? hs_color ;
     public int[]? rgb_color ;
     public int[]? rgbw_color ;

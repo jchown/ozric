@@ -282,7 +282,7 @@ public class GraphLight: GraphEntity
                 case ColorTemp temp:
                 {
                     colorValue = CalcColorValueTemp(attributes, update, temp, ref needsConversion);
-                    colorKey = "color_temp";
+                    colorKey = "color_temp_kelvin";
                     break;
                 }
 
@@ -338,8 +338,12 @@ public class GraphLight: GraphEntity
 
     private static string GetColorMode(string colorKey)
     {
-        return colorKey == "color_temp" ? "color_temp" : colorKey.Substring(0, colorKey.Length - 6);
+        if (colorKey == "color_temp" || colorKey == "color_temp_kelvin")
+            return "color_temp";
+        return colorKey.Substring(0, colorKey.Length - 6);
     }
+
+    private static int MiredsToKelvin(float mireds) => (int)(1_000_000f / mireds + 0.5f);
 
     private static object ConvertToXY(ColorValue desired, UpdateReason update, LightAttributes attributes, int brightness)
     {
@@ -396,7 +400,8 @@ public class GraphLight: GraphEntity
 
     private object CalcColorValueTemp(LightAttributes attributes, UpdateReason update, ColorTemp temp, ref bool needsConversion)
     {
-        object colorValue;
+        var desiredKelvin = MiredsToKelvin(temp.temp);
+
         if (attributes.color_mode != "color_temp")
         {
             if (!attributes.supported_color_modes.Contains("color_temp"))
@@ -410,13 +415,18 @@ public class GraphLight: GraphEntity
         }
         else
         {
-            Log(LogLevel.Debug, "color#temp = {0}", attributes.color_temp);
+            var currentKelvin = attributes.color_temp_kelvin
+                                ?? (attributes.color_temp.HasValue ? MiredsToKelvin(attributes.color_temp.Value) : (int?)null);
 
-            update.Check(attributes.color_temp != temp.temp);
+            Log(LogLevel.Debug, "color#temp = {0}K", currentKelvin);
+
+            if (currentKelvin.HasValue)
+                update.Check(currentKelvin.Value != desiredKelvin);
+            else
+                update.Set("attributes.color_temp_kelvin missing");
         }
 
-        colorValue = temp.temp;
-        return colorValue;
+        return desiredKelvin;
     }
 
     private object CalcColorValueRGB(ColorRGB rgb, LightAttributes attributes, UpdateReason update, ref bool needsConversion)
