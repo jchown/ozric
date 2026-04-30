@@ -164,10 +164,12 @@
         //  prerender doesn't know the ingress prefix because HA strips it from the inbound
         //  request before forwarding, so a relative URL would redirect outside ingress.
 
-        var currentUri = Navigation.ToAbsoluteUri(Navigation.Uri);
+        var currentAbsolute = Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath;
         var expectedAbsolute = $"{Config.Path}area/{Uri.EscapeDataString(AreaId)}";
-        if (currentUri.AbsolutePath != expectedAbsolute)
+        
+        if (currentAbsolute != expectedAbsolute)
         {
+            Log(LogLevel.Info, "Expected path {0}, but was {1}, redirecting", expectedAbsolute,  currentAbsolute); 
             Navigation.NavigateTo(expectedAbsolute, forceLoad: false);
         }
 
