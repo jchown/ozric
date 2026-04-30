@@ -115,7 +115,7 @@ public class Home: OzricObject, IHome
 
     private async Task SyncEntityStates()
     {
-        var entityStateResult = await _comms.SendCommand<ServerGetStates>(new ClientGetStates(), SyncMessageTimeoutMs, verbose: true);
+        var entityStateResult = await _comms.SendCommand<ServerGetStates>(new ClientGetStates(), SyncMessageTimeoutMs);
 
         OnStatesReceived(entityStateResult);
     }

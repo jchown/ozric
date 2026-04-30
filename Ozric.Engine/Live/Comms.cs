@@ -286,7 +286,7 @@ public class Comms : OzricObject, IComms, IDisposable
                 throw new Exception($"Command ID mismatch: sent {command.id}, received {result.id}");
             }
 
-            Log(LogLevel.Info, "Received response: ID {0}, {1}", result.id, result.Describe());
+            Log(LogLevel.Debug, "Received response: ID {0}, {1}", result.id, result.Describe());
             return result;
         }
         catch (OperationCanceledException)
