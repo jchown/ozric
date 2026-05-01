@@ -173,7 +173,38 @@
     private bool _navBarCollapsed = false;
     private MudThemeProvider? _mudThemeProvider;
     private List<AreaConfig> Areas { get; set; } = new();
-    private int SelectedAreaIndex { get; set; } = 0;
+
+    private int _selectedAreaIndex;
+    private int SelectedAreaIndex
+    {
+        get => _selectedAreaIndex;
+        set
+        {
+            if (_selectedAreaIndex == value)
+                return;
+            _selectedAreaIndex = value;
+            SyncUrlToSelectedArea();
+        }
+    }
+
+    //  Compare and navigate using *base-relative* paths. <base href="@Config.Path"/> in
+    //  HeadContent prefixes the ingress URL on the browser side; on the server during
+    //  prerender HA has already stripped that prefix from the inbound request. Working
+    //  in base-relative space makes both contexts agree.
+
+    private void SyncUrlToSelectedArea()
+    {
+        if (Areas.Count == 0)
+            return;
+
+        var expected = $"area/{Uri.EscapeDataString(Areas[_selectedAreaIndex].area_id)}";
+        var current = Navigation.ToBaseRelativePath(Navigation.Uri);
+        if (string.Equals(current, expected, StringComparison.Ordinal))
+            return;
+
+        Log.Log(LogLevel.Info, "Sync URL: was '{0}', now '{1}'", current, expected);
+        Navigation.NavigateTo(expected);
+    }
 
     private Graph Graph { get; set; }
     private GraphLayout GraphLayout { get; set; }
@@ -247,6 +278,10 @@
         if (selectedAreaIndex < 0)
             selectedAreaIndex = 0;
         SelectedAreaIndex = selectedAreaIndex;
+
+        //  The setter is a no-op when the index didn't change, but we still want
+        //  the URL to reflect the selected area on first load (e.g. user landed on "/").
+        SyncUrlToSelectedArea();
     }
 
     void IDisposable.Dispose()

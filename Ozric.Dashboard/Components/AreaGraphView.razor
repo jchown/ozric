@@ -14,8 +14,6 @@
 @using Anchor = Blazor.Diagrams.Core.Anchors.Anchor
 @inherits DashboardComponent
 @implements IDisposable
-@inject NavigationManager Navigation
-@inject OzricConfig Config
 
 @if (Diagram != null)
 {
@@ -157,21 +155,6 @@
             return;
 
         Log(LogLevel.Debug, "Area {0} parametersSet", AreaId);
-
-        //  Check the URI of the page is correct for this area. We have to build an absolute
-        //  path including Config.Path (the supervisor's ingress_url, e.g.
-        //  /api/hassio_ingress/<token>/) — NavigationManager.BaseUri during server-side
-        //  prerender doesn't know the ingress prefix because HA strips it from the inbound
-        //  request before forwarding, so a relative URL would redirect outside ingress.
-
-        var currentAbsolute = Navigation.ToAbsoluteUri(Navigation.Uri).AbsolutePath;
-        var expectedAbsolute = $"{Config.Path}area/{Uri.EscapeDataString(AreaId)}";
-        
-        if (currentAbsolute != expectedAbsolute)
-        {
-            Log(LogLevel.Info, "Expected path {0}, but was {1}, redirecting", expectedAbsolute,  currentAbsolute); 
-            Navigation.NavigateTo(expectedAbsolute, forceLoad: false);
-        }
 
         if (Diagram.Container != null)
         {
