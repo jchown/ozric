@@ -197,13 +197,13 @@
         if (Areas.Count == 0)
             return;
 
-        var expected = $"area/{Uri.EscapeDataString(Areas[_selectedAreaIndex].area_id)}";
+        var expected = _selectedAreaIndex == 0 ? "" : $"area/{Uri.EscapeDataString(Areas[_selectedAreaIndex].area_id)}";
         var current = Navigation.ToBaseRelativePath(Navigation.Uri);
         if (string.Equals(current, expected, StringComparison.Ordinal))
             return;
 
         Log.Log(LogLevel.Info, "Sync URL: was '{0}', now '{1}'", current, expected);
-        Navigation.NavigateTo(expected);
+        Navigation.NavigateTo(expected, forceLoad: false);
     }
 
     private Graph Graph { get; set; }

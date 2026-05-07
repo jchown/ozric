@@ -8,6 +8,7 @@ using Ozric.Engine.Live;
 using Ozric.Engine.Messages;
 using Ozric.Engine.Nodes;
 using Ozric.Engine.Utils;
+using Sentry;
 
 namespace Ozric.Service;
 
@@ -260,10 +261,13 @@ public class OzricService: IOzricService, ICommandSender
         var core = Environment.GetEnvironmentVariable("CORE_TOKEN");
         if (core != null)
         {
-            var wsUri = Comms.CoreApi;
+            //  Dev override: lets a docker-compose stack point at an in-network HA
+            //  instance instead of the hardcoded LAN IP in Comms.CoreApi.
+            var wsUriOverride = Environment.GetEnvironmentVariable("OZRIC_HA_WS_URL");
+            var wsUri = wsUriOverride != null ? new Uri(wsUriOverride) : Comms.CoreApi;
             HaConnectionInfo.BaseHttpUrl = $"http://{wsUri.Host}:{wsUri.Port}";
             HaConnectionInfo.Token = core;
-            return new Comms(Comms.CoreApi, core);
+            return new Comms(wsUri, core);
         }
 
         throw new Exception("No tokens");

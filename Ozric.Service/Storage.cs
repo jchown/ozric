@@ -1,5 +1,3 @@
-using System.Runtime.InteropServices;
-
 namespace Ozric.Service;
 
 /// <summary>
@@ -59,14 +57,12 @@ public static class Storage
 
     private static string GetRootPath()
     {
-        if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
-        {
-            // Assume we are running inside the container.
+        //  HA Supervisor injects SUPERVISOR_TOKEN when running as an add-on; that's
+        //  also where /data is mounted as the persistent volume. Without it (local
+        //  dev on macOS, or a Linux devcontainer) keep state under the user profile.
 
+        if (Environment.GetEnvironmentVariable("SUPERVISOR_TOKEN") != null)
             return "/data";
-        }
-
-        //  Outside the container, use ~/.ozric/data
 
         return $"{Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)}/.ozric/data";
     }

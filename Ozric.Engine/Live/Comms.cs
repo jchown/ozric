@@ -30,6 +30,13 @@ public class Comms : OzricObject, IComms, IDisposable
     private WatsonWsClient? _client;
 
     private bool _messagePumpRunning;
+
+    /// <summary>
+    /// Cancelled when the pump should abandon its current receive and reconnect (e.g. when
+    /// a SendCommand caller times out and concludes the connection is unhealthy).
+    /// Replaced with a fresh CTS on every successful (re)connect.
+    /// </summary>
+    private CancellationTokenSource _connectionCts = new();
         
     /// <summary>
     /// All incoming messages that need to be processed 
@@ -78,12 +85,25 @@ public class Comms : OzricObject, IComms, IDisposable
 
     public async Task Connect()
     {
-        if (_client == null)
-            CreateClient();
+        await EstablishConnection();
+        _messagePumpRunning = true;
+        Tasks.Run(MessagePump);
+    }
 
+    /// <summary>
+    /// (Re)open the WebSocket and complete the auth+subscribe handshake. Does NOT start
+    /// the message pump — used both for first connect and for reconnects from inside the pump.
+    /// </summary>
+    private async Task EstablishConnection()
+    {
+        Disconnect();
+
+        _connectionCts = new CancellationTokenSource();
+
+        CreateClient();
         await _client!.StartWithTimeoutAsync((int)ReceiveTimeout.TotalSeconds);
         await Authenticate();
-        await Subscribe();
+        await SendSubscribe();
     }
 
     private void OnMessageReceived(object? sender, MessageReceivedEventArgs args)
@@ -138,7 +158,7 @@ public class Comms : OzricObject, IComms, IDisposable
 
     private async Task<string> ReceiveJsonAsync()
     {
-        var json = await receivedMessages.ReceiveAsync(ReceiveTimeout);
+        var json = await receivedMessages.ReceiveAsync(ReceiveTimeout, _connectionCts.Token);
 
         Log(LogLevel.Debug, "<< {0}", json);
         return json;
@@ -178,39 +198,6 @@ public class Comms : OzricObject, IComms, IDisposable
         }
 
         await sendTask;
-    }
-
-    private void Send<TMessage>(TMessage t)
-    {
-        if (t == null)
-            throw new ArgumentNullException(nameof(t));
-
-        if (_client == null)
-            throw new IOException("Not connected");
-
-        SentMessageHandler?.Invoke(t);
-
-        if (t is ClientCommand cc && cc.id == 0)
-        {
-            lock (_sendCommandLock)
-            {
-                cc.id = _nextCommandId++;
-            }
-        }
-
-        var cancellation = new CancellationTokenSource();
-        cancellation.CancelAfter(SendTimeout);
-
-        var json = Json.Serialize(t, t.GetType());
-
-        Log(LogLevel.Debug, ">> {0}", json);
-        SentJsonHandler?.Invoke(json);
-
-        lock (_sendLock)
-        {
-            var token = cancellation.Token;
-            _ = Task.Run(() => _client.SendAsync(json, WebSocketMessageType.Text, token), token);
-        }
     }
 
     public void Dispose()
@@ -254,7 +241,6 @@ public class Comms : OzricObject, IComms, IDisposable
             throw new Exception("Message pump not running");
 
         var completionSource = new TaskCompletionSource<string>();
-        Task send;
 
         lock (_sendCommandLock)
         {
@@ -262,16 +248,14 @@ public class Comms : OzricObject, IComms, IDisposable
 
             if (!asyncResults.TryAdd(command.id, completionSource))
                 Log(LogLevel.Error, "Failed to register result handler for command {0}", command.id);
-
-            Log(LogLevel.Info, "Sending command: ID {0}, Type \"{1}\"", command.id, command.type);
-            send = SendAsync(command);
         }
 
-        await send;
-
-        using var timeout = new CancellationTokenSource(millisecondsTimeout);
         try
         {
+            Log(LogLevel.Info, "Sending command: ID {0}, Type \"{1}\"", command.id, command.type);
+            await SendAsync(command);
+
+            using var timeout = new CancellationTokenSource(millisecondsTimeout);
             var response = await completionSource.Task.WaitAsync(timeout.Token);
 
             if (verbose)
@@ -291,20 +275,18 @@ public class Comms : OzricObject, IComms, IDisposable
         }
         catch (OperationCanceledException)
         {
+            //  Wake the message pump so it abandons its current receive and reconnects,
+            //  rather than waiting out its own 60s receive timeout.
+
+            Log(LogLevel.Warning, "Command {0} timed out, marking connection unhealthy", command.id);
+            try { _connectionCts.Cancel(); } catch (ObjectDisposedException) { }
+
             throw new Exception($"Timeout waiting for response to {command}");
         }
-    }
-
-    /// <summary>
-    /// Start the message pump which will continuously receive messages from HA and dispatch to thread-safe queues. 
-    /// </summary>
-    private async Task Subscribe()
-    {
-        await SendSubscribe();
-
-        _messagePumpRunning = true;
-
-        Tasks.Run(MessagePump);
+        finally
+        {
+            asyncResults.TryRemove(command.id, out _);
+        }
     }
 
     private async Task SendSubscribe()
@@ -332,15 +314,7 @@ public class Comms : OzricObject, IComms, IDisposable
                     }
                     catch (TimeoutException)
                     {
-                        lock (_sendLock)
-                        {
-                            Send(new ClientPing());
-                            var receive = Receive<ServerPong>();
-                            if (receive == null)
-                            {
-                                throw new TimeoutException("No pong received from server");
-                            }
-                        }
+                        await VerifyConnectionAlive();
                     }
                 }
                 catch (Exception e)
@@ -350,18 +324,14 @@ public class Comms : OzricObject, IComms, IDisposable
                     while (true)
                     {
                         await Task.Delay(TimeSpan.FromSeconds(3));
-                            
+
                         try
                         {
-                            DiscardPendingMessages();
-
                             Log(LogLevel.Info, "Reconnecting...");
 
-                            Disconnect();
+                            DiscardPendingMessages();
+                            await EstablishConnection();
 
-                            await Authenticate();
-                            await SendSubscribe();
-                                
                             Log(LogLevel.Info, "Reconnected");
                             break;
                         }
@@ -380,6 +350,33 @@ public class Comms : OzricObject, IComms, IDisposable
         finally
         {
             _messagePumpRunning = false;
+        }
+    }
+
+    /// <summary>
+    /// Idle line — send a ping and wait briefly for any incoming message. If nothing arrives,
+    /// assume the connection is dead and throw to drive the reconnect path.
+    /// </summary>
+    private async Task VerifyConnectionAlive()
+    {
+        Log(LogLevel.Debug, "Idle, pinging server");
+
+        await SendAsync(new ClientPing());
+
+        try
+        {
+            var json = await receivedMessages.ReceiveAsync(
+                TimeSpan.FromMilliseconds(PingTimeoutMilliseconds),
+                _connectionCts.Token);
+
+            //  Could be the pong or a real message that arrived just now — either way the
+            //  line is alive. Hand the message off so it isn't lost.
+
+            HandleMessage(json);
+        }
+        catch (TimeoutException)
+        {
+            throw new IOException("No response to ping");
         }
     }
         

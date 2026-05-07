@@ -34,6 +34,12 @@ catch (Exception e)
     Console.WriteLine($"Failed to get Supervisor config: {e.Message}");
 }
 
+//  Dev override: lets a docker-compose stack present the same ingress URL prefix
+//  the Supervisor would, without standing up a real Supervisor.
+var ingressOverride = Environment.GetEnvironmentVariable("OZRIC_INGRESS_URL");
+if (!string.IsNullOrEmpty(ingressOverride))
+    ozricConfig.Path = ingressOverride;
+
 Console.WriteLine($"Config:\n  URL = {ozricConfig.Path}\n  Port = {ozricConfig.Port}");
 
 const string dockerWwwRoot = "/ozric/wwwroot";
