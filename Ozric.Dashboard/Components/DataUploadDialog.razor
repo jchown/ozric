@@ -16,13 +16,14 @@
                 <MudAlert Severity="Severity.Warning">This cannot be undone.</MudAlert>
             </MudText>
 
-            <MudFileUpload T="IBrowserFile" Context="fileInput" Accept=".json" FilesChanged="OnUploadFile">
-                <ButtonTemplate>
-                    <MudButton HtmlTag="label"
+            <MudFileUpload T="IBrowserFile" Accept=".json" FilesChanged="OnUploadFile">
+                <ActivatorContent>
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Primary"
                                StartIcon="@Icons.Material.Filled.Upload">
                         Upload & Save Data
                     </MudButton>
-                </ButtonTemplate>
+                </ActivatorContent>
             </MudFileUpload>
 
         </MudContainer>
