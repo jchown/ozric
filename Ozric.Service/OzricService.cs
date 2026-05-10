@@ -323,10 +323,7 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
 
         await Stop(cancellationToken);
 
-        if (!graph.Equals(Graph))
-        {
-            await SaveGraph(graph);
-        }
+        await SaveGraph(graph);
 
         await Start(cancellationToken);
     }
