@@ -98,7 +98,7 @@ builder.WebHost.UseSentry(options =>
     options.AutoSessionTracking = true;
 });
 
-IOzricService ozricEngine = new Ozric.Service.OzricService();
+IOzricService ozricEngine = new OzricService();
 await ozricEngine.Start(CancellationToken.None);
 builder.Services.AddSingleton<IOzricService>(_ => ozricEngine);
 builder.Services.AddHttpContextAccessor();

@@ -15,8 +15,10 @@ namespace Ozric.Service;
 using Engine = Ozric.Engine.Live.Engine;
 using Graph = Ozric.Engine.Graph.Graph;
 
-public class OzricService: IOzricService, ICommandSender
+public class OzricService: OzricObject, IOzricService, ICommandSender
 {
+    public override string Name => "OzricService";
+
     private Engine? _engine;
     private IComms? _comms;
     private CommandBatcher? _batcher;
@@ -45,12 +47,18 @@ public class OzricService: IOzricService, ICommandSender
 
     public async Task Start(CancellationToken cancellationToken)
     {
+        Log(LogLevel.Info,"Starting");
+        
         var graph = await LoadGraph();
 
         ValidateAndFixGraph(graph);
 
+        Log(LogLevel.Info,"Connecting");
+
         _comms = await Connect();
         _comms.OnSentMessage(OnSendUpdateEntityUpdateTime);
+
+        Log(LogLevel.Info,"Creating Home");
 
         var home = new Home(_comms);
 
@@ -58,7 +66,12 @@ public class OzricService: IOzricService, ICommandSender
 
         CheckAreas(home, graph);
 
+        Log(LogLevel.Info, "Creating Engine");
+            
         _engine = new Engine(home, graph);
+
+        Log(LogLevel.Info, "Creating Command Batcher");
+            
         _batcher = new CommandBatcher();
 
         var token = _mainLoopCancel.Token;
@@ -75,6 +88,8 @@ public class OzricService: IOzricService, ICommandSender
 
     private async Task MainLoop(CancellationToken cancellationToken)
     {
+        Log(LogLevel.Info,"Running Main Loop");
+
         var engine = _engine!;
         var batcher = _batcher!;
         var comms = _comms!;
@@ -148,7 +163,7 @@ public class OzricService: IOzricService, ICommandSender
     }
 
 
-    private static async Task<Graph> LoadGraph()
+    private async Task<Graph> LoadGraph()
     {
         Graph graph = new Graph();
 
@@ -183,9 +198,9 @@ public class OzricService: IOzricService, ICommandSender
         return graph;
     }
 
-    private static void ExamineGraph(string json)
+    private void ExamineGraph(string json)
     {
-        Console.WriteLine("Checking nodes");
+        Log(LogLevel.Info, "Checking nodes");
         
         var bytes = new ReadOnlySequence<byte>(Encoding.UTF8.GetBytes(json));
         var options = new JsonReaderOptions();
@@ -302,6 +317,8 @@ public class OzricService: IOzricService, ICommandSender
 
     public async Task Restart(Graph graph)
     {
+        Log(LogLevel.Info,"Restarting");
+
         CancellationToken cancellationToken = CancellationToken.None;
 
         await Stop(cancellationToken);
@@ -344,6 +361,8 @@ public class OzricService: IOzricService, ICommandSender
     
     private void CheckAreas(IHome home, Graph graph)
     {
+        Log(LogLevel.Info,"Checking Areas");
+        
         var entities = home.GetEntityConfigs();
         var devices = home.GetDeviceConfigs();
         
@@ -421,4 +440,4 @@ public class OzricService: IOzricService, ICommandSender
             }
         }
     }
- }
+}
