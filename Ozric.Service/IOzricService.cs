@@ -9,6 +9,8 @@ namespace Ozric.Service;
 /// </summary>
 public interface IOzricService
 {
+    public Task AwaitStarted();
+
     EngineStatus Status { get; }
     
     Graph Graph { get; }

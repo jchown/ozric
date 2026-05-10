@@ -117,13 +117,13 @@
             FullWidth = true
         };
 
-        var result = await DialogService.Show(typeof(ColorPickerDialog), "Choose Color", parameters, options).Result;
-        if (result.Canceled)
+        var dialog = await DialogService.ShowAsync<ColorPickerDialog>("Choose Color", parameters, options);
+        var result = await dialog.Result;
+        if (result == null || result.Canceled || result.Data == null)
             return;
 
         color = (ColorValue) result.Data;
         await OnEdited.InvokeAsync(color);
         StateHasChanged();
     }
-
 }

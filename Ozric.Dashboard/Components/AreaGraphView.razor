@@ -141,9 +141,11 @@
         //Diagram.AddLinkDragBehavior();
     }
 
-    protected override void OnParametersSet()
+    protected override async Task OnParametersSetAsync()
     {
-        base.OnParametersSet();
+        await base.OnParametersSetAsync();
+
+        await OzricService.AwaitStarted();
 
         if (string.IsNullOrEmpty(AreaId))
             return;
@@ -943,7 +945,7 @@
 
     private void UpdateUnassignedEntities()
     {
-        if (OzricService?.Home == null || Graph == null || string.IsNullOrEmpty(AreaId))
+        if (OzricService?.Home == null || string.IsNullOrEmpty(AreaId))
         {
             _unassignedEntities = new();
             return;

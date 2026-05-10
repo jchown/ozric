@@ -65,6 +65,14 @@ public class OzricService: IOzricService, ICommandSender
         Tasks.Run(() => MainLoop(token), token);
     }
 
+    public async Task AwaitStarted()
+    {
+        while (_engine == null)
+        {
+            await Task.Yield();
+        }
+    }
+
     private async Task MainLoop(CancellationToken cancellationToken)
     {
         var engine = _engine!;

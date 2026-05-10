@@ -244,6 +244,8 @@
     {
         Log.Log(LogLevel.Info, "MainLayout initializing, GraphEditState: {0}", GraphEditState.Id);
         
+        await OzricService.AwaitStarted();
+        
         Areas = ShownAreas();
         
         ChooseInitialArea();
@@ -470,7 +472,7 @@
 
         var dialog = await DialogService.ShowAsync(type, title, parameters, options);
         var result = await dialog.Result;
-        if (result.Canceled || result.Data == null)
+        if (result == null || result.Canceled || result.Data == null)
             return;
 
         var changes = (List<GraphEditAction>)result.Data;
