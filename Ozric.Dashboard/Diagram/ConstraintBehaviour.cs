@@ -147,7 +147,15 @@ public class ConstraintBehavior : Behavior
         {
             minX = maxX;
         }
-        
+
+        // On narrow viewports (e.g. mobile) the container can be smaller than the
+        // combined margins, leaving minX > maxX (or minY > maxY). Math.Clamp throws
+        // when min > max, so collapse an inverted range to its lower bound.
+        if (maxX < minX)
+            maxX = minX;
+        if (maxY < minY)
+            maxY = minY;
+
         return (Math.Clamp(x, minX, maxX), Math.Clamp(y, minY, maxY));
     }
 

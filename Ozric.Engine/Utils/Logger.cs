@@ -7,11 +7,11 @@ namespace Ozric.Engine.Utils;
 
 public class Logger
 {
-    public static Action<string> Output = line => Console.WriteLine(line);
+    private static Action<string> Output = line => Console.WriteLine(line);
 
     private readonly string _name;
 
-    public LogLevel MinLevel { get; set; } = LogLevel.Info;
+    protected LogLevel MinLevel { get; set; } = LogLevel.Info;
 
     public Logger(string name)
     {
