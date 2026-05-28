@@ -2,6 +2,7 @@ using System.Buffers;
 using System.Text;
 using System.Text.Json;
 using Ozric.Engine;
+using Ozric.Engine.Extensions;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Live;
@@ -35,6 +36,7 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
             var status = _engine.Status;
             if (_comms != null)
                 status.comms = _comms.Status;
+            
             return status;
         }
     }
@@ -104,38 +106,56 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
             {
                 if (!engine.paused)
                 {
-                    await engine.UpdateNodes(batcher);
-                    await Flush(batcher, comms);
+                    try
+                    {
+                        try
+                        {
+                            await engine.UpdateNodes(batcher);
+                        }
+                        catch (Exception e)
+                        {
+                            throw e.Rethrown("While updating nodes");
+                        }
+
+                        try
+                        {
+                            await Flush(batcher, comms);
+                        }
+                        catch (Exception e)
+                        {
+                            throw e.Rethrown("While flushing comms");
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        Console.WriteLine($"Main loop threw exception: {e}");
+                        SentrySdk.CaptureException(e);
+                    }
                 }
 
                 //  Avoid spinning constantly by waiting for an event (that we aren't responsible for)
                 //  OR a period of time has elapsed.
 
-                DateTime waitTimeout = home.GetTime().AddMilliseconds(100);
+                var waitTimeout = home.GetTime().AddMilliseconds(100);
 
                 while (true)
                 {
-                    int millisToWait = (int)(waitTimeout - home.GetTime()).TotalMilliseconds;
+                    var millisToWait = (int) (waitTimeout - home.GetTime()).TotalMilliseconds;
                     if (millisToWait <= 0)
                         break;
 
                     var events = comms.TakePendingEvents(millisToWait);
-                    if (events.Count > 0)
-                    {
-                        if (engine.ProcessEvents(events))
-                            break;
-                    }
+                    if (events.Count == 0)
+                        continue;
+                    
+                    if (engine.ProcessEvents(events))
+                        break;
                 }
             }
         }
-        catch (Exception e)
-        {
-            Console.WriteLine($"Main loop threw exception: {e}");
-            SentrySdk.CaptureException(e);
-        }
         finally
         {
-            Console.WriteLine("Main loop ended");
+            Log(LogLevel.Info,"Main loop ended");
         }
     }
 
@@ -155,11 +175,11 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
         if (_engine == null)
             return;
 
-        if (message is ClientCallService ccs)
-        {
-            foreach (var entityID in ccs.GetEntities())
-                _engine.home.SetUpdatedTime(entityID);
-        }
+        if (message is not ClientCallService ccs)
+            return;
+        
+        foreach (var entityID in ccs.GetEntities())
+            _engine.home.SetUpdatedTime(entityID);
     }
 
 
