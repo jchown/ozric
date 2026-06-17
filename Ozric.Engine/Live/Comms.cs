@@ -24,12 +24,14 @@ public class Comms : OzricObject, IComms, IDisposable
 
     private const int PingTimeoutMilliseconds = 3000;
 
-    public CommsStatus Status => new() { messagePump = _messagePumpRunning };
+    public CommsStatus Status => new() { messagePump = _messagePumpRunning, heartbeat = _pumpHeartbeat.Snapshot() };
 
     private readonly Uri _uri;
     private WatsonWsClient? _client;
 
     private bool _messagePumpRunning;
+
+    private readonly Heartbeat _pumpHeartbeat = new();
 
     /// <summary>
     /// Cancelled when the pump should abandon its current receive and reconnect (e.g. when
@@ -218,6 +220,11 @@ public class Comms : OzricObject, IComms, IDisposable
         Log(LogLevel.Info, "Auth requested by HA {0}", authReq.ha_version);
 
         var auth = new ClientAuth(accessToken: llat);
+        var coreEnv = Environment.GetEnvironmentVariable("CORE_TOKEN") ?? "<unset>";
+        var coreLast6 = coreEnv.Length >= 6 ? coreEnv[^6..] : coreEnv;
+        Log(LogLevel.Info, "DEBUG llat len={0} last6={1}", llat.Length, llat.Length >= 6 ? llat[^6..] : "<short>");
+        Log(LogLevel.Info, "DEBUG CORE_TOKEN env len={0} last6={1}", coreEnv.Length, coreLast6);
+        Log(LogLevel.Info, "DEBUG auth url={0}", _uri);
         await SendAsync(auth);
 
         var authResult = await Receive<ServerMessage>();
@@ -303,6 +310,8 @@ public class Comms : OzricObject, IComms, IDisposable
         {
             while (true)
             {
+                _pumpHeartbeat.Iterated();
+
                 try
                 {
                     Log(LogLevel.Trace, "... waiting for messages ...");
@@ -319,6 +328,7 @@ public class Comms : OzricObject, IComms, IDisposable
                 }
                 catch (Exception e)
                 {
+                    _pumpHeartbeat.Threw(e);
                     Log(LogLevel.Error, "Error receiving message: {0}", e);
 
                     while (true)
@@ -345,6 +355,7 @@ public class Comms : OzricObject, IComms, IDisposable
         }
         catch (Exception e)
         {
+            _pumpHeartbeat.Threw(e);
             Log(LogLevel.Error, "Exception thrown in message pump: {0}", e);
         }
         finally

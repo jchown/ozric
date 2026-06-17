@@ -6,6 +6,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Ozric.Engine.Graph;
 using Ozric.Engine.Graph.Entities;
+using Ozric.Engine.Live;
 using Ozric.Engine.Model;
 using Ozric.Engine.Utils;
 using Ozric.Engine.Messages;
@@ -26,7 +27,10 @@ public class Home: OzricObject, IHome
 
     private readonly SemaphoreSlim _syncedSemaphore = new(0, 1);
     private readonly LinkedList<EntityUpdate> _entityUpdateHistory = new();
+    private readonly Heartbeat _syncHeartbeat = new();
     private CancellationToken _cancelToken;
+
+    public HeartbeatStatus SyncStatus => _syncHeartbeat.Snapshot();
 
     private bool _hasData;
 
@@ -84,12 +88,15 @@ public class Home: OzricObject, IHome
     {
         while (!_cancelToken.IsCancellationRequested)
         {
+            _syncHeartbeat.Iterated();
+
             try
             {
                 await SyncConfigs();
             }
             catch (Exception e)
             {
+                _syncHeartbeat.Threw(e);
                 Log(LogLevel.Error, e.Message);
             }
 
@@ -99,6 +106,7 @@ public class Home: OzricObject, IHome
             }
             catch (Exception e)
             {
+                _syncHeartbeat.Threw(e);
                 Log(LogLevel.Error, "{0}\n{1}", e.Message, e.StackTrace);
             }
 

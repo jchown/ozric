@@ -24,6 +24,8 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
     private IComms? _comms;
     private CommandBatcher? _batcher;
 
+    private readonly Heartbeat _mainLoopHeartbeat = new();
+
     public Engine Engine => _engine ?? throw new InvalidOperationException();
 
     public EngineStatus Status
@@ -36,7 +38,9 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
             var status = _engine.Status;
             if (_comms != null)
                 status.comms = _comms.Status;
-            
+
+            status.mainLoop = _mainLoopHeartbeat.Snapshot();
+
             return status;
         }
     }
@@ -104,6 +108,8 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
 
             while (!cancellationToken.IsCancellationRequested)
             {
+                _mainLoopHeartbeat.Iterated();
+
                 if (!engine.paused)
                 {
                     try
@@ -128,6 +134,7 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
                     }
                     catch (Exception e)
                     {
+                        _mainLoopHeartbeat.Threw(e);
                         Console.WriteLine($"Main loop threw exception: {e}");
                         SentrySdk.CaptureException(e);
                     }

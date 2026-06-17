@@ -1,4 +1,8 @@
+@using Ozric.Engine.Live
+@using Ozric.Service
 @inject OzricConfig Config
+@inject IOzricService OzricService
+@implements IDisposable
 
 <MudDialog>
     <DialogContent>
@@ -11,9 +15,31 @@
                 <MudTextField Value="@Config.Port" Label="Port" ReadOnly="true" Variant="Variant.Outlined"/>
                 <MudTextField Value="@Config.Path" Label="Path" ReadOnly="true" Variant="Variant.Outlined"/>
             </MudItem>
+            <MudItem xs="12">
+                <MudText Typo="Typo.h6">Threads</MudText>
+                <MudSimpleTable Dense="true" Bordered="true" Striped="true">
+                    <thead>
+                        <tr>
+                            <th>Thread</th>
+                            <th>Last iteration</th>
+                            <th>Last exception</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var (name, hb) in Threads())
+                        {
+                            <tr>
+                                <td>@name</td>
+                                <td>@(hb is null ? "—" : Ago(hb.sinceLastIteration))</td>
+                                <td>@FormatException(hb)</td>
+                            </tr>
+                        }
+                    </tbody>
+                </MudSimpleTable>
+            </MudItem>
         </MudGrid>
     </DialogContent>
- 
+
      <DialogActions>
         <MudButton OnClick="@Close">Close</MudButton>
     </DialogActions>
@@ -24,6 +50,43 @@
 
     [CascadingParameter]
     IMudDialogInstance MudDialog { get; set; }
-    
+
+    private System.Threading.Timer? _refresh;
+
+    protected override void OnInitialized()
+    {
+        //  Keep the times-since ticking over while the dialog is open.
+        _refresh = new System.Threading.Timer(_ => InvokeAsync(StateHasChanged), null, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(1));
+    }
+
+    private IEnumerable<(string Name, HeartbeatStatus? Heartbeat)> Threads()
+    {
+        var status = OzricService.Status;
+        yield return ("Message pump", status.comms?.heartbeat);
+        yield return ("Home sync", status.sync);
+        yield return ("Main loop", status.mainLoop);
+    }
+
+    private static string FormatException(HeartbeatStatus? hb)
+    {
+        if (hb?.sinceLastException is not { } since)
+            return "none";
+
+        return $"{Ago(since)}: {hb.lastExceptionMessage}";
+    }
+
+    private static string Ago(TimeSpan t)
+    {
+        if (t.TotalSeconds < 60)
+            return $"{t.TotalSeconds:0.0}s ago";
+        if (t.TotalMinutes < 60)
+            return $"{t.TotalMinutes:0.0}m ago";
+        if (t.TotalHours < 24)
+            return $"{t.TotalHours:0.0}h ago";
+        return $"{t.TotalDays:0.0}d ago";
+    }
+
+    public void Dispose() => _refresh?.Dispose();
+
     void Close() => MudDialog.Cancel();
 }

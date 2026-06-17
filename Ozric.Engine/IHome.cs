@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Ozric.Engine.Live;
 using Ozric.Engine.Model;
 
 namespace Ozric.Engine;
@@ -21,6 +22,11 @@ public interface IHome
     /// </summary>
     public const string PaletteId = "<palette>";
         
+    /// <summary>
+    /// Liveness of the background sync loop that polls Home Assistant for state.
+    /// </summary>
+    HeartbeatStatus SyncStatus { get; }
+
     DateTime GetTime();
 
     void SetUpdatedTime(string entityId);

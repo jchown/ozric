@@ -1,18 +1,19 @@
 {
-  "iisSettings": {
-    "windowsAuthentication": false,
-    "anonymousAuthentication": true,
-    "iisExpress": {
-      "applicationUrl": "http://localhost:27997",
-      "sslPort": 0
-    }
-  },
   "profiles": {
     "Ozric.Dashboard": {
       "commandName": "Project",
       "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "applicationUrl": "http://localhost:8099",
+      "launchUrl": "graph",
+      "dotnetRunMessages": true
+    },
+    "Ozric.Dashboard - BP302": {
+      "commandName": "Project",
+      "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
-        "CORE_TOKEN": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiI5NjIyODE0NmFmMmQ0YTVmOWZiZmNiNDRmNTY0ZGQ4NSIsImlhdCI6MTYzNzAwMzc4OCwiZXhwIjoxOTUyMzYzNzg4fQ.YeZGrm3Shnx5Zu8MedejVB61t2GWWr4gU0MqIqb0cXY"
+        "CORE_TOKEN": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJmN2VlNTAxZWU2Mzk0OTc4YTQwNWU1ODZhN2UwMzA4MSIsImlhdCI6MTc3Nzc1MDg1OCwiZXhwIjoyMDkzMTEwODU4fQ.RXiOONkPFv-t6oeiLpfDTAgrgGBebsI2Rs21uhCL9Jw"
       },
       "applicationUrl": "http://localhost:8099",
       "launchUrl": "graph",
@@ -27,13 +28,6 @@
       "applicationUrl": "http://localhost:8099",
       "launchUrl": "graph",
       "dotnetRunMessages": true
-    },
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
     }
   }
 }

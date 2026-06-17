@@ -6,6 +6,8 @@ namespace Ozric.Engine.Live;
 public class EngineStatus
 {
     public CommsStatus comms;
+    public HeartbeatStatus sync;
+    public HeartbeatStatus mainLoop;
     public List<EntityState> states;
     public bool paused;
 }

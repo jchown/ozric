@@ -101,6 +101,7 @@ public class Engine : OzricObject
     public EngineStatus Status => new()
     {
         states = home.GetEntityStates(graph.GetInterestedEntityIDs()),
+        sync = home.SyncStatus,
         paused = paused
     };
 }
