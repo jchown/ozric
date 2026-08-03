@@ -43,7 +43,7 @@ public class GraphIfAny : GraphVariableInputs
     {
         var on = false;
         foreach (var onOff in GetInputValues<Binary>())
-            on |= onOff?.value ?? false;
+            on |= onOff;
 
         var value = new Binary(on);
         SetOutputValue(OUTPUT_NAME, value, context);

@@ -13,6 +13,44 @@
 
             <MudTextField Label="Type" HelperText="The type of this node" Value="Type" Disabled="true" />
 
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            <MudText Typo="Typo.caption" Class="mb-1">Inputs</MudText>
+            
+            <MudTable Items="Node.inputs" Dense="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Type</MudTh>
+                    <MudTh>Source</MudTh>
+                    <MudTh>Value</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Nr">@context.name</MudTd>
+                    <MudTd DataLabel="Sign">@context.type</MudTd>
+                    <MudTd DataLabel="Source">-</MudTd>
+                    <MudTd DataLabel="Value">@context.value</MudTd>
+                </RowTemplate>
+            </MudTable>
+
+            <MudDivider DividerType="DividerType.Middle" Class="my-4" />
+
+            <MudText Typo="Typo.caption" Class="mb-1">Outputs</MudText>
+            
+            <MudTable Items="Node.outputs" Dense="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>Name</MudTh>
+                    <MudTh>Type</MudTh>
+                    <MudTh>Source</MudTh>
+                    <MudTh>Value</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="Nr">@context.name</MudTd>
+                    <MudTd DataLabel="Sign">@context.type</MudTd>
+                    <MudTd DataLabel="Destination">-</MudTd>
+                    <MudTd DataLabel="Value">@context.value</MudTd>
+                </RowTemplate>
+            </MudTable>
+
         </MudContainer>
 
     </DialogContent>
@@ -56,4 +94,21 @@
 
         return GraphEditAction.NoChanges;
     }
+
+    private IReadOnlyCollection<TreeItemData<Pin?>> InputTree()
+    {
+        return Node.inputs.Select(i => new TreeItemData<Pin?>
+        {
+            Text = i.name,
+        }).ToList();
+    }
+
+    private IReadOnlyCollection<TreeItemData<Pin?>> OutputTree()
+    {
+        return Node.outputs.Select(i => new TreeItemData<Pin?>
+        {
+            Text = i.name,
+        }).ToList();
+    }
+
 }
