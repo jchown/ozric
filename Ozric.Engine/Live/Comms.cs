@@ -26,6 +26,7 @@ public class Comms : OzricObject, IComms, IDisposable
 
     public CommsStatus Status => new() { messagePump = _messagePumpRunning, heartbeat = _pumpHeartbeat.Snapshot() };
 
+    private int _connectionId;
     private readonly Uri _uri;
     private WatsonWsClient? _client;
 
@@ -59,6 +60,7 @@ public class Comms : OzricObject, IComms, IDisposable
     private event IComms.JsonHandler? SentJsonHandler;
     private event IComms.JsonHandler? ReceivedJsonHandler;
 
+    private int _nextConnectionId = 1;
     private int _nextCommandId = 1;
     private readonly Lock _sendLock = new();
     private readonly Lock _sendCommandLock = new();
@@ -88,6 +90,7 @@ public class Comms : OzricObject, IComms, IDisposable
     public async Task Connect()
     {
         await EstablishConnection();
+        _connectionId = _nextConnectionId++;
         _messagePumpRunning = true;
         Tasks.Run(MessagePump);
     }
@@ -247,6 +250,7 @@ public class Comms : OzricObject, IComms, IDisposable
         if (!_messagePumpRunning)
             throw new Exception("Message pump not running");
 
+        var connectionId = _connectionId;
         var completionSource = new TaskCompletionSource<string>();
 
         lock (_sendCommandLock)
@@ -282,11 +286,26 @@ public class Comms : OzricObject, IComms, IDisposable
         }
         catch (OperationCanceledException)
         {
-            //  Wake the message pump so it abandons its current receive and reconnects,
-            //  rather than waiting out its own 60s receive timeout.
+            if (connectionId != _connectionId)
+            {
+                //  The connection was closed and re-established while we were waiting for the response.
 
-            Log(LogLevel.Warning, "Command {0} timed out, marking connection unhealthy", command.id);
-            try { _connectionCts.Cancel(); } catch (ObjectDisposedException) { }
+                Log(LogLevel.Warning, "Command {0} timed out due to closed connection", command.id);
+            }
+            else
+            {
+                //  Wake the message pump so it abandons its current receive and reconnects,
+                //  rather than waiting out its own 60s receive timeout.
+
+                Log(LogLevel.Warning, "Command {0} timed out, marking connection unhealthy", command.id);
+                try
+                {
+                    await _connectionCts.CancelAsync();
+                }
+                catch (ObjectDisposedException)
+                {
+                }
+            }
 
             throw new Exception($"Timeout waiting for response to {command}");
         }
