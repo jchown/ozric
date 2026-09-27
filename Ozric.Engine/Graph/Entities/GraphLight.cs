@@ -106,7 +106,7 @@ public class GraphLight: GraphEntity
         {
             if (!result.success)
             {
-                Log(LogLevel.Warning, "Service call failed ({0}) - {1}", result.error.code, result.error.message);
+                Log(LogLevel.Warning, "Service call failed ({0}) - {1}\nCommand: {2}", result.error.code, result.error.message, command);
             }
         });
     }

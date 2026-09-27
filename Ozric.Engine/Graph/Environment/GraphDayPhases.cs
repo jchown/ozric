@@ -6,13 +6,13 @@ using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 using Humanizer;
 using Ozric.Engine.Extensions;
-using Ozric.Engine.Graph;
 using Ozric.Engine.Messages;
+using Ozric.Engine.Nodes;
 using Ozric.Engine.Utils;
 using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace Ozric.Engine.Nodes;
+namespace Ozric.Engine.Graph.Environment;
 
 /// <summary>
 /// Split the day into phases, emitting a Mode for each one.

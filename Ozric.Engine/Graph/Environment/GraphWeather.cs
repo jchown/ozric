@@ -2,10 +2,11 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Ozric.Engine.Graph.Entities;
 using Ozric.Engine.Model;
+using Ozric.Engine.Nodes;
 using Ozric.Engine.Values;
 using ValueType = Ozric.Engine.Values.ValueType;
 
-namespace Ozric.Engine.Nodes;
+namespace Ozric.Engine.Graph.Environment;
 
 /// <summary>
 /// Combines dawn & dusk times with the current weather to determine the overall light level. 1 = bright sunshine, 0 = darkness

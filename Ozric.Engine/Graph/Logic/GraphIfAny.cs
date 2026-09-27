@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Ozric.Engine.Nodes;
 using Ozric.Engine.Values;
@@ -42,7 +43,8 @@ public class GraphIfAny : GraphVariableInputs
     private void UpdateValue(Context context)
     {
         var on = false;
-        foreach (var onOff in GetInputValues<Binary>())
+        var inputValues = GetInputValues<Binary>().ToArray();
+        foreach (var onOff in inputValues)
             on |= onOff;
 
         var value = new Binary(on);

@@ -1,5 +1,6 @@
 using Blazor.Diagrams.Core.Geometry;
 using Ozric.Dashboard.Components;
+using Ozric.Engine.Graph.Environment;
 
 namespace Ozric.Dashboard.Model;
 
@@ -8,7 +9,7 @@ public class DiagramDayPhases: DiagramNode
 {
     public static string ICON = "mdi:weather-sunset";
 
-    public DiagramDayPhases(Ozric.Engine.Nodes.GraphDayPhases dayPhases, Point? point = null): base(dayPhases, point)
+    public DiagramDayPhases(GraphDayPhases dayPhases, Point? point = null): base(dayPhases, point)
     {
     }
 

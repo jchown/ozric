@@ -27,7 +27,7 @@
                 <RowTemplate>
                     <MudTd DataLabel="Nr">@context.name</MudTd>
                     <MudTd DataLabel="Sign">@context.type</MudTd>
-                    <MudTd DataLabel="Source">-</MudTd>
+                    <MudTd DataLabel="Source">@DescribeSource(context)</MudTd>
                     <MudTd DataLabel="Value">@context.value</MudTd>
                 </RowTemplate>
             </MudTable>
@@ -46,7 +46,7 @@
                 <RowTemplate>
                     <MudTd DataLabel="Nr">@context.name</MudTd>
                     <MudTd DataLabel="Sign">@context.type</MudTd>
-                    <MudTd DataLabel="Destination">-</MudTd>
+                    <MudTd DataLabel="Destination">@DescribeDestination(context)</MudTd>
                     <MudTd DataLabel="Value">@context.value</MudTd>
                 </RowTemplate>
             </MudTable>
@@ -66,6 +66,9 @@
 
     [CascadingParameter]
     IMudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public Graph Graph { get; set; }
 
     [Parameter]
     public DiagramNode Model { get; set; }
@@ -111,4 +114,21 @@
         }).ToList();
     }
 
+    private string DescribeSource(Pin pin)
+    {
+        var source = Graph.edges.Values.FirstOrDefault(ge => ge.to.nodeID == Node.id && ge.to.inputName == pin.name);
+        if (source == null)
+            return "<unconnected>";
+        
+        return $"{source.from.nodeID} {source.from.outputName}";
+    }
+
+    private string DescribeDestination(Pin pin)
+    {
+        var destination = Graph.edges.Values.FirstOrDefault(ge => ge.from.nodeID == Node.id && ge.from.outputName == pin.name);
+        if (destination == null)
+            return "<unconnected>";
+        
+        return $"{destination.to.nodeID} {destination.to.inputName}";
+    }
 }

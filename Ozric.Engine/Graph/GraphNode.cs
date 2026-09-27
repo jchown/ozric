@@ -24,7 +24,7 @@ public abstract class GraphNode : OzricObject, IGraphObject, IEquatable<GraphNod
 
     public string id { get; set; }
     public string? area_id { get; set; }
-
+    
     public List<Pin> inputs;
     public List<Pin> outputs;
 

@@ -25,11 +25,11 @@ public class Heartbeat
         Interlocked.Exchange(ref _lastExceptionTicks, DateTime.UtcNow.Ticks);
     }
 
-    public DateTime LastIteration => new(Interlocked.Read(ref _lastIterationTicks), DateTimeKind.Utc);
+    private DateTime LastIteration => new(Interlocked.Read(ref _lastIterationTicks), DateTimeKind.Utc);
 
-    public TimeSpan SinceLastIteration => DateTime.UtcNow - LastIteration;
+    private TimeSpan SinceLastIteration => DateTime.UtcNow - LastIteration;
 
-    public DateTime? LastException
+    private DateTime? LastException
     {
         get
         {
