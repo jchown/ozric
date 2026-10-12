@@ -17,7 +17,7 @@ namespace Ozric.Engine.Live;
 
 public class Comms : OzricObject, IComms, IDisposable
 {
-    public override string Name => "Comms";
+    public override string Name => $"Comms:{_connectionId}";
 
     public static readonly Uri IngressApi = new("ws://supervisor/core/websocket");
     public static readonly Uri CoreApi = new("ws://192.168.2.48:8123/api/websocket");
@@ -90,7 +90,6 @@ public class Comms : OzricObject, IComms, IDisposable
     public async Task Connect()
     {
         await EstablishConnection();
-        _connectionId = _nextConnectionId++;
         _messagePumpRunning = true;
         Tasks.Run(MessagePump);
     }
@@ -103,6 +102,7 @@ public class Comms : OzricObject, IComms, IDisposable
     {
         Disconnect();
 
+        _connectionId = _nextConnectionId++;
         _connectionCts = new CancellationTokenSource();
 
         CreateClient();

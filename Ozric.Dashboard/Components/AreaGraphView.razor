@@ -307,6 +307,10 @@
             return;
 
         node.SetPinValue(pinName, value);
+        
+        if (!nodeMappings.HasDiagram(node))
+            return;
+        
         var dnode = nodeMappings.GetDiagram(node);
         var pinID = $"{node.id}.{pinName}";
         var port = dnode.GetPort(pinID);

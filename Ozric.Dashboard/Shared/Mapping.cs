@@ -21,6 +21,11 @@ public class Mapping<GType, DType> where GType: IGraphObject where DType: Blazor
         return d;
     }
 
+    public bool HasDiagram(GType g)
+    {
+        return idToDType.ContainsKey(g.id);
+    }
+
     public DType GetDiagram(GType g)
     {
         return GetDiagram(g.id);
