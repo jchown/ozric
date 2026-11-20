@@ -26,6 +26,33 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
 
     private readonly Heartbeat _mainLoopHeartbeat = new();
 
+    /// <summary>
+    /// Where the graph is persisted
+    /// </summary>
+    private readonly string _graphFilename;
+
+    /// <summary>
+    /// Each engine gets its own main loop, so each needs its own cancellation (a CTS can't be un-cancelled).
+    /// </summary>
+    private CancellationTokenSource? _mainLoopCancel;
+    private Task? _mainLoopTask;
+
+    /// <summary>
+    /// Subscribers are held here, not on the engine, so they survive the engine being replaced.
+    /// </summary>
+    private Pin.Changed? _pinChanged;
+    private Alert.Changed? _alertChanged;
+
+    /// <summary>
+    /// Only one thing at a time may replace the running engine.
+    /// </summary>
+    private readonly SemaphoreSlim _engineSwap = new(1, 1);
+
+    public OzricService(string? graphFilename = null)
+    {
+        _graphFilename = graphFilename ?? Storage.GraphFilename;
+    }
+
     public Engine Engine => _engine ?? throw new InvalidOperationException();
 
     public EngineStatus Status
@@ -49,39 +76,92 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
     public IHome Home => Engine.home ?? throw new InvalidOperationException();
     public ICommandSender CommandSender => this;
 
-    private readonly CancellationTokenSource _mainLoopCancel = new();
-
     public async Task Start(CancellationToken cancellationToken)
     {
         Log(LogLevel.Info,"Starting");
-        
+
         var graph = await LoadGraph();
 
         ValidateAndFixGraph(graph);
 
         Log(LogLevel.Info,"Connecting");
 
-        _comms = await Connect();
-        _comms.OnSentMessage(OnSendUpdateEntityUpdateTime);
+        var comms = _comms = await Connect();
+        comms.OnSentMessage(OnSendUpdateEntityUpdateTime);
 
         Log(LogLevel.Info,"Creating Home");
 
-        var home = new Home(_comms);
+        var home = new Home(comms);
 
         await home.WaitForEntities();
 
+        Run(home, comms, graph);
+    }
+
+    /// <summary>
+    /// Run a graph against a home, over an established connection.
+    /// </summary>
+    internal void Run(IHome home, IComms comms, Graph graph)
+    {
+        _comms = comms;
+
         CheckAreas(home, graph);
 
+        StartEngine(home, comms, graph, paused: false);
+    }
+
+    /// <summary>
+    /// Create an engine for the graph and start its main loop. The caller must have stopped any previous main loop.
+    /// </summary>
+    private void StartEngine(IHome home, IComms comms, Graph graph, bool paused)
+    {
         Log(LogLevel.Info, "Creating Engine");
-            
-        _engine = new Engine(home, graph);
+
+        var engine = new Engine(home, graph) { paused = paused };
+        engine.pinChanged += (nodeID, pinName, value) => _pinChanged?.Invoke(nodeID, pinName, value);
+        engine.alertChanged += nodeID => _alertChanged?.Invoke(nodeID);
 
         Log(LogLevel.Info, "Creating Command Batcher");
-            
-        _batcher = new CommandBatcher();
 
-        var token = _mainLoopCancel.Token;
-        Tasks.Run(() => MainLoop(token), token);
+        var batcher = new CommandBatcher();
+        var cancel = new CancellationTokenSource();
+
+        _engine = engine;
+        _batcher = batcher;
+        _mainLoopCancel = cancel;
+        _mainLoopTask = Task.Run(async () =>
+        {
+            try
+            {
+                await MainLoop(engine, batcher, comms, cancel.Token);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine($"Error in main loop: {e.Message}: {e.StackTrace}");
+                SentrySdk.CaptureException(e);
+            }
+        });
+    }
+
+    /// <summary>
+    /// Stop the main loop and wait for it to finish, so nothing is still using the engine afterwards.
+    /// </summary>
+    private async Task StopMainLoop()
+    {
+        var cancel = _mainLoopCancel;
+        var task = _mainLoopTask;
+        _mainLoopCancel = null;
+        _mainLoopTask = null;
+
+        if (cancel == null)
+            return;
+
+        cancel.Cancel();
+
+        if (task != null)
+            await task;
+
+        cancel.Dispose();
     }
 
     public async Task AwaitStarted()
@@ -92,13 +172,10 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
         }
     }
 
-    private async Task MainLoop(CancellationToken cancellationToken)
+    private async Task MainLoop(Engine engine, CommandBatcher batcher, IComms comms, CancellationToken cancellationToken)
     {
         Log(LogLevel.Info,"Running Main Loop");
 
-        var engine = _engine!;
-        var batcher = _batcher!;
-        var comms = _comms!;
         var home = engine.home;
 
         try
@@ -194,11 +271,11 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
     {
         Graph graph = new Graph();
 
-        if (File.Exists(Storage.GraphFilename))
+        if (File.Exists(_graphFilename))
         {
             try
             {
-                var json = await File.ReadAllTextAsync(Storage.GraphFilename);
+                var json = await File.ReadAllTextAsync(_graphFilename);
                 try
                 {
                     graph = Graph.Deserialize(json);
@@ -288,7 +365,44 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
     {
         var json = Json.Prettify(Json.Serialize(graph));
         Console.WriteLine(json);
-        await File.WriteAllTextAsync(Storage.GraphFilename, json);
+        await File.WriteAllTextAsync(_graphFilename, json);
+    }
+
+    /// <summary>
+    /// Persist an edited graph, then swap the engine over to it.
+    /// </summary>
+    /// <remarks>
+    /// The engine runs its own copy, rebuilt from exactly what was written to disk (and checked
+    /// the same way as on startup), so what you see after a reload is what you'd get after a restart.
+    /// The comms connection and home are kept, so this is quick and doesn't disturb Home Assistant.
+    /// </remarks>
+    public async Task ApplyGraph(Graph graph)
+    {
+        await _engineSwap.WaitAsync();
+        try
+        {
+            if (_engine == null || _comms == null)
+                throw new InvalidOperationException("The service is not running");
+
+            Log(LogLevel.Info, "Applying graph with {0} nodes and {1} edges", graph.nodes.Count, graph.edges.Count);
+
+            var json = Json.Prettify(Json.Serialize(graph));
+            await File.WriteAllTextAsync(_graphFilename, json);
+
+            var home = _engine.home;
+            var paused = _engine.paused;
+
+            var live = Graph.Deserialize(json);
+            ValidateAndFixGraph(live);
+            CheckAreas(home, live);
+
+            await StopMainLoop();
+            StartEngine(home, _comms, live, paused);
+        }
+        finally
+        {
+            _engineSwap.Release();
+        }
     }
 
     private static async Task<IComms> Connect()
@@ -323,11 +437,11 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
         throw new Exception("No tokens");
     }
 
-    public Task Stop(CancellationToken cancellationToken)
+    public async Task Stop(CancellationToken cancellationToken)
     {
         try
         {
-            _mainLoopCancel.Cancel();
+            await StopMainLoop();
 
             _comms?.Dispose();
             _comms = null;
@@ -338,21 +452,27 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
         {
             Console.WriteLine(e);
         }
-
-        return Task.CompletedTask;
     }
 
     public async Task Restart(Graph graph)
     {
-        Log(LogLevel.Info,"Restarting");
+        await _engineSwap.WaitAsync();
+        try
+        {
+            Log(LogLevel.Info, "Restarting");
 
-        CancellationToken cancellationToken = CancellationToken.None;
+            CancellationToken cancellationToken = CancellationToken.None;
 
-        await Stop(cancellationToken);
+            await Stop(cancellationToken);
 
-        await SaveGraph(graph);
+            await SaveGraph(graph);
 
-        await Start(cancellationToken);
+            await Start(cancellationToken);
+        }
+        finally
+        {
+            _engineSwap.Release();
+        }
     }
 
     public void SetPaused(bool paused)
@@ -373,14 +493,14 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
 
     public void Subscribe(Pin.Changed pinChanged, Alert.Changed alertChanged)
     {
-        Engine.pinChanged += pinChanged;
-        Engine.alertChanged += alertChanged;
+        _pinChanged += pinChanged;
+        _alertChanged += alertChanged;
     }
-    
+
     public void Unsubscribe(Pin.Changed pinChanged, Alert.Changed alertChanged)
     {
-        Engine.pinChanged -= pinChanged;
-        Engine.alertChanged -= alertChanged;
+        _pinChanged -= pinChanged;
+        _alertChanged -= alertChanged;
     }
     
     private void CheckAreas(IHome home, Graph graph)
@@ -438,6 +558,8 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
 
         while (toGuess.Count > 0)
         {
+            var guessed = false;
+
             foreach (var node in toGuess)
             {
                 var connections = graph.GetConnectedNodes(node);
@@ -447,21 +569,37 @@ public class OzricService: OzricObject, IOzricService, ICommandSender
                 {
                     continue;
                 }
-                
+
                 if (areas.Count == 1)
                 {
                     var areaId = areas.First();
                     graph.nodes[node].area_id = areaId;
                     toGuess.Remove(node);
                     Console.WriteLine($"Guessing area of {node} is {areaId}");
+                    guessed = true;
                     break;
                 }
-                
+
                 graph.nodes[node].area_id = IHome.GlobalAreaId;
                 toGuess.Remove(node);
                 Console.WriteLine($"Guessing area of {node} is {IHome.GlobalAreaId}");
+                guessed = true;
                 break;
             }
+
+            if (guessed)
+                continue;
+
+            //  Nothing left is connected to anything with an area (e.g. a node that has just
+            //  been added and not yet wired up), so there's nothing to go on. Don't spin forever.
+
+            foreach (var node in toGuess)
+            {
+                graph.nodes[node].area_id = IHome.GlobalAreaId;
+                Console.WriteLine($"Guessing area of {node} is {IHome.GlobalAreaId} (no connections to go on)");
+            }
+
+            break;
         }
     }
 }

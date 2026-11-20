@@ -103,7 +103,10 @@ public class DataService
 
     public async Task SetGraphLayoutAsync(GraphLayout graphLayout)
     {
-        _currentGraphLayout = graphLayout;
+        //  Keep our own copy: the editor carries on changing the one it passed in, and those
+        //  changes aren't part of the layout until they are saved.
+
+        _currentGraphLayout = Json.Clone(graphLayout);
         var json = Json.Prettify(Json.Serialize(graphLayout));
         await File.WriteAllTextAsync(_layoutFilename, json);
     }

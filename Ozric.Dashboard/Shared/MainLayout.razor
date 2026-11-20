@@ -148,13 +148,13 @@
                     {
                         <!-- Most areas are shown as a graph -->
                         
-                        <AreaGraphView Graph="@Graph" GraphEditState="@GraphEditState" GraphLayout="@GraphLayout" AreaId="@Areas[SelectedAreaIndex].area_id"/>
+                        <AreaGraphView @key="_viewKey" Graph="@Graph" GraphEditState="@GraphEditState" GraphLayout="@GraphLayout" AreaId="@Areas[SelectedAreaIndex].area_id"/>
                     }
                     else
                     {
                         <!-- Colors are presented in their own view -->
                         
-                        <PaletteView Graph="@Graph" GraphEditState="@GraphEditState" />
+                        <PaletteView @key="_viewKey" Graph="@Graph" GraphEditState="@GraphEditState" />
                     }
                 </div>
             }
@@ -208,6 +208,13 @@
 
     private Graph Graph { get; set; }
     private GraphLayout GraphLayout { get; set; }
+
+    /// <summary>
+    /// The views build themselves from the Graph they are first given and keep references into it, so
+    /// they can't be handed a different one. Changing this key throws them away and builds new ones.
+    /// Bump it whenever Graph (or GraphLayout) is replaced.
+    /// </summary>
+    private int _viewKey;
     private GraphEditState GraphEditState { get; set; } = new();
     private List<KeyValuePair<SelectableModel, IGraphObject>> SelectedItems { get; set; } = new();
 
@@ -316,10 +323,17 @@
     {
         Graph = OzricService.Graph;
         GraphLayout = Data.GetGraphLayout();
+        ResetViews();
 
         GraphEditState.OnChanged += OnGraphEditStateChanged;
         GraphEditState.OnSelectionChanged += GraphSelectionChanged;
         GraphEditState.OnKeyDown += OnDiagramKeyDown;
+    }
+
+    private void ResetViews()
+    {
+        _viewKey++;
+        SelectedItems = new();
     }
 
     private void UnloadGraph()
@@ -346,19 +360,21 @@
 
     private void OnClickEdit()
     {
-        Graph = Json.Clone(OzricService.Graph); // Don't edit the live graph!
+        //  Edit copies, so that unsaved changes can be thrown away, and the running engine
+        //  isn't changed under its feet. Saving hands the copy to the engine.
+
+        Graph = Json.Clone(OzricService.Graph);
+        GraphLayout = Json.Clone(Data.GetGraphLayout());
+        ResetViews();
+
         GraphEditState.OnEdit();
     }
 
     private void OnClickDone()
     {
-        if (!GraphEditState.IsChanged)
-        {
-            GraphEditState.OnCancel();
-            return;
-        }
-
-    //  Tear down and rebuild. It would be nice to do something less brutal.
+        //  Whether or not anything was changed, we've been looking at a copy of the graph,
+        //  so go back to the live one (which includes anything that was saved).
+        //  Tear down and rebuild. It would be nice to do something less brutal.
 
         if (OzricService.Status.paused)
             OzricService.SetPaused(false);
@@ -380,7 +396,7 @@
         GraphEditState.OnSaving();
         try
         {
-            await OzricService.SaveGraph(Graph);
+            await OzricService.ApplyGraph(Graph);
             await Data.SetGraphLayoutAsync(GraphLayout);
             Storage.Commit("Dashboard Save");
             await InvokeAsync(() => GraphEditState.DoCommand(GraphEditState.Command.SetCheckpoint));

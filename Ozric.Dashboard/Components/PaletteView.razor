@@ -46,7 +46,7 @@
 
     protected override void OnInitialized()
     {
-        _currentColors = OzricService.Graph.nodes
+        _currentColors = Graph.nodes
             .Where(n => n.Value is GraphConstant c && c.ConstantType == ValueType.Color)
             .ToDictionary(n => n.Key, n => (ColorValue) ((GraphConstant) n.Value).ConstantValue!);
 
